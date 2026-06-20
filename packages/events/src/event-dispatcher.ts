@@ -1,5 +1,8 @@
 import type { Constructor } from '@tyravel/container';
 import type { Container } from '@tyravel/container';
+import type { EventRegistry } from './event-registry.js';
+import type { ListenerRegistry } from './listener-registry.js';
+import type { EventDispatcherOptions } from './dispatcher-options.js';
 import type { Event } from './types.js';
 import {
   type EventConstructor,
@@ -8,19 +11,36 @@ import {
   type ListenerContract,
   type ListenerHandler,
 } from './types.js';
+import {
+  buildCallQueuedListenerJob,
+  listenerShouldQueue,
+} from './should-queue.js';
 
 export class EventDispatcher {
   private readonly listeners = new Map<string, ListenerHandler[]>();
   private readonly container?: Container;
+  private readonly eventRegistry?: EventRegistry;
+  private readonly listenerRegistry?: ListenerRegistry;
+  private readonly queue?: EventDispatcherOptions['queue'];
+  private queueDefaults: EventDispatcherOptions['queueDefaults'];
 
-  constructor(options: { container?: Container } = {}) {
+  constructor(options: EventDispatcherOptions = {}) {
     this.container = options.container;
+    this.eventRegistry = options.eventRegistry;
+    this.listenerRegistry = options.listenerRegistry;
+    this.queue = options.queue;
+    this.queueDefaults = options.queueDefaults;
   }
 
   listen<TEvent extends Event>(
     event: EventConstructor<TEvent>,
     handler: ListenerHandler<TEvent>,
   ): this {
+    this.eventRegistry?.register(event);
+    if (this.isListenerClass(handler)) {
+      this.listenerRegistry?.register(handler);
+    }
+
     const key = event.name;
     const existing = this.listeners.get(key) ?? [];
     existing.push(handler as ListenerHandler);
@@ -79,10 +99,23 @@ export class EventDispatcher {
     return this;
   }
 
+  setQueueDefaults(defaults: EventDispatcherOptions['queueDefaults']): this {
+    this.queueDefaults = {
+      ...this.queueDefaults,
+      ...defaults,
+    };
+    return this;
+  }
+
   private async invokeHandler<TEvent extends Event>(
     handler: ListenerHandler<TEvent>,
     event: TEvent,
   ): Promise<void> {
+    if (this.isListenerClass(handler) && listenerShouldQueue(handler)) {
+      await this.queueListener(handler, event);
+      return;
+    }
+
     if (this.isListenerCallback(handler)) {
       await handler(event);
       return;
@@ -90,6 +123,25 @@ export class EventDispatcher {
 
     const instance = this.resolveListener(handler);
     await instance.handle(event);
+  }
+
+  private async queueListener<TEvent extends Event>(
+    constructor: import('./should-queue.js').QueuedListenerConstructor,
+    event: TEvent,
+  ): Promise<void> {
+    if (!this.queue) {
+      throw new Error(
+        `Listener ${constructor.name} is queued but no queue bridge is configured. Register QueueServiceProvider before EventServiceProvider.`,
+      );
+    }
+
+    const { job, metadata } = buildCallQueuedListenerJob(
+      constructor,
+      event,
+      this.queueDefaults,
+    );
+
+    await this.queue.dispatch(job, metadata);
   }
 
   private resolveListener<TEvent extends Event>(
@@ -119,7 +171,7 @@ export class EventDispatcher {
 
   private isListenerClass<TEvent extends Event>(
     handler: ListenerHandler<TEvent>,
-  ): handler is ListenerHandler<TEvent> & { prototype: { handle: Function } } {
+  ): handler is ListenerConstructor<TEvent> {
     return (
       typeof handler === 'function' &&
       typeof handler.prototype?.handle === 'function'

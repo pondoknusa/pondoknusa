@@ -332,6 +332,8 @@ export function eventsConfig(): string {
 
 export default {
   listen: [],
+  queueConnection: 'database',
+  queue: 'default',
 } satisfies EventsConfig;
 `;
 }

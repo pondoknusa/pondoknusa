@@ -1,5 +1,3 @@
-import type { Container } from '@tyravel/container';
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export abstract class Event<TData = any> {
   constructor(public readonly data: TData) {}
@@ -33,6 +31,10 @@ export type ListenerHandler<TEvent extends Event = Event> =
   | ListenerConstructor<TEvent>
   | ListenerCallback<TEvent>;
 
+export interface ShouldQueue {
+  readonly shouldQueue: true;
+}
+
 export type EventListenerRegistration = [
   EventConstructor,
   ListenerHandler[],
@@ -40,8 +42,6 @@ export type EventListenerRegistration = [
 
 export interface EventsConfig {
   listen: EventListenerRegistration[];
-}
-
-export interface EventDispatcherOptions {
-  container?: Container;
+  queueConnection?: string;
+  queue?: string;
 }

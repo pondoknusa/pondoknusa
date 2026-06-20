@@ -401,6 +401,34 @@ export class SendWelcomeEmail extends Listener<UserRegistered> {
 
 Listeners resolve from the container when registered as classes, so constructor dependencies work like controllers.
 
+**Queued listeners** extend `QueuedListener` (Laravel's `ShouldQueue`). They are serialized to a `CallQueuedListener` job instead of running inline:
+
+```typescript
+import { QueuedListener } from '@tyravel/events';
+
+export class SendInvoiceEmail extends QueuedListener<InvoicePaid> {
+  static connection = 'database';
+  static queue = 'emails';
+  static delaySeconds = 30;
+
+  override async handle(event: InvoicePaid): Promise<void> {
+    //
+  }
+}
+```
+
+Set defaults in `config/events.ts`:
+
+```typescript
+export default {
+  listen: [[InvoicePaid, [SendInvoiceEmail]]],
+  queueConnection: 'database',
+  queue: 'default',
+} satisfies import('@tyravel/events').EventsConfig;
+```
+
+Register `QueueServiceProvider` **before** `EventServiceProvider`, run `tyravel queue:work`, and queued listeners execute on the worker.
+
 ### Service providers
 
 ```typescript

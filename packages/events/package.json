@@ -15,7 +15,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@tyravel/container": "0.0.1"
+    "@tyravel/container": "0.0.1",
+    "@tyravel/queue": "0.0.1"
   },
   "files": ["dist"],
   "engines": {
