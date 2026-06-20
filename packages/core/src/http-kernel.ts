@@ -1,6 +1,8 @@
 import { RouteNotFoundException } from '@tyravel/http';
 import { Response } from '@tyravel/http';
 import { ValidationException } from '@tyravel/validation';
+import { AuthenticationException } from '@tyravel/auth';
+import { InvalidCredentialsException } from '@tyravel/auth';
 import type { Application } from './application.js';
 
 export class HttpKernel {
@@ -23,6 +25,14 @@ export class HttpKernel {
           },
           { status: 422 },
         );
+      }
+
+      if (error instanceof AuthenticationException) {
+        return Response.json({ message: error.message }, { status: 401 });
+      }
+
+      if (error instanceof InvalidCredentialsException) {
+        return Response.json({ message: error.message }, { status: 401 });
       }
 
       console.error(error);

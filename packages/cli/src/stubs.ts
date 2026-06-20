@@ -9,6 +9,7 @@ export function projectPackageJson(name: string): string {
         start: 'tyravel serve',
       },
       dependencies: {
+        '@tyravel/auth': '^0.0.1',
         '@tyravel/config': '^0.0.1',
         '@tyravel/core': '^0.0.1',
         '@tyravel/database': '^0.0.1',
@@ -376,5 +377,202 @@ export class ${name} extends EventSubscriber {
     // dispatcher.listen(SomeEvent, SomeListener);
   }
 }
+`;
+}
+
+export function authConfig(): string {
+  return `import type { AuthConfig } from '@tyravel/auth';
+import { User } from '../src/models/User.js';
+
+export default {
+  defaults: {
+    guard: 'web',
+  },
+  guards: {
+    web: {
+      driver: 'session',
+      provider: 'users',
+    },
+  },
+  providers: {
+    users: {
+      driver: 'eloquent',
+      model: User,
+    },
+  },
+  session: {
+    cookie: 'tyravel_session',
+    lifetimeMinutes: 120,
+    table: 'sessions',
+    connection: 'sqlite',
+  },
+} satisfies AuthConfig;
+`;
+}
+
+export function userModel(): string {
+  return `import { Model } from '@tyravel/database';
+import type { Authenticatable } from '@tyravel/auth';
+
+export interface UserAttributes {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+}
+
+export class User extends Model<UserAttributes> implements Authenticatable {
+  static override table = 'users';
+
+  getAuthIdentifier(): number {
+    return Number(this.get('id'));
+  }
+
+  getAuthPassword(): string {
+    return String(this.get('password'));
+  }
+}
+`;
+}
+
+export function usersTableMigration(): string {
+  return `import { Migration } from '@tyravel/database';
+import type { DatabaseConnection } from '@tyravel/database';
+import type { SchemaBuilder } from '@tyravel/database';
+
+export default class CreateUsersTable extends Migration {
+  override async up(_connection: DatabaseConnection, schema: SchemaBuilder) {
+    await schema.create('users', (table) => {
+      table.id();
+      table.string('name');
+      table.string('email');
+      table.string('password');
+      table.integer('created_at').nullable();
+      table.integer('updated_at').nullable();
+    });
+  }
+
+  override async down(_connection: DatabaseConnection, schema: SchemaBuilder) {
+    await schema.drop('users');
+  }
+}
+`;
+}
+
+export function sessionsTableMigration(): string {
+  return `import { Migration } from '@tyravel/database';
+import type { DatabaseConnection } from '@tyravel/database';
+import type { SchemaBuilder } from '@tyravel/database';
+
+export default class CreateSessionsTable extends Migration {
+  override async up(_connection: DatabaseConnection, schema: SchemaBuilder) {
+    await schema.create('sessions', (table) => {
+      table.string('id', 128);
+      table.unique('id');
+      table.integer('user_id').nullable();
+      table.string('ip_address').nullable();
+      table.text('user_agent').nullable();
+      table.text('payload');
+      table.integer('last_activity');
+    });
+  }
+
+  override async down(_connection: DatabaseConnection, schema: SchemaBuilder) {
+    await schema.drop('sessions');
+  }
+}
+`;
+}
+
+export function authController(): string {
+  return `import type { TyravelRequest } from '@tyravel/http';
+import { Response } from '@tyravel/http';
+import { Auth } from '@tyravel/core';
+
+export class AuthController {
+  async login(request: TyravelRequest) {
+    const body = await request.json<{ email?: string; password?: string }>();
+    await Auth.attempt({
+      email: body.email ?? '',
+      password: body.password ?? '',
+    });
+
+    return Response.json({
+      user: {
+        id: Auth.id(),
+      },
+    });
+  }
+
+  async logout(_request: TyravelRequest) {
+    await Auth.logout();
+    return Response.json({ message: 'Logged out.' });
+  }
+
+  me(request: TyravelRequest) {
+    return Response.json({
+      user: request.user,
+    });
+  }
+}
+`;
+}
+
+export function authRoutes(): string {
+  return `import { Route, createControllerHandler } from '@tyravel/core';
+import { AuthController } from '../controllers/AuthController.js';
+
+Route.post('/login', createControllerHandler(AuthController, 'login'), {
+  middleware: ['guest'],
+});
+Route.post('/logout', createControllerHandler(AuthController, 'logout'), {
+  middleware: ['auth'],
+});
+Route.get('/me', createControllerHandler(AuthController, 'me'), {
+  middleware: ['auth'],
+});
+`;
+}
+
+export function mainEntryWithAuth(): string {
+  return `import {
+  Application,
+  AuthServiceProvider,
+  ConfigServiceProvider,
+  DatabaseServiceProvider,
+  EventServiceProvider,
+  HttpKernel,
+  QueueServiceProvider,
+  setAuthApplication,
+  setEventApplication,
+  setQueueApplication,
+  setRouteApplication,
+  setViewApplication,
+  ViewServiceProvider,
+  serve,
+} from '@tyravel/core';
+import { AppServiceProvider } from './providers/app-service-provider.js';
+import './routes/web.js';
+import './routes/auth.js';
+
+const app = new Application(import.meta.dir);
+setRouteApplication(app);
+setViewApplication(app);
+setQueueApplication(app);
+setEventApplication(app);
+setAuthApplication(app);
+
+app.register(ConfigServiceProvider);
+app.register(DatabaseServiceProvider);
+app.register(QueueServiceProvider);
+app.register(EventServiceProvider);
+app.register(AuthServiceProvider);
+app.register(ViewServiceProvider);
+app.register(AppServiceProvider);
+
+await app.boot();
+
+const kernel = new HttpKernel(app);
+await serve(kernel);
 `;
 }

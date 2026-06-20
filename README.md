@@ -67,6 +67,7 @@ tyravel queue:failed-table               # Migration for failed_jobs
 tyravel queue:work [--queue=default]     # Process database queue jobs
 tyravel queue:failed                     # List failed jobs
 tyravel queue:retry <id>                 # Re-queue a failed job
+tyravel auth:install                     # Scaffold session auth (User, routes, migrations)
 tyravel migrate                        # Run pending migrations
 tyravel version                      # Show CLI version
 ```
@@ -466,6 +467,32 @@ export default {
 
 Register `QueueServiceProvider` **before** `EventServiceProvider`, run `tyravel queue:work`, and queued listeners execute on the worker.
 
+### Authentication
+
+Session-based **web guard** with Eloquent user provider, scrypt password hashing, and Laravel-style middleware:
+
+```bash
+tyravel auth:install
+tyravel migrate
+```
+
+`AuthServiceProvider` registers global **StartSession** middleware plus named **`auth`** and **`guest`** aliases.
+
+```typescript
+import { Auth } from '@tyravel/core';
+
+await Auth.attempt({ email, password });
+const user = Auth.user();
+await Auth.logout();
+```
+
+Routes (from `auth:install`):
+
+- `POST /login` — `guest` middleware
+- `POST /logout`, `GET /me` — `auth` middleware
+
+`request.user` is set after the session middleware runs. Unauthenticated access to `auth` routes returns **401**.
+
 ### Service providers
 
 ```typescript
@@ -511,7 +538,7 @@ npm run typecheck # Type-check via project references
 - [x] **Blade-like templating** — TS-native view layer with layouts and components
 - [x] **Queue and jobs** — background job dispatch with typed payloads
 - [x] **Event bus** — typed domain events and listeners
-- [ ] **Auth** — sessions, guards, and policies
+- [x] **Auth** — session guard, `Auth` facade, `auth` / `guest` middleware (`tyravel auth:install`)
 - [ ] **Testing utilities** — `TestCase`, HTTP test client, container fakes
 - [ ] **Package ecosystem** — publishable first-party packages (cache, mail, notifications)
 

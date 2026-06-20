@@ -1,4 +1,5 @@
 import type { RouteParams } from './types.js';
+import type { SessionContract } from './session-contract.js';
 
 export class TyravelRequest {
   constructor(
@@ -6,6 +7,9 @@ export class TyravelRequest {
     public readonly params: RouteParams = {},
     public readonly routeName?: string,
   ) {}
+
+  session?: SessionContract;
+  user: unknown = null;
 
   get method(): string {
     return this.raw.method;

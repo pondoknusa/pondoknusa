@@ -9,6 +9,7 @@ import { MakeModelCommand } from './commands/make-model.js';
 import { MakeProviderCommand } from './commands/make-provider.js';
 import { MakeViewCommand } from './commands/make-view.js';
 import { MigrateCommand } from './commands/migrate.js';
+import { AuthInstallCommand } from './commands/auth-install.js';
 import { NewCommand } from './commands/new.js';
 import { QueueFailedCommand, QueueFailedTableCommand, QueueRetryCommand } from './commands/queue-failed.js';
 import { QueueTableCommand } from './commands/queue-table.js';
@@ -19,6 +20,7 @@ import { VersionCommand } from './commands/version.js';
 export function createKernel(): ConsoleKernel {
   return new ConsoleKernel([
     new NewCommand(),
+    new AuthInstallCommand(),
     new ServeCommand(),
     new MigrateCommand(),
     new MakeControllerCommand(),

@@ -1,5 +1,5 @@
 {
-  "name": "@tyravel/core",
+  "name": "@tyravel/auth",
   "version": "0.0.1",
   "type": "module",
   "main": "./dist/index.js",
@@ -15,15 +15,15 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@tyravel/auth": "0.0.1",
-    "@tyravel/config": "0.0.1",
-    "@tyravel/database": "0.0.1",
-    "@tyravel/events": "0.0.1",
     "@tyravel/container": "0.0.1",
-    "@tyravel/http": "0.0.1",
-    "@tyravel/queue": "0.0.1",
-    "@tyravel/validation": "0.0.1",
-    "@tyravel/views": "0.0.1"
+    "@tyravel/database": "0.0.1",
+    "@tyravel/http": "0.0.1"
   },
-  "files": ["dist"]
+  "files": ["dist"],
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.30"
+  }
 }

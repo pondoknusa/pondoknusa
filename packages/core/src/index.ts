@@ -1,3 +1,4 @@
+export { AuthServiceProvider } from './auth-service-provider.js';
 export { Application } from './application.js';
 export { ConfigServiceProvider } from './config-service-provider.js';
 export { DatabaseServiceProvider } from './database-service-provider.js';
@@ -14,6 +15,8 @@ export type { ControllerAction, ControllerConstructor } from './controller.js';
 export { HttpKernel } from './http-kernel.js';
 export { Route, setRouteApplication } from './route.js';
 export type { RouteFacade } from './route.js';
+export { Auth, setAuthApplication } from './auth.js';
+export type { AuthFacade } from './auth.js';
 export { Events, fire, setEventApplication } from './event.js';
 export type { EventsFacade } from './event.js';
 export { Queue, dispatch, setQueueApplication } from './queue.js';
@@ -31,3 +34,5 @@ export type {
   ListenerConstructor,
   ListenerHandler,
 } from '@tyravel/events';
+export type { Authenticatable, AuthConfig } from '@tyravel/auth';
+export { AuthenticationException, InvalidCredentialsException } from '@tyravel/auth';

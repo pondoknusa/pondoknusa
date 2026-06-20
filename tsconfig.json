@@ -9,6 +9,7 @@
     { "path": "packages/views" },
     { "path": "packages/queue" },
     { "path": "packages/events" },
+    { "path": "packages/auth" },
     { "path": "packages/core" },
     { "path": "packages/cli" }
   ]
