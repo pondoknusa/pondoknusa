@@ -8,6 +8,7 @@
     { "path": "packages/validation" },
     { "path": "packages/views" },
     { "path": "packages/queue" },
+    { "path": "packages/events" },
     { "path": "packages/core" },
     { "path": "packages/cli" }
   ]

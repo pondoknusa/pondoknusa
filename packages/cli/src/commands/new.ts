@@ -5,6 +5,7 @@ import {
   appConfig,
   databaseConfig,
   appServiceProvider,
+  eventsConfig,
   layoutView,
   mainEntry,
   projectConfig,
@@ -52,6 +53,7 @@ export class NewCommand extends Command {
     writeFile(projectPath(targetDir, 'config/database.ts'), databaseConfig());
     writeFile(projectPath(targetDir, 'config/views.ts'), viewsConfig());
     writeFile(projectPath(targetDir, 'config/queue.ts'), queueConfig());
+    writeFile(projectPath(targetDir, 'config/events.ts'), eventsConfig());
     writeFile(
       projectPath(targetDir, 'resources/views/layouts/app.tyr'),
       layoutView(),

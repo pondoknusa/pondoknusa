@@ -12,6 +12,7 @@ export function projectPackageJson(name: string): string {
         '@tyravel/config': '^0.0.1',
         '@tyravel/core': '^0.0.1',
         '@tyravel/database': '^0.0.1',
+        '@tyravel/events': '^0.0.1',
         '@tyravel/http': '^0.0.1',
         '@tyravel/queue': '^0.0.1',
         '@tyravel/validation': '^0.0.1',
@@ -46,8 +47,10 @@ export function mainEntry(): string {
   Application,
   ConfigServiceProvider,
   DatabaseServiceProvider,
+  EventServiceProvider,
   HttpKernel,
   QueueServiceProvider,
+  setEventApplication,
   setQueueApplication,
   setRouteApplication,
   setViewApplication,
@@ -61,10 +64,12 @@ const app = new Application(import.meta.dir);
 setRouteApplication(app);
 setViewApplication(app);
 setQueueApplication(app);
+setEventApplication(app);
 
 app.register(ConfigServiceProvider);
 app.register(DatabaseServiceProvider);
 app.register(QueueServiceProvider);
+app.register(EventServiceProvider);
 app.register(ViewServiceProvider);
 app.register(AppServiceProvider);
 
@@ -296,5 +301,37 @@ export default class CreateJobsTable extends Migration {
     await schema.drop('jobs');
   }
 }
+`;
+}
+
+export function domainEvent(name: string): string {
+  return `import { Event } from '@tyravel/events';
+
+export interface ${name}Payload {
+  //
+}
+
+export class ${name} extends Event<${name}Payload> {}
+`;
+}
+
+export function eventListener(name: string): string {
+  return `import { Listener } from '@tyravel/events';
+import type { Event } from '@tyravel/events';
+
+export class ${name} extends Listener<Event> {
+  override async handle(_event: Event): Promise<void> {
+    //
+  }
+}
+`;
+}
+
+export function eventsConfig(): string {
+  return `import type { EventsConfig } from '@tyravel/events';
+
+export default {
+  listen: [],
+} satisfies EventsConfig;
 `;
 }

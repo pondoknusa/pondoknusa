@@ -9,6 +9,7 @@
   "references": [
     { "path": "../config" },
     { "path": "../database" },
+    { "path": "../events" },
     { "path": "../container" },
     { "path": "../http" },
     { "path": "../queue" },

@@ -13,6 +13,7 @@ A TypeScript-native web framework with the ergonomics of Laravel — service con
 | `@tyravel/database` | Eloquent-style models, query builder, schema, and migrations |
 | `@tyravel/views` | Blade-like `.tyr` templates with layouts, sections, and components |
 | `@tyravel/queue` | Typed jobs, sync/database drivers, dispatch facade, and queue worker |
+| `@tyravel/events` | Typed domain events, listeners, dispatcher, and `Events` facade |
 | `@tyravel/core` | Application kernel, controllers, service providers, HTTP kernel, `Route` facade |
 | `@tyravel/cli` | Project scaffolding, dev server, and code generators |
 
@@ -58,6 +59,8 @@ tyravel make:model <Name>              # Create src/models/<Name>.ts
 tyravel make:migration <name>            # Create database/migrations/<timestamp>_<name>.ts
 tyravel make:view <name>                 # Create resources/views/<name>.tyr
 tyravel make:job <Name>                  # Create src/jobs/<Name>.ts
+tyravel make:event <Name>                # Create src/events/<Name>.ts
+tyravel make:listener <Name>             # Create src/listeners/<Name>.ts
 tyravel queue:table                      # Migration for the jobs table
 tyravel queue:work [--queue=default]     # Process database queue jobs
 tyravel migrate                        # Run pending migrations
@@ -348,6 +351,56 @@ export default {
 } as const;
 ```
 
+### Events
+
+Register `EventServiceProvider` and map listeners in `config/events.ts` (typed class references) or at runtime:
+
+```typescript
+import { UserRegistered } from '../events/user-registered.js';
+import { SendWelcomeEmail } from '../listeners/send-welcome-email.js';
+
+export default {
+  listen: [
+    [UserRegistered, [SendWelcomeEmail]],
+  ],
+} satisfies import('@tyravel/events').EventsConfig;
+```
+
+Dispatch from routes, jobs, or services:
+
+```typescript
+import { Events, fire } from '@tyravel/core';
+import { UserRegistered } from '../events/user-registered.js';
+
+await fire(new UserRegistered({ userId: 1 }));
+
+Events.listen(UserRegistered, async (event) => {
+  console.log(event.data.userId);
+});
+
+await Events.dispatch(new UserRegistered({ userId: 2 }));
+```
+
+Typed event and listener classes:
+
+```typescript
+import { Event, Listener } from '@tyravel/events';
+
+export interface UserRegisteredPayload {
+  userId: number;
+}
+
+export class UserRegistered extends Event<UserRegisteredPayload> {}
+
+export class SendWelcomeEmail extends Listener<UserRegistered> {
+  override async handle(event: UserRegistered): Promise<void> {
+    // event.data.userId
+  }
+}
+```
+
+Listeners resolve from the container when registered as classes, so constructor dependencies work like controllers.
+
 ### Service providers
 
 ```typescript
@@ -392,7 +445,7 @@ npm run typecheck # Type-check via project references
 - [x] **Eloquent-style ORM** — typed models, query builder, and migrations
 - [x] **Blade-like templating** — TS-native view layer with layouts and components
 - [x] **Queue and jobs** — background job dispatch with typed payloads
-- [ ] **Event bus** — typed domain events and listeners
+- [x] **Event bus** — typed domain events and listeners
 - [ ] **Auth** — sessions, guards, and policies
 - [ ] **Testing utilities** — `TestCase`, HTTP test client, container fakes
 - [ ] **Package ecosystem** — publishable first-party packages (cache, mail, notifications)
