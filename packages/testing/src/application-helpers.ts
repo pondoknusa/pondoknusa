@@ -2,8 +2,11 @@ import type { Application } from '@tyravel/core';
 import {
   HttpKernel,
   setAuthApplication,
+  setCacheApplication,
   setEventApplication,
   setGateApplication,
+  setMailApplication,
+  setNotificationApplication,
   setPasswordApplication,
   setQueueApplication,
   setRouteApplication,
@@ -21,6 +24,9 @@ export function wireFacades(app: Application): void {
   setAuthApplication(app);
   setGateApplication(app);
   setPasswordApplication(app);
+  setCacheApplication(app);
+  setMailApplication(app);
+  setNotificationApplication(app);
 }
 
 export function createHttpKernel(app: Application): HttpKernel {

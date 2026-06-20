@@ -1,4 +1,7 @@
 export { AuthServiceProvider } from './auth-service-provider.js';
+export { CacheServiceProvider } from './cache-service-provider.js';
+export { MailServiceProvider } from './mail-service-provider.js';
+export { NotificationServiceProvider } from './notification-service-provider.js';
 export { Application } from './application.js';
 export { ConfigServiceProvider } from './config-service-provider.js';
 export { DatabaseServiceProvider } from './database-service-provider.js';
@@ -25,6 +28,12 @@ export { Events, fire, setEventApplication } from './event.js';
 export type { EventsFacade } from './event.js';
 export { Queue, dispatch, setQueueApplication } from './queue.js';
 export type { QueueConnectionFacade, QueueFacade } from './queue.js';
+export { Cache, setCacheApplication } from './cache.js';
+export type { CacheFacade } from './cache.js';
+export { Mail, setMailApplication } from './mail.js';
+export type { MailFacade } from './mail.js';
+export { Notifications, setNotificationApplication } from './notifications.js';
+export type { NotificationsFacade } from './notifications.js';
 export { serve } from './server.js';
 export type { ServeOptions } from './server.js';
 export { ServiceProvider } from './service-provider.js';
@@ -50,3 +59,5 @@ export {
   PersonalAccessTokenRepository,
   Gate as AuthorizationGate,
 } from '@tyravel/auth';
+export { Mailable } from '@tyravel/mail';
+export { Notification, type Notifiable } from '@tyravel/notifications';

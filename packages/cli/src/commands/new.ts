@@ -2,6 +2,12 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { Command } from '../command.js';
 import {
+  cacheConfig,
+  mailConfig,
+  notificationsConfig,
+  notificationsTableMigration,
+} from '../stubs-ecosystem.js';
+import {
   appConfig,
   databaseConfig,
   appServiceProvider,
@@ -55,11 +61,19 @@ export class NewCommand extends Command {
     writeFile(projectPath(targetDir, 'config/views.ts'), viewsConfig());
     writeFile(projectPath(targetDir, 'config/queue.ts'), queueConfig());
     writeFile(projectPath(targetDir, 'config/events.ts'), eventsConfig());
+    writeFile(projectPath(targetDir, 'config/cache.ts'), cacheConfig());
+    writeFile(projectPath(targetDir, 'config/mail.ts'), mailConfig());
+    writeFile(projectPath(targetDir, 'config/notifications.ts'), notificationsConfig());
     writeFile(
       projectPath(targetDir, 'resources/views/layouts/app.tyr'),
       layoutView(),
     );
     writeFile(projectPath(targetDir, 'database/migrations/.gitkeep'), '');
+    const ts = Date.now();
+    writeFile(
+      projectPath(targetDir, `database/migrations/${ts}_create_notifications_table.ts`),
+      notificationsTableMigration(),
+    );
     writeFile(projectPath(targetDir, 'src/main.ts'), mainEntry());
     writeFile(
       projectPath(targetDir, 'src/providers/app-service-provider.ts'),

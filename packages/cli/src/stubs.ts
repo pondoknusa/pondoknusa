@@ -11,11 +11,14 @@ export function projectPackageJson(name: string): string {
       },
       dependencies: {
         '@tyravel/auth': '^0.0.1',
+        '@tyravel/cache': '^0.0.1',
         '@tyravel/config': '^0.0.1',
         '@tyravel/core': '^0.0.1',
         '@tyravel/database': '^0.0.1',
         '@tyravel/events': '^0.0.1',
         '@tyravel/http': '^0.0.1',
+        '@tyravel/mail': '^0.0.1',
+        '@tyravel/notifications': '^0.0.1',
         '@tyravel/queue': '^0.0.1',
         '@tyravel/validation': '^0.0.1',
         '@tyravel/views': '^0.0.1',
@@ -49,12 +52,18 @@ export function projectConfig(name: string): string {
 export function mainEntry(): string {
   return `import {
   Application,
+  CacheServiceProvider,
   ConfigServiceProvider,
   DatabaseServiceProvider,
   EventServiceProvider,
   HttpKernel,
+  MailServiceProvider,
+  NotificationServiceProvider,
   QueueServiceProvider,
+  setCacheApplication,
   setEventApplication,
+  setMailApplication,
+  setNotificationApplication,
   setQueueApplication,
   setRouteApplication,
   setViewApplication,
@@ -69,9 +78,15 @@ setRouteApplication(app);
 setViewApplication(app);
 setQueueApplication(app);
 setEventApplication(app);
+setCacheApplication(app);
+setMailApplication(app);
+setNotificationApplication(app);
 
 app.register(ConfigServiceProvider);
 app.register(DatabaseServiceProvider);
+app.register(CacheServiceProvider);
+app.register(MailServiceProvider);
+app.register(NotificationServiceProvider);
 app.register(QueueServiceProvider);
 app.register(EventServiceProvider);
 app.register(ViewServiceProvider);

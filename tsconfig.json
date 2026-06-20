@@ -10,6 +10,9 @@
     { "path": "packages/queue" },
     { "path": "packages/events" },
     { "path": "packages/auth" },
+    { "path": "packages/cache" },
+    { "path": "packages/mail" },
+    { "path": "packages/notifications" },
     { "path": "packages/core" },
     { "path": "packages/testing" },
     { "path": "packages/cli" }

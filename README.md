@@ -17,6 +17,9 @@ A TypeScript-native web framework with the ergonomics of Laravel — service con
 | `@tyravel/core` | Application kernel, controllers, service providers, HTTP kernel, `Route` facade |
 | `@tyravel/cli` | Project scaffolding, dev server, and code generators |
 | `@tyravel/testing` | `TestCase`, HTTP test client, Vitest hooks, container fakes |
+| `@tyravel/cache` | Array and file cache stores, `Cache` facade, `remember()` |
+| `@tyravel/mail` | `Mailable` classes, log/array transports, `Mail` facade |
+| `@tyravel/notifications` | Multi-channel notifications (mail, database), `Notifications` facade |
 
 ## Quick start
 
@@ -541,6 +544,26 @@ it('returns JSON', async () => {
 
 New apps get `vitest.config.ts`, `tests/feature/example.test.ts`, and `@tyravel/testing` as a dev dependency.
 
+### Cache, mail, and notifications
+
+New projects ship `config/cache.ts`, `config/mail.ts`, and `config/notifications.ts`, with providers registered in `src/main.ts`.
+
+```typescript
+import { Cache, Mail, Notifications, Mailable, Notification } from '@tyravel/core';
+
+await Cache.remember('stats', 300, async () => computeStats());
+await Mail.to('user@example.com').send(new WelcomeMail());
+await Notifications.send(user, new InvoicePaidNotification());
+```
+
+| Facade | Drivers / channels |
+|--------|-------------------|
+| `Cache` | `array`, `file` (`storage/framework/cache`) |
+| `Mail` | `log`, `array` (tests) |
+| `Notifications` | `mail`, `database` (`notifications` table) |
+
+Use the **array** mail connection in tests to assert `mail.transport('array').messages`.
+
 ### Service providers
 
 ```typescript
@@ -588,7 +611,7 @@ npm run typecheck # Type-check via project references
 - [x] **Event bus** — typed domain events and listeners
 - [x] **Auth** — session + API token guards, policies, password reset, OAuth, `auth:install`
 - [x] **Testing utilities** — `TestCase`, HTTP test client, container fakes (`@tyravel/testing`)
-- [ ] **Package ecosystem** — publishable first-party packages (cache, mail, notifications)
+- [x] **Package ecosystem** — `@tyravel/cache`, `@tyravel/mail`, `@tyravel/notifications`
 
 ## License
 

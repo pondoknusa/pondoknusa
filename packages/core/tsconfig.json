@@ -8,11 +8,14 @@
   },
   "references": [
     { "path": "../auth" },
+    { "path": "../cache" },
     { "path": "../config" },
     { "path": "../database" },
     { "path": "../events" },
     { "path": "../container" },
     { "path": "../http" },
+    { "path": "../mail" },
+    { "path": "../notifications" },
     { "path": "../queue" },
     { "path": "../validation" },
     { "path": "../views" }
