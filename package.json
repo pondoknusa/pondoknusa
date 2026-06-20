@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc -b",
-    "tyravel": "node packages/cli/dist/bin/tyravel.js"
+    "tyravel": "node packages/cli/dist/bin/tyravel.js",
+    "release:prepare": "node scripts/prepare-release.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.15.30",

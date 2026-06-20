@@ -9,7 +9,7 @@ Make the framework trustworthy for early adopters.
 - [x] **Reference app** — Upgrade `examples/hello-world` (or add `examples/blog`) with `auth:install`, a queued job, a mailable, and a feature test
 - [x] **`.env` support** — `loadEnv()`, `env()` helper, `.env.example`, config stubs wired to environment variables
 - [x] **Exception handler polish** — `ExceptionHandler` with debug HTML pages, consistent JSON API errors, `HttpException` base class, 405 Method Not Allowed
-- [ ] **CI + release script** — Automated test/build/publish in dependency order
+- [x] **CI + release script** — GitHub Actions CI (typecheck/build/test on push+PR), automated npm publish on tag, `npm run release:prepare` version bumper
 
 ## Tier 2 — Daily-driver quality (v0.2.x)
 

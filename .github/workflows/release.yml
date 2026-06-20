@@ -1,0 +1,93 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+      - name: Publish packages in dependency order
+        run: |
+          set -e
+          PACKAGES=(
+            @tyravel/container
+            @tyravel/config
+            @tyravel/http
+            @tyravel/validation
+            @tyravel/database
+            @tyravel/views
+            @tyravel/queue
+            @tyravel/events
+            @tyravel/auth
+            @tyravel/cache
+            @tyravel/mail
+            @tyravel/notifications
+            @tyravel/testing
+            @tyravel/core
+            @tyravel/cli
+          )
+
+          PUBLISHED=0
+          SKIPPED=0
+
+          for pkg in "${PACKAGES[@]}"; do
+            SHORT="${pkg#@tyravel/}"
+            LOCAL_VERSION=$(node -p "require('./packages/'+'$SHORT'+'/package.json').version")
+
+            REMOTE_VERSION=$(npm view "$pkg" version 2>/dev/null || echo "")
+            if [[ "$LOCAL_VERSION" == "$REMOTE_VERSION" ]]; then
+              echo "⏭  $pkg@$LOCAL_VERSION already published — skipping"
+              SKIPPED=$((SKIPPED + 1))
+              continue
+            fi
+
+            echo "📦 Publishing $pkg@$LOCAL_VERSION…"
+            npm publish --workspace="$pkg" --access public
+            echo "✅ Published $pkg@$LOCAL_VERSION"
+            PUBLISHED=$((PUBLISHED + 1))
+          done
+
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Published: $PUBLISHED"
+          echo "Skipped:   $SKIPPED"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
