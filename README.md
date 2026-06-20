@@ -16,6 +16,7 @@ A TypeScript-native web framework with the ergonomics of Laravel — service con
 | `@tyravel/events` | Typed domain events, listeners, dispatcher, and `Events` facade |
 | `@tyravel/core` | Application kernel, controllers, service providers, HTTP kernel, `Route` facade |
 | `@tyravel/cli` | Project scaffolding, dev server, and code generators |
+| `@tyravel/testing` | `TestCase`, HTTP test client, Vitest hooks, container fakes |
 
 ## Quick start
 
@@ -67,6 +68,7 @@ tyravel queue:failed-table               # Migration for failed_jobs
 tyravel queue:work [--queue=default]     # Process database queue jobs
 tyravel queue:failed                     # List failed jobs
 tyravel queue:retry <id>                 # Re-queue a failed job
+tyravel make:test <Name>                 # Create tests/feature/<name>.ts
 tyravel auth:install                     # Scaffold session auth (User, routes, migrations)
 tyravel migrate                        # Run pending migrations
 tyravel version                      # Show CLI version
@@ -498,6 +500,47 @@ await Gate.authorize(Auth.user(), 'update', post);
 
 Routes from `auth:install` include login, tokens, forgot/reset password, and OAuth redirects.
 
+### Testing
+
+`@tyravel/testing` brings Laravel-style feature tests on top of Vitest:
+
+```bash
+npm test                    # in an app created with tyravel new
+tyravel make:test Posts     # tests/feature/posts.test.ts
+```
+
+```typescript
+import { Application } from '@tyravel/core';
+import { TestCase, withTyravelTest, fake, mockInstance } from '@tyravel/testing';
+
+class AppTest extends TestCase {
+  protected createApplication() {
+    return new Application(import.meta.dir);
+  }
+  protected override async configureApplication(app) {
+    // import routes, register providers, wireFacades via setUp()
+  }
+}
+
+const t = withTyravelTest(AppTest);
+
+it('returns JSON', async () => {
+  const res = await t.http.post('http://localhost/login', {
+    json: { email: 'a@b.com', password: 'secret' },
+  });
+  await res.assertOk().assertJson({ user: { email: 'a@b.com' } });
+});
+```
+
+| API | Purpose |
+|-----|---------|
+| **`HttpTestClient`** | `get` / `post` / … through `HttpKernel` with cookie jar + `withToken()` |
+| **`TestResponse`** | `assertStatus`, `assertJson` (partial), `assertJsonPath` |
+| **`fake` / `mockInstance`** | Swap container bindings for test doubles |
+| **`wireFacades`** | Point `Route`, `Auth`, `Gate`, etc. at the test app |
+
+New apps get `vitest.config.ts`, `tests/feature/example.test.ts`, and `@tyravel/testing` as a dev dependency.
+
 ### Service providers
 
 ```typescript
@@ -544,7 +587,7 @@ npm run typecheck # Type-check via project references
 - [x] **Queue and jobs** — background job dispatch with typed payloads
 - [x] **Event bus** — typed domain events and listeners
 - [x] **Auth** — session + API token guards, policies, password reset, OAuth, `auth:install`
-- [ ] **Testing utilities** — `TestCase`, HTTP test client, container fakes
+- [x] **Testing utilities** — `TestCase`, HTTP test client, container fakes (`@tyravel/testing`)
 - [ ] **Package ecosystem** — publishable first-party packages (cache, mail, notifications)
 
 ## License

@@ -7,6 +7,7 @@ export function projectPackageJson(name: string): string {
       scripts: {
         dev: 'tyravel serve',
         start: 'tyravel serve',
+        test: 'vitest run',
       },
       dependencies: {
         '@tyravel/auth': '^0.0.1',
@@ -21,6 +22,8 @@ export function projectPackageJson(name: string): string {
       },
       devDependencies: {
         '@tyravel/cli': '^0.0.1',
+        '@tyravel/testing': '^0.0.1',
+        vitest: '^3.2.4',
       },
     },
     null,

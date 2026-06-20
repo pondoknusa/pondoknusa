@@ -1,5 +1,6 @@
 import { ConsoleKernel } from './console.js';
 import { MakeEventCommand } from './commands/make-event.js';
+import { MakeTestCommand } from './commands/make-test.js';
 import { MakeControllerCommand } from './commands/make-controller.js';
 import { MakeJobCommand } from './commands/make-job.js';
 import { MakeSubscriberCommand } from './commands/make-subscriber.js';
@@ -32,6 +33,7 @@ export function createKernel(): ConsoleKernel {
     new MakeEventCommand(),
     new MakeListenerCommand(),
     new MakeSubscriberCommand(),
+    new MakeTestCommand(),
     new QueueTableCommand(),
     new QueueFailedTableCommand(),
     new QueueFailedCommand(),

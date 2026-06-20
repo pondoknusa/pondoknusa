@@ -11,6 +11,7 @@
     { "path": "packages/events" },
     { "path": "packages/auth" },
     { "path": "packages/core" },
+    { "path": "packages/testing" },
     { "path": "packages/cli" }
   ]
 }

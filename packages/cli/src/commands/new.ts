@@ -14,6 +14,7 @@ import {
   viewsConfig,
   webRoutes,
 } from '../stubs.js';
+import { featureTestStub, projectVitestConfig } from '../stubs-testing.js';
 import {
   optionString,
   parseOptions,
@@ -65,11 +66,17 @@ export class NewCommand extends Command {
       appServiceProvider(),
     );
     writeFile(projectPath(targetDir, 'src/routes/web.ts'), webRoutes());
+    writeFile(projectPath(targetDir, 'vitest.config.ts'), projectVitestConfig());
+    writeFile(
+      projectPath(targetDir, 'tests/feature/example.test.ts'),
+      featureTestStub('ExampleTest'),
+    );
 
     console.log(`Tyravel application created successfully.`);
     console.log('');
     console.log(`  cd ${name}`);
     console.log('  npm install');
+    console.log('  npm test');
     console.log('  tyravel serve');
 
     return 0;
