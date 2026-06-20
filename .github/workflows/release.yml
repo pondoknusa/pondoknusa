@@ -45,6 +45,7 @@ jobs:
             @tyravel/http
             @tyravel/validation
             @tyravel/database
+            @tyravel/redis
             @tyravel/views
             @tyravel/queue
             @tyravel/events

@@ -17,6 +17,7 @@
     { "path": "../mail" },
     { "path": "../notifications" },
     { "path": "../queue" },
+    { "path": "../redis" },
     { "path": "../validation" },
     { "path": "../views" }
   ],

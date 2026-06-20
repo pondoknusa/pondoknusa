@@ -55,6 +55,7 @@ export function mainEntry(): string {
   CacheServiceProvider,
   ConfigServiceProvider,
   DatabaseServiceProvider,
+  RedisServiceProvider,
   EventServiceProvider,
   HttpKernel,
   MailServiceProvider,
@@ -83,6 +84,7 @@ setMailApplication(app);
 setNotificationApplication(app);
 
 app.register(ConfigServiceProvider);
+app.register(RedisServiceProvider);
 app.register(DatabaseServiceProvider);
 app.register(CacheServiceProvider);
 app.register(MailServiceProvider);
@@ -211,6 +213,43 @@ export class ${name} extends Model<${name}Attributes> {
 `;
 }
 
+export function factory(modelName: string): string {
+  const factoryName = `${modelName}Factory`;
+  const exportName = `${modelName.charAt(0).toLowerCase()}${modelName.slice(1)}Factory`;
+
+  return `import { Factory, fakeEmail, fakeName } from '@tyravel/database';
+import { ${modelName}, type ${modelName}Attributes } from '../../src/models/${modelName}.js';
+
+export class ${factoryName} extends Factory<${modelName}, ${modelName}Attributes> {
+  protected readonly ModelClass = ${modelName};
+
+  definition(): Partial<${modelName}Attributes> {
+    return {
+      name: fakeName(),
+      email: fakeEmail(),
+    };
+  }
+}
+
+export const ${exportName} = new ${factoryName}();
+`;
+}
+
+export function seeder(className: string): string {
+  return `import { Seeder } from '@tyravel/database';
+
+export class ${className} extends Seeder {
+  override async run(): Promise<void> {
+    //
+  }
+}
+`;
+}
+
+export function databaseSeeder(): string {
+  return seeder('DatabaseSeeder');
+}
+
 export function migration(className: string): string {
   return `import { Migration } from '@tyravel/database';
 import type { DatabaseConnection } from '@tyravel/database';
@@ -288,14 +327,21 @@ export class ${name} extends Job<${name}Payload> {
 }
 
 export function queueConfig(): string {
-  return `export default {
-  default: 'database',
+  return `import { env } from '@tyravel/config';
+
+export default {
+  default: env('QUEUE_CONNECTION', 'database'),
   connections: {
     sync: { driver: 'sync' },
     database: {
       driver: 'database',
       table: 'jobs',
       connection: 'sqlite',
+      retryAfter: 90,
+    },
+    redis: {
+      driver: 'redis',
+      connection: 'default',
       retryAfter: 90,
     },
   },

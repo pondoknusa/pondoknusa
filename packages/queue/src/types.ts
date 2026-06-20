@@ -1,6 +1,6 @@
 import type { FailedJobsConfig } from './failed-job-types.js';
 
-export type QueueDriver = 'sync' | 'database';
+export type QueueDriver = 'sync' | 'database' | 'redis';
 
 export interface SyncQueueConnectionConfig {
   driver: 'sync';
@@ -13,9 +13,18 @@ export interface DatabaseQueueConnectionConfig {
   retryAfter?: number;
 }
 
+export interface RedisQueueConnectionConfig {
+  driver: 'redis';
+  connection?: string;
+  prefix?: string;
+  retryAfter?: number;
+  blockTimeout?: number;
+}
+
 export type QueueConnectionConfig =
   | SyncQueueConnectionConfig
-  | DatabaseQueueConnectionConfig;
+  | DatabaseQueueConnectionConfig
+  | RedisQueueConnectionConfig;
 
 export interface QueueConfig {
   default: string;

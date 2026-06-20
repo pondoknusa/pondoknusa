@@ -4,6 +4,7 @@ import { QueryBuilder } from '@tyravel/database';
 import type { Job } from './job.js';
 import { decodePayload, encodePayload, serializeJob } from './payload.js';
 import type { QueueContract } from './queue-contract.js';
+import type { WorkerQueue } from './worker-queue.js';
 import type {
   DatabaseQueueConnectionConfig,
   QueueJobRecord,
@@ -20,7 +21,7 @@ interface JobsTableRow extends Record<string, unknown> {
   created_at: number;
 }
 
-export class DatabaseQueue implements QueueContract {
+export class DatabaseQueue implements QueueContract, WorkerQueue {
   private readonly table: string;
   private readonly retryAfter: number;
 

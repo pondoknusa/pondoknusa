@@ -7,7 +7,8 @@
   },
   "references": [
     { "path": "../container" },
-    { "path": "../database" }
+    { "path": "../database" },
+    { "path": "../redis" }
   ],
   "include": ["src"]
 }

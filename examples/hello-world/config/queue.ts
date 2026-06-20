@@ -10,6 +10,11 @@ export default {
       connection: 'sqlite',
       retryAfter: 90,
     },
+    redis: {
+      driver: 'redis',
+      connection: 'default',
+      retryAfter: 90,
+    },
   },
   failed: {
     table: 'failed_jobs',

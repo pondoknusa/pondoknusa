@@ -22,4 +22,42 @@ export class HasOneRelation<Related extends Model = Model> extends Relation<Rela
   async get(): Promise<Related | null> {
     return this.query().firstModel<Related>();
   }
+
+  override eagerLoadKeys(parents: Model[]): RowValue[] {
+    return parents
+      .map((parent) => parent.getAttribute(this.localKey as never) as RowValue)
+      .filter((key) => key !== undefined && key !== null);
+  }
+
+  override defaultEagerValue(): null {
+    return null;
+  }
+
+  override async eagerLoad(keys: RowValue[]): Promise<Related[]> {
+    return this.relatedModel
+      .query()
+      .whereIn(this.foreignKey, keys)
+      .getModels<Related>();
+  }
+
+  override matchEager(
+    parents: Model[],
+    results: unknown,
+    relationName: string,
+  ): void {
+    const related = results as Related[];
+    const dictionary = new Map<RowValue, Related>();
+
+    for (const model of related) {
+      const key = model.getAttribute(this.foreignKey as never) as RowValue;
+      if (!dictionary.has(key)) {
+        dictionary.set(key, model);
+      }
+    }
+
+    for (const parent of parents) {
+      const key = parent.getAttribute(this.localKey as never) as RowValue;
+      parent.setRelation(relationName, dictionary.get(key) ?? null);
+    }
+  }
 }

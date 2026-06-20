@@ -16,7 +16,8 @@
   },
   "dependencies": {
     "@tyravel/container": "0.2.0",
-    "@tyravel/database": "0.2.0"
+    "@tyravel/database": "0.2.0",
+    "@tyravel/redis": "0.2.0"
   },
   "files": [
     "dist"

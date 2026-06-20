@@ -1,4 +1,4 @@
-import { DatabaseQueue } from './database-queue.js';
+import { isWorkerQueue } from './worker-queue.js';
 import type { FailedJobRepository } from './failed-job-repository.js';
 import {
   formatJobException,
@@ -34,8 +34,8 @@ export class QueueProcessor {
     const maxJobs = options.maxJobs;
 
     const connection = this.manager.connection(connectionName);
-    if (!(connection instanceof DatabaseQueue)) {
-      throw new Error('Queue worker only supports the database queue driver');
+    if (!isWorkerQueue(connection)) {
+      throw new Error('Queue worker only supports database and redis queue drivers');
     }
 
     let processed = 0;

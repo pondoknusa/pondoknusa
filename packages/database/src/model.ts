@@ -18,6 +18,7 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
   private static globalScopes: GlobalScope[] = [];
 
   protected attributes: Partial<T>;
+  private relations: Record<string, unknown> = {};
 
   constructor(attributes: Partial<T> = {}) {
     this.attributes = { ...attributes };
@@ -87,6 +88,11 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
     }
 
     return new this(attributes);
+  }
+
+  static with(...relations: string[]): ModelQueryBuilder {
+    const model = this as unknown as ModelStatic;
+    return model.query().with(...relations);
   }
 
   static where(
@@ -164,6 +170,18 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
       parentKey ?? parentModel.primaryKey,
       relatedKey ?? RelatedModel.primaryKey,
     );
+  }
+
+  setRelation(name: string, value: unknown): void {
+    this.relations[name] = value;
+  }
+
+  getRelation<TRelation>(name: string): TRelation | undefined {
+    return this.relations[name] as TRelation | undefined;
+  }
+
+  relationLoaded(name: string): boolean {
+    return Object.prototype.hasOwnProperty.call(this.relations, name);
   }
 
   getAttribute<K extends keyof T>(key: K): T[K] | undefined {

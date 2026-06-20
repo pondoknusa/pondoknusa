@@ -1,6 +1,8 @@
 import type { DatabaseManager } from '@tyravel/database';
+import type { RedisManager } from '@tyravel/redis';
 import { DatabaseQueue } from './database-queue.js';
 import type { QueueContract } from './queue-contract.js';
+import { RedisQueue } from './redis-queue.js';
 import { SyncQueue } from './sync-queue.js';
 import type { QueueConfig, QueueConnectionConfig } from './types.js';
 import { QueueWorker } from './worker.js';
@@ -12,6 +14,7 @@ export class QueueManager {
     private readonly config: QueueConfig,
     private readonly worker: QueueWorker,
     private readonly database?: DatabaseManager,
+    private readonly redis?: RedisManager,
   ) {}
 
   connection(name?: string): QueueContract {
@@ -45,6 +48,12 @@ export class QueueManager {
         }
         const dbConnection = this.database.connection(config.connection);
         return new DatabaseQueue(dbConnection, config);
+      }
+      case 'redis': {
+        if (!this.redis) {
+          throw new Error('Redis manager is required for the redis queue driver');
+        }
+        return new RedisQueue(this.redis, config);
       }
       default:
         throw new Error(`Unsupported queue driver: ${(config as QueueConnectionConfig).driver}`);

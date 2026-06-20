@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import type { DatabaseConnection } from './connection.js';
 import type { Migration } from './migration.js';
-import { SchemaBuilder } from './schema/schema-builder.js';
+import { migrationsTableSql, SchemaBuilder } from './schema/schema-builder.js';
 
 export class Migrator {
   constructor(
@@ -12,14 +12,7 @@ export class Migrator {
   ) {}
 
   async ensureMigrationsTable(): Promise<void> {
-    await this.connection.exec(`
-      CREATE TABLE IF NOT EXISTS "migrations" (
-        "id" INTEGER PRIMARY KEY AUTOINCREMENT,
-        "migration" TEXT NOT NULL,
-        "batch" INTEGER NOT NULL,
-        "executed_at" TEXT NOT NULL
-      )
-    `);
+    await this.connection.exec(migrationsTableSql(this.connection.grammar));
   }
 
   async pending(): Promise<string[]> {
@@ -51,15 +44,18 @@ export class Migrator {
   }
 
   private async executed(): Promise<string[]> {
+    const grammar = this.connection.grammar;
     const result = await this.connection.query(
-      `SELECT "migration" FROM "migrations" ORDER BY "id" ASC`,
+      `SELECT ${grammar.wrapIdentifier('migration')} FROM ${grammar.wrapIdentifier('migrations')} ORDER BY ${grammar.wrapIdentifier('id')} ASC`,
     );
     return result.rows.map((row) => String(row.migration));
   }
 
   private async latestBatch(): Promise<number> {
+    const grammar = this.connection.grammar;
+    const batchColumn = grammar.wrapIdentifier('batch');
     const result = await this.connection.query(
-      `SELECT MAX("batch") as "batch" FROM "migrations"`,
+      `SELECT MAX(${batchColumn}) as ${batchColumn} FROM ${grammar.wrapIdentifier('migrations')}`,
     );
     const batch = result.rows[0]?.batch;
     return typeof batch === 'number' ? batch : 0;
@@ -90,9 +86,9 @@ export class Migrator {
   }
 
   private async record(migration: string, batch: number): Promise<void> {
-    await this.connection.query(
-      `INSERT INTO "migrations" ("migration", "batch", "executed_at") VALUES (?, ?, ?)`,
-      [migration, batch, new Date().toISOString()],
-    );
+    const grammar = this.connection.grammar;
+    const table = grammar.wrapIdentifier('migrations');
+    const sql = `INSERT INTO ${table} (${grammar.wrapIdentifier('migration')}, ${grammar.wrapIdentifier('batch')}, ${grammar.wrapIdentifier('executed_at')}) VALUES (${grammar.parameter(1)}, ${grammar.parameter(2)}, ${grammar.parameter(3)})`;
+    await this.connection.query(sql, [migration, batch, new Date().toISOString()]);
   }
 }

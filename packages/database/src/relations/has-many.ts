@@ -22,4 +22,45 @@ export class HasManyRelation<Related extends Model = Model> extends Relation<Rel
   async get(): Promise<Related[]> {
     return this.query().getModels<Related>();
   }
+
+  override eagerLoadKeys(parents: Model[]): RowValue[] {
+    return parents
+      .map((parent) => parent.getAttribute(this.localKey as never) as RowValue)
+      .filter((key) => key !== undefined && key !== null);
+  }
+
+  override defaultEagerValue(): Related[] {
+    return [];
+  }
+
+  override async eagerLoad(keys: RowValue[]): Promise<Related[]> {
+    return this.relatedModel
+      .query()
+      .whereIn(this.foreignKey, keys)
+      .getModels<Related>();
+  }
+
+  override matchEager(
+    parents: Model[],
+    results: unknown,
+    relationName: string,
+  ): void {
+    const related = results as Related[];
+    const dictionary = new Map<RowValue, Related[]>();
+
+    for (const model of related) {
+      const key = model.getAttribute(this.foreignKey as never) as RowValue;
+      const bucket = dictionary.get(key);
+      if (bucket) {
+        bucket.push(model);
+      } else {
+        dictionary.set(key, [model]);
+      }
+    }
+
+    for (const parent of parents) {
+      const key = parent.getAttribute(this.localKey as never) as RowValue;
+      parent.setRelation(relationName, dictionary.get(key) ?? []);
+    }
+  }
 }

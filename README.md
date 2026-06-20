@@ -14,12 +14,13 @@ Requires **Node.js ≥ 22**.
 | `@tyravel/validation` | Request validation with pipe rules and 422 error responses |
 | `@tyravel/database` | Eloquent-style models, query builder, schema, and migrations |
 | `@tyravel/views` | Blade-like `.tyr` templates with layouts, sections, and components |
-| `@tyravel/queue` | Typed jobs, sync/database drivers, dispatch facade, and queue worker |
+| `@tyravel/queue` | Typed jobs, sync/database/redis drivers, dispatch facade, and queue worker |
 | `@tyravel/events` | Typed domain events, listeners, dispatcher, and `Events` facade |
 | `@tyravel/core` | Application kernel, controllers, service providers, HTTP kernel, `Route` facade |
 | `@tyravel/cli` | Project scaffolding, dev server, and code generators |
 | `@tyravel/testing` | `TestCase`, HTTP test client, Vitest hooks, container fakes |
-| `@tyravel/cache` | Array and file cache stores, `Cache` facade, `remember()` |
+| `@tyravel/redis` | Redis connection manager for cache and queue drivers |
+| `@tyravel/cache` | Array, file, and Redis cache stores, `Cache` facade, `remember()` |
 | `@tyravel/mail` | `Mailable` classes, log/array transports, `Mail` facade |
 | `@tyravel/notifications` | Multi-channel notifications (mail, database), `Notifications` facade |
 
@@ -62,6 +63,8 @@ tyravel serve [--port=3000] [--host=127.0.0.1]
 tyravel make:controller <Name>       # Create src/controllers/<Name>Controller.ts
 tyravel make:provider <Name>           # Create src/providers/<Name>ServiceProvider.ts
 tyravel make:model <Name>              # Create src/models/<Name>.ts
+tyravel make:factory <Model>             # Create database/factories/<model>-factory.ts
+tyravel make:seeder <Name>               # Create database/seeders/<name>-seeder.ts
 tyravel make:migration <name>            # Create database/migrations/<timestamp>_<name>.ts
 tyravel make:view <name>                 # Create resources/views/<name>.tyr
 tyravel make:job <Name>                  # Create src/jobs/<Name>.ts
@@ -76,6 +79,7 @@ tyravel queue:retry <id>                 # Re-queue a failed job
 tyravel make:test <Name>                 # Create tests/feature/<name>.ts
 tyravel auth:install                     # Scaffold session auth (User, routes, migrations)
 tyravel migrate                        # Run pending migrations
+tyravel db:seed [--class=DatabaseSeeder]  # Seed the database
 tyravel version                      # Show CLI version
 ```
 
@@ -365,7 +369,7 @@ tyravel queue:failed
 tyravel queue:retry 1
 ```
 
-`config/queue.ts` supports `sync` (immediate, great for local dev) and `database` (persistent, worker-driven):
+`config/queue.ts` supports `sync` (immediate, great for local dev), `database` (persistent, worker-driven), and `redis` (production-grade external adapter):
 
 ```typescript
 export default {
@@ -570,7 +574,7 @@ await Notifications.send(user, new InvoicePaidNotification());
 
 | Facade | Drivers / channels |
 |--------|-------------------|
-| `Cache` | `array`, `file` (`storage/framework/cache`) |
+| `Cache` | `array`, `file` (`storage/framework/cache`), **`redis`** |
 | `Mail` | `log`, `array` (tests), **`smtp`**; **`shouldQueue()`** → `SendMailable` job |
 | `Notifications` | `mail`, `database`; **`shouldQueue()`** → `SendQueuedNotification` (default **`database`** queue) |
 

@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { Command } from '../command.js';
 import {
   cacheConfig,
+  redisConfig,
   mailConfig,
   notificationsConfig,
   notificationsTableMigration,
@@ -10,6 +11,7 @@ import {
 import {
   appConfig,
   databaseConfig,
+  databaseSeeder,
   appServiceProvider,
   eventsConfig,
   layoutView,
@@ -68,6 +70,7 @@ export class NewCommand extends Command {
     writeFile(projectPath(targetDir, 'config/queue.ts'), queueConfig());
     writeFile(projectPath(targetDir, 'config/events.ts'), eventsConfig());
     writeFile(projectPath(targetDir, 'config/cache.ts'), cacheConfig());
+    writeFile(projectPath(targetDir, 'config/redis.ts'), redisConfig());
     writeFile(projectPath(targetDir, 'config/mail.ts'), mailConfig());
     writeFile(projectPath(targetDir, 'config/notifications.ts'), notificationsConfig());
     writeFile(
@@ -75,6 +78,11 @@ export class NewCommand extends Command {
       layoutView(),
     );
     writeFile(projectPath(targetDir, 'database/migrations/.gitkeep'), '');
+    writeFile(projectPath(targetDir, 'database/factories/.gitkeep'), '');
+    writeFile(
+      projectPath(targetDir, 'database/seeders/database-seeder.ts'),
+      databaseSeeder(),
+    );
     const ts = Date.now();
     writeFile(
       projectPath(targetDir, `database/migrations/${ts}_create_jobs_table.ts`),

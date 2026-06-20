@@ -1,5 +1,8 @@
 import { ConsoleKernel } from './console.js';
+import { DbSeedCommand } from './commands/db-seed.js';
 import { MakeEventCommand } from './commands/make-event.js';
+import { MakeFactoryCommand } from './commands/make-factory.js';
+import { MakeSeederCommand } from './commands/make-seeder.js';
 import { MakeTestCommand } from './commands/make-test.js';
 import { MakeControllerCommand } from './commands/make-controller.js';
 import { MakeJobCommand } from './commands/make-job.js';
@@ -24,8 +27,11 @@ export function createKernel(): ConsoleKernel {
     new AuthInstallCommand(),
     new ServeCommand(),
     new MigrateCommand(),
+    new DbSeedCommand(),
     new MakeControllerCommand(),
     new MakeModelCommand(),
+    new MakeFactoryCommand(),
+    new MakeSeederCommand(),
     new MakeMigrationCommand(),
     new MakeProviderCommand(),
     new MakeViewCommand(),

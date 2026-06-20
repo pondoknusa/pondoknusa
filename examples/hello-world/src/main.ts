@@ -10,6 +10,7 @@ import {
   MailServiceProvider,
   NotificationServiceProvider,
   QueueServiceProvider,
+  RedisServiceProvider,
   setAuthApplication,
   setCacheApplication,
   setEventApplication,
@@ -38,6 +39,7 @@ setGateApplication(app);
 setPasswordApplication(app);
 
 app.register(ConfigServiceProvider);
+app.register(RedisServiceProvider);
 app.register(DatabaseServiceProvider);
 app.register(CacheServiceProvider);
 app.register(MailServiceProvider);

@@ -15,10 +15,10 @@ Make the framework trustworthy for early adopters.
 
 Close gaps developers hit on day two of a real project.
 
-- [ ] **ORM eager loading** — `with()` to avoid N+1 queries on relationships
-- [ ] **Seeders + factories** — Dev data and test ergonomics (`tyravel make:factory`, `db:seed`)
-- [ ] **Redis queue + cache drivers** — First production-grade external adapter
-- [ ] **Driver-aware migrations** — Postgres/MySQL schema parity beyond SQLite-centric blueprints
+- [x] **ORM eager loading** — `with()` to avoid N+1 queries on relationships
+- [x] **Seeders + factories** — Dev data and test ergonomics (`tyravel make:factory`, `db:seed`)
+- [x] **Redis queue + cache drivers** — First production-grade external adapter
+- [x] **Driver-aware migrations** — Postgres/MySQL schema parity beyond SQLite-centric blueprints
 
 ## Tier 3 — Adoption (v0.3+)
 

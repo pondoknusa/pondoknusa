@@ -1,5 +1,6 @@
 import type { Container } from '@tyravel/container';
 import type { DatabaseManager } from '@tyravel/database';
+import type { RedisManager } from '@tyravel/redis';
 import { Dispatcher } from './dispatcher.js';
 import { JobRegistry } from './registry.js';
 import { QueueManager } from './queue-manager.js';
@@ -11,6 +12,7 @@ export function createQueueStack(options: {
   config: QueueConfig;
   registry: JobRegistry;
   database?: DatabaseManager;
+  redis?: RedisManager;
   container?: Container;
 }): {
   manager: QueueManager;
@@ -20,7 +22,7 @@ export function createQueueStack(options: {
 } {
   const registry = options.registry;
   const worker = new QueueWorker(registry, options.container);
-  const manager = new QueueManager(options.config, worker, options.database);
+  const manager = new QueueManager(options.config, worker, options.database, options.redis);
   const dispatcher = new Dispatcher(manager.connection());
   const processor = new QueueProcessor(manager, registry, worker);
 
@@ -28,6 +30,9 @@ export function createQueueStack(options: {
 }
 
 export { DatabaseQueue } from './database-queue.js';
+export { RedisQueue } from './redis-queue.js';
+export { isWorkerQueue } from './worker-queue.js';
+export type { WorkerQueue } from './worker-queue.js';
 export { Dispatcher } from './dispatcher.js';
 export {
   FailedJobRepository,
@@ -49,6 +54,7 @@ export type {
   QueueConnectionConfig,
   QueueJobRecord,
   SerializedJobPayload,
+  RedisQueueConnectionConfig,
   SyncQueueConnectionConfig,
 } from './types.js';
 export { QueueWorker } from './worker.js';

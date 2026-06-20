@@ -1,16 +1,24 @@
 import type { DatabaseConnection } from './connection.js';
+import { EagerLoader } from './eager-loader.js';
 import { QueryBuilder } from './query-builder.js';
 import type { Model } from './model.js';
 import type { ModelAttributes, ModelStatic } from './model-types.js';
 import { scopeMethodName, type GlobalScope, type LocalScope } from './scopes.js';
 
 export class ModelQueryBuilder extends QueryBuilder {
+  protected eagerLoad: string[] = [];
+
   constructor(
     connection: DatabaseConnection,
     tableName: string,
     private readonly model: ModelStatic,
   ) {
     super(connection, tableName);
+  }
+
+  with(...relations: string[]): this {
+    this.eagerLoad.push(...relations);
+    return this;
   }
 
   override clone(): ModelQueryBuilder {
@@ -21,6 +29,13 @@ export class ModelQueryBuilder extends QueryBuilder {
     );
     this.copyTo(builder);
     return builder;
+  }
+
+  protected override copyTo(builder: QueryBuilder): void {
+    super.copyTo(builder);
+    if (builder instanceof ModelQueryBuilder) {
+      builder.eagerLoad = [...this.eagerLoad];
+    }
   }
 
   applyScope(name: string, ...args: unknown[]): this {
@@ -42,7 +57,13 @@ export class ModelQueryBuilder extends QueryBuilder {
     const ModelClass = this.model as new (
       attributes?: Partial<ModelAttributes>,
     ) => TModel;
-    return rows.map((row) => new ModelClass(row));
+    const models = rows.map((row) => new ModelClass(row));
+
+    if (this.eagerLoad.length > 0) {
+      await EagerLoader.load(models, this.eagerLoad, this.model);
+    }
+
+    return models;
   }
 
   async firstModel<TModel extends Model>(): Promise<TModel | null> {

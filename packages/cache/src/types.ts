@@ -15,7 +15,13 @@ export interface FileStoreConfig {
   path: string;
 }
 
-export type CacheConnectionConfig = ArrayStoreConfig | FileStoreConfig;
+export interface RedisStoreConfig {
+  driver: 'redis';
+  connection?: string;
+  prefix?: string;
+}
+
+export type CacheConnectionConfig = ArrayStoreConfig | FileStoreConfig | RedisStoreConfig;
 
 export interface CacheConfig {
   default: string;

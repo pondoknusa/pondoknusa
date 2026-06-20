@@ -1,5 +1,6 @@
 import { ConfigRepository } from '@tyravel/config';
 import { DatabaseManager } from '@tyravel/database';
+import { RedisManager } from '@tyravel/redis';
 import {
   Dispatcher,
   FailedJobRepository,
@@ -23,7 +24,7 @@ export class QueueServiceProvider extends ServiceProvider {
     const database = this.resolveDatabaseManager();
 
     const worker = new QueueWorker(registry, this.app);
-    const manager = new QueueManager(queueConfig, worker, database);
+    const manager = new QueueManager(queueConfig, worker, database, this.resolveRedisManager());
     const dispatcher = new Dispatcher(manager.connection());
     const failedJobs = this.createFailedJobRepository(database, queueConfig);
     const processor = new QueueProcessor(manager, registry, worker, { failedJobs });
@@ -38,6 +39,14 @@ export class QueueServiceProvider extends ServiceProvider {
     }
     this.app.instance('queue.processor', processor);
     this.app.singleton(QueueProcessor, () => processor);
+  }
+
+  private resolveRedisManager(): RedisManager | undefined {
+    try {
+      return this.app.make<RedisManager>('redis');
+    } catch {
+      return undefined;
+    }
   }
 
   private resolveDatabaseManager(): DatabaseManager | undefined {

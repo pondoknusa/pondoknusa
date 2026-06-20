@@ -7,6 +7,7 @@ export { ConfigServiceProvider } from './config-service-provider.js';
 export { DatabaseServiceProvider } from './database-service-provider.js';
 export { EventServiceProvider } from './events-service-provider.js';
 export { QueueServiceProvider } from './queue-service-provider.js';
+export { RedisServiceProvider } from './redis-service-provider.js';
 export { ViewServiceProvider } from './view-service-provider.js';
 export { View, setViewApplication } from './view.js';
 export type { ViewFacade } from './view.js';

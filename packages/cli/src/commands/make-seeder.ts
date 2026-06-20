@@ -1,0 +1,44 @@
+import { existsSync } from 'node:fs';
+import { Command } from '../command.js';
+import { requireProjectRoot } from '../project.js';
+import { seeder } from '../stubs.js';
+import {
+  parseOptions,
+  positionalArgs,
+  projectPath,
+  toKebabCase,
+  toPascalCase,
+  writeFile,
+} from '../utils.js';
+
+export class MakeSeederCommand extends Command {
+  override readonly name = 'make:seeder';
+  override readonly description = 'Create a new database seeder class';
+  override readonly usage = 'tyravel make:seeder <Name>';
+
+  async handle(args: string[]): Promise<number> {
+    parseOptions(args);
+    const [rawName] = positionalArgs(args);
+
+    if (!rawName) {
+      console.error('Seeder name is required.');
+      console.error('Usage: tyravel make:seeder <Name>');
+      return 1;
+    }
+
+    const root = requireProjectRoot();
+    const className = `${toPascalCase(rawName)}Seeder`;
+    const fileName = `${toKebabCase(className)}.ts`;
+    const target = projectPath(root, 'database/seeders', fileName);
+
+    if (existsSync(target)) {
+      console.error(`Seeder already exists: database/seeders/${fileName}`);
+      return 1;
+    }
+
+    writeFile(target, seeder(className));
+    console.log(`Seeder created: database/seeders/${fileName}`);
+
+    return 0;
+  }
+}
