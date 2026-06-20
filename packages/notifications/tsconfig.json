@@ -5,6 +5,6 @@
     "outDir": "dist",
     "rootDir": "src"
   },
-  "references": [{ "path": "../database" }, { "path": "../mail" }],
+  "references": [{ "path": "../database" }, { "path": "../mail" }, { "path": "../queue" }],
   "include": ["src"]
 }

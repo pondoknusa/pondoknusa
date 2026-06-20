@@ -1,4 +1,5 @@
 import { ArrayMailTransport, LogMailTransport, type MailTransport } from './transport.js';
+import { SmtpMailTransport } from './smtp-transport.js';
 import type { MailAddress, MailConfig, MailConnectionConfig, MailMessage } from './types.js';
 import { Mailable } from './mailable.js';
 
@@ -38,8 +39,10 @@ export class MailManager {
         return new ArrayMailTransport();
       case 'log':
         return new LogMailTransport(config.channel ?? 'stdout');
+      case 'smtp':
+        return new SmtpMailTransport(config);
       default:
-        throw new Error('Unsupported mail driver.');
+        throw new Error(`Unsupported mail driver: ${(config as MailConnectionConfig).driver}`);
     }
   }
 }

@@ -559,10 +559,14 @@ await Notifications.send(user, new InvoicePaidNotification());
 | Facade | Drivers / channels |
 |--------|-------------------|
 | `Cache` | `array`, `file` (`storage/framework/cache`) |
-| `Mail` | `log`, `array` (tests) |
-| `Notifications` | `mail`, `database` (`notifications` table) |
+| `Mail` | `log`, `array` (tests), **`smtp`** (STARTTLS / SSL, AUTH LOGIN) |
+| `Notifications` | `mail`, `database`; **`shouldQueue()`** dispatches `SendQueuedNotification` |
 
 Use the **array** mail connection in tests to assert `mail.transport('array').messages`.
+
+**SMTP** (`config/mail.ts` → `smtp` connection): set `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, then `default: 'smtp'`.
+
+**Queued notifications**: override `shouldQueue()` on your `Notification` class; Tyravel pushes `SendQueuedNotification` via the app queue (`notifications.queueConnection` / `queue` in config).
 
 ### Service providers
 

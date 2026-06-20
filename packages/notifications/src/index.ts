@@ -1,4 +1,12 @@
 export type { Notifiable, NotificationChannel, NotificationsConfig } from './types.js';
 export { Notification } from './notification.js';
 export { NotificationManager } from './notification-manager.js';
+export { NotificationRegistry } from './notification-registry.js';
 export { notify, setNotificationSender } from './send.js';
+export type { ShouldQueue } from './should-queue.js';
+export { shouldQueue } from './should-queue.js';
+export { SendQueuedNotification } from './send-queued-notification.js';
+export type { SendQueuedNotificationData } from './send-queued-notification.js';
+export { setQueuedNotificationContext } from './queued-notification-context.js';
+export { SerializedNotifiable, serializeNotifiable } from './serialized-notifiable.js';
+export type { NotificationQueueBridge } from './queue-bridge.js';

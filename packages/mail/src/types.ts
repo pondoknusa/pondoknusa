@@ -24,7 +24,17 @@ export interface LogMailConfig {
   channel?: 'stdout' | 'stderr';
 }
 
-export type MailConnectionConfig = ArrayMailConfig | LogMailConfig;
+export interface SmtpMailConfig {
+  driver: 'smtp';
+  host: string;
+  port?: number;
+  username?: string;
+  password?: string;
+  encryption?: 'tls' | 'ssl' | null;
+  timeout?: number;
+}
+
+export type MailConnectionConfig = ArrayMailConfig | LogMailConfig | SmtpMailConfig;
 
 export interface MailConfig {
   default: string;

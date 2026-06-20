@@ -27,6 +27,14 @@ export default {
   connections: {
     log: { driver: 'log' },
     array: { driver: 'array' },
+    smtp: {
+      driver: 'smtp',
+      host: process.env.MAIL_HOST ?? '127.0.0.1',
+      port: Number(process.env.MAIL_PORT ?? 587),
+      username: process.env.MAIL_USERNAME,
+      password: process.env.MAIL_PASSWORD,
+      encryption: 'tls',
+    },
   },
 } satisfies MailConfig;
 `;
@@ -38,6 +46,8 @@ export function notificationsConfig(): string {
 export default {
   table: 'notifications',
   connection: 'sqlite',
+  queue: 'default',
+  queueConnection: 'sync',
 } satisfies NotificationsConfig;
 `;
 }

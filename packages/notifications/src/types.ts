@@ -8,4 +8,6 @@ export interface Notifiable {
 export interface NotificationsConfig {
   table?: string;
   connection?: string;
+  queue?: string;
+  queueConnection?: string;
 }
