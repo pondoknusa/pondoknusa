@@ -36,7 +36,8 @@ function writeJson(path, data) {
 }
 
 function run(cmd, opts = {}) {
-  return execSync(cmd, { cwd: ROOT, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'], ...opts }).trim();
+  const result = execSync(cmd, { cwd: ROOT, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'], ...opts });
+  return result == null ? '' : result.trim();
 }
 
 function log(msg) {

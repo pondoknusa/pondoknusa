@@ -2,6 +2,10 @@
 
 All notable changes to Tyravel are documented in this file.
 
+
+## [0.2.0] - 2026-06-20
+
+See [v0.2.0 release notes](https://github.com/thesimonharms/tyravel/releases/tag/v0.2.0).
 ## [0.1.0] - 2026-06-20
 
 First public release of the `@tyravel/*` monorepo.
@@ -30,3 +34,4 @@ First public release of the `@tyravel/*` monorepo.
 - New apps default to **database** queue with `jobs`, `failed_jobs`, and `notifications` migrations scaffolded
 
 [0.1.0]: https://github.com/thesimonharms/tyravel/releases/tag/v0.1.0
+[0.2.0]: https://github.com/thesimonharms/tyravel/releases/tag/v0.2.0
