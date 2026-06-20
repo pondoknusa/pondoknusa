@@ -1,6 +1,6 @@
 {
   "name": "@tyravel/cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "The Tyravel command-line interface",
   "type": "module",
   "bin": {
@@ -19,10 +19,10 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@tyravel/config": "0.2.0",
-    "@tyravel/core": "0.2.0",
-    "@tyravel/database": "0.2.0",
-    "@tyravel/queue": "0.2.0"
+    "@tyravel/config": "0.2.1",
+    "@tyravel/core": "0.2.1",
+    "@tyravel/database": "0.2.1",
+    "@tyravel/queue": "0.2.1"
   },
   "files": [
     "dist"
