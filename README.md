@@ -12,6 +12,7 @@ A TypeScript-native web framework with the ergonomics of Laravel — service con
 | `@tyravel/validation` | Request validation with pipe rules and 422 error responses |
 | `@tyravel/database` | Eloquent-style models, query builder, schema, and migrations |
 | `@tyravel/views` | Blade-like `.tyr` templates with layouts, sections, and components |
+| `@tyravel/queue` | Typed jobs, sync/database drivers, dispatch facade, and queue worker |
 | `@tyravel/core` | Application kernel, controllers, service providers, HTTP kernel, `Route` facade |
 | `@tyravel/cli` | Project scaffolding, dev server, and code generators |
 
@@ -56,6 +57,9 @@ tyravel make:provider <Name>           # Create src/providers/<Name>ServiceProvi
 tyravel make:model <Name>              # Create src/models/<Name>.ts
 tyravel make:migration <name>            # Create database/migrations/<timestamp>_<name>.ts
 tyravel make:view <name>                 # Create resources/views/<name>.tyr
+tyravel make:job <Name>                  # Create src/jobs/<Name>.ts
+tyravel queue:table                      # Migration for the jobs table
+tyravel queue:work [--queue=default]     # Process database queue jobs
 tyravel migrate                        # Run pending migrations
 tyravel version                      # Show CLI version
 ```
@@ -276,6 +280,74 @@ Route.get('/', async () =>
 
 Layouts use `@yield('section')`. Values in `{{ }}` are HTML-escaped; use `{!! html !!}` for raw output. Generate views with `tyravel make:view pages.about`.
 
+### Queue / Jobs
+
+Register `QueueServiceProvider`, add `config/queue.ts`, and register job classes on the `JobRegistry` in `AppServiceProvider`:
+
+```typescript
+import { JobRegistry } from '@tyravel/queue';
+import { SendWelcomeEmail } from '../jobs/send-welcome-email.js';
+
+this.app.make<JobRegistry>('jobs.registry').register(SendWelcomeEmail);
+```
+
+Dispatch from routes or services:
+
+```typescript
+import { dispatch, Queue } from '@tyravel/core';
+import { SendWelcomeEmail } from '../jobs/send-welcome-email.js';
+
+await dispatch(new SendWelcomeEmail({ email: 'ada@example.com' }));
+
+await Queue.connection('database').dispatch(
+  new SendWelcomeEmail({ email: 'grace@example.com' }),
+  'emails',
+);
+
+await Queue.later(60, new SendWelcomeEmail({ email: 'later@example.com' }));
+```
+
+Typed job classes:
+
+```typescript
+import { Job } from '@tyravel/queue';
+
+export interface SendWelcomeEmailPayload {
+  email: string;
+}
+
+export class SendWelcomeEmail extends Job<SendWelcomeEmailPayload> {
+  override async handle(): Promise<void> {
+    // send mail using this.data.email
+  }
+}
+```
+
+For the database driver, create the jobs table and run a worker:
+
+```bash
+tyravel queue:table
+tyravel migrate
+tyravel queue:work --connection=database --queue=default
+```
+
+`config/queue.ts` supports `sync` (immediate, great for local dev) and `database` (persistent, worker-driven):
+
+```typescript
+export default {
+  default: 'sync',
+  connections: {
+    sync: { driver: 'sync' },
+    database: {
+      driver: 'database',
+      table: 'jobs',
+      connection: 'sqlite',
+      retryAfter: 90,
+    },
+  },
+} as const;
+```
+
 ### Service providers
 
 ```typescript
@@ -319,7 +391,7 @@ npm run typecheck # Type-check via project references
 
 - [x] **Eloquent-style ORM** — typed models, query builder, and migrations
 - [x] **Blade-like templating** — TS-native view layer with layouts and components
-- [ ] **Queue and jobs** — background job dispatch with typed payloads
+- [x] **Queue and jobs** — background job dispatch with typed payloads
 - [ ] **Event bus** — typed domain events and listeners
 - [ ] **Auth** — sessions, guards, and policies
 - [ ] **Testing utilities** — `TestCase`, HTTP test client, container fakes

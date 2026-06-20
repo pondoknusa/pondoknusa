@@ -11,6 +11,7 @@
     { "path": "../database" },
     { "path": "../container" },
     { "path": "../http" },
+    { "path": "../queue" },
     { "path": "../validation" },
     { "path": "../views" }
   ],

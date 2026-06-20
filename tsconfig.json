@@ -7,6 +7,7 @@
     { "path": "packages/database" },
     { "path": "packages/validation" },
     { "path": "packages/views" },
+    { "path": "packages/queue" },
     { "path": "packages/core" },
     { "path": "packages/cli" }
   ]

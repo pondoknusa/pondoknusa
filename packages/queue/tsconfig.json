@@ -6,10 +6,8 @@
     "rootDir": "src"
   },
   "references": [
-    { "path": "../config" },
-    { "path": "../core" },
-    { "path": "../database" },
-    { "path": "../queue" }
+    { "path": "../container" },
+    { "path": "../database" }
   ],
   "include": ["src"]
 }

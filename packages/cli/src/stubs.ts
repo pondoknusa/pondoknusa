@@ -13,6 +13,7 @@ export function projectPackageJson(name: string): string {
         '@tyravel/core': '^0.0.1',
         '@tyravel/database': '^0.0.1',
         '@tyravel/http': '^0.0.1',
+        '@tyravel/queue': '^0.0.1',
         '@tyravel/validation': '^0.0.1',
         '@tyravel/views': '^0.0.1',
       },
@@ -46,6 +47,8 @@ export function mainEntry(): string {
   ConfigServiceProvider,
   DatabaseServiceProvider,
   HttpKernel,
+  QueueServiceProvider,
+  setQueueApplication,
   setRouteApplication,
   setViewApplication,
   ViewServiceProvider,
@@ -57,9 +60,11 @@ import './routes/web.js';
 const app = new Application(import.meta.dir);
 setRouteApplication(app);
 setViewApplication(app);
+setQueueApplication(app);
 
 app.register(ConfigServiceProvider);
 app.register(DatabaseServiceProvider);
+app.register(QueueServiceProvider);
 app.register(ViewServiceProvider);
 app.register(AppServiceProvider);
 
@@ -233,6 +238,62 @@ export class ${className} extends ServiceProvider {
 
   override boot() {
     //
+  }
+}
+`;
+}
+
+export function job(name: string): string {
+  return `import { Job } from '@tyravel/queue';
+
+export interface ${name}Payload {
+  //
+}
+
+export class ${name} extends Job<${name}Payload> {
+  override async handle(): Promise<void> {
+    //
+  }
+}
+`;
+}
+
+export function queueConfig(): string {
+  return `export default {
+  default: 'sync',
+  connections: {
+    sync: { driver: 'sync' },
+    database: {
+      driver: 'database',
+      table: 'jobs',
+      connection: 'sqlite',
+      retryAfter: 90,
+    },
+  },
+} as const;
+`;
+}
+
+export function jobsTableMigration(): string {
+  return `import { Migration } from '@tyravel/database';
+import type { DatabaseConnection } from '@tyravel/database';
+import type { SchemaBuilder } from '@tyravel/database';
+
+export default class CreateJobsTable extends Migration {
+  override async up(_connection: DatabaseConnection, schema: SchemaBuilder) {
+    await schema.create('jobs', (table) => {
+      table.id();
+      table.string('queue');
+      table.text('payload');
+      table.integer('attempts');
+      table.integer('reserved_at').nullable();
+      table.integer('available_at');
+      table.integer('created_at');
+    });
+  }
+
+  override async down(_connection: DatabaseConnection, schema: SchemaBuilder) {
+    await schema.drop('jobs');
   }
 }
 `;
