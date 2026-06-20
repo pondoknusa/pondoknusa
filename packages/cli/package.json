@@ -1,0 +1,29 @@
+{
+  "name": "@tyravel/cli",
+  "version": "0.0.1",
+  "description": "The Tyravel command-line interface",
+  "type": "module",
+  "bin": {
+    "tyravel": "./dist/bin/tyravel.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@tyravel/config": "0.0.1",
+    "@tyravel/database": "0.0.1"
+  },
+  "files": ["dist"],
+  "engines": {
+    "node": ">=22"
+  }
+}

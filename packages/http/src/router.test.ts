@@ -1,0 +1,116 @@
+import { describe, expect, it } from 'vitest';
+import { MiddlewareRegistry } from './middleware-registry.js';
+import { Response } from './response.js';
+import { RouteNotFoundException, Router } from './router.js';
+
+describe('Router', () => {
+  it('matches static routes', async () => {
+    const router = new Router();
+
+    router.get('/', () => Response.text('home'));
+
+    const response = await router.dispatch(new Request('http://localhost/'));
+    expect(await response.text()).toBe('home');
+  });
+
+  it('matches parameterized routes', async () => {
+    const router = new Router();
+
+    router.get('/users/:id', (request) =>
+      Response.json({ id: request.param('id') }),
+    );
+
+    const response = await router.dispatch(
+      new Request('http://localhost/users/42'),
+    );
+
+    expect(await response.json()).toEqual({ id: '42' });
+  });
+
+  it('runs middleware in order', async () => {
+    const router = new Router();
+    const order: string[] = [];
+
+    router.use(async (_request, next) => {
+      order.push('global');
+      return next();
+    });
+
+    router.middleware(async (_request, next) => {
+      order.push('route');
+      return next();
+    }).get('/ping', () => {
+      order.push('handler');
+      return Response.text('pong');
+    });
+
+    await router.dispatch(new Request('http://localhost/ping'));
+
+    expect(order).toEqual(['global', 'route', 'handler']);
+  });
+
+  it('resolves named middleware aliases', async () => {
+    const registry = new MiddlewareRegistry();
+    const router = new Router(registry);
+    const order: string[] = [];
+
+    registry.alias('auth', async (_request, next) => {
+      order.push('auth');
+      return next();
+    });
+
+    router.middleware('auth').get('/secure', () => Response.text('ok'));
+
+    await router.dispatch(new Request('http://localhost/secure'));
+
+    expect(order).toEqual(['auth']);
+  });
+
+  it('applies route groups with prefix and middleware', async () => {
+    const router = new Router();
+    const order: string[] = [];
+
+    router.prefix('api').middleware(async (_request, next) => {
+      order.push('api');
+      return next();
+    }).group(() => {
+      router.get('/users', () => {
+        order.push('handler');
+        return Response.text('ok');
+      });
+    });
+
+    const response = await router.dispatch(new Request('http://localhost/api/users'));
+
+    expect(await response.text()).toBe('ok');
+    expect(order).toEqual(['api', 'handler']);
+  });
+
+  it('prefixes named routes inside groups', () => {
+    const router = new Router();
+
+    router.prefix('api').namePrefix('api.').group(() => {
+      router.get('/users', () => Response.text('ok')).name('users.index');
+    });
+
+    expect(router.url('api.users.index')).toBe('/api/users');
+  });
+
+  it('generates urls for named routes', () => {
+    const router = new Router();
+
+    router.get('/posts/:slug', () => Response.text('ok')).name('posts.show');
+
+    expect(router.url('posts.show', { slug: 'hello-world' })).toBe(
+      '/posts/hello-world',
+    );
+  });
+
+  it('throws when no route matches', async () => {
+    const router = new Router();
+
+    await expect(
+      router.dispatch(new Request('http://localhost/missing')),
+    ).rejects.toThrow(RouteNotFoundException);
+  });
+});

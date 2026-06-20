@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "lib": ["ES2022", "DOM"]
+  },
+  "references": [
+    { "path": "../config" },
+    { "path": "../database" },
+    { "path": "../container" },
+    { "path": "../http" },
+    { "path": "../validation" },
+    { "path": "../views" }
+  ],
+  "include": ["src"]
+}

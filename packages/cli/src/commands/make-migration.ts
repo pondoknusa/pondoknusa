@@ -1,0 +1,64 @@
+import { existsSync } from 'node:fs';
+import { Command } from '../command.js';
+import { requireProjectRoot } from '../project.js';
+import { migration } from '../stubs.js';
+import {
+  parseOptions,
+  positionalArgs,
+  projectPath,
+  toPascalCase,
+  writeFile,
+} from '../utils.js';
+
+export class MakeMigrationCommand extends Command {
+  override readonly name = 'make:migration';
+  override readonly description = 'Create a new database migration';
+  override readonly usage = 'tyravel make:migration <name>';
+
+  async handle(args: string[]): Promise<number> {
+    parseOptions(args);
+    const [rawName] = positionalArgs(args);
+
+    if (!rawName) {
+      console.error('Migration name is required.');
+      console.error('Usage: tyravel make:migration <name>');
+      return 1;
+    }
+
+    const root = requireProjectRoot();
+    const className = toPascalCase(rawName);
+    const fileName = `${timestamp()}_${snakeCase(rawName)}.ts`;
+    const target = projectPath(root, 'database/migrations', fileName);
+
+    if (existsSync(target)) {
+      console.error(`Migration already exists: database/migrations/${fileName}`);
+      return 1;
+    }
+
+    writeFile(target, migration(className));
+    console.log(`Migration created: database/migrations/${fileName}`);
+
+    return 0;
+  }
+}
+
+function timestamp(): string {
+  const now = new Date();
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return [
+    now.getFullYear(),
+    pad(now.getMonth() + 1),
+    pad(now.getDate()),
+    pad(now.getHours()),
+    pad(now.getMinutes()),
+    pad(now.getSeconds()),
+  ].join('_');
+}
+
+function snakeCase(value: string): string {
+  return value
+    .replace(/([a-z0-9])([A-Z])/g, '$1_$2')
+    .replace(/[^a-zA-Z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .toLowerCase();
+}

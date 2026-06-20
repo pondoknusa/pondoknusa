@@ -1,0 +1,26 @@
+{
+  "name": "@tyravel/core",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@tyravel/config": "0.0.1",
+    "@tyravel/database": "0.0.1",
+    "@tyravel/container": "0.0.1",
+    "@tyravel/http": "0.0.1",
+    "@tyravel/validation": "0.0.1",
+    "@tyravel/views": "0.0.1"
+  },
+  "files": ["dist"]
+}

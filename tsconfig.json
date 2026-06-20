@@ -1,0 +1,13 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/container" },
+    { "path": "packages/http" },
+    { "path": "packages/config" },
+    { "path": "packages/database" },
+    { "path": "packages/validation" },
+    { "path": "packages/views" },
+    { "path": "packages/core" },
+    { "path": "packages/cli" }
+  ]
+}

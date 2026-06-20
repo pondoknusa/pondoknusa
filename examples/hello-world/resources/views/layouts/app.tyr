@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>@yield('title', 'Tyravel')</title>
+  <style>
+    :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+    body { margin: 2rem auto; max-width: 48rem; line-height: 1.5; }
+    .alert { padding: 0.75rem 1rem; border-radius: 0.5rem; background: #eef2ff; }
+  </style>
+</head>
+<body>
+  @yield('content')
+</body>
+</html>
