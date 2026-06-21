@@ -87,6 +87,33 @@ Recreate the magic of Laravel in a way that feels TypeScript native, with develo
 - [x] **Interactive `tyravel new`** — Prompt for database driver, auth guard, queue driver, mail driver, redis. Progress bar (`npm install`) in interactive mode. Builds on the existing `tyravel new` which already handled DB + redis prompts.
 - [x] **Command bus** — `Bus.dispatch(new SendWelcomeEmail(user))`. Auto-resolve handlers from the container, explicit mapping via `Bus.map()`, self-handling commands supported.
 
+## Tier 6 — Templating engine (v0.6.0)
+
+Make `.tyr` feel as productive as Blade for full-stack apps — TypeScript-native, compiled, and testable. Builds on the existing `@tyravel/views` compiler (layouts, sections, `@if`/`@foreach`, `@include`, one-line `@component`).
+
+### P0 — Must ship
+
+- [x] **Component blocks & slots** — `@component('card')` … `@slot('footer')` … `@endcomponent`; default slot via `{{ $slot }}` in child templates. The biggest gap vs one-line `@component` includes today.
+- [ ] **@stack / @push** — defer scripts, styles, and meta into layout stacks (`@push('scripts')` / `@stack('scripts')`).
+- [ ] **@forelse / @empty** — list rendering with an empty-state branch without nested `@if`.
+- [ ] **@unless, @isset, @empty** — common conditionals developers reach for on day one of a UI.
+
+### P1 — Strong want
+
+- [ ] **Custom directives** — `View::directive('datetime', handler)` to register project-specific `@datetime(...)` tags without forking the compiler.
+- [ ] **View composers** — attach shared data to named views or wildcards (`View::composer('posts.*', fn => ...)`).
+- [ ] **Conditional includes** — `@includeIf`, `@includeWhen` for partials.
+- [ ] **Auth-aware directives** — `@auth`, `@guest`, `@can` wired to `@tyravel/auth` (optional when auth provider is registered).
+- [ ] **View helpers in templates** — `route()`, `asset()`, `config()` (and `old()` for forms) available in expression context.
+
+### P2 — If scope allows
+
+- [ ] **Compiled view cache** — write compiled ops to `storage/framework/views`; `tyravel view:cache` and `view:clear` commands.
+- [ ] **Anonymous components** — `resources/views/components/*.tyr` auto-resolvable as `@component('alert')` without manual paths.
+- [ ] **View testing** — `assertSee` / `assertDontSee` helpers in `@tyravel/testing` for rendered HTML assertions.
+- [ ] **`make:component`** — scaffold component templates with slot stubs and optional class binding.
+- [ ] **@once** — render a block only once per request (useful for push/stack deduplication).
+
 ## Tier X — Production-ready project
 
 Open-ended tier: done when Tyravel is a framework teams can adopt with confidence in production — not tied to a version number. Items land here when the core framework depth (Tier 4+) is in place.

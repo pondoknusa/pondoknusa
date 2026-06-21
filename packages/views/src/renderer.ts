@@ -73,12 +73,39 @@ export async function renderOps(
         helpers.append(helpers.yield(op.name, op.defaultValue ?? ''));
         break;
 
-      case 'include':
-      case 'component': {
+      case 'include': {
         const data = op.dataExpression
           ? (evaluateExpression(op.dataExpression, context) as ViewContext)
           : context;
         const html = await engine.render(op.name, data, helpers.getSections());
+        helpers.append(html);
+        break;
+      }
+
+      case 'component': {
+        const props = op.dataExpression
+          ? ((evaluateExpression(op.dataExpression, context) as ViewContext) ?? {})
+          : {};
+        const childContext: ViewContext = {
+          ...context,
+          ...(typeof props === 'object' && props !== null ? props : {}),
+        };
+
+        if (op.defaultSlot) {
+          const slotHelpers = new ViewHelpers();
+          await renderOps(op.defaultSlot, context, slotHelpers, engine);
+          childContext.$slot = slotHelpers.toString();
+        }
+
+        if (op.namedSlots) {
+          for (const [slotName, slotOps] of Object.entries(op.namedSlots)) {
+            const slotHelpers = new ViewHelpers();
+            await renderOps(slotOps, context, slotHelpers, engine);
+            childContext[`$${slotName}`] = slotHelpers.toString();
+          }
+        }
+
+        const html = await engine.render(op.name, childContext, helpers.getSections());
         helpers.append(html);
         break;
       }

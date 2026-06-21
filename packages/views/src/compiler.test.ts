@@ -44,4 +44,53 @@ describe('compile', () => {
       { type: 'component', name: 'components.alert', dataExpression: '{ message: \'Hi\' }' },
     ]);
   });
+
+  it('parses component blocks with default and named slots', () => {
+    const source = `@component('components.card', { title: 'Post' })
+  <h2>{{ title }}</h2>
+  @slot('footer')
+    <a href="#">Read more</a>
+  @endslot
+@endcomponent
+`;
+
+    const template = compile(source);
+    const component = template.ops.find((op) => op.type === 'component');
+
+    expect(component).toMatchObject({
+      type: 'component',
+      name: 'components.card',
+      dataExpression: '{ title: \'Post\' }',
+    });
+
+    if (component?.type !== 'component') {
+      throw new Error('Expected component op');
+    }
+
+    expect(component.defaultSlot?.some((op) => op.type === 'echo')).toBe(true);
+    expect(component.namedSlots?.footer?.some((op) => op.type === 'text')).toBe(true);
+  });
+
+  it('parses nested component blocks', () => {
+    const source = `@component('components.shell')
+  @component('components.alert', { message: 'Nested' })
+  @endcomponent
+@endcomponent
+`;
+
+    const template = compile(source);
+    const shell = template.ops.find((op) => op.type === 'component');
+
+    expect(shell?.type).toBe('component');
+    if (shell?.type !== 'component') {
+      throw new Error('Expected shell component');
+    }
+
+    const nested = shell.defaultSlot?.find((op) => op.type === 'component');
+    expect(nested).toMatchObject({
+      type: 'component',
+      name: 'components.alert',
+      dataExpression: '{ message: \'Nested\' }',
+    });
+  });
 });

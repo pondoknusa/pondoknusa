@@ -18,4 +18,10 @@ export type TemplateOp =
   | { type: 'section'; name: string; body: TemplateOp[] }
   | { type: 'yield'; name: string; defaultValue?: string }
   | { type: 'include'; name: string; dataExpression?: string }
-  | { type: 'component'; name: string; dataExpression?: string };
+  | {
+      type: 'component';
+      name: string;
+      dataExpression?: string;
+      defaultSlot?: TemplateOp[];
+      namedSlots?: Record<string, TemplateOp[]>;
+    };

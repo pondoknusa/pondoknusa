@@ -50,6 +50,15 @@ function createFixture(): { basePath: string; engine: ViewEngine } {
     `<div class="alert">{{ message }}</div>`,
   );
 
+  writeFileSync(
+    join(viewsPath, 'components/card.tyr'),
+    `<article class="card">
+  <header>{{ title }}</header>
+  <div class="card-body">{!! $slot !!}</div>
+  <footer>{!! $footer !!}</footer>
+</article>`,
+  );
+
   const engine = new ViewEngine(basePath, { path: 'resources/views' });
   return { basePath, engine };
 }
@@ -70,6 +79,44 @@ describe('ViewEngine', () => {
     expect(html).toContain('<p>Users: 2</p>');
     expect(html).toContain('<li>Grace</li>');
     expect(html).toContain('<div class="alert">Welcome back</div>');
+  });
+
+  it('renders component blocks with default and named slots', async () => {
+    const { basePath, engine } = createFixture();
+    writeFileSync(
+      join(basePath, 'resources/views/post.tyr'),
+      `@component('components.card', { title: 'Featured' })
+  <p>{{ excerpt }}</p>
+  @slot('footer')
+    <a href="{{ url }}">Read more</a>
+  @endslot
+@endcomponent
+`,
+    );
+
+    const html = await engine.render('post', {
+      excerpt: 'Hello world',
+      url: '/posts/1',
+    });
+
+    expect(html).toContain('<header>Featured</header>');
+    expect(html).toContain('<div class="card-body">');
+    expect(html).toContain('<p>Hello world</p>');
+    expect(html).toContain('<footer>');
+    expect(html).toContain('<a href="/posts/1">Read more</a>');
+  });
+
+  it('keeps inline one-line components working', async () => {
+    const { engine } = createFixture();
+
+    const html = await engine.render('welcome', {
+      name: 'Ada',
+      showDetails: false,
+      users: [],
+      greeting: 'Hi',
+    });
+
+    expect(html).toContain('<div class="alert">Hi</div>');
   });
 
   it('escapes echoed values by default', async () => {

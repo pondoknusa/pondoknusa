@@ -6,6 +6,9 @@ const SECTION_END_RE = /^@endsection\s*$/;
 const YIELD_RE = /^@yield\(\s*['"]([^'"]+)['"]\s*(?:,\s*['"]([^'"]*)['"]\s*)?\)\s*$/;
 const INCLUDE_RE = /^@include\(\s*['"]([^'"]+)['"]\s*(?:,\s*(.+))?\)\s*$/;
 const COMPONENT_RE = /^@component\(\s*['"]([^'"]+)['"]\s*(?:,\s*(.+))?\)\s*$/;
+const ENDCOMPONENT_RE = /^@endcomponent\s*$/;
+const SLOT_START_RE = /^@slot\(\s*['"]([^'"]+)['"]\s*\)\s*$/;
+const SLOT_END_RE = /^@endslot\s*$/;
 const IF_RE = /^@if\s*\((.+)\)\s*$/;
 const ELSEIF_RE = /^@elseif\s*\((.+)\)\s*$/;
 const ELSE_RE = /^@else\s*$/;
@@ -115,6 +118,20 @@ function parseOps(source: string): TemplateOp[] {
 
     const componentMatch = trimmed.match(COMPONENT_RE);
     if (componentMatch) {
+      const closeAt = findPartnerEndComponent(source, cursor + line.length);
+      if (closeAt !== -1) {
+        const block = parseComponentBlock(
+          source,
+          cursor,
+          componentMatch[1]!,
+          componentMatch[2]?.trim(),
+          closeAt,
+        );
+        ops.push(block.op);
+        cursor = block.end;
+        continue;
+      }
+
       ops.push({
         type: 'component',
         name: componentMatch[1]!,
@@ -244,6 +261,111 @@ function parseForeachBlock(
     },
     end: contentEnd + endLine.length,
   };
+}
+
+function parseComponentBlock(
+  source: string,
+  start: number,
+  name: string,
+  dataExpression: string | undefined,
+  closeAt: number,
+): { op: TemplateOp; end: number } {
+  const headerLine = takeLine(source, start);
+  const bodyStart = start + headerLine.length;
+  const body = source.slice(bodyStart, closeAt);
+  const closeLine = takeLine(source, closeAt);
+  const { defaultSlot, namedSlots } = parseSlotAwareBody(body);
+
+  return {
+    op: {
+      type: 'component',
+      name,
+      dataExpression,
+      defaultSlot: defaultSlot.length > 0 ? defaultSlot : undefined,
+      namedSlots: Object.keys(namedSlots).length > 0 ? namedSlots : undefined,
+    },
+    end: closeAt + closeLine.length,
+  };
+}
+
+function findPartnerEndComponent(source: string, searchStart: number): number {
+  let depth = 1;
+  let cursor = searchStart;
+
+  while (cursor < source.length) {
+    const line = takeLine(source, cursor);
+    const trimmed = line.trim();
+
+    if (COMPONENT_RE.test(trimmed)) {
+      depth += 1;
+    }
+
+    if (ENDCOMPONENT_RE.test(trimmed)) {
+      depth -= 1;
+      if (depth === 0) {
+        return cursor;
+      }
+    }
+
+    cursor += line.length;
+  }
+
+  return -1;
+}
+
+function parseSlotAwareBody(content: string): {
+  defaultSlot: TemplateOp[];
+  namedSlots: Record<string, TemplateOp[]>;
+} {
+  const defaultSlot: TemplateOp[] = [];
+  const namedSlots: Record<string, TemplateOp[]> = {};
+  let cursor = 0;
+
+  while (cursor < content.length) {
+    const line = takeLine(content, cursor);
+    const trimmed = line.trim();
+    const slotMatch = trimmed.match(SLOT_START_RE);
+
+    if (slotMatch) {
+      const slotContentStart = cursor + line.length;
+      const slotContentEnd = findNestedEnd(
+        content,
+        slotContentStart,
+        SLOT_START_RE,
+        SLOT_END_RE,
+      );
+      const endLine = takeLine(content, slotContentEnd);
+      namedSlots[slotMatch[1]!] = parseOps(content.slice(slotContentStart, slotContentEnd));
+      cursor = slotContentEnd + endLine.length;
+      continue;
+    }
+
+    const nextSlot = findNextSlotStart(content, cursor);
+    const chunkEnd = nextSlot === -1 ? content.length : nextSlot;
+    const chunk = content.slice(cursor, chunkEnd);
+
+    if (chunk.trim().length > 0) {
+      defaultSlot.push(...parseOps(chunk));
+    }
+
+    cursor = nextSlot === -1 ? content.length : nextSlot;
+  }
+
+  return { defaultSlot, namedSlots };
+}
+
+function findNextSlotStart(source: string, start: number): number {
+  let cursor = start;
+
+  while (cursor < source.length) {
+    const line = takeLine(source, cursor);
+    if (SLOT_START_RE.test(line.trim())) {
+      return cursor;
+    }
+    cursor += line.length;
+  }
+
+  return -1;
 }
 
 function parseSectionBlock(
