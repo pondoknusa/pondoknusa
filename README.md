@@ -4,6 +4,10 @@
 
 Requires **Node.js ≥ 22**.
 
+## API stability
+
+Published `@tyravel/*` packages follow the semver and deprecation rules in [STABILITY.md](STABILITY.md). Patch releases preserve documented stable APIs; experimental features (streaming views, hydration islands, REPL, etc.) may change in minors.
+
 ## Packages
 
 | Package | Description |

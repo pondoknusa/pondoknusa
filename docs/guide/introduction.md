@@ -27,3 +27,7 @@ Tyravel is a TypeScript-native web framework that brings Laravel-style ergonomic
 | `@tyravel/cli` | Project scaffolding and generators |
 
 See the [monorepo README](https://github.com/thesimonharms/tyravel#packages) for the full package list.
+
+## Upgrading
+
+Tyravel is pre-1.0 but documents which APIs are stable vs experimental. Read [API stability](/guide/api-stability) before upgrading across minor versions.

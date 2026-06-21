@@ -27,6 +27,7 @@ export default defineConfig({
         text: 'v0.6.0',
         items: [
           { text: 'Changelog', link: 'https://github.com/thesimonharms/tyravel/blob/main/CHANGELOG.md' },
+          { text: 'API stability', link: '/guide/api-stability' },
           { text: 'Roadmap', link: 'https://github.com/thesimonharms/tyravel/blob/main/ROADMAP.md' },
           { text: 'Contributing', link: 'https://github.com/thesimonharms/tyravel' },
         ],
@@ -40,6 +41,7 @@ export default defineConfig({
           { text: 'Introduction', link: '/guide/introduction' },
           { text: 'Installation', link: '/guide/getting-started' },
           { text: 'Application structure', link: '/guide/application-structure' },
+          { text: 'API stability', link: '/guide/api-stability' },
         ],
       },
       {

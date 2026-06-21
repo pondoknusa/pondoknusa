@@ -180,13 +180,13 @@ Close the polish gaps found during the Tier 6 audit. Ship before v0.7.0 producti
 - [x] **`@inject` diagnostics** — warn or fail in dev when `@inject` is used without a registered injector; avoid silent empty context.
 - [x] **Unknown custom directive diagnostics** — compile-time or lint-time warning when `@myDirective` has no `View::directive()` handler registered.
 
-## Tier 7 — Production credibility (v0.7.0)
+## Tier 7 — Production credibility (v0.7.0) ✓
 
 Make Tyravel deployable with confidence. Builds on Tier 6.1 hardening.
 
 - [X] **Config validation** — fail fast at boot when required environment variables are missing or invalid; typed schema per config file.
 - [x] **Graceful shutdown** — drain in-flight HTTP requests and queue workers on `SIGTERM` / `SIGINT`; cooperative timeout before force exit.
-- [ ] **API stability policy** — documented semver guarantees for public `@tyravel/*` surfaces (what is stable, what is experimental, deprecation window).
+- [x] **API stability policy** — documented semver guarantees for public `@tyravel/*` surfaces (what is stable, what is experimental, deprecation window). See [STABILITY.md](STABILITY.md).
 
 ## Tier X — Production-ready project
 
