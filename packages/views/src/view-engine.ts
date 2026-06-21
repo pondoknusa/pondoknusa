@@ -25,9 +25,10 @@ export class ViewEngine {
     name: string,
     context: ViewContext = {},
     parentSections?: ReadonlyMap<string, string>,
+    parentStacks?: Map<string, string[]>,
   ): Promise<string> {
     const template = this.loadTemplate(name);
-    const helpers = new ViewHelpers();
+    const helpers = new ViewHelpers(parentStacks);
 
     if (parentSections) {
       helpers.importSections(parentSections);
@@ -36,7 +37,7 @@ export class ViewEngine {
     await renderOps(template.ops, context, helpers, this);
 
     if (template.layout) {
-      const layoutHelpers = new ViewHelpers();
+      const layoutHelpers = new ViewHelpers(helpers.getStacks());
       layoutHelpers.importSections(helpers.getSections());
       await renderOps(
         this.loadTemplate(template.layout).ops,

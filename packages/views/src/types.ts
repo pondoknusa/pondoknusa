@@ -10,13 +10,24 @@ export interface CompiledTemplate {
   ops: TemplateOp[];
 }
 
+export type ConditionalMode = 'if' | 'unless' | 'isset' | 'empty';
+
 export type TemplateOp =
   | { type: 'text'; value: string }
   | { type: 'echo'; expression: string; raw: boolean }
-  | { type: 'if'; expression: string; body: TemplateOp[]; elseBody?: TemplateOp[] }
+  | {
+      type: 'if';
+      expression: string;
+      body: TemplateOp[];
+      elseBody?: TemplateOp[];
+      mode?: ConditionalMode;
+    }
   | { type: 'foreach'; expression: string; body: TemplateOp[] }
+  | { type: 'forelse'; expression: string; body: TemplateOp[]; emptyBody: TemplateOp[] }
   | { type: 'section'; name: string; body: TemplateOp[] }
   | { type: 'yield'; name: string; defaultValue?: string }
+  | { type: 'push'; name: string; body: TemplateOp[] }
+  | { type: 'stack'; name: string; defaultValue?: string }
   | { type: 'include'; name: string; dataExpression?: string }
   | {
       type: 'component';

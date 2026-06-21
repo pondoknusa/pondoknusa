@@ -71,6 +71,74 @@ describe('compile', () => {
     expect(component.namedSlots?.footer?.some((op) => op.type === 'text')).toBe(true);
   });
 
+  it('parses push, stack, forelse, and conditional directives', () => {
+    const source = `@push('scripts')
+  <script src="{{ asset }}"></script>
+@endpush
+@stack('scripts', 'fallback')
+
+@forelse (items as item)
+  <li>{{ item }}</li>
+@empty
+  <li>None</li>
+@endforelse
+
+@unless (hidden)
+  <p>Visible</p>
+@endunless
+
+@isset (title)
+  <h1>{{ title }}</h1>
+@endisset
+
+@empty (tags)
+  <p>No tags</p>
+@endempty
+`;
+
+    const template = compile(source);
+
+    expect(template.ops.some((op) => op.type === 'push' && op.name === 'scripts')).toBe(
+      true,
+    );
+    expect(template.ops.some((op) => op.type === 'stack' && op.name === 'scripts')).toBe(
+      true,
+    );
+
+    const forelse = template.ops.find((op) => op.type === 'forelse');
+    expect(forelse).toMatchObject({
+      type: 'forelse',
+      expression: 'items as item',
+    });
+    if (forelse?.type === 'forelse') {
+      expect(forelse.body.some((op) => op.type === 'echo')).toBe(true);
+      expect(forelse.emptyBody.some((op) => op.type === 'text')).toBe(true);
+    }
+
+    const unless = template.ops.find(
+      (op) => op.type === 'if' && op.mode === 'unless',
+    );
+    expect(unless).toMatchObject({
+      type: 'if',
+      mode: 'unless',
+      expression: 'hidden',
+    });
+
+    const isset = template.ops.find((op) => op.type === 'if' && op.mode === 'isset');
+    expect(isset).toMatchObject({
+      type: 'if',
+      mode: 'isset',
+      expression: 'title',
+    });
+
+    const empty = template.ops.find((op) => op.type === 'if' && op.mode === 'empty');
+    expect(empty).toMatchObject({
+      type: 'if',
+      mode: 'empty',
+      expression: 'tags',
+    });
+  });
+
   it('parses nested component blocks', () => {
     const source = `@component('components.shell')
   @component('components.alert', { message: 'Nested' })

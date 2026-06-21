@@ -1,4 +1,4 @@
-import { evaluateExpression } from './evaluate.js';
+import { evaluateExpression, parseForeachExpression } from './evaluate.js';
 import type { ViewContext } from './types.js';
 
 export function isViewEmpty(value: unknown): boolean {
@@ -36,7 +36,9 @@ export function isViewSet(expression: string, context: ViewContext): boolean {
 }
 
 export function isIterableEmpty(expression: string, context: ViewContext): boolean {
-  const value = evaluateExpression(expression, context);
+  const parsed = parseForeachExpression(expression);
+  const itemsExpression = parsed?.itemsExpression ?? expression;
+  const value = evaluateExpression(itemsExpression, context);
   if (value == null) {
     return true;
   }

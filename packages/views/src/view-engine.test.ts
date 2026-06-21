@@ -119,6 +119,107 @@ describe('ViewEngine', () => {
     expect(html).toContain('<div class="alert">Hi</div>');
   });
 
+  it('renders push and stack directives into layouts', async () => {
+    const { basePath, engine } = createFixture();
+    writeFileSync(
+      join(basePath, 'resources/views/layouts/stacked.tyr'),
+      `<html>
+<head>@stack('styles')</head>
+<body>
+  @yield('content')
+  @stack('scripts')
+</body>
+</html>`,
+    );
+    writeFileSync(
+      join(basePath, 'resources/views/stacked-page.tyr'),
+      `@layout('layouts.stacked')
+
+@section('content')
+  <main>Hello</main>
+@endsection
+
+@push('styles')
+  <link rel="stylesheet" href="/app.css">
+@endpush
+
+@push('scripts')
+  <script src="/app.js"></script>
+@endpush
+`,
+    );
+
+    const html = await engine.render('stacked-page', {});
+
+    expect(html).toContain('<link rel="stylesheet" href="/app.css">');
+    expect(html).toContain('<script src="/app.js"></script>');
+    expect(html).toContain('<main>Hello</main>');
+    expect(html.indexOf('<head>')).toBeLessThan(html.indexOf('<link'));
+    expect(html.indexOf('<main>')).toBeLessThan(html.indexOf('<script'));
+  });
+
+  it('renders forelse with empty branch', async () => {
+    const { basePath, engine } = createFixture();
+    writeFileSync(
+      join(basePath, 'resources/views/items.tyr'),
+      `<ul>
+@forelse (items as item)
+  <li>{{ item }}</li>
+@empty
+  <li class="empty">No items</li>
+@endforelse
+</ul>
+`,
+    );
+
+    const populated = await engine.render('items', { items: ['A', 'B'] });
+    expect(populated).toContain('<li>A</li>');
+    expect(populated).toContain('<li>B</li>');
+    expect(populated).not.toContain('No items');
+
+    const empty = await engine.render('items', { items: [] });
+    expect(empty).toContain('<li class="empty">No items</li>');
+  });
+
+  it('renders unless, isset, and empty directives', async () => {
+    const { basePath, engine } = createFixture();
+    writeFileSync(
+      join(basePath, 'resources/views/conditionals.tyr'),
+      `@unless (hidden)
+  <p>Shown unless hidden</p>
+@endunless
+
+@isset (title)
+  <h1>{{ title }}</h1>
+@endisset
+
+@empty (tags)
+  <p>No tags yet</p>
+@endempty
+`,
+    );
+
+    const html = await engine.render('conditionals', {
+      hidden: false,
+      title: 'Dashboard',
+      tags: [],
+    });
+
+    expect(html).toContain('<p>Shown unless hidden</p>');
+    expect(html).toContain('<h1>Dashboard</h1>');
+    expect(html).toContain('<p>No tags yet</p>');
+
+    const hidden = await engine.render('conditionals', {
+      hidden: true,
+      title: undefined,
+      tags: ['news'],
+    });
+
+    expect(hidden).not.toContain('Shown unless hidden');
+    expect(hidden).not.toContain('<h1>');
+    expect(hidden).not.toContain('No tags yet');
+  });
+
   it('escapes echoed values by default', async () => {
     const { basePath, engine } = createFixture();
     writeFileSync(

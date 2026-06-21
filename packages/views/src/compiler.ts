@@ -13,8 +13,20 @@ const IF_RE = /^@if\s*\((.+)\)\s*$/;
 const ELSEIF_RE = /^@elseif\s*\((.+)\)\s*$/;
 const ELSE_RE = /^@else\s*$/;
 const ENDIF_RE = /^@endif\s*$/;
+const UNLESS_RE = /^@unless\s*\((.+)\)\s*$/;
+const ENDUNLESS_RE = /^@endunless\s*$/;
+const ISSET_RE = /^@isset\s*\((.+)\)\s*$/;
+const ENDISSET_RE = /^@endisset\s*$/;
+const EMPTY_RE = /^@empty\s*\((.+)\)\s*$/;
+const ENDEMPTY_RE = /^@endempty\s*$/;
 const FOREACH_RE = /^@foreach\s*\((.+)\)\s*$/;
 const ENDFOREACH_RE = /^@endforeach\s*$/;
+const FORELSE_RE = /^@forelse\s*\((.+)\)\s*$/;
+const FORELSE_EMPTY_RE = /^@empty\s*$/;
+const ENDFORELSE_RE = /^@endforelse\s*$/;
+const PUSH_START_RE = /^@push\(\s*['"]([^'"]+)['"]\s*\)\s*$/;
+const PUSH_END_RE = /^@endpush\s*$/;
+const STACK_RE = /^@stack\(\s*['"]([^'"]+)['"]\s*(?:,\s*['"]([^'"]*)['"]\s*)?\)\s*$/;
 const ECHO_RE = /\{\{\s*(.+?)\s*\}\}/g;
 const RAW_ECHO_RE = /\{!!\s*(.+?)\s*!!\}/g;
 
@@ -78,11 +90,80 @@ function parseOps(source: string): TemplateOp[] {
       continue;
     }
 
+    const unlessMatch = trimmed.match(UNLESS_RE);
+    if (unlessMatch) {
+      const block = parseSimpleConditionalBlock(
+        source,
+        cursor,
+        UNLESS_RE,
+        ENDUNLESS_RE,
+        'unless',
+      );
+      ops.push(block.op);
+      cursor = block.end;
+      continue;
+    }
+
+    const issetMatch = trimmed.match(ISSET_RE);
+    if (issetMatch) {
+      const block = parseSimpleConditionalBlock(
+        source,
+        cursor,
+        ISSET_RE,
+        ENDISSET_RE,
+        'isset',
+      );
+      ops.push(block.op);
+      cursor = block.end;
+      continue;
+    }
+
+    const emptyMatch = trimmed.match(EMPTY_RE);
+    if (emptyMatch) {
+      const block = parseSimpleConditionalBlock(
+        source,
+        cursor,
+        EMPTY_RE,
+        ENDEMPTY_RE,
+        'empty',
+      );
+      ops.push(block.op);
+      cursor = block.end;
+      continue;
+    }
+
+    const forelseMatch = trimmed.match(FORELSE_RE);
+    if (forelseMatch) {
+      const block = parseForelseBlock(source, cursor);
+      ops.push(block.op);
+      cursor = block.end;
+      continue;
+    }
+
     const foreachMatch = trimmed.match(FOREACH_RE);
     if (foreachMatch) {
       const block = parseForeachBlock(source, cursor);
       ops.push(block.op);
       cursor = block.end;
+      continue;
+    }
+
+    const pushMatch = trimmed.match(PUSH_START_RE);
+    if (pushMatch) {
+      const block = parsePushBlock(source, cursor, pushMatch[1]!);
+      ops.push(block.op);
+      cursor = block.end;
+      continue;
+    }
+
+    const stackMatch = trimmed.match(STACK_RE);
+    if (stackMatch) {
+      ops.push({
+        type: 'stack',
+        name: stackMatch[1]!,
+        defaultValue: stackMatch[2],
+      });
+      cursor += line.length;
       continue;
     }
 
@@ -241,6 +322,100 @@ function flattenBranches(
       elseBody: flattenBranches(remaining),
     },
   ];
+}
+
+function parseSimpleConditionalBlock(
+  source: string,
+  start: number,
+  startRe: RegExp,
+  endRe: RegExp,
+  mode: 'unless' | 'isset' | 'empty',
+): { op: TemplateOp; end: number } {
+  const firstLine = takeLine(source, start);
+  const expression = firstLine.trim().match(startRe)?.[1] ?? '';
+  const contentStart = start + firstLine.length;
+  const contentEnd = findNestedEnd(source, contentStart, startRe, endRe);
+  const endLine = takeLine(source, contentEnd);
+
+  return {
+    op: {
+      type: 'if',
+      mode,
+      expression,
+      body: parseOps(source.slice(contentStart, contentEnd)),
+    },
+    end: contentEnd + endLine.length,
+  };
+}
+
+function parseForelseBlock(
+  source: string,
+  start: number,
+): { op: TemplateOp; end: number } {
+  const firstLine = takeLine(source, start);
+  const expression = firstLine.trim().match(FORELSE_RE)?.[1] ?? '[]';
+  const contentStart = start + firstLine.length;
+  const contentEnd = findNestedEnd(source, contentStart, FORELSE_RE, ENDFORELSE_RE);
+  const endLine = takeLine(source, contentEnd);
+  const content = source.slice(contentStart, contentEnd);
+  const emptyBoundary = findForelseEmptyBoundary(content);
+
+  return {
+    op: {
+      type: 'forelse',
+      expression,
+      body: parseOps(content.slice(0, emptyBoundary.start)),
+      emptyBody: parseOps(content.slice(emptyBoundary.end)),
+    },
+    end: contentEnd + endLine.length,
+  };
+}
+
+function findForelseEmptyBoundary(content: string): { start: number; end: number } {
+  let cursor = 0;
+  let depth = 0;
+
+  while (cursor < content.length) {
+    const line = takeLine(content, cursor);
+    const trimmed = line.trim();
+
+    if (FORELSE_RE.test(trimmed)) {
+      depth += 1;
+    }
+
+    if (ENDFORELSE_RE.test(trimmed)) {
+      depth -= 1;
+    }
+
+    if (FORELSE_EMPTY_RE.test(trimmed) && depth === 0) {
+      const end = cursor + line.length;
+      return { start: cursor, end };
+    }
+
+    cursor += line.length;
+  }
+
+  return { start: content.length, end: content.length };
+}
+
+function parsePushBlock(
+  source: string,
+  start: number,
+  name: string,
+): { op: TemplateOp; end: number } {
+  const headerLine = takeLine(source, start);
+  const contentStart = start + headerLine.length;
+  const contentEnd = findNestedEnd(source, contentStart, PUSH_START_RE, PUSH_END_RE);
+  const endLine = takeLine(source, contentEnd);
+
+  return {
+    op: {
+      type: 'push',
+      name,
+      body: parseOps(source.slice(contentStart, contentEnd)),
+    },
+    end: contentEnd + endLine.length,
+  };
 }
 
 function parseForeachBlock(
@@ -479,7 +654,7 @@ function appendText(ops: TemplateOp[], value: string): void {
 function parseTextWithDirectives(text: string): TemplateOp[] {
   const ops: TemplateOp[] = [];
   const pattern =
-    /@yield\(\s*['"]([^'"]+)['"]\s*(?:,\s*['"]([^'"]*)['"]\s*)?\)|@include\(\s*['"]([^'"]+)['"]\s*(?:,\s*(.+?))?\s*\)|@component\(\s*['"]([^'"]+)['"]\s*(?:,\s*(.+?))?\s*\)/g;
+    /@yield\(\s*['"]([^'"]+)['"]\s*(?:,\s*['"]([^'"]*)['"]\s*)?\)|@stack\(\s*['"]([^'"]+)['"]\s*(?:,\s*['"]([^'"]*)['"]\s*)?\)|@include\(\s*['"]([^'"]+)['"]\s*(?:,\s*(.+?))?\s*\)|@component\(\s*['"]([^'"]+)['"]\s*(?:,\s*(.+?))?\s*\)/g;
 
   let lastIndex = 0;
   let match: RegExpExecArray | null;
@@ -495,17 +670,23 @@ function parseTextWithDirectives(text: string): TemplateOp[] {
         name: match[1]!,
         defaultValue: match[2],
       });
+    } else if (match[0].startsWith('@stack')) {
+      ops.push({
+        type: 'stack',
+        name: match[3]!,
+        defaultValue: match[4],
+      });
     } else if (match[0].startsWith('@include')) {
       ops.push({
         type: 'include',
-        name: match[3]!,
-        dataExpression: match[4]?.trim(),
+        name: match[5]!,
+        dataExpression: match[6]?.trim(),
       });
     } else {
       ops.push({
         type: 'component',
-        name: match[5]!,
-        dataExpression: match[6]?.trim(),
+        name: match[7]!,
+        dataExpression: match[8]?.trim(),
       });
     }
 

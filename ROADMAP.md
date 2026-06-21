@@ -94,9 +94,9 @@ Make `.tyr` feel as productive as Blade for full-stack apps — TypeScript-nativ
 ### P0 — Must ship
 
 - [x] **Component blocks & slots** — `@component('card')` … `@slot('footer')` … `@endcomponent`; default slot via `{{ $slot }}` in child templates. The biggest gap vs one-line `@component` includes today.
-- [ ] **@stack / @push** — defer scripts, styles, and meta into layout stacks (`@push('scripts')` / `@stack('scripts')`).
-- [ ] **@forelse / @empty** — list rendering with an empty-state branch without nested `@if`.
-- [ ] **@unless, @isset, @empty** — common conditionals developers reach for on day one of a UI.
+- [x] **@stack / @push** — defer scripts, styles, and meta into layout stacks (`@push('scripts')` / `@stack('scripts')`).
+- [x] **@forelse / @empty** — list rendering with an empty-state branch without nested `@if`.
+- [x] **@unless, @isset, @empty** — common conditionals developers reach for on day one of a UI.
 
 ### P1 — Strong want
 
