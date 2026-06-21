@@ -128,12 +128,12 @@ Day-two ergonomics for server-rendered apps: forms, validation feedback, and con
 
 Move anonymous components from "included partials" toward first-class, reusable UI primitives.
 
-- [ ] **`@props` declaration** — top-of-file `@props(['title', 'count' => 0])` merges defaults into child component context.
-- [ ] **Attribute bag** — `$attributes` in component templates; merge classes/styles onto the root element.
-- [ ] **`@class` / `@style` helpers** — conditional class lists and inline style maps (Tailwind-friendly).
-- [ ] **Class-based component data** — `make:component --class` providers auto-merge `data()` into render context when a binding exists.
-- [ ] **Default slot content** — fallback markup inside `@slot('name')` … `@endslot` when the parent omits that slot.
-- [ ] **`@aware`** — child components inherit selected props from a parent component context.
+- [x] **`@props` declaration** — top-of-file `@props(['title', 'count' => 0])` merges defaults into child component context.
+- [x] **Attribute bag** — `$attributes` in component templates; merge classes/styles onto the root element.
+- [x] **`@class` / `@style` helpers** — conditional class lists and inline style maps (Tailwind-friendly).
+- [x] **Class-based component data** — `make:component --class` providers auto-merge `data()` into render context when a binding exists.
+- [x] **Default slot content** — fallback markup inside `@slot('name')` … `@endslot` when the parent omits that slot.
+- [x] **`@aware`** — child components inherit selected props from a parent component context.
 
 ### P5 — Ecosystem & integration
 

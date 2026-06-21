@@ -1,4 +1,8 @@
 import { createHash } from 'node:crypto';
+import {
+  parseAwareExpression,
+  parsePropsExpression,
+} from './component-helpers.js';
 import type {
   CompiledTemplate,
   ConditionalMode,
@@ -62,6 +66,10 @@ const BUILTIN_DIRECTIVES = new Set([
   'break',
   'default',
   'endswitch',
+  'props',
+  'aware',
+  'class',
+  'style',
 ]);
 
 const LAYOUT_RE = /^@layout\(\s*['"]([^'"]+)['"]\s*\)\s*$/m;
@@ -120,15 +128,79 @@ const ENDSWITCH_RE = /^@endswitch\s*$/;
 const ECHO_RE = /\{\{\s*(.+?)\s*\}\}/g;
 const RAW_ECHO_RE = /\{!!\s*(.+?)\s*!!\}/g;
 
+const PROPS_LINE_RE = /^@props\s*\(/;
+const AWARE_LINE_RE = /^@aware\s*\(/;
+
 export function compile(source: string, options: CompileOptions = {}): CompiledTemplate {
   const layoutMatch = source.match(LAYOUT_RE);
   const layout = layoutMatch?.[1];
-  const body = layout ? source.replace(LAYOUT_RE, '').trimStart() : source;
+  let body = layout ? source.replace(LAYOUT_RE, '').trimStart() : source;
+
+  const props = extractLeadingDirective(body, 'props', parsePropsExpression);
+  if (props.value !== undefined) {
+    body = props.remaining;
+  }
+
+  const aware = extractLeadingDirective(body, 'aware', parseAwareExpression);
+  if (aware.value !== undefined) {
+    body = aware.remaining;
+  }
+
+  const useSlotAwareCompile =
+    props.value !== undefined ||
+    aware.value !== undefined ||
+    hasComponentSlotDefinitions(body);
+
+  if (useSlotAwareCompile) {
+    const { defaultSlot, namedSlots } = parseSlotAwareBody(body, options);
+    return {
+      layout,
+      ops: defaultSlot,
+      props: props.value,
+      aware: aware.value,
+      defaultSlots: Object.keys(namedSlots).length > 0 ? namedSlots : undefined,
+    };
+  }
 
   return {
     layout,
     ops: parseOps(body, options),
+    props: props.value,
+    aware: aware.value,
   };
+}
+
+function extractLeadingDirective<T>(
+  source: string,
+  name: string,
+  parse: (expression: string) => T,
+): { value?: T; remaining: string } {
+  const trimmedStart = source.trimStart();
+  const leadingWhitespace = source.slice(0, source.length - trimmedStart.length);
+  const firstLine = takeLine(trimmedStart, 0);
+  const directive = firstLine.trim();
+
+  if (name === 'props' && !PROPS_LINE_RE.test(directive)) {
+    return { remaining: source };
+  }
+  if (name === 'aware' && !AWARE_LINE_RE.test(directive)) {
+    return { remaining: source };
+  }
+
+  const parsed = parseExpressionDirective(directive, name);
+  if (!parsed) {
+    return { remaining: source };
+  }
+
+  const remaining = leadingWhitespace + trimmedStart.slice(firstLine.length).trimStart();
+  return {
+    value: parse(parsed.expression),
+    remaining,
+  };
+}
+
+function hasComponentSlotDefinitions(body: string): boolean {
+  return /^@slot\(/m.test(body);
 }
 
 function parseOps(source: string, options: CompileOptions = {}): TemplateOp[] {
@@ -1167,6 +1239,22 @@ function parseInlineDirective(
         length: parsed.length,
       };
     }
+  }
+
+  const classDirective = parseExpressionDirective(source, 'class');
+  if (classDirective) {
+    return {
+      op: { type: 'class', expression: classDirective.expression },
+      length: classDirective.length,
+    };
+  }
+
+  const styleDirective = parseExpressionDirective(source, 'style');
+  if (styleDirective) {
+    return {
+      op: { type: 'style', expression: styleDirective.expression },
+      length: styleDirective.length,
+    };
   }
 
   const yieldMatch = source.match(

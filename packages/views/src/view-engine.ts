@@ -15,6 +15,7 @@ import {
   ViewRegistry,
   type CustomDirectiveHandler,
   type ViewAuthBindings,
+  type ViewComponentBinding,
   type ViewComposerHandler,
   type ViewExpressionBindings,
   type ViewFormBindings,
@@ -82,6 +83,15 @@ export class ViewEngine {
     return this;
   }
 
+  component(name: string, binding: ViewComponentBinding): this {
+    this.registry.component(name, binding);
+    return this;
+  }
+
+  getCompiledTemplate(name: string): CompiledTemplate {
+    return this.loadTemplate(this.resolveName(name));
+  }
+
   setCompiledCachePath(path: string | null): this {
     this.compiledCacheDirectory = path ?? undefined;
     return this;
@@ -114,11 +124,16 @@ export class ViewEngine {
     parentSections?: ReadonlyMap<string, string>,
     parentStacks?: Map<string, string[]>,
     parentOnceRendered?: Set<string>,
+    parentComponentPropsStack?: Record<string, unknown>[],
   ): Promise<string> {
     const template = this.loadTemplate(name);
     const composed = await this.registry.applyComposers(name, context);
     const renderContext = this.buildEvaluationContext(this.mergeFormContext(composed));
-    const helpers = new ViewHelpers(parentStacks, parentOnceRendered);
+    const helpers = new ViewHelpers(
+      parentStacks,
+      parentOnceRendered,
+      parentComponentPropsStack,
+    );
 
     if (parentSections) {
       helpers.importSections(parentSections);
@@ -130,6 +145,7 @@ export class ViewEngine {
       const layoutHelpers = new ViewHelpers(
         helpers.getStacks(),
         helpers.getOnceRendered(),
+        helpers.getComponentPropsStack(),
       );
       layoutHelpers.importSections(helpers.getSections());
       await renderOps(

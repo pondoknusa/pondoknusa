@@ -425,4 +425,111 @@ describe('ViewEngine', () => {
     expect(html).toContain('&lt;script&gt;');
     expect(html).not.toContain('<script>');
   });
+
+  it('renders P4 component props, attributes, class helpers, and default slots', async () => {
+    const { basePath, engine } = createFixture();
+
+    writeFileSync(
+      join(basePath, 'resources/views/components/button.tyr'),
+      `@props(['label', 'variant' => 'primary'])
+
+<button {!! $attributes.merge({ class: 'btn btn-' + variant }) !!}>
+  {{ label }}
+</button>
+`,
+    );
+
+    writeFileSync(
+      join(basePath, 'resources/views/components/panel.tyr'),
+      `@props(['title'])
+
+<article class="panel">
+  <header>{{ title }}</header>
+  <div class="panel-body">{!! $slot !!}</div>
+  <footer>{!! $footer !!}</footer>
+</article>
+
+@slot('footer')
+  <span class="panel-default-footer">Default footer</span>
+@endslot
+`,
+    );
+
+    writeFileSync(
+      join(basePath, 'resources/views/p4.tyr'),
+      `@component('components.button', { label: 'Save', variant: 'danger', id: 'save-btn', type: 'submit' })
+@component('components.panel', { title: 'Updates' })
+  <p>Body copy</p>
+@endcomponent
+`,
+    );
+
+    const html = await engine.render('p4', {});
+
+    expect(html).toContain('id="save-btn"');
+    expect(html).toContain('type="submit"');
+    expect(html).toContain('class="btn btn-danger"');
+    expect(html).toContain('Save');
+    expect(html).toContain('</button>');
+    expect(html).toContain('<header>Updates</header>');
+    expect(html).toContain('<p>Body copy</p>');
+    expect(html).toContain('<span class="panel-default-footer">Default footer</span>');
+  });
+
+  it('merges class-based component data and @aware props', async () => {
+    const { basePath, engine } = createFixture();
+
+    engine.component('components.badge', {
+      data: () => ({ label: 'From class', tone: 'info' }),
+    });
+
+    writeFileSync(
+      join(basePath, 'resources/views/components/badge.tyr'),
+      `@props(['label', 'tone' => 'neutral'])
+@aware(['tone'])
+
+<span class="badge badge-{{ tone }}">{{ label }}</span>
+`,
+    );
+
+    writeFileSync(
+      join(basePath, 'resources/views/components/wrapper.tyr'),
+      `@props(['tone' => 'muted'])
+
+<div class="wrapper tone-{{ tone }}">
+  @component('components.badge', {})
+</div>
+`,
+    );
+
+    writeFileSync(
+      join(basePath, 'resources/views/aware.tyr'),
+      `@component('components.wrapper', { tone: 'success' })
+`,
+    );
+
+    const html = await engine.render('aware', {});
+
+    expect(html).toContain('tone-success');
+    expect(html).toContain('badge-success');
+    expect(html).toContain('>From class</span>');
+  });
+
+  it('renders inline @class and @style directives from expressions', async () => {
+    const { basePath, engine } = createFixture();
+    writeFileSync(
+      join(basePath, 'resources/views/class-style.tyr'),
+      `<div @class(['active' => isActive, 'hidden' => false]) @style({ color: accent })>Item</div>
+`,
+    );
+
+    const html = await engine.render('class-style', {
+      isActive: true,
+      accent: 'blue',
+    });
+
+    expect(html).toContain('class="active"');
+    expect(html).toContain('style="color: blue"');
+    expect(html).not.toContain('hidden');
+  });
 });

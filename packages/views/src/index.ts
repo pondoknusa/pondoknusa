@@ -14,10 +14,19 @@ export {
   ViewRegistry,
   type CustomDirectiveHandler,
   type ViewAuthBindings,
+  type ViewComponentBinding,
   type ViewComposerHandler,
   type ViewExpressionBindings,
   type ViewFormBindings,
 } from './view-registry.js';
+export { ViewAttributeBag } from './view-attributes.js';
+export {
+  collectClassNames,
+  mergeComponentProps,
+  parsePropsExpression,
+  renderClassDirective,
+  renderStyleDirective,
+} from './component-helpers.js';
 export { ViewErrorBag, type ValidationErrors } from './view-errors.js';
 export {
   encodeJsonForHtml,

@@ -254,4 +254,34 @@ describe('compile', () => {
       dataExpression: '{ message: \'Nested\' }',
     });
   });
+
+  it('parses component metadata directives and default slot definitions', () => {
+    const source = `@props(['title', 'count' => 0])
+@aware(['color'])
+
+<article>{{ title }}</article>
+@slot('footer')
+  <span>Default footer</span>
+@endslot
+`;
+
+    const template = compile(source);
+
+    expect(template.props).toEqual({ title: undefined, count: 0 });
+    expect(template.aware).toEqual(['color']);
+    expect(template.ops.some((op) => op.type === 'echo')).toBe(true);
+    expect(template.defaultSlots?.footer?.some((op) => op.type === 'text')).toBe(true);
+  });
+
+  it('parses inline @class and @style directives', () => {
+    const source = `<button @class(['btn' => active, 'hidden' => false]) @style({ color: 'red' })>Save</button>`;
+
+    const template = compile(source);
+
+    expect(template.ops.filter((op) => op.type === 'class')).toHaveLength(1);
+    expect(template.ops.filter((op) => op.type === 'style')).toHaveLength(1);
+    expect(template.ops.some((op) => op.type === 'text' && op.value.includes('Save'))).toBe(
+      true,
+    );
+  });
 });

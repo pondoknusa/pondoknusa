@@ -30,6 +30,12 @@ export interface ViewAuthBindings {
   can(ability: string, model?: unknown): boolean | Promise<boolean>;
 }
 
+export interface ViewComponentBinding {
+  data(
+    context: ViewContext,
+  ): Record<string, unknown> | Promise<Record<string, unknown>>;
+}
+
 interface ComposerEntry {
   pattern: RegExp;
   handler: ViewComposerHandler;
@@ -38,6 +44,7 @@ interface ComposerEntry {
 export class ViewRegistry {
   private readonly composers: ComposerEntry[] = [];
   private readonly directives = new Map<string, CustomDirectiveHandler>();
+  private readonly components = new Map<string, ViewComponentBinding>();
   private shared: ViewContext = {};
   private bindings: ViewExpressionBindings = {};
   private auth?: ViewAuthBindings;
@@ -76,6 +83,21 @@ export class ViewRegistry {
   setForm(form: ViewFormBindings | undefined): this {
     this.form = form;
     return this;
+  }
+
+  component(name: string, binding: ViewComponentBinding): this {
+    this.components.set(name, binding);
+    const anonymous = name.startsWith('components.') ? name.slice('components.'.length) : name;
+    if (anonymous !== name) {
+      this.components.set(anonymous, binding);
+    } else {
+      this.components.set(`components.${name}`, binding);
+    }
+    return this;
+  }
+
+  getComponent(name: string): ViewComponentBinding | undefined {
+    return this.components.get(name);
   }
 
   getForm(): ViewFormBindings | undefined {

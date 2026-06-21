@@ -1,11 +1,17 @@
 export class ViewHelpers {
   private readonly sections = new Map<string, string>();
+  private readonly componentPropsStack: Record<string, unknown>[] = [];
   private output = '';
 
   constructor(
     private readonly stacks: Map<string, string[]> = new Map(),
     private readonly onceRendered: Set<string> = new Set(),
-  ) {}
+    componentPropsStack?: Record<string, unknown>[],
+  ) {
+    if (componentPropsStack) {
+      this.componentPropsStack.push(...componentPropsStack);
+    }
+  }
 
   append(value: string): void {
     this.output += value;
@@ -49,6 +55,33 @@ export class ViewHelpers {
 
   getOnceRendered(): Set<string> {
     return this.onceRendered;
+  }
+
+  getComponentPropsStack(): Record<string, unknown>[] {
+    return this.componentPropsStack;
+  }
+
+  pushComponentProps(props: Record<string, unknown>): void {
+    this.componentPropsStack.push(props);
+  }
+
+  popComponentProps(): void {
+    this.componentPropsStack.pop();
+  }
+
+  resolveAwareProps(keys: string[]): Record<string, unknown> {
+    if (this.componentPropsStack.length === 0) {
+      return {};
+    }
+
+    const parent = this.componentPropsStack[this.componentPropsStack.length - 1]!;
+    const resolved: Record<string, unknown> = {};
+    for (const key of keys) {
+      if (key in parent) {
+        resolved[key] = parent[key];
+      }
+    }
+    return resolved;
   }
 
   hasRenderedOnce(id: string): boolean {

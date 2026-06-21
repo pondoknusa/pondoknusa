@@ -10,6 +10,9 @@ export interface ViewConfig {
 export interface CompiledTemplate {
   layout?: string;
   ops: TemplateOp[];
+  props?: Record<string, unknown>;
+  aware?: string[];
+  defaultSlots?: Record<string, TemplateOp[]>;
 }
 
 export type ConditionalMode =
@@ -49,6 +52,8 @@ export type TemplateOp =
   | { type: 'method'; verb: string }
   | { type: 'json'; expression: string }
   | { type: 'formAttr'; attribute: FormAttribute; expression: string }
+  | { type: 'class'; expression: string }
+  | { type: 'style'; expression: string }
   | { type: 'switch'; expression: string; cases: SwitchCase[]; defaultBody?: TemplateOp[] }
   | {
       type: 'component';

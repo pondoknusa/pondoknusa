@@ -2,6 +2,7 @@ import type { TyravelRequest } from '@tyravel/http';
 import type {
   CustomDirectiveHandler,
   ViewAuthBindings,
+  ViewComponentBinding,
   ViewComposerHandler,
   ViewContext,
   ViewExpressionBindings,
@@ -41,6 +42,7 @@ export interface ViewFacade {
   share(data: ViewContext): ViewFacade;
   setBindings(bindings: ViewExpressionBindings): ViewFacade;
   setAuth(auth: ViewAuthBindings | undefined): ViewFacade;
+  component(name: string, binding: ViewComponentBinding): ViewFacade;
 }
 
 export const View: ViewFacade = {
@@ -64,6 +66,10 @@ export const View: ViewFacade = {
   },
   setAuth: (auth) => {
     viewEngine().setAuth(auth);
+    return View;
+  },
+  component: (name, binding) => {
+    viewEngine().component(name, binding);
     return View;
   },
 };

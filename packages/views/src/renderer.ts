@@ -1,3 +1,9 @@
+import {
+  evaluateConditionalMap,
+  mergeComponentProps,
+  renderClassDirective,
+  renderStyleDirective,
+} from './component-helpers.js';
 import { isIterableEmpty, isViewEmpty, isViewSet } from './conditions.js';
 import { escapeHtml } from './escape.js';
 import { evaluateExpression, parseForeachExpression } from './evaluate.js';
@@ -9,6 +15,7 @@ import {
   switchMatches,
 } from './form-helpers.js';
 import type { TemplateOp, ViewContext } from './types.js';
+import { ViewAttributeBag } from './view-attributes.js';
 import { ViewErrorBag } from './view-errors.js';
 import type { ViewEngine } from './view-engine.js';
 import { ViewHelpers } from './view-helpers.js';
@@ -27,6 +34,10 @@ export async function renderOps(
 
       case 'echo': {
         const value = evaluateExpression(op.expression, context);
+        if (value instanceof ViewAttributeBag) {
+          helpers.append(value.toHtml());
+          break;
+        }
         helpers.append(op.raw ? String(value ?? '') : escapeHtml(value));
         break;
       }
@@ -88,6 +99,18 @@ export async function renderOps(
         break;
       }
 
+      case 'class': {
+        const value = evaluateConditionalMap(op.expression, context);
+        helpers.append(renderClassDirective(value));
+        break;
+      }
+
+      case 'style': {
+        const value = evaluateConditionalMap(op.expression, context);
+        helpers.append(renderStyleDirective(value));
+        break;
+      }
+
       case 'forelse': {
         if (isIterableEmpty(op.expression, context)) {
           await renderOps(op.emptyBody, context, helpers, engine);
@@ -114,6 +137,7 @@ export async function renderOps(
         const sectionHelpers = new ViewHelpers(
           helpers.getStacks(),
           helpers.getOnceRendered(),
+          helpers.getComponentPropsStack(),
         );
         await renderOps(op.body, context, sectionHelpers, engine);
         helpers.setSection(op.name, sectionHelpers.toString());
@@ -124,6 +148,7 @@ export async function renderOps(
         const pushHelpers = new ViewHelpers(
           helpers.getStacks(),
           helpers.getOnceRendered(),
+          helpers.getComponentPropsStack(),
         );
         await renderOps(op.body, context, pushHelpers, engine);
         helpers.pushStack(op.name, pushHelpers.toString());
@@ -173,18 +198,40 @@ export async function renderOps(
       }
 
       case 'component': {
-        const props = op.dataExpression
+        const resolvedName = engine.resolveName(op.name);
+        const template = engine.getCompiledTemplate(op.name);
+        const passed = op.dataExpression
           ? ((evaluateExpression(op.dataExpression, context) as ViewContext) ?? {})
           : {};
+        const passedProps =
+          typeof passed === 'object' && passed !== null ? passed : {};
+
+        const provider =
+          engine.getRegistry().getComponent(resolvedName) ??
+          engine.getRegistry().getComponent(op.name);
+        const providerData = provider ? await provider.data(context) : {};
+
+        const { props: mergedProps, attributes } = mergeComponentProps(
+          template.props,
+          { ...providerData, ...passedProps },
+          template.props !== undefined,
+        );
+
+        if (template.aware?.length) {
+          Object.assign(mergedProps, helpers.resolveAwareProps(template.aware));
+        }
+
         const childContext: ViewContext = {
           ...context,
-          ...(typeof props === 'object' && props !== null ? props : {}),
+          ...mergedProps,
+          $attributes: new ViewAttributeBag(attributes),
         };
 
         if (op.defaultSlot) {
           const slotHelpers = new ViewHelpers(
             helpers.getStacks(),
             helpers.getOnceRendered(),
+            helpers.getComponentPropsStack(),
           );
           await renderOps(op.defaultSlot, context, slotHelpers, engine);
           childContext.$slot = slotHelpers.toString();
@@ -195,20 +242,43 @@ export async function renderOps(
             const slotHelpers = new ViewHelpers(
               helpers.getStacks(),
               helpers.getOnceRendered(),
+              helpers.getComponentPropsStack(),
             );
             await renderOps(slotOps, context, slotHelpers, engine);
             childContext[`$${slotName}`] = slotHelpers.toString();
           }
         }
 
-        const html = await engine.render(
-          engine.resolveName(op.name),
-          childContext,
-          helpers.getSections(),
-          helpers.getStacks(),
-          helpers.getOnceRendered(),
-        );
-        helpers.append(html);
+        if (template.defaultSlots) {
+          for (const [slotName, slotOps] of Object.entries(template.defaultSlots)) {
+            if (op.namedSlots?.[slotName]) {
+              continue;
+            }
+
+            const slotHelpers = new ViewHelpers(
+              helpers.getStacks(),
+              helpers.getOnceRendered(),
+              helpers.getComponentPropsStack(),
+            );
+            await renderOps(slotOps, childContext, slotHelpers, engine);
+            childContext[`$${slotName}`] = slotHelpers.toString();
+          }
+        }
+
+        helpers.pushComponentProps(mergedProps);
+        try {
+          const html = await engine.render(
+            resolvedName,
+            childContext,
+            helpers.getSections(),
+            helpers.getStacks(),
+            helpers.getOnceRendered(),
+            helpers.getComponentPropsStack(),
+          );
+          helpers.append(html);
+        } finally {
+          helpers.popComponentProps();
+        }
         break;
       }
     }
@@ -308,6 +378,7 @@ async function renderInclude(
     helpers.getSections(),
     helpers.getStacks(),
     helpers.getOnceRendered(),
+    helpers.getComponentPropsStack(),
   );
 }
 

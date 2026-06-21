@@ -61,20 +61,27 @@ export function viewsConfig(): string {
 }
 
 export function componentView(name: string): string {
-  return `<div class="component component-${name}">
+  return `@props([])
+
+<div class="component component-${name}" {!! $attributes !!}>
   {!! $slot !!}
 </div>
 `;
 }
 
 export function componentClass(className: string, tagName: string): string {
-  return `export class ${className} {
+  return `import type { ViewContext } from '@tyravel/views';
+
+export class ${className} {
   readonly tag = '${tagName}';
 
-  data(): Record<string, unknown> {
+  data(_context: ViewContext): Record<string, unknown> {
     return {};
   }
 }
+
+// Register in a service provider boot method:
+// View.component('${tagName}', app.make(${className}));
 `;
 }
 
