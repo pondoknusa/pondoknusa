@@ -7,6 +7,7 @@ export class ViewHelpers {
     private readonly stacks: Map<string, string[]> = new Map(),
     private readonly onceRendered: Set<string> = new Set(),
     componentPropsStack?: Record<string, unknown>[],
+    private readonly stackOncePushed: Set<string> = new Set(),
   ) {
     if (componentPropsStack) {
       this.componentPropsStack.push(...componentPropsStack);
@@ -37,6 +38,21 @@ export class ViewHelpers {
     this.stacks.set(name, entries);
   }
 
+  prependStack(name: string, content: string): void {
+    const entries = this.stacks.get(name) ?? [];
+    entries.unshift(content);
+    this.stacks.set(name, entries);
+  }
+
+  pushStackOnce(name: string, id: string, content: string): void {
+    const key = `${name}:${id}`;
+    if (this.stackOncePushed.has(key)) {
+      return;
+    }
+    this.stackOncePushed.add(key);
+    this.pushStack(name, content);
+  }
+
   renderStack(name: string, defaultValue = ''): string {
     const entries = this.stacks.get(name);
     if (!entries || entries.length === 0) {
@@ -55,6 +71,10 @@ export class ViewHelpers {
 
   getOnceRendered(): Set<string> {
     return this.onceRendered;
+  }
+
+  getStackOncePushed(): Set<string> {
+    return this.stackOncePushed;
   }
 
   getComponentPropsStack(): Record<string, unknown>[] {

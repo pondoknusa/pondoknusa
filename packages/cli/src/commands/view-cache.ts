@@ -1,16 +1,7 @@
-import { join } from 'node:path';
-import { pathToFileURL } from 'node:url';
-import { ViewEngine, type ViewConfig } from '@tyravel/views';
 import { Command } from '../command.js';
 import { requireProjectRoot } from '../project.js';
 import { parseOptions, positionalArgs } from '../utils.js';
-
-const DEFAULT_VIEW_CONFIG: ViewConfig = {
-  path: 'resources/views',
-  extension: '.tyr',
-  compiled: true,
-  compiledPath: 'storage/framework/views',
-};
+import { createViewEngine, loadViewConfig } from '../view-config.js';
 
 export class ViewCacheCommand extends Command {
   override readonly name = 'view:cache';
@@ -23,7 +14,7 @@ export class ViewCacheCommand extends Command {
 
     const root = requireProjectRoot();
     const viewConfig = await loadViewConfig(root);
-    const engine = new ViewEngine(root, {
+    const engine = createViewEngine(root, {
       ...viewConfig,
       compiled: true,
       compiledPath: viewConfig.compiledPath ?? 'storage/framework/views',
@@ -47,7 +38,7 @@ export class ViewClearCommand extends Command {
 
     const root = requireProjectRoot();
     const viewConfig = await loadViewConfig(root);
-    const engine = new ViewEngine(root, {
+    const engine = createViewEngine(root, {
       ...viewConfig,
       compiled: true,
       compiledPath: viewConfig.compiledPath ?? 'storage/framework/views',
@@ -60,20 +51,3 @@ export class ViewClearCommand extends Command {
   }
 }
 
-async function loadViewConfig(root: string): Promise<ViewConfig> {
-  const configPath = join(root, 'config/views.ts');
-  const configJsPath = join(root, 'config/views.js');
-
-  for (const target of [configJsPath, configPath]) {
-    try {
-      const { access } = await import('node:fs/promises');
-      await access(target);
-      const loaded = await import(pathToFileURL(target).href);
-      return { ...DEFAULT_VIEW_CONFIG, ...(loaded.default as ViewConfig) };
-    } catch {
-      continue;
-    }
-  }
-
-  return DEFAULT_VIEW_CONFIG;
-}

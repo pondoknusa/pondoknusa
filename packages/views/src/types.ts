@@ -11,6 +11,8 @@ export interface ViewConfig {
   manifestPath?: string;
   viteBase?: string;
   env?: string;
+  /** When true, warm disk cache is trusted without reading source templates. */
+  trustCompiledCache?: boolean;
 }
 
 export interface CompiledTemplate {
@@ -52,7 +54,11 @@ export type TemplateOp =
   | { type: 'yield'; name: string; defaultValue?: string }
   | { type: 'once'; id: string; body: TemplateOp[] }
   | { type: 'push'; name: string; body: TemplateOp[] }
+  | { type: 'pushOnce'; name: string; id: string; body: TemplateOp[] }
+  | { type: 'prepend'; name: string; body: TemplateOp[] }
   | { type: 'stack'; name: string; defaultValue?: string }
+  | { type: 'inject'; varName: string; binding: string }
+  | { type: 'fragment'; name: string; ttlSeconds?: number; body: TemplateOp[] }
   | { type: 'include'; name: string; dataExpression?: string }
   | { type: 'includeIf'; name: string; dataExpression?: string }
   | { type: 'includeWhen'; name: string; conditionExpression: string; dataExpression?: string }

@@ -11,9 +11,11 @@ import type {
   SwitchCase,
   TemplateOp,
 } from './types.js';
+import { lineColumnAt, ViewCompileError } from './view-compile-error.js';
 
 export interface CompileOptions {
   customDirectives?: ReadonlySet<string>;
+  viewPath?: string;
 }
 
 const BUILTIN_DIRECTIVES = new Set([
@@ -53,7 +55,14 @@ const BUILTIN_DIRECTIVES = new Set([
   'endforelse',
   'push',
   'endpush',
+  'pushOnce',
+  'endpushOnce',
+  'prepend',
+  'endprepend',
   'stack',
+  'inject',
+  'fragment',
+  'endfragment',
   'auth',
   'endauth',
   'guest',
@@ -131,7 +140,17 @@ const ONCE_RE = /^@once(?:\(\s*['"]([^'"]+)['"]\s*\))?\s*$/;
 const ENDONCE_RE = /^@endonce\s*$/;
 const PUSH_START_RE = /^@push\(\s*['"]([^'"]+)['"]\s*\)\s*$/;
 const PUSH_END_RE = /^@endpush\s*$/;
+const PUSH_ONCE_START_RE =
+  /^@pushOnce\(\s*['"]([^'"]+)['"]\s*(?:,\s*['"]([^'"]+)['"]\s*)?\)\s*$/;
+const PUSH_ONCE_END_RE = /^@endpushOnce\s*$/;
+const PREPEND_START_RE = /^@prepend\(\s*['"]([^'"]+)['"]\s*\)\s*$/;
+const PREPEND_END_RE = /^@endprepend\s*$/;
 const STACK_RE = /^@stack\(\s*['"]([^'"]+)['"]\s*(?:,\s*['"]([^'"]*)['"]\s*)?\)\s*$/;
+const INJECT_RE = /^@inject\(\s*['"]([^'"]+)['"]\s*,\s*['"]([^'"]+)['"]\s*\)\s*$/;
+const FRAGMENT_START_RE =
+  /^@fragment\(\s*['"]([^'"]+)['"]\s*(?:,\s*(\d+))?\s*\)\s*$/;
+const FRAGMENT_END_RE = /^@endfragment\s*$/;
+const UNKNOWN_DIRECTIVE_RE = /^@([A-Za-z_][\w]*)\b/;
 const CSRF_RE = /^@csrf\s*$/;
 const METHOD_RE = /^@method\(\s*['"]([^'"]+)['"]\s*\)\s*$/;
 const JSON_RE = /^@json\s*\((.+)\)\s*$/;
@@ -264,6 +283,18 @@ function parseOps(source: string, options: CompileOptions = {}): TemplateOp[] {
 
     const line = takeLine(source, cursor);
     const trimmed = line.trim();
+    const remainingAtCursor = source.slice(cursor);
+    const lineStart = source.lastIndexOf('\n', cursor - 1) + 1;
+    const beforeAtOnLine = source.slice(lineStart, cursor);
+
+    if (remainingAtCursor.startsWith('@') && beforeAtOnLine.trim().length > 0) {
+      const inline = parseInlineDirective(remainingAtCursor);
+      if (inline) {
+        ops.push(inline.op);
+        cursor += inline.length;
+        continue;
+      }
+    }
 
     const authMatch = trimmed.match(AUTH_RE);
     if (authMatch) {
@@ -446,6 +477,53 @@ function parseOps(source: string, options: CompileOptions = {}): TemplateOp[] {
       continue;
     }
 
+    const pushOnceMatch = trimmed.match(PUSH_ONCE_START_RE);
+    if (pushOnceMatch) {
+      const block = parsePushOnceBlock(
+        source,
+        cursor,
+        pushOnceMatch[1]!,
+        pushOnceMatch[2],
+        options,
+      );
+      ops.push(block.op);
+      cursor = block.end;
+      continue;
+    }
+
+    const prependMatch = trimmed.match(PREPEND_START_RE);
+    if (prependMatch) {
+      const block = parsePrependBlock(source, cursor, prependMatch[1]!, options);
+      ops.push(block.op);
+      cursor = block.end;
+      continue;
+    }
+
+    const injectMatch = trimmed.match(INJECT_RE);
+    if (injectMatch) {
+      ops.push({
+        type: 'inject',
+        varName: injectMatch[1]!,
+        binding: injectMatch[2]!,
+      });
+      cursor += line.length;
+      continue;
+    }
+
+    const fragmentMatch = trimmed.match(FRAGMENT_START_RE);
+    if (fragmentMatch) {
+      const block = parseFragmentBlock(
+        source,
+        cursor,
+        fragmentMatch[1]!,
+        fragmentMatch[2] ? Number(fragmentMatch[2]) : undefined,
+        options,
+      );
+      ops.push(block.op);
+      cursor = block.end;
+      continue;
+    }
+
     const stackMatch = trimmed.match(STACK_RE);
     if (stackMatch) {
       ops.push({
@@ -453,6 +531,24 @@ function parseOps(source: string, options: CompileOptions = {}): TemplateOp[] {
         name: stackMatch[1]!,
         defaultValue: stackMatch[2],
       });
+      cursor += line.length;
+      continue;
+    }
+
+    const langMatch = trimmed.match(LANG_RE);
+    if (langMatch) {
+      ops.push({
+        type: 'lang',
+        key: langMatch[1]!,
+        replaceExpression: langMatch[2]?.trim(),
+      });
+      cursor += line.length;
+      continue;
+    }
+
+    const viteMatch = trimmed.match(VITE_RE);
+    if (viteMatch) {
+      ops.push({ type: 'vite', entry: viteMatch[1]! });
       cursor += line.length;
       continue;
     }
@@ -626,6 +722,20 @@ function parseOps(source: string, options: CompileOptions = {}): TemplateOp[] {
       });
       cursor += line.length;
       continue;
+    }
+
+    if (
+      trimmed.startsWith('@') &&
+      !trimmed.startsWith('@end') &&
+      UNKNOWN_DIRECTIVE_RE.test(trimmed) &&
+      /^@[A-Za-z_][\w]*(?:\([^)]*\))?\s*$/.test(trimmed)
+    ) {
+      throw compileError(
+        `Unrecognized view directive ${trimmed.match(UNKNOWN_DIRECTIVE_RE)?.[0] ?? trimmed}`,
+        source,
+        cursor,
+        options,
+      );
     }
 
     appendText(ops, line);
@@ -989,13 +1099,116 @@ function parsePushBlock(
 ): { op: TemplateOp; end: number } {
   const headerLine = takeLine(source, start);
   const contentStart = start + headerLine.length;
-  const contentEnd = findNestedEnd(source, contentStart, PUSH_START_RE, PUSH_END_RE);
+  const contentEnd = findNestedEnd(
+    source,
+    contentStart,
+    PUSH_START_RE,
+    PUSH_END_RE,
+    start,
+    '@endpush',
+    options,
+  );
   const endLine = takeLine(source, contentEnd);
 
   return {
     op: {
       type: 'push',
       name,
+      body: parseOps(source.slice(contentStart, contentEnd), options),
+    },
+    end: contentEnd + endLine.length,
+  };
+}
+
+function parsePushOnceBlock(
+  source: string,
+  start: number,
+  name: string,
+  explicitId: string | undefined,
+  options: CompileOptions = {},
+): { op: TemplateOp; end: number } {
+  const headerLine = takeLine(source, start);
+  const contentStart = start + headerLine.length;
+  const contentEnd = findNestedEnd(
+    source,
+    contentStart,
+    PUSH_ONCE_START_RE,
+    PUSH_ONCE_END_RE,
+    start,
+    '@endpushOnce',
+    options,
+  );
+  const endLine = takeLine(source, contentEnd);
+  const bodySource = source.slice(contentStart, contentEnd);
+  const id =
+    explicitId ??
+    createHash('sha256').update(`${name}:${bodySource}`).digest('hex');
+
+  return {
+    op: {
+      type: 'pushOnce',
+      name,
+      id,
+      body: parseOps(bodySource, options),
+    },
+    end: contentEnd + endLine.length,
+  };
+}
+
+function parsePrependBlock(
+  source: string,
+  start: number,
+  name: string,
+  options: CompileOptions = {},
+): { op: TemplateOp; end: number } {
+  const headerLine = takeLine(source, start);
+  const contentStart = start + headerLine.length;
+  const contentEnd = findNestedEnd(
+    source,
+    contentStart,
+    PREPEND_START_RE,
+    PREPEND_END_RE,
+    start,
+    '@endprepend',
+    options,
+  );
+  const endLine = takeLine(source, contentEnd);
+
+  return {
+    op: {
+      type: 'prepend',
+      name,
+      body: parseOps(source.slice(contentStart, contentEnd), options),
+    },
+    end: contentEnd + endLine.length,
+  };
+}
+
+function parseFragmentBlock(
+  source: string,
+  start: number,
+  name: string,
+  ttlSeconds: number | undefined,
+  options: CompileOptions = {},
+): { op: TemplateOp; end: number } {
+  const headerLine = takeLine(source, start);
+  const contentStart = start + headerLine.length;
+  const contentEnd = findNestedEnd(
+    source,
+    contentStart,
+    FRAGMENT_START_RE,
+    FRAGMENT_END_RE,
+    start,
+    '@endfragment',
+    options,
+  );
+  const endLine = takeLine(source, contentEnd);
+
+  return {
+    op: {
+      type: 'fragment',
+      name,
+      ttlSeconds,
       body: parseOps(source.slice(contentStart, contentEnd), options),
     },
     end: contentEnd + endLine.length,
@@ -1161,6 +1374,9 @@ function findNestedEnd(
   start: number,
   openRe: RegExp,
   closeRe: RegExp,
+  blockStart = start,
+  closeDirective = '@end',
+  options: CompileOptions = {},
 ): number {
   let cursor = start;
   let depth = 0;
@@ -1183,7 +1399,26 @@ function findNestedEnd(
     cursor += line.length;
   }
 
-  return source.length;
+  throw compileError(
+    `Unclosed directive; expected ${closeDirective}`,
+    source,
+    blockStart,
+    options,
+  );
+}
+
+function compileError(
+  message: string,
+  source: string,
+  index: number,
+  options: CompileOptions,
+): ViewCompileError {
+  const { line, column } = lineColumnAt(source, index);
+  return new ViewCompileError(message, {
+    viewPath: options.viewPath,
+    line,
+    column,
+  });
 }
 
 function findBlockBoundary(

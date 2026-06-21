@@ -1,6 +1,7 @@
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { createViewWatcher } from '@tyravel/views';
 import { Command } from '../command.js';
 import { loadProjectConfig, requireProjectRoot } from '../project.js';
 import {
@@ -9,6 +10,7 @@ import {
   parseOptions,
   positionalArgs,
 } from '../utils.js';
+import { createViewEngine, loadViewConfig } from '../view-config.js';
 
 export class ServeCommand extends Command {
   override readonly name = 'serve';
@@ -39,6 +41,21 @@ export class ServeCommand extends Command {
 
     console.log(`Starting Tyravel server using ${runtime.name}...`);
 
+    const viewConfig = await loadViewConfig(root);
+    const viewEngine = createViewEngine(root, {
+      ...viewConfig,
+      compiled: true,
+      compiledPath: viewConfig.compiledPath ?? 'storage/framework/views',
+    });
+    const viewWatcher = createViewWatcher(viewEngine, {
+      onRecompiled: (viewName) => {
+        console.log(`[views] Recompiled ${viewName}`);
+      },
+      onError: (error) => {
+        console.error(`[views] ${error.message}`);
+      },
+    });
+
     const child = spawn(
       runtime.command,
       runtime.args(entry, port, hostname),
@@ -54,10 +71,15 @@ export class ServeCommand extends Command {
     );
 
     return await new Promise<number>((resolve) => {
-      child.on('exit', (code) => resolve(code ?? 1));
+      const shutdown = (code: number): void => {
+        viewWatcher.close();
+        resolve(code);
+      };
+
+      child.on('exit', (code) => shutdown(code ?? 1));
       child.on('error', (error) => {
         console.error(error.message);
-        resolve(1);
+        shutdown(1);
       });
     });
   }

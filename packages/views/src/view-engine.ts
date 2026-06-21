@@ -8,6 +8,7 @@ import {
   writeCompiledCache,
 } from './compiled-cache.js';
 import { compile, type CompileOptions } from './compiler.js';
+import { ViewCompileError } from './view-compile-error.js';
 import { mergeEvaluationContext } from './evaluate.js';
 import {
   flattenTranslations,
@@ -26,6 +27,7 @@ import {
   type ViewComposerHandler,
   type ViewExpressionBindings,
   type ViewFormBindings,
+  type ViewInjector,
   type ViewLocaleBindings,
 } from './view-registry.js';
 import { ViewHelpers } from './view-helpers.js';
@@ -142,6 +144,11 @@ export class ViewEngine {
     return this;
   }
 
+  setInjector(injector: ViewInjector | undefined): this {
+    this.registry.setInjector(injector);
+    return this;
+  }
+
   getCompiledTemplate(name: string): CompiledTemplate {
     return this.loadTemplate(this.resolveName(name));
   }
@@ -153,6 +160,35 @@ export class ViewEngine {
 
   getRegistry(): ViewRegistry {
     return this.registry;
+  }
+
+  getViewExtension(): string {
+    return this.extension;
+  }
+
+  getViewRoots(): string[] {
+    return [this.viewsRoot, ...this.namespaces.values()];
+  }
+
+  sourcePathFor(name: string): string {
+    return this.resolvePath(this.resolveName(name));
+  }
+
+  viewNameFromPath(filePath: string, root: string): string {
+    const relative = filePath
+      .slice(root.length)
+      .replace(/^[\\/]/, '')
+      .replace(/\\/g, '/');
+    const withoutExtension = relative.slice(0, -this.extension.length);
+    const dotted = withoutExtension.replace(/\//g, '.');
+
+    for (const [namespace, namespaceRoot] of this.namespaces.entries()) {
+      if (root === namespaceRoot) {
+        return `${namespace}::${dotted}`;
+      }
+    }
+
+    return dotted;
   }
 
   buildEvaluationContext(context: ViewContext): ViewContext {
@@ -188,6 +224,7 @@ export class ViewEngine {
     parentStacks?: Map<string, string[]>,
     parentOnceRendered?: Set<string>,
     parentComponentPropsStack?: Record<string, unknown>[],
+    parentStackOncePushed?: Set<string>,
   ): Promise<string> {
     const resolved = this.resolveName(name);
     const template = this.loadTemplate(resolved);
@@ -197,6 +234,7 @@ export class ViewEngine {
       parentStacks,
       parentOnceRendered,
       parentComponentPropsStack,
+      parentStackOncePushed,
     );
 
     if (parentSections) {
@@ -210,6 +248,7 @@ export class ViewEngine {
         helpers.getStacks(),
         helpers.getOnceRendered(),
         helpers.getComponentPropsStack(),
+        helpers.getStackOncePushed(),
       );
       layoutHelpers.importSections(helpers.getSections());
       await renderOps(
@@ -292,11 +331,52 @@ export class ViewEngine {
     }
   }
 
+  invalidateTemplate(name: string): void {
+    const path = this.resolvePath(name);
+    this.cache.delete(path);
+  }
+
+  recompileTemplate(name: string): CompiledTemplate {
+    this.invalidateTemplate(name);
+    return this.loadTemplate(this.resolveName(name));
+  }
+
   private loadTemplate(name: string): CompiledTemplate {
     const path = this.resolvePath(name);
-    const stats = statSync(path);
     const registryVersion = this.registry.getCompileVersion();
+    const compileOptions: CompileOptions = {
+      customDirectives: this.registry.getDirectiveNames(),
+      viewPath: path,
+    };
+
+    if (this.compiledCacheDirectory) {
+      const cacheFile = cacheFileForView(this.compiledCacheDirectory, this.viewsRoot, path);
+      const diskEntry = readCompiledCache(cacheFile);
+
+      if (diskEntry && diskEntry.registryVersion === registryVersion) {
+        if (this.shouldTrustDiskCache()) {
+          this.cache.set(path, {
+            mtimeMs: diskEntry.mtimeMs,
+            registryVersion,
+            template: diskEntry.template,
+          });
+          return diskEntry.template;
+        }
+
+        const stats = statSync(path);
+        if (diskEntry.mtimeMs === stats.mtimeMs) {
+          this.cache.set(path, {
+            mtimeMs: stats.mtimeMs,
+            registryVersion,
+            template: diskEntry.template,
+          });
+          return diskEntry.template;
+        }
+      }
+    }
+
     const cached = this.cache.get(path);
+    const stats = statSync(path);
 
     if (
       cached &&
@@ -306,38 +386,40 @@ export class ViewEngine {
       return cached.template;
     }
 
-    const compileOptions: CompileOptions = {
-      customDirectives: this.registry.getDirectiveNames(),
-    };
+    const source = readFileSync(path, 'utf8');
+    const template = this.compileSource(source, compileOptions);
+    const memoryEntry = { mtimeMs: stats.mtimeMs, registryVersion, template };
+    this.cache.set(path, memoryEntry);
 
     if (this.compiledCacheDirectory) {
       const cacheFile = cacheFileForView(this.compiledCacheDirectory, this.viewsRoot, path);
-      const diskEntry = readCompiledCache(cacheFile);
-      if (
-        diskEntry &&
-        diskEntry.mtimeMs === stats.mtimeMs &&
-        diskEntry.registryVersion === registryVersion
-      ) {
-        this.cache.set(path, {
-          mtimeMs: stats.mtimeMs,
-          registryVersion,
-          template: diskEntry.template,
-        });
-        return diskEntry.template;
-      }
-
-      const source = readFileSync(path, 'utf8');
-      const template = compile(source, compileOptions);
-      const memoryEntry = { mtimeMs: stats.mtimeMs, registryVersion, template };
-      this.cache.set(path, memoryEntry);
       writeCompiledCache(cacheFile, memoryEntry);
-      return template;
     }
 
-    const source = readFileSync(path, 'utf8');
-    const template = compile(source, compileOptions);
-    this.cache.set(path, { mtimeMs: stats.mtimeMs, registryVersion, template });
     return template;
+  }
+
+  private compileSource(source: string, options: CompileOptions): CompiledTemplate {
+    try {
+      return compile(source, options);
+    } catch (error) {
+      if (error instanceof ViewCompileError) {
+        throw error;
+      }
+      throw new ViewCompileError(String(error), { viewPath: options.viewPath });
+    }
+  }
+
+  private shouldTrustDiskCache(): boolean {
+    if (!this.compiledCacheDirectory || !this.config.compiled) {
+      return false;
+    }
+
+    if (this.config.trustCompiledCache !== undefined) {
+      return this.config.trustCompiledCache;
+    }
+
+    return this.registry.getEnvironment() === 'production';
   }
 
   private mergeFormContext(context: ViewContext): ViewContext {
@@ -397,11 +479,8 @@ export class ViewEngine {
   private syncTranslatorBinding(): void {
     this.registry.setBindings({
       ...this.registry.getBindings(),
-      __: (key, replacements = {}) =>
-        this.translate(
-          String(key),
-          replacements as Record<string, string | number>,
-        ),
+      __: (key: string, replacements: Record<string, string | number> = {}) =>
+        this.translate(String(key), replacements),
     });
   }
 }

@@ -150,13 +150,13 @@ Templating that works across packages, environments, and outbound channels.
 
 Make large apps maintainable: faster compiles, clearer errors, and better local iteration.
 
-- [ ] **`@pushOnce` / `@prepend`** — stack variants for deduplicated or head-prepended assets.
-- [ ] **`@inject`** — `@inject('stats', 'PostStats')` resolves a container binding into the view context.
-- [ ] **Fragment caching** — `@fragment('sidebar')` … `@endfragment` with TTL/store-backed cache for expensive partials.
-- [ ] **Compile error locations** — parse failures report view path and line/column (not opaque regex misses).
-- [ ] **`tyravel view:watch`** — recompile changed `.tyr` files during `tyravel serve` (dev-only file watcher).
-- [ ] **`tyravel view:lint`** — static pass for unclosed directives, unknown components, and unsafe `{!! !!}` usage.
-- [ ] **Production compile mode** — `config/views.ts` `compiled: true` by default in production; skip source reads when cache is warm.
+- [x] **`@pushOnce` / `@prepend`** — stack variants for deduplicated or head-prepended assets.
+- [x] **`@inject`** — `@inject('stats', 'PostStats')` resolves a container binding into the view context.
+- [x] **Fragment caching** — `@fragment('sidebar')` … `@endfragment` with TTL/store-backed cache for expensive partials.
+- [x] **Compile error locations** — parse failures report view path and line/column (not opaque regex misses).
+- [x] **`tyravel view:watch`** — recompile changed `.tyr` files during `tyravel serve` (dev-only file watcher).
+- [x] **`tyravel view:lint`** — static pass for unclosed directives, unknown components, and unsafe `{!! !!}` usage.
+- [x] **Production compile mode** — `config/views.ts` `compiled: true` by default in production; skip source reads when cache is warm.
 
 ### P7 — Typed, testable, advanced rendering
 

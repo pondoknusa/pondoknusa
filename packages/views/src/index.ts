@@ -7,6 +7,18 @@ export {
 } from './compiled-cache.js';
 export type { SerializedCacheEntry } from './compiled-cache.js';
 export { compile, type CompileOptions } from './compiler.js';
+export { ViewCompileError, formatCompileLocation } from './view-compile-error.js';
+export {
+  InMemoryFragmentCache,
+  type FragmentCacheStore,
+} from './fragment-cache.js';
+export {
+  lintViewSource,
+  type ViewLintIssue,
+  type ViewLintOptions,
+  type ViewLintRule,
+} from './view-lint.js';
+export { createViewWatcher, type ViewWatcher, type ViewWatcherOptions } from './view-watcher.js';
 export { escapeHtml } from './escape.js';
 export { evaluateExpression, mergeEvaluationContext } from './evaluate.js';
 export { ViewEngine } from './view-engine.js';
@@ -30,6 +42,7 @@ export {
   type ViewComposerHandler,
   type ViewExpressionBindings,
   type ViewFormBindings,
+  type ViewInjector,
   type ViewLocaleBindings,
 } from './view-registry.js';
 export { ViewAttributeBag } from './view-attributes.js';

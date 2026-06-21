@@ -21,6 +21,8 @@ import { MakeProviderCommand } from './commands/make-provider.js';
 import { MakeComponentCommand } from './commands/make-component.js';
 import { MakeViewCommand } from './commands/make-view.js';
 import { ViewCacheCommand, ViewClearCommand } from './commands/view-cache.js';
+import { ViewLintCommand } from './commands/view-lint.js';
+import { ViewWatchCommand } from './commands/view-watch.js';
 import { MigrateCommand } from './commands/migrate.js';
 import { AuthInstallCommand } from './commands/auth-install.js';
 import { NewCommand } from './commands/new.js';
@@ -51,6 +53,8 @@ export function createKernel(): ConsoleKernel {
     new MakeComponentCommand(),
     new ViewCacheCommand(),
     new ViewClearCommand(),
+    new ViewWatchCommand(),
+    new ViewLintCommand(),
     new MakeJobCommand(),
     new MakeEventCommand(),
     new MakeListenerCommand(),

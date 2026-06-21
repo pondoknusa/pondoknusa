@@ -15,6 +15,8 @@ const DEFAULT_VIEW_CONFIG: ViewConfig = {
   path: 'resources/views',
   extension: '.tyr',
   env: process.env.NODE_ENV ?? 'production',
+  compiled: (process.env.NODE_ENV ?? 'production') === 'production',
+  compiledPath: 'storage/framework/views',
 };
 
 function joinAssetUrl(base: string, path: string): string {
@@ -71,6 +73,7 @@ export class ViewServiceProvider extends ServiceProvider {
 
     const engine = this.app.make<ViewEngine>('view');
     const config = this.app.make<ConfigRepository>('config');
+    const viewConfig = config.get<ViewConfig>('views') ?? DEFAULT_VIEW_CONFIG;
 
     const environment = String(
       viewConfig.env ?? config.get('app.env', process.env.NODE_ENV ?? 'production'),
@@ -80,6 +83,8 @@ export class ViewServiceProvider extends ServiceProvider {
     if (viewConfig.locale) {
       engine.setLocale(viewConfig.locale);
     }
+
+    engine.setInjector((binding) => this.app.make(binding));
 
     const applyBindings = (request?: TyravelRequest) => {
       engine.setBindings({
@@ -93,11 +98,8 @@ export class ViewServiceProvider extends ServiceProvider {
           joinAssetUrl(String(config.get('app.asset_url', '') ?? ''), path),
         config: (key, defaultValue) => config.get(key, defaultValue),
         old: (key, defaultValue) => readOldInput(request, key, defaultValue),
-        __: (key, replacements = {}) =>
-          engine.translate(
-            String(key),
-            replacements as Record<string, string | number>,
-          ),
+        __: (key: string, replacements: Record<string, string | number> = {}) =>
+          engine.translate(String(key), replacements),
       });
       engine.setForm({
         csrfToken: () => ensureCsrfToken(request),

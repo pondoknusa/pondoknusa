@@ -1,5 +1,11 @@
+import type { FragmentCacheStore } from './fragment-cache.js';
+import { InMemoryFragmentCache } from './fragment-cache.js';
 import type { ViewErrorBag } from './view-errors.js';
 import type { ViewContext } from './types.js';
+
+export type ViewInjector = (
+  binding: string,
+) => unknown | Promise<unknown>;
 
 export interface ViewFormBindings {
   csrfToken(): string;
@@ -56,6 +62,8 @@ export class ViewRegistry {
   private locale?: ViewLocaleBindings;
   private environment = 'production';
   private compileVersion = 0;
+  private injector?: ViewInjector;
+  private fragmentCache: FragmentCacheStore = new InMemoryFragmentCache();
 
   directive(name: string, handler: CustomDirectiveHandler): this {
     this.directives.set(name, handler);
@@ -99,6 +107,24 @@ export class ViewRegistry {
   setEnvironment(environment: string): this {
     this.environment = environment;
     return this;
+  }
+
+  setInjector(injector: ViewInjector | undefined): this {
+    this.injector = injector;
+    return this;
+  }
+
+  getInjector(): ViewInjector | undefined {
+    return this.injector;
+  }
+
+  setFragmentCache(store: FragmentCacheStore): this {
+    this.fragmentCache = store;
+    return this;
+  }
+
+  getFragmentCache(): FragmentCacheStore {
+    return this.fragmentCache;
   }
 
   getLocale(): ViewLocaleBindings | undefined {

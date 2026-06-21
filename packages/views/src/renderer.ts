@@ -139,6 +139,7 @@ export async function renderOps(
           helpers.getStacks(),
           helpers.getOnceRendered(),
           helpers.getComponentPropsStack(),
+          helpers.getStackOncePushed(),
         );
         await renderOps(op.body, context, sectionHelpers, engine);
         helpers.setSection(op.name, sectionHelpers.toString());
@@ -150,9 +151,65 @@ export async function renderOps(
           helpers.getStacks(),
           helpers.getOnceRendered(),
           helpers.getComponentPropsStack(),
+          helpers.getStackOncePushed(),
         );
         await renderOps(op.body, context, pushHelpers, engine);
         helpers.pushStack(op.name, pushHelpers.toString());
+        break;
+      }
+
+      case 'pushOnce': {
+        const pushHelpers = new ViewHelpers(
+          helpers.getStacks(),
+          helpers.getOnceRendered(),
+          helpers.getComponentPropsStack(),
+          helpers.getStackOncePushed(),
+        );
+        await renderOps(op.body, context, pushHelpers, engine);
+        helpers.pushStackOnce(op.name, op.id, pushHelpers.toString());
+        break;
+      }
+
+      case 'prepend': {
+        const prependHelpers = new ViewHelpers(
+          helpers.getStacks(),
+          helpers.getOnceRendered(),
+          helpers.getComponentPropsStack(),
+          helpers.getStackOncePushed(),
+        );
+        await renderOps(op.body, context, prependHelpers, engine);
+        helpers.prependStack(op.name, prependHelpers.toString());
+        break;
+      }
+
+      case 'inject': {
+        const injector = engine.getRegistry().getInjector();
+        if (injector) {
+          const value = await injector(op.binding);
+          context[op.varName] = value;
+        }
+        break;
+      }
+
+      case 'fragment': {
+        const cache = engine.getRegistry().getFragmentCache();
+        const cacheKey = op.name;
+        const cached = await cache.get(cacheKey);
+        if (cached !== null) {
+          helpers.append(cached);
+          break;
+        }
+
+        const fragmentHelpers = new ViewHelpers(
+          helpers.getStacks(),
+          helpers.getOnceRendered(),
+          helpers.getComponentPropsStack(),
+          helpers.getStackOncePushed(),
+        );
+        await renderOps(op.body, context, fragmentHelpers, engine);
+        const rendered = fragmentHelpers.toString();
+        await cache.put(cacheKey, rendered, op.ttlSeconds);
+        helpers.append(rendered);
         break;
       }
 
@@ -261,6 +318,7 @@ export async function renderOps(
             helpers.getStacks(),
             helpers.getOnceRendered(),
             helpers.getComponentPropsStack(),
+            helpers.getStackOncePushed(),
           );
           await renderOps(op.defaultSlot, context, slotHelpers, engine);
           childContext.$slot = slotHelpers.toString();
@@ -272,6 +330,7 @@ export async function renderOps(
               helpers.getStacks(),
               helpers.getOnceRendered(),
               helpers.getComponentPropsStack(),
+              helpers.getStackOncePushed(),
             );
             await renderOps(slotOps, context, slotHelpers, engine);
             childContext[`$${slotName}`] = slotHelpers.toString();
@@ -288,6 +347,7 @@ export async function renderOps(
               helpers.getStacks(),
               helpers.getOnceRendered(),
               helpers.getComponentPropsStack(),
+              helpers.getStackOncePushed(),
             );
             await renderOps(slotOps, childContext, slotHelpers, engine);
             childContext[`$${slotName}`] = slotHelpers.toString();
@@ -303,6 +363,7 @@ export async function renderOps(
             helpers.getStacks(),
             helpers.getOnceRendered(),
             helpers.getComponentPropsStack(),
+            helpers.getStackOncePushed(),
           );
           helpers.append(html);
         } finally {
@@ -310,6 +371,7 @@ export async function renderOps(
         }
         break;
       }
+
     }
   }
 }
@@ -417,6 +479,7 @@ async function renderInclude(
     helpers.getStacks(),
     helpers.getOnceRendered(),
     helpers.getComponentPropsStack(),
+    helpers.getStackOncePushed(),
   );
 }
 
