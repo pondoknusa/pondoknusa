@@ -7,7 +7,7 @@ export type CommandHandler<TCommand = unknown, TResult = unknown> =
   | (new (...args: unknown[]) => { handle(command: TCommand): TResult | Promise<TResult> })
   | ((command: TCommand) => TResult | Promise<TResult>);
 
-type HandlerMap = Map<string, CommandHandler>;
+type HandlerMap = Map<string, CommandHandler<any, any>>;
 
 /**
  * Lightweight command bus — dispatch commands to auto-resolved handlers.
