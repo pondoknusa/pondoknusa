@@ -15,7 +15,7 @@ export function createViewWatcher(
   engine: ViewEngine,
   options: ViewWatcherOptions = {},
 ): ViewWatcher {
-  const extension = engine.getViewExtension();
+  const extensions = new Set(engine.getWatchedExtensions());
   const roots = engine.getViewRoots();
   const watchers: FSWatcher[] = [];
   const pending = new Map<string, NodeJS.Timeout>();
@@ -32,7 +32,10 @@ export function createViewWatcher(
         pending.delete(filePath);
         try {
           const viewName = engine.viewNameFromPath(filePath, root);
-          engine.recompileTemplate(viewName);
+          engine.invalidateTemplate(viewName);
+          if (!filePath.endsWith(engine.getProgrammaticExtension())) {
+            engine.recompileTemplate(viewName);
+          }
           options.onRecompiled?.(viewName);
         } catch (error) {
           if (error instanceof Error) {
@@ -43,12 +46,21 @@ export function createViewWatcher(
     );
   };
 
+  const matchesExtension = (fileName: string): boolean => {
+    for (const extension of extensions) {
+      if (fileName.endsWith(extension)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   for (const root of roots) {
     const watcher = watch(
       root,
       { recursive: true },
       (_eventType, fileName) => {
-        if (!fileName || !fileName.endsWith(extension)) {
+        if (!fileName || !matchesExtension(fileName.toString())) {
           return;
         }
         scheduleRecompile(join(root, fileName.toString()), root);

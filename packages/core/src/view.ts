@@ -63,9 +63,13 @@ export interface ViewFacade {
 }
 
 export const View: ViewFacade = {
-  render: (name, context) => viewEngine().render(name, context ?? {}),
-  renderStream: (name, context, handlers) =>
-    viewEngine().renderStream(name, context ?? {}, handlers),
+  render: <TName extends string>(name: TName, context?: ViewPropsFor<TName>) =>
+    viewEngine().render(name, (context ?? {}) as ViewPropsFor<TName>),
+  renderStream: <TName extends string>(
+    name: TName,
+    context?: ViewPropsFor<TName>,
+    handlers?: Record<string, (ctx: ViewContext) => Promise<string>>,
+  ) => viewEngine().renderStream(name, (context ?? {}) as ViewPropsFor<TName>, handlers),
   exists: (name) => viewEngine().exists(name),
   catalog: () => viewEngine().getComponentCatalog(),
   escape: (context, handler) => {

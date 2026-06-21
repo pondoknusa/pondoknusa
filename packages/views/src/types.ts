@@ -21,6 +21,10 @@ export type RenderMode = 'full' | 'stream-shell';
 
 export interface RenderOptions {
   mode?: RenderMode;
+  /** Source template path; scopes fragment cache keys per view. */
+  viewPath?: string;
+  /** Populated during stream-shell renders in DOM order. */
+  streamSections?: Array<{ name: string; body: TemplateOp[] }>;
 }
 
 export interface CompiledTemplate {

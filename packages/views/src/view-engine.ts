@@ -22,7 +22,7 @@ import {
 } from './component-catalog.js';
 import { loadProgrammaticView } from './programmatic-view.js';
 import { renderOps } from './renderer.js';
-import { collectStreamSections } from './streaming.js';
+import { streamPlaceholder } from './streaming.js';
 import type {
   CompiledTemplate,
   RenderOptions,
@@ -189,6 +189,14 @@ export class ViewEngine {
     return this.extension;
   }
 
+  getProgrammaticExtension(): string {
+    return this.config.programmaticExtension ?? '.tyr.ts';
+  }
+
+  getWatchedExtensions(): string[] {
+    return [this.extension, this.getProgrammaticExtension()];
+  }
+
   getViewRoots(): string[] {
     return [this.viewsRoot, ...this.namespaces.values()];
   }
@@ -202,7 +210,10 @@ export class ViewEngine {
       .slice(root.length)
       .replace(/^[\\/]/, '')
       .replace(/\\/g, '/');
-    const withoutExtension = relative.slice(0, -this.extension.length);
+    const programmaticExtension = this.getProgrammaticExtension();
+    const withoutExtension = relative.endsWith(programmaticExtension)
+      ? relative.slice(0, -programmaticExtension.length)
+      : relative.slice(0, -this.extension.length);
     const dotted = withoutExtension.replace(/\//g, '.');
 
     for (const [namespace, namespaceRoot] of this.namespaces.entries()) {
@@ -222,9 +233,6 @@ export class ViewEngine {
     const parsed = parseViewName(name);
 
     if (parsed.namespace) {
-      if (this.existsAt(name)) {
-        return name;
-      }
       return name;
     }
 
@@ -288,30 +296,46 @@ export class ViewEngine {
     );
 
     this.registry.resetHydrationManifest();
-    yield await this.render(resolved, renderContext, undefined, undefined, undefined, undefined, undefined, {
-      mode: 'stream-shell',
-    });
 
-    const template = this.loadTemplate(resolved);
-    const sections = collectStreamSections(template);
-    if (template.layout) {
-      sections.push(...collectStreamSections(this.loadTemplate(template.layout)));
+    if (this.isProgrammatic(resolved)) {
+      yield await this.renderProgrammatic(resolved, renderContext);
+      return;
     }
 
-    const seen = new Set<string>();
-    for (const section of sections) {
-      if (seen.has(section.name)) {
+    const streamSections: Array<{ name: string; body: TemplateOp[] }> = [];
+    const shell = await this.render(
+      resolved,
+      renderContext,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      { mode: 'stream-shell', streamSections },
+    );
+
+    let cursor = 0;
+    for (const section of streamSections) {
+      const placeholder = streamPlaceholder(section.name);
+      const index = shell.indexOf(placeholder, cursor);
+      if (index === -1) {
         continue;
       }
-      seen.add(section.name);
+
+      if (index > cursor) {
+        yield shell.slice(cursor, index);
+      }
+
+      cursor = index + placeholder.length;
 
       const handler = handlers[section.name];
-      if (handler) {
-        yield await handler(renderContext);
-        continue;
-      }
+      yield handler
+        ? await handler(renderContext)
+        : await this.renderStreamSection(section.body, renderContext);
+    }
 
-      yield await this.renderStreamSection(section.body, renderContext);
+    if (cursor < shell.length) {
+      yield shell.slice(cursor);
     }
   }
 
@@ -358,7 +382,13 @@ export class ViewEngine {
       helpers.importSections(parentSections);
     }
 
-    await renderOps(template.ops, renderContext, helpers, this, renderOptions);
+    const optionsWithPath: RenderOptions = {
+      ...renderOptions,
+      viewPath: this.resolvePath(resolved),
+      streamSections: renderOptions.streamSections,
+    };
+
+    await renderOps(template.ops, renderContext, helpers, this, optionsWithPath);
 
     if (template.layout) {
       const layoutHelpers = new ViewHelpers(
@@ -373,7 +403,10 @@ export class ViewEngine {
         renderContext,
         layoutHelpers,
         this,
-        renderOptions,
+        {
+          ...optionsWithPath,
+          viewPath: this.resolvePath(template.layout),
+        },
       );
       return layoutHelpers.toString();
     }
@@ -400,6 +433,17 @@ export class ViewEngine {
   private isProgrammatic(name: string): boolean {
     try {
       return existsSync(this.programmaticPathFor(this.resolvePath(name)));
+    } catch {
+      return false;
+    }
+  }
+
+  private isProgrammaticOnly(name: string): boolean {
+    try {
+      const tyrPath = this.resolvePath(name);
+      return (
+        existsSync(this.programmaticPathFor(tyrPath)) && !existsSync(tyrPath)
+      );
     } catch {
       return false;
     }
@@ -479,6 +523,13 @@ export class ViewEngine {
   }
 
   private loadTemplate(name: string): CompiledTemplate {
+    if (this.isProgrammaticOnly(name)) {
+      throw new ViewCompileError(
+        `View "${name}" is a programmatic .tyr.ts template and has no compiled ops. Use render() instead of getCompiledTemplate().`,
+        { viewPath: this.programmaticPathFor(this.resolvePath(name)) },
+      );
+    }
+
     const path = this.resolvePath(name);
     const registryVersion = this.registry.getCompileVersion();
     const compileOptions: CompileOptions = {

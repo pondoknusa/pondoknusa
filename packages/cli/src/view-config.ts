@@ -1,13 +1,8 @@
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { ViewEngine, type ViewConfig } from '@tyravel/views';
+import { DEFAULT_VIEW_CONFIG, ViewEngine, type ViewConfig } from '@tyravel/views';
 
-export const DEFAULT_VIEW_CONFIG: ViewConfig = {
-  path: 'resources/views',
-  extension: '.tyr',
-  compiled: (process.env.NODE_ENV ?? 'production') === 'production',
-  compiledPath: 'storage/framework/views',
-};
+export { DEFAULT_VIEW_CONFIG };
 
 export async function loadViewConfig(root: string): Promise<ViewConfig> {
   const configPath = join(root, 'config/views.ts');

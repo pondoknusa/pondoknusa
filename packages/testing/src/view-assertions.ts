@@ -1,5 +1,24 @@
+export interface HydrationManifestSnapshot {
+  islands: Array<{ id: string; html: string; props: Record<string, unknown> }>;
+}
+
 export class RenderedView {
-  constructor(private readonly html: string) {}
+  constructor(
+    private readonly html: string,
+    private readonly hydration?: HydrationManifestSnapshot,
+  ) {}
+
+  getHydrationManifest(): HydrationManifestSnapshot | undefined {
+    return this.hydration;
+  }
+
+  assertIsland(id: string): this {
+    const manifest = this.hydration;
+    if (!manifest?.islands.some((island) => island.id === id)) {
+      throw new Error(`Expected hydration manifest to include island: ${JSON.stringify(id)}`);
+    }
+    return this;
+  }
 
   assertSee(text: string): this {
     assertSee(this.html, text);

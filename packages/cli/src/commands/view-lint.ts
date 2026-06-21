@@ -26,6 +26,7 @@ export class ViewLintCommand extends Command {
       const found = lintViewSource(source, {
         viewPath: filePath,
         componentExists: (component) => engine.exists(component),
+        escapeContexts: new Set(engine.getRegistry().getEscapeContexts().keys()),
       });
 
       for (const issue of found) {

@@ -37,7 +37,7 @@ export class ResponseFactory {
     const stream =
       source instanceof ReadableStream
         ? source
-        : ReadableStream.from(encodeHtmlChunks(source));
+        : readableStreamFromAsyncIterable(encodeHtmlChunks(source));
 
     return new WebResponse(stream, {
       ...init,
@@ -94,4 +94,24 @@ async function* encodeHtmlChunks(
   for await (const chunk of source) {
     yield encoder.encode(chunk);
   }
+}
+
+function readableStreamFromAsyncIterable(
+  source: AsyncIterable<Uint8Array>,
+): ReadableStream<Uint8Array> {
+  const iterator = source[Symbol.asyncIterator]();
+
+  return new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      const { value, done } = await iterator.next();
+      if (done) {
+        controller.close();
+        return;
+      }
+      controller.enqueue(value);
+    },
+    async cancel() {
+      await iterator.return?.();
+    },
+  });
 }

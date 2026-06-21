@@ -8,6 +8,11 @@ export class HydrationManifest {
   private readonly islands: HydrationIsland[] = [];
 
   register(id: string, html: string, props: Record<string, unknown> = {}): void {
+    const existing = this.islands.findIndex((island) => island.id === id);
+    if (existing >= 0) {
+      this.islands[existing] = { id, html, props };
+      return;
+    }
     this.islands.push({ id, html, props });
   }
 

@@ -62,6 +62,20 @@ describe('Response', () => {
     );
   });
 
+  it('streams interleaved view chunks into valid html', async () => {
+    async function* chunks(): AsyncGenerator<string> {
+      yield '<html><body><main>Core</main>';
+      yield '<aside>Sidebar</aside></body></html>';
+    }
+
+    const response = Response.streamHtml(chunks());
+    const html = await response.text();
+
+    expect(html).toContain('<main>Core</main>');
+    expect(html).toContain('<aside>Sidebar</aside>');
+    expect(html.indexOf('<main>Core</main>')).toBeLessThan(html.indexOf('<aside>Sidebar</aside>'));
+  });
+
   it('forwards status and extra headers', async () => {
     const response = Response.make('created', {
       status: 201,

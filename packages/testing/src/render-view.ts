@@ -9,5 +9,5 @@ export async function renderView(
 ): Promise<RenderedView> {
   const engine = app.make<ViewEngine>('view');
   const html = await engine.render(name, context);
-  return new RenderedView(html);
+  return new RenderedView(html, engine.getHydrationManifest());
 }

@@ -150,10 +150,14 @@ describe('P7 view features', () => {
       chunks.push(chunk);
     }
 
-    expect(chunks[0]).toContain('<title>App</title>');
-    expect(chunks[0]).toContain('<!--tyr-stream:sidebar-->');
-    expect(chunks[0]).not.toContain('Slow sidebar');
-    expect(chunks[1]).toContain('Slow sidebar');
+    const combined = chunks.join('');
+    expect(combined).toContain('<title>App</title>');
+    expect(combined).toContain('<main>Core</main>');
+    expect(combined).toContain('<aside>Slow sidebar</aside>');
+    expect(combined).not.toContain('<!--tyr-stream:sidebar-->');
+    expect(combined.indexOf('<main>Core</main>')).toBeLessThan(
+      combined.indexOf('<aside>Slow sidebar</aside>'),
+    );
   });
 
   it('renders programmatic .tyr.ts views', async () => {

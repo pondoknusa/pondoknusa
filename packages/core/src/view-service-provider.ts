@@ -3,6 +3,7 @@ import { ConfigRepository } from '@tyravel/config';
 import type { AuthManager, Gate } from '@tyravel/auth';
 import type { TyravelRequest } from '@tyravel/http';
 import {
+  DEFAULT_VIEW_CONFIG,
   ViewEngine,
   ViewErrorBag,
   type ValidationErrors,
@@ -10,14 +11,6 @@ import {
 } from '@tyravel/views';
 import { ServiceProvider } from './service-provider.js';
 import { setViewApplication, setViewRequest } from './view.js';
-
-const DEFAULT_VIEW_CONFIG: ViewConfig = {
-  path: 'resources/views',
-  extension: '.tyr',
-  env: process.env.NODE_ENV ?? 'production',
-  compiled: (process.env.NODE_ENV ?? 'production') === 'production',
-  compiledPath: 'storage/framework/views',
-};
 
 function joinAssetUrl(base: string, path: string): string {
   const normalized = path.startsWith('/') ? path : `/${path}`;

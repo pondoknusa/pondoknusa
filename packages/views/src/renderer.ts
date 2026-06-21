@@ -210,7 +210,9 @@ export async function renderOps(
 
       case 'fragment': {
         const cache = engine.getRegistry().getFragmentCache();
-        const cacheKey = op.name;
+        const cacheKey = renderOptions.viewPath
+          ? `${renderOptions.viewPath}::${op.name}`
+          : op.name;
         const cached = await cache.get(cacheKey);
         if (cached !== null) {
           helpers.append(cached);
@@ -240,6 +242,7 @@ export async function renderOps(
 
       case 'stream': {
         if (renderOptions.mode === 'stream-shell') {
+          renderOptions.streamSections?.push({ name: op.name, body: op.body });
           helpers.append(streamPlaceholder(op.name));
           break;
         }

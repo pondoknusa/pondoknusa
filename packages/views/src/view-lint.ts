@@ -1,8 +1,11 @@
+import { BUILTIN_ESCAPE_CONTEXTS } from './escape.js';
 import { lineColumnAt } from './view-compile-error.js';
 
 export type ViewLintRule =
   | 'unclosed-directive'
   | 'unknown-component'
+  | 'unknown-escape-context'
+  | 'duplicate-island'
   | 'unsafe-raw-echo';
 
 export interface ViewLintIssue {
@@ -15,6 +18,7 @@ export interface ViewLintIssue {
 export interface ViewLintOptions {
   viewPath?: string;
   componentExists?: (name: string) => boolean;
+  escapeContexts?: ReadonlySet<string>;
 }
 
 interface DirectivePair {
@@ -51,15 +55,20 @@ const DIRECTIVE_PAIRS: DirectivePair[] = [
 ];
 
 const COMPONENT_RE = /^@component\(\s*['"]([^'"]+)['"]/;
+const ISLAND_RE = /^@island\(\s*['"]([^'"]+)['"]/;
+const ESCAPE_RE = /^@escape\(\s*['"]([^'"]+)['"]/;
 const RAW_ECHO_RE = /\{!!\s*(.+?)\s*!!\}/g;
 
 export function lintViewSource(
   source: string,
   options: ViewLintOptions = {},
 ): ViewLintIssue[] {
+  const escapeContexts = options.escapeContexts ?? new Set(Object.keys(BUILTIN_ESCAPE_CONTEXTS));
   const issues: ViewLintIssue[] = [];
   issues.push(...lintUnclosedDirectives(source, options.viewPath));
   issues.push(...lintUnknownComponents(source, options.componentExists));
+  issues.push(...lintDuplicateIslands(source));
+  issues.push(...lintUnknownEscapeContexts(source, escapeContexts));
   issues.push(...lintUnsafeRawEchoes(source));
   return issues;
 }
@@ -138,6 +147,69 @@ function lintUnknownComponents(
         issues.push({
           rule: 'unknown-component',
           message: `Unknown component "${name}"`,
+          line: location.line,
+          column: location.column,
+        });
+      }
+    }
+
+    cursor += line.length;
+  }
+
+  return issues;
+}
+
+function lintDuplicateIslands(source: string): ViewLintIssue[] {
+  const issues: ViewLintIssue[] = [];
+  const seen = new Set<string>();
+  let cursor = 0;
+
+  while (cursor < source.length) {
+    const line = takeLine(source, cursor);
+    const trimmed = line.trim();
+    const match = trimmed.match(ISLAND_RE);
+
+    if (match) {
+      const id = match[1]!;
+      if (seen.has(id)) {
+        const lineStart = cursor + line.indexOf(trimmed);
+        const location = lineColumnAt(source, lineStart);
+        issues.push({
+          rule: 'duplicate-island',
+          message: `Duplicate @island id "${id}"`,
+          line: location.line,
+          column: location.column,
+        });
+      }
+      seen.add(id);
+    }
+
+    cursor += line.length;
+  }
+
+  return issues;
+}
+
+function lintUnknownEscapeContexts(
+  source: string,
+  escapeContexts: ReadonlySet<string>,
+): ViewLintIssue[] {
+  const issues: ViewLintIssue[] = [];
+  let cursor = 0;
+
+  while (cursor < source.length) {
+    const line = takeLine(source, cursor);
+    const trimmed = line.trim();
+    const match = trimmed.match(ESCAPE_RE);
+
+    if (match) {
+      const context = match[1]!;
+      if (!escapeContexts.has(context)) {
+        const lineStart = cursor + line.indexOf(trimmed);
+        const location = lineColumnAt(source, lineStart);
+        issues.push({
+          rule: 'unknown-escape-context',
+          message: `Unknown escape context "${context}"`,
           line: location.line,
           column: location.column,
         });

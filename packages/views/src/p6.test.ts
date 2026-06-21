@@ -154,6 +154,33 @@ describe('P6 view features', () => {
     expect(calls).toBe(1);
   });
 
+  it('scopes fragment cache per view path', async () => {
+    const { basePath, engine } = createFixture();
+    const cache = new InMemoryFragmentCache();
+    engine.getRegistry().setFragmentCache(cache);
+
+    writeFileSync(
+      join(basePath, 'resources/views/frag-a.tyr'),
+      `@fragment('box')
+<span>{{ value }}</span>
+@endfragment
+`,
+    );
+    writeFileSync(
+      join(basePath, 'resources/views/frag-b.tyr'),
+      `@fragment('box')
+<span>{{ value }}</span>
+@endfragment
+`,
+    );
+
+    const a = await engine.render('frag-a', { value: 'A' });
+    const b = await engine.render('frag-b', { value: 'B' });
+
+    expect(a).toContain('<span>A</span>');
+    expect(b).toContain('<span>B</span>');
+  });
+
   it('uses warm disk cache without reading source in production mode', async () => {
     const { basePath, engine } = createFixture();
     const cacheDir = join(basePath, 'storage/framework/views');
