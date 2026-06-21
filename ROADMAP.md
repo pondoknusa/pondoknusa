@@ -177,7 +177,7 @@ Open-ended tier: done when Tyravel is a framework teams can adopt with confidenc
 - [ ] **Hosted documentation** — public docs site (beyond in-repo VitePress)
 - [ ] **tyravel-mcp** — agent-oriented capability index so models can build Tyravel apps without searching the whole codebase
 - [ ] **Ecosystem guide** — how to publish and maintain third-party `@tyravel/*` packages
-- [ ] **Graceful shutdown** — drain in-flight requests and queue workers on SIGTERM
+- [x] **Graceful shutdown** — drain in-flight requests and queue workers on SIGTERM
 - [ ] **Config validation** — fail fast at boot when required environment variables are missing
 - [ ] **API stability policy** — documented semver guarantees for public package surfaces
 
