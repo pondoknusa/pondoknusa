@@ -1,4 +1,5 @@
 import type { DatabaseConnection } from './connection.js';
+import { runWithConnection } from './connection-context.js';
 import { MysqlConnection } from './mysql-connection.js';
 import { PostgresConnection } from './postgres-connection.js';
 import { SqliteConnection } from './sqlite-connection.js';
@@ -27,6 +28,16 @@ export class DatabaseManager {
     const connection = this.createConnection(connectionConfig);
     this.connections.set(connectionName, connection);
     return connection;
+  }
+
+  async transaction<T>(
+    callback: () => Promise<T>,
+    name?: string,
+  ): Promise<T> {
+    const connection = this.connection(name);
+    return connection.transaction(async (transactional) =>
+      runWithConnection(transactional, callback),
+    );
   }
 
   async close(name?: string): Promise<void> {

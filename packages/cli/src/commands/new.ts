@@ -3,6 +3,11 @@ import { resolve } from 'node:path';
 import { Command } from '../command.js';
 import {
   cacheConfig,
+  corsConfig,
+  filesystemsConfig,
+  healthConfig,
+  httpConfig,
+  logConfig,
   redisConfig,
   mailConfig,
   notificationsConfig,
@@ -70,6 +75,11 @@ export class NewCommand extends Command {
     writeFile(projectPath(targetDir, 'config/queue.ts'), queueConfig());
     writeFile(projectPath(targetDir, 'config/events.ts'), eventsConfig());
     writeFile(projectPath(targetDir, 'config/cache.ts'), cacheConfig());
+    writeFile(projectPath(targetDir, 'config/filesystems.ts'), filesystemsConfig());
+    writeFile(projectPath(targetDir, 'config/cors.ts'), corsConfig());
+    writeFile(projectPath(targetDir, 'config/http.ts'), httpConfig());
+    writeFile(projectPath(targetDir, 'config/log.ts'), logConfig());
+    writeFile(projectPath(targetDir, 'config/health.ts'), healthConfig());
     writeFile(projectPath(targetDir, 'config/redis.ts'), redisConfig());
     writeFile(projectPath(targetDir, 'config/mail.ts'), mailConfig());
     writeFile(projectPath(targetDir, 'config/notifications.ts'), notificationsConfig());

@@ -1,5 +1,6 @@
 import type { DatabaseConnection } from './connection.js';
 import { EagerLoader } from './eager-loader.js';
+import { applyCastsToAttributes } from './model-casts.js';
 import { LengthAwarePaginator } from './paginator.js';
 import { QueryBuilder } from './query-builder.js';
 import type { Model } from './model.js';
@@ -8,6 +9,8 @@ import { scopeMethodName, type GlobalScope, type LocalScope } from './scopes.js'
 
 export class ModelQueryBuilder extends QueryBuilder {
   protected eagerLoad: string[] = [];
+  private withTrashed = false;
+  private onlyTrashed = false;
 
   constructor(
     connection: DatabaseConnection,
@@ -19,6 +22,17 @@ export class ModelQueryBuilder extends QueryBuilder {
 
   with(...relations: string[]): this {
     this.eagerLoad.push(...relations);
+    return this;
+  }
+
+  withTrashedModels(): this {
+    this.withTrashed = true;
+    return this;
+  }
+
+  onlyTrashedModels(): this {
+    this.withTrashed = true;
+    this.onlyTrashed = true;
     return this;
   }
 
@@ -36,7 +50,33 @@ export class ModelQueryBuilder extends QueryBuilder {
     super.copyTo(builder);
     if (builder instanceof ModelQueryBuilder) {
       builder.eagerLoad = [...this.eagerLoad];
+      builder.withTrashed = this.withTrashed;
+      builder.onlyTrashed = this.onlyTrashed;
     }
+  }
+
+  protected applySoftDeleteScope(): void {
+    const model = this.model as typeof Model;
+    if (!model.softDeletes || this.withTrashed) {
+      return;
+    }
+
+    if (this.onlyTrashed) {
+      this.whereNotNull(model.deletedAt);
+      return;
+    }
+
+    this.whereNull(model.deletedAt);
+  }
+
+  override async get(): Promise<Record<string, unknown>[]> {
+    this.applySoftDeleteScope();
+    return super.get();
+  }
+
+  override async count(column = '*'): Promise<number> {
+    this.applySoftDeleteScope();
+    return super.count(column);
   }
 
   applyScope(name: string, ...args: unknown[]): this {
@@ -58,7 +98,13 @@ export class ModelQueryBuilder extends QueryBuilder {
     const ModelClass = this.model as new (
       attributes?: Partial<ModelAttributes>,
     ) => TModel;
-    const models = rows.map((row) => new ModelClass(row));
+    const casts = (this.model as typeof Model).casts;
+    const models = rows.map((row) => {
+      const attributes = Object.keys(casts).length > 0
+        ? applyCastsToAttributes(row, casts)
+        : row;
+      return new ModelClass(attributes);
+    });
 
     if (this.eagerLoad.length > 0) {
       await EagerLoader.load(models, this.eagerLoad, this.model);

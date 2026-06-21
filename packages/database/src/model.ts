@@ -5,8 +5,14 @@ import { BelongsToManyRelation } from './relations/belongs-to-many.js';
 import { BelongsToRelation } from './relations/belongs-to.js';
 import { HasManyRelation } from './relations/has-many.js';
 import { HasOneRelation } from './relations/has-one.js';
+import { getContextConnection } from './connection-context.js';
 import type { DatabaseConnection } from './connection.js';
 import type { GlobalScope } from './scopes.js';
+import {
+  serializeAttributesForStorage,
+  type ModelCastMap,
+} from './model-casts.js';
+import { fireModelEvent } from './model-events.js';
 import {
   readAccessorValue,
   serializeAppendedValue,
@@ -20,6 +26,9 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
   static table = '';
   static primaryKey = 'id';
   static appends: string[] = [];
+  static casts: ModelCastMap = {};
+  static softDeletes = false;
+  static deletedAt = 'deleted_at';
   private static resolver: (() => DatabaseConnection) | undefined;
   private static globalScopes: GlobalScope[] = [];
 
@@ -44,6 +53,11 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
   }
 
   static getConnection(): DatabaseConnection {
+    const context = getContextConnection();
+    if (context) {
+      return context;
+    }
+
     if (!this.resolver) {
       throw new Error(
         `Database connection not configured for ${this.name}. Register DatabaseServiceProvider first.`,
@@ -94,8 +108,23 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
     this: new (attributes?: Partial<ModelAttributes>) => TModel,
     attributes: Partial<ModelAttributes>,
   ): Promise<TModel> {
-    const model = this as unknown as ModelStatic;
-    const id = await model.query().insert(attributes);
+    const instance = new this(attributes);
+    if (!(await fireModelEvent(instance, 'creating'))) {
+      return instance;
+    }
+
+    const model = this as unknown as ModelStatic & typeof Model;
+    const payload = serializeAttributesForStorage(
+      instance.attributes as Record<string, unknown>,
+      model.casts,
+    );
+    const id = await model.query().insert(payload);
+    if (id !== undefined) {
+      instance.setAttribute(model.primaryKey as keyof ModelAttributes, id as never);
+    }
+
+    await fireModelEvent(instance, 'created');
+
     if (id !== undefined) {
       const created = await (this as unknown as ModelStatic).find(id);
       if (created) {
@@ -103,12 +132,20 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
       }
     }
 
-    return new this(attributes);
+    return instance;
   }
 
   static with(...relations: string[]): ModelQueryBuilder {
     const model = this as unknown as ModelStatic;
     return model.query().with(...relations);
+  }
+
+  static withTrashed(): ModelQueryBuilder {
+    return this.query().withTrashedModels();
+  }
+
+  static onlyTrashed(): ModelQueryBuilder {
+    return this.query().onlyTrashedModels();
   }
 
   static where(
@@ -241,34 +278,69 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
     return result;
   }
 
-  async save(): Promise<this> {
-    const model = this.constructor as unknown as ModelStatic;
+  async save(options?: { skipBefore?: 'creating' | 'updating' }): Promise<this> {
+    const model = this.constructor as unknown as ModelStatic & typeof Model;
     const primaryKey = model.primaryKey;
     const id = this.attributes[primaryKey as keyof T];
+    const isNew = id === undefined || id === null;
+    const event = isNew ? 'creating' : 'updating';
 
-    if (id === undefined || id === null) {
-      const insertedId = await model.query().insert(this.attributes as Row);
+    if (options?.skipBefore !== event && !(await fireModelEvent(this, event))) {
+      return this;
+    }
+
+    const payload = serializeAttributesForStorage(
+      this.attributes as Record<string, unknown>,
+      model.casts,
+    );
+
+    if (isNew) {
+      const insertedId = await model.query().insert(payload);
       if (insertedId !== undefined) {
         this.setAttribute(primaryKey as keyof T, insertedId as T[keyof T]);
       }
+      await fireModelEvent(this, 'created');
       return this;
     }
 
     await model
       .query()
       .where(primaryKey, id as RowValue)
-      .update(this.attributes as Row);
+      .update(payload);
 
+    await fireModelEvent(this, 'updated');
     return this;
   }
 
   async update(attributes: Partial<ModelAttributes>): Promise<this> {
-    Object.assign(this.attributes, attributes);
-    return this.save();
+    const rollback = new Map<string, unknown>();
+    for (const [key, value] of Object.entries(attributes)) {
+      rollback.set(key, this.attributes[key as keyof T]);
+      this.setAttribute(key as keyof T, value as T[keyof T]);
+    }
+
+    if (!(await fireModelEvent(this, 'updating'))) {
+      for (const [key, value] of rollback) {
+        this.setAttribute(key as keyof T, value as T[keyof T]);
+      }
+      return this;
+    }
+
+    return this.save({ skipBefore: 'updating' });
   }
 
   async delete(): Promise<void> {
-    const model = this.constructor as unknown as ModelStatic;
+    const model = this.constructor as unknown as ModelStatic & typeof Model;
+
+    if (!(await fireModelEvent(this, 'deleting'))) {
+      return;
+    }
+
+    if (model.softDeletes) {
+      await this.softDelete();
+      return;
+    }
+
     const primaryKey = model.primaryKey;
     const id = this.attributes[primaryKey as keyof T];
 
@@ -277,6 +349,44 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
     }
 
     await model.query().where(primaryKey, id as RowValue).delete();
+    await fireModelEvent(this, 'deleted');
+  }
+
+  async softDelete(): Promise<void> {
+    const model = this.constructor as typeof Model;
+    const deletedAt = model.deletedAt;
+    const timestamp = Math.floor(Date.now() / 1000);
+    await this.update({ [deletedAt]: timestamp } as Partial<ModelAttributes>);
+    await fireModelEvent(this, 'deleted');
+  }
+
+  async restore(): Promise<void> {
+    const model = this.constructor as typeof Model;
+
+    if (!(await fireModelEvent(this, 'restoring'))) {
+      return;
+    }
+
+    await this.update({ [model.deletedAt]: null } as Partial<ModelAttributes>);
+    await fireModelEvent(this, 'restored');
+  }
+
+  async forceDelete(): Promise<void> {
+    const model = this.constructor as unknown as ModelStatic;
+
+    if (!(await fireModelEvent(this, 'deleting'))) {
+      return;
+    }
+
+    const primaryKey = model.primaryKey;
+    const id = this.attributes[primaryKey as keyof T];
+
+    if (id === undefined || id === null) {
+      throw new Error(`Cannot delete ${model.name} without a primary key.`);
+    }
+
+    await model.query().withTrashedModels().where(primaryKey, id as RowValue).delete();
+    await fireModelEvent(this, 'deleted');
   }
 
   async fresh<TModel extends Model>(): Promise<TModel | null> {

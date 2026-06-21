@@ -21,4 +21,19 @@ describe('TyravelRequest', () => {
     expect(request.page()).toBe(1);
     expect(request.perPage()).toBe(15);
   });
+
+  it('resolves ip and secure state from trusted proxy headers', () => {
+    const request = new TyravelRequest(
+      new Request('http://localhost/users', {
+        headers: {
+          'x-forwarded-for': '203.0.113.10, 10.0.0.1',
+          'x-forwarded-proto': 'https',
+        },
+      }),
+    );
+
+    request.setTrustedProxies(['10.0.0.1']);
+    expect(request.ip()).toBe('203.0.113.10');
+    expect(request.secure()).toBe(true);
+  });
 });

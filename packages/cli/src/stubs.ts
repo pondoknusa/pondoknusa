@@ -17,6 +17,7 @@ export function projectPackageJson(name: string): string {
         '@tyravel/database': '^0.3.0',
         '@tyravel/events': '^0.3.0',
         '@tyravel/http': '^0.3.0',
+        '@tyravel/log': '^0.3.0',
         '@tyravel/mail': '^0.3.0',
         '@tyravel/notifications': '^0.3.0',
         '@tyravel/queue': '^0.3.0',
@@ -53,7 +54,9 @@ export function mainEntry(): string {
   return `import {
   Application,
   CacheServiceProvider,
+  ConfigRepository,
   ConfigServiceProvider,
+  LogServiceProvider,
   DatabaseServiceProvider,
   RedisServiceProvider,
   EventServiceProvider,
@@ -61,12 +64,16 @@ export function mainEntry(): string {
   MailServiceProvider,
   NotificationServiceProvider,
   QueueServiceProvider,
+  StorageServiceProvider,
+  registerHttpMiddleware,
   setCacheApplication,
   setEventApplication,
+  setLogApplication,
   setMailApplication,
   setNotificationApplication,
   setQueueApplication,
   setRouteApplication,
+  setStorageApplication,
   setViewApplication,
   ViewServiceProvider,
   serve,
@@ -80,6 +87,8 @@ setViewApplication(app);
 setQueueApplication(app);
 setEventApplication(app);
 setCacheApplication(app);
+setStorageApplication(app);
+setLogApplication(app);
 setMailApplication(app);
 setNotificationApplication(app);
 
@@ -87,6 +96,8 @@ app.register(ConfigServiceProvider);
 app.register(RedisServiceProvider);
 app.register(DatabaseServiceProvider);
 app.register(CacheServiceProvider);
+app.register(StorageServiceProvider);
+app.register(LogServiceProvider);
 app.register(MailServiceProvider);
 app.register(NotificationServiceProvider);
 app.register(QueueServiceProvider);
@@ -96,8 +107,33 @@ app.register(AppServiceProvider);
 
 await app.boot();
 
+registerHttpMiddleware(app, app.make(ConfigRepository));
+
 const kernel = new HttpKernel(app);
 await serve(kernel);
+`;
+}
+
+export function middleware(name: string): string {
+  return `import type { Middleware } from '@tyravel/http';
+import type { TyravelRequest } from '@tyravel/http';
+
+export const ${name}Middleware: Middleware = async (request, next) => {
+  return next();
+};
+`;
+}
+
+export function consoleCommand(name: string, signature: string): string {
+  return `export class ${name}Command {
+  readonly name = '${signature}';
+  readonly description = 'TODO: describe this command';
+
+  async handle(_args: string[]): Promise<number> {
+    console.log('${name} command executed.');
+    return 0;
+  }
+}
 `;
 }
 

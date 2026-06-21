@@ -3,23 +3,32 @@ import {
   Application,
   AuthServiceProvider,
   CacheServiceProvider,
+  ConfigRepository,
   ConfigServiceProvider,
+  LogServiceProvider,
   DatabaseServiceProvider,
   EventServiceProvider,
+  HealthServiceProvider,
   HttpKernel,
+  ScheduleServiceProvider,
   MailServiceProvider,
   NotificationServiceProvider,
   QueueServiceProvider,
   RedisServiceProvider,
+  StorageServiceProvider,
+  registerHttpMiddleware,
   setAuthApplication,
   setCacheApplication,
+  setDbApplication,
   setEventApplication,
+  setLogApplication,
   setGateApplication,
   setMailApplication,
   setNotificationApplication,
   setPasswordApplication,
   setQueueApplication,
   setRouteApplication,
+  setStorageApplication,
   setViewApplication,
   ViewServiceProvider,
   serve,
@@ -32,6 +41,9 @@ setViewApplication(app);
 setQueueApplication(app);
 setEventApplication(app);
 setCacheApplication(app);
+setDbApplication(app);
+setStorageApplication(app);
+setLogApplication(app);
 setMailApplication(app);
 setNotificationApplication(app);
 setAuthApplication(app);
@@ -42,10 +54,14 @@ app.register(ConfigServiceProvider);
 app.register(RedisServiceProvider);
 app.register(DatabaseServiceProvider);
 app.register(CacheServiceProvider);
+app.register(StorageServiceProvider);
+app.register(LogServiceProvider);
 app.register(MailServiceProvider);
 app.register(NotificationServiceProvider);
 app.register(QueueServiceProvider);
 app.register(EventServiceProvider);
+app.register(ScheduleServiceProvider);
+app.register(HealthServiceProvider);
 app.register(AuthServiceProvider);
 app.register(ViewServiceProvider);
 app.register(AppServiceProvider);
@@ -54,6 +70,8 @@ setRouteApplication(app);
 setViewApplication(app);
 
 await app.boot();
+
+registerHttpMiddleware(app, app.make(ConfigRepository));
 
 const { registerRoutes } = await import('./routes/index.js');
 registerRoutes();

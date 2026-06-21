@@ -4,9 +4,14 @@ import { MakeEventCommand } from './commands/make-event.js';
 import { MakeFactoryCommand } from './commands/make-factory.js';
 import { MakeSeederCommand } from './commands/make-seeder.js';
 import { MakeTestCommand } from './commands/make-test.js';
+import { MakeCommandCommand } from './commands/make-command.js';
 import { MakeControllerCommand } from './commands/make-controller.js';
+import { MakeMiddlewareCommand } from './commands/make-middleware.js';
 import { MakeRequestCommand } from './commands/make-request.js';
 import { MakeResourceCommand } from './commands/make-resource.js';
+import { RouteListCommand } from './commands/route-list.js';
+import { ScheduleRunCommand } from './commands/schedule-run.js';
+import { SessionPruneCommand } from './commands/session-prune.js';
 import { MakeJobCommand } from './commands/make-job.js';
 import { MakeSubscriberCommand } from './commands/make-subscriber.js';
 import { MakeListenerCommand } from './commands/make-listener.js';
@@ -49,6 +54,11 @@ export function createKernel(): ConsoleKernel {
     new QueueFailedCommand(),
     new QueueRetryCommand(),
     new QueueWorkCommand(),
+    new ScheduleRunCommand(),
+    new SessionPruneCommand(),
+    new RouteListCommand(),
+    new MakeMiddlewareCommand(),
+    new MakeCommandCommand(),
     new VersionCommand(),
   ]);
 }

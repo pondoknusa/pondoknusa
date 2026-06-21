@@ -1,3 +1,4 @@
+import { resolveClientIp, resolveSecure } from './trusted-proxies.js';
 import type { RouteParams } from './types.js';
 import type { SessionContract } from './session-contract.js';
 
@@ -10,6 +11,8 @@ export class TyravelRequest {
 
   session?: SessionContract;
   user: unknown = null;
+  remoteAddress?: string;
+  private trustedProxies: string[] = [];
 
   get method(): string {
     return this.raw.method;
@@ -90,5 +93,21 @@ export class TyravelRequest {
       return undefined;
     }
     return authorization.slice('Bearer '.length);
+  }
+
+  setTrustedProxies(proxies: string[]): void {
+    this.trustedProxies = proxies;
+  }
+
+  hasTrustedProxies(): boolean {
+    return this.trustedProxies.length > 0;
+  }
+
+  ip(): string {
+    return resolveClientIp(this, this.remoteAddress);
+  }
+
+  secure(): boolean {
+    return resolveSecure(this);
   }
 }

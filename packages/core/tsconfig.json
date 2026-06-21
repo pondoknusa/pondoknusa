@@ -14,10 +14,12 @@
     { "path": "../events" },
     { "path": "../container" },
     { "path": "../http" },
+    { "path": "../log" },
     { "path": "../mail" },
     { "path": "../notifications" },
     { "path": "../queue" },
     { "path": "../redis" },
+    { "path": "../storage" },
     { "path": "../validation" },
     { "path": "../views" }
   ],

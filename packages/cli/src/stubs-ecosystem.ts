@@ -1,3 +1,90 @@
+export function logConfig(): string {
+  return `import type { LogConfig } from '@tyravel/log';
+import { env } from '@tyravel/config';
+
+export default {
+  default: env('LOG_CHANNEL', 'stack'),
+  channels: {
+    stdout: { channel: 'stdout' },
+    file: {
+      channel: 'file',
+      path: 'storage/logs/tyravel.log',
+    },
+    stack: {
+      channel: 'stack',
+      channels: ['stdout', 'file'],
+    },
+  },
+} satisfies LogConfig;
+`;
+}
+
+export function filesystemsConfig(): string {
+  return `import type { StorageConfig } from '@tyravel/storage';
+import { env } from '@tyravel/config';
+
+export default {
+  default: env('FILESYSTEM_DISK', 'local'),
+  disks: {
+    local: {
+      driver: 'local',
+      root: 'storage/app',
+    },
+    s3: {
+      driver: 's3',
+      key: env('AWS_ACCESS_KEY_ID', ''),
+      secret: env('AWS_SECRET_ACCESS_KEY', ''),
+      region: env('AWS_DEFAULT_REGION', 'us-east-1'),
+      bucket: env('AWS_BUCKET', ''),
+      url: env('AWS_URL', ''),
+      endpoint: env('AWS_ENDPOINT', ''),
+    },
+  },
+} satisfies StorageConfig;
+`;
+}
+
+export function corsConfig(): string {
+  return `import type { CorsConfig } from '@tyravel/core';
+
+export default {
+  enabled: true,
+  origins: ['*'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
+  headers: ['Content-Type', 'Authorization'],
+  credentials: false,
+} satisfies CorsConfig;
+`;
+}
+
+export function httpConfig(): string {
+  return `import type { HttpConfig } from '@tyravel/core';
+
+export default {
+  trustedProxies: ['127.0.0.1', '::1'],
+  throttle: {
+    enabled: true,
+    limit: 60,
+    windowMs: 60_000,
+  },
+} satisfies HttpConfig;
+`;
+}
+
+export function healthConfig(): string {
+  return `import type { HealthConfig } from '@tyravel/core';
+
+export default {
+  enabled: true,
+  path: '/health',
+  checks: {
+    database: true,
+    redis: false,
+  },
+} satisfies HealthConfig;
+`;
+}
+
 export function cacheConfig(): string {
   return `import type { CacheConfig } from '@tyravel/cache';
 import { env } from '@tyravel/config';

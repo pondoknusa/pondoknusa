@@ -43,6 +43,7 @@ jobs:
             @tyravel/container
             @tyravel/support
             @tyravel/config
+            @tyravel/log
             @tyravel/http
             @tyravel/validation
             @tyravel/database
@@ -52,6 +53,7 @@ jobs:
             @tyravel/events
             @tyravel/auth
             @tyravel/cache
+            @tyravel/storage
             @tyravel/mail
             @tyravel/notifications
             @tyravel/testing

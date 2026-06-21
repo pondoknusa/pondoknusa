@@ -155,15 +155,19 @@ export class Router implements Routable {
     const activeScope = this.mergeScopes([...this.scopeStack, scope]);
     const fullPattern = joinRoutePaths(activeScope.prefix, pattern);
 
+    const middlewareInputs = [
+      ...this.globalMiddleware,
+      ...activeScope.middleware,
+      ...middleware,
+    ];
+
     this.routes.push({
       method,
       pattern: fullPattern,
       handler: this.handlerNormalizer(handler),
-      middleware: this.resolveMiddleware([
-        ...this.globalMiddleware,
-        ...activeScope.middleware,
-        ...middleware,
-      ]),
+      handlerLabel: resolveHandlerLabel(handler),
+      middleware: this.resolveMiddleware(middlewareInputs),
+      middlewareLabels: middlewareInputs.map((input) => String(input)),
       name: undefined,
       namePrefix: activeScope.namePrefix,
     });
@@ -182,6 +186,22 @@ export class Router implements Routable {
     route.name = scopedName;
     this.namedRoutes.set(scopedName, route);
     return this;
+  }
+
+  listRoutes(): Array<{
+    method: HttpMethod;
+    uri: string;
+    name?: string;
+    middleware: string[];
+    action: string;
+  }> {
+    return this.routes.map((route) => ({
+      method: route.method,
+      uri: route.pattern,
+      name: route.name,
+      middleware: route.middlewareLabels ?? [],
+      action: route.handlerLabel ?? 'Closure',
+    }));
   }
 
   url(name: string, params: RouteParams = {}): string {
@@ -315,6 +335,21 @@ export class Router implements Routable {
 
     return params;
   }
+}
+
+function resolveHandlerLabel(handler: RouteHandler): string {
+  if (Array.isArray(handler) && handler.length >= 2) {
+    const [controller, method] = handler as unknown[];
+    if (typeof controller === 'function' && typeof method === 'string') {
+      return `${controller.name}@${method}`;
+    }
+  }
+
+  if (typeof handler === 'function' && handler.name) {
+    return handler.name;
+  }
+
+  return 'Closure';
 }
 
 export function createRouter(middlewareRegistry?: MiddlewareRegistry): Router {

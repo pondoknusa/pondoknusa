@@ -64,6 +64,28 @@ export class QueryBuilder<T extends Row = Row> {
     return this;
   }
 
+  whereNull(column: string): this {
+    this.wheres.push({
+      type: 'null',
+      column,
+      operator: 'is',
+      value: null,
+      boolean: 'and',
+    });
+    return this;
+  }
+
+  whereNotNull(column: string): this {
+    this.wheres.push({
+      type: 'null',
+      column,
+      operator: 'is not',
+      value: null,
+      boolean: 'and',
+    });
+    return this;
+  }
+
   orderBy(column: string, direction: 'asc' | 'desc' = 'asc'): this {
     this.orders.push({ column, direction });
     return this;
@@ -239,6 +261,13 @@ export class QueryBuilder<T extends Row = Row> {
           `${prefix}${this.grammar.wrapIdentifier(clause.column)} IN (${placeholders.join(', ')})`,
         );
         bindings.push(...values);
+        continue;
+      }
+
+      if (clause.type === 'null') {
+        parts.push(
+          `${prefix}${this.grammar.wrapIdentifier(clause.column)} ${clause.operator.toUpperCase()} NULL`,
+        );
         continue;
       }
 

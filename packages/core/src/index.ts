@@ -1,5 +1,7 @@
 export { AuthServiceProvider } from './auth-service-provider.js';
 export { CacheServiceProvider } from './cache-service-provider.js';
+export { StorageServiceProvider } from './storage-service-provider.js';
+export { LogServiceProvider } from './log-service-provider.js';
 export { MailServiceProvider } from './mail-service-provider.js';
 export { NotificationServiceProvider } from './notification-service-provider.js';
 export { Application } from './application.js';
@@ -37,6 +39,21 @@ export { Queue, dispatch, setQueueApplication } from './queue.js';
 export type { QueueConnectionFacade, QueueFacade } from './queue.js';
 export { Cache, setCacheApplication } from './cache.js';
 export type { CacheFacade } from './cache.js';
+export { DB, setDbApplication } from './db.js';
+export type { DbFacade } from './db.js';
+export { Schedule, cronMatches } from './schedule.js';
+export type { ScheduledEvent } from './schedule.js';
+export { ScheduleServiceProvider } from './schedule-service-provider.js';
+export { HealthChecker } from './health.js';
+export type { HealthCheckResult, HealthReport } from './health.js';
+export { HealthServiceProvider } from './health-service-provider.js';
+export type { HealthConfig } from './health-service-provider.js';
+export { Storage, setStorageApplication } from './storage.js';
+export type { StorageFacade } from './storage.js';
+export { registerHttpMiddleware } from './http-middleware.js';
+export type { CorsConfig, HttpConfig } from './http-middleware.js';
+export { Log, setLogApplication } from './log.js';
+export type { LogFacade } from './log.js';
 export { Mail, setMailApplication } from './mail.js';
 export type { MailFacade } from './mail.js';
 export { Notifications, setNotificationApplication } from './notifications.js';
@@ -66,6 +83,6 @@ export {
   PersonalAccessTokenRepository,
   Gate as AuthorizationGate,
 } from '@tyravel/auth';
-export { env, envBool, envInt, loadEnv } from '@tyravel/config';
+export { ConfigRepository, env, envBool, envInt, loadEnv } from '@tyravel/config';
 export { Mailable, SendMailable } from '@tyravel/mail';
 export { Notification, type Notifiable, NotificationRegistry } from '@tyravel/notifications';

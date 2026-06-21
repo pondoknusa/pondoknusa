@@ -3,9 +3,9 @@ export type RowValue = string | number | bigint | boolean | null | undefined;
 export type WhereOperator = '=' | '!=' | '<' | '>' | '<=' | '>=' | 'like' | 'in';
 
 export interface WhereClause {
-  type: 'basic' | 'in';
+  type: 'basic' | 'in' | 'null';
   column: string;
-  operator: WhereOperator;
+  operator: WhereOperator | 'is' | 'is not';
   value: unknown;
   boolean: 'and' | 'or';
 }

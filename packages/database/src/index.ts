@@ -1,5 +1,15 @@
 export type { DatabaseConnection, QueryResult } from './connection.js';
+export { getContextConnection, runWithConnection } from './connection-context.js';
 export { DatabaseManager } from './database-manager.js';
+export {
+  applyCastsToAttributes,
+  castAttribute,
+  serializeAttributesForStorage,
+  serializeCast,
+} from './model-casts.js';
+export type { CastType, ModelCastMap } from './model-casts.js';
+export { fireModelEvent } from './model-events.js';
+export type { ModelEventHandler, ModelEventName } from './model-events.js';
 export { Factory } from './factory.js';
 export {
   fakeEmail,

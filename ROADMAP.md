@@ -29,6 +29,52 @@ Grow the ecosystem and Laravel parity for API-heavy apps.
 - [x] **Documentation site** — Tutorials beyond the monorepo README
 - [x] **More auth adapters** — Redis/database session drivers, additional OAuth providers
 
+## Tier 4 — Framework depth (v0.4.0)
+
+TypeScript-native depth for any full-stack app — not domain-specific features. Laravel-shaped ergonomics without PHP ceremony; batteries included, magic by default.
+
+### Data layer
+
+- [x] **DB transactions** — `transaction()` helper with async-native, typed usage
+- [x] **Model casts** — typed attribute serialization (`datetime`, `json`, `boolean`, …)
+- [x] **Soft deletes** — `deleted_at`, `withTrashed()`, `restore()`, `forceDelete()`
+- [x] **Model lifecycle hooks** — `creating`, `created`, `updating`, `updated`, `deleting`, `deleted`
+
+### Operations
+
+- [x] **Logging** — structured `Log` facade with typed context (stdout, file, stack drivers)
+- [x] **Scheduler** — task registration API and `tyravel schedule:run` for cron
+- [x] **Health checks** — connectivity probes for database, Redis, and app readiness
+- [x] **Session maintenance** — `tyravel session:prune` for database session driver
+
+### HTTP & deployment
+
+- [x] **CORS middleware** — config-driven cross-origin support for APIs
+- [x] **Rate limiting** — throttle middleware with configurable limits
+- [x] **Trusted proxies** — correct client IP and scheme behind load balancers
+
+### Files
+
+- [x] **Storage** — filesystem abstraction with local driver
+- [x] **S3 storage driver** — cloud-compatible object storage adapter
+
+### CLI & DX
+
+- [x] **`tyravel route:list`** — named routes, methods, middleware, and handlers
+- [x] **`tyravel make:middleware`** — scaffold custom middleware
+- [x] **`tyravel make:command`** — scaffold console commands
+
+## Tier X — Production-ready project
+
+Open-ended tier: done when Tyravel is a framework teams can adopt with confidence in production — not tied to a version number. Items land here when the core framework depth (Tier 4+) is in place.
+
+- [ ] **Hosted documentation** — public docs site (beyond in-repo VitePress)
+- [ ] **tyravel-mcp** — agent-oriented capability index so models can build Tyravel apps without searching the whole codebase
+- [ ] **Ecosystem guide** — how to publish and maintain third-party `@tyravel/*` packages
+- [ ] **Graceful shutdown** — drain in-flight requests and queue workers on SIGTERM
+- [ ] **Config validation** — fail fast at boot when required environment variables are missing
+- [ ] **API stability policy** — documented semver guarantees for public package surfaces
+
 ## Shipped in v0.1.0
 
 - Service container, HTTP router, kernel, facades, CLI scaffolding

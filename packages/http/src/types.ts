@@ -24,7 +24,9 @@ export interface RouteDefinition {
   method: HttpMethod;
   pattern: string;
   handler: RouteHandler;
+  handlerLabel?: string;
   name?: string;
   namePrefix?: string;
   middleware: Middleware[];
+  middlewareLabels?: string[];
 }

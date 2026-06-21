@@ -41,6 +41,16 @@ export {
   MiddlewareRegistry,
 } from './middleware-registry.js';
 export type { MiddlewareInput } from './middleware-registry.js';
+export { createCorsMiddleware } from './cors.js';
+export type { CorsOptions } from './cors.js';
+export { createThrottleMiddleware, resetThrottleStore } from './throttle.js';
+export type { ThrottleOptions } from './throttle.js';
+export {
+  createTrustedProxiesMiddleware,
+  resolveClientIp,
+  resolveSecure,
+} from './trusted-proxies.js';
+export type { TrustedProxiesOptions } from './trusted-proxies.js';
 export type {
   HttpMethod,
   Middleware,
