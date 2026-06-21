@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { spawn } from 'node:child_process';
 import { Command } from '../command.js';
 import { resolveNewProjectOptions } from '../new-project-options.js';
 import {
@@ -45,7 +46,7 @@ export class NewCommand extends Command {
   override readonly name = 'new';
   override readonly description = 'Create a new Tyravel application';
   override readonly usage =
-    'tyravel new <name> [--path=<directory>] [--db=sqlite|mysql|postgres] [--redis] [--no-redis]';
+    'tyravel new <name> [--path=<directory>] [--db=sqlite|mysql|postgres] [--redis|--no-redis] [--auth|--no-auth] [--queue=database|sync|redis] [--mail=log|smtp|array]';
 
   async handle(args: string[]): Promise<number> {
     const options = parseOptions(args);
@@ -136,6 +137,9 @@ export class NewCommand extends Command {
     console.log(`Tyravel application created successfully.`);
     console.log('');
     console.log(`  Database: ${projectOptions.database}`);
+    console.log(`  Auth: ${projectOptions.auth ? 'yes' : 'no'}`);
+    console.log(`  Queue: ${projectOptions.queue}`);
+    console.log(`  Mail: ${projectOptions.mail}`);
     console.log(`  Redis: ${projectOptions.redis ? 'yes' : 'no'}`);
     console.log('');
     console.log(`  cd ${name}`);
@@ -143,6 +147,61 @@ export class NewCommand extends Command {
     console.log('  npm test');
     console.log('  tyravel serve');
 
+    // Run npm install with inline spinner (only in interactive mode)
+    if (process.stdout.isTTY) {
+      console.log('');
+      console.log('Running npm install...');
+      const installCode = await runNpmInstall(targetDir);
+      if (installCode === 0) {
+        console.log('✓ npm install complete');
+      } else {
+        console.log('⚠ npm install finished with warnings (run `npm install` manually)');
+      }
+    } else {
+      console.log('');
+      console.log('  Run: npm install');
+    }
+
     return 0;
   }
+}
+
+/**
+ * Run `npm install` in the given directory with a simple progress indicator.
+ */
+async function runNpmInstall(targetDir: string): Promise<number> {
+  return new Promise((resolvePromise) => {
+    const proc = spawn('npm', ['install'], {
+      cwd: targetDir,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+
+    let dots = 0;
+    const spinner = setInterval(() => {
+      dots = (dots + 1) % 4;
+      const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+      process.stdout.write(`\r${frames[dots]} Installing dependencies...`);
+    }, 150);
+
+    let output = '';
+    proc.stdout?.on('data', (chunk: Buffer) => {
+      output += chunk.toString();
+    });
+
+    proc.stderr?.on('data', (chunk: Buffer) => {
+      output += chunk.toString();
+    });
+
+    proc.on('close', (code) => {
+      clearInterval(spinner);
+      process.stdout.write('\r' + ' '.repeat(40) + '\r');
+      resolvePromise(code ?? 1);
+    });
+
+    proc.on('error', () => {
+      clearInterval(spinner);
+      process.stdout.write('\r' + ' '.repeat(40) + '\r');
+      resolvePromise(1);
+    });
+  });
 }

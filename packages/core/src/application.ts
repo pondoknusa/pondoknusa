@@ -10,6 +10,9 @@ import {
 } from '@tyravel/http';
 import { createControllerHandler, isControllerAction } from './controller.js';
 import { ServiceProvider } from './service-provider.js';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { join, isAbsolute } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 type ProviderConstructor = new (app: Application) => ServiceProvider;
 
@@ -84,6 +87,50 @@ export class Application extends Container {
     }
 
     this.booted = true;
+  }
+
+  /** Discover and register all service providers in `app/providers/`. */
+  async discoverProviders(): Promise<this> {
+    const providersDir = join(this.basePath, 'app', 'providers');
+    if (!existsSync(providersDir)) return this;
+
+    const files = readdirSync(providersDir)
+      .filter((f) => f.endsWith('.ts') && statSync(join(providersDir, f)).isFile())
+      .sort();
+
+    for (const file of files) {
+      try {
+        const moduleUrl = pathToFileURL(join(providersDir, file)).href;
+        const mod = await import(moduleUrl);
+        // Look for the exported class that extends ServiceProvider
+        for (const key of Object.keys(mod)) {
+          const exported = mod[key];
+          if (typeof exported === 'function' && /Provider$/i.test(key)) {
+            this.register(exported);
+            break;
+          }
+        }
+      } catch (err) {
+        console.error(`Failed to load provider: ${file}`, (err as Error).message);
+      }
+    }
+    return this;
+  }
+
+  /** Discover and register console commands in `app/console/commands/`. */
+  async discoverCommands(): Promise<string[]> {
+    const cmdsDir = join(this.basePath, 'app', 'console', 'commands');
+    if (!existsSync(cmdsDir)) return [];
+
+    const files = readdirSync(cmdsDir)
+      .filter((f) => f.endsWith('.ts') && statSync(join(cmdsDir, f)).isFile())
+      .sort();
+
+    const discovered: string[] = [];
+    for (const file of files) {
+      discovered.push(file.replace(/\.ts$/, ''));
+    }
+    return discovered;
   }
 
   router(): Router {

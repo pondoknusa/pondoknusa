@@ -4,8 +4,8 @@ const CORE_VERSION = '^0.3.0';
 
 export function projectPackageJson(name: string, options: NewProjectOptions): string {
   const dependencies: Record<string, string> = {
-    '@tyravel/auth': CORE_VERSION,
     '@tyravel/cache': CORE_VERSION,
+    '@tyravel/collection': CORE_VERSION,
     '@tyravel/config': CORE_VERSION,
     '@tyravel/core': CORE_VERSION,
     '@tyravel/database': CORE_VERSION,
@@ -15,9 +15,14 @@ export function projectPackageJson(name: string, options: NewProjectOptions): st
     '@tyravel/mail': CORE_VERSION,
     '@tyravel/notifications': CORE_VERSION,
     '@tyravel/queue': CORE_VERSION,
+    '@tyravel/support': CORE_VERSION,
     '@tyravel/validation': CORE_VERSION,
     '@tyravel/views': CORE_VERSION,
   };
+
+  if (options.auth !== false) {
+    dependencies['@tyravel/auth'] = CORE_VERSION;
+  }
 
   if (options.database === 'mysql') {
     dependencies['@tyravel/database-mysql'] = CORE_VERSION;
