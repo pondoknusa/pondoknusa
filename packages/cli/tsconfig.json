@@ -11,7 +11,8 @@
     { "path": "../core" },
     { "path": "../database" },
     { "path": "../queue" },
-    { "path": "../views" }
+    { "path": "../views" },
+    { "path": "../repl" }
   ],
   "include": ["src"]
 }

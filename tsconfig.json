@@ -2,6 +2,7 @@
   "files": [],
   "references": [
     { "path": "packages/container" },
+    { "path": "packages/collection" },
     { "path": "packages/support" },
     { "path": "packages/http" },
     { "path": "packages/config" },
@@ -23,6 +24,7 @@
     { "path": "packages/notifications" },
     { "path": "packages/core" },
     { "path": "packages/testing" },
+    { "path": "packages/repl" },
     { "path": "packages/cli" }
   ]
 }
