@@ -37,6 +37,25 @@ export class ResponseFactory {
     });
   }
 
+  make(body: string, init: ResponseInit = {}): Response {
+    return new WebResponse(body, {
+      ...init,
+      headers: new Headers(init.headers),
+    });
+  }
+
+  xml(body: string, init: ResponseInit = {}): Response {
+    const headers = new Headers(init.headers);
+    if (!headers.has('content-type')) {
+      headers.set('content-type', 'application/xml; charset=utf-8');
+    }
+
+    return new WebResponse(body, {
+      ...init,
+      headers,
+    });
+  }
+
   redirect(location: string, status = 302): Response {
     return WebResponse.redirect(location, status);
   }
