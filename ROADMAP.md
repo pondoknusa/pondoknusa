@@ -170,16 +170,31 @@ Longer-horizon bets that keep Tyravel TypeScript-native while closing the gap wi
 - [x] **Programmatic views** — `.tyr.ts` views that export a `render(ctx)` function for logic-heavy UI without stringly directives.
 - [x] **Custom escape contexts** — `View::escape('url' | 'js' | 'css', fn)` for context-specific escaping beyond HTML.
 
+## Tier 6.1 — Templating hardening (v0.6.1)
+
+Close the polish gaps found during the Tier 6 audit. Ship before v0.7.0 production work.
+
+- [x] **CLI view commands boot the app** — `tyravel view:cache`, `view:clear`, and `view:lint` boot the application so custom directives, composers, and escape contexts registered in providers are available (not a bare `ViewEngine`).
+- [x] **`serve` watcher in server child** — run `view:watch` inside the served process so recompiles apply to the running app, not only the CLI parent.
+- [x] **`make:component --class` registration** — scaffolded class-based components auto-register via `View.component()` in the generated provider or service provider stub.
+- [x] **`@inject` diagnostics** — warn or fail in dev when `@inject` is used without a registered injector; avoid silent empty context.
+- [x] **Unknown custom directive diagnostics** — compile-time or lint-time warning when `@myDirective` has no `View::directive()` handler registered.
+
+## Tier 7 — Production credibility (v0.7.0)
+
+Make Tyravel deployable with confidence. Builds on Tier 6.1 hardening.
+
+- [ ] **Config validation** — fail fast at boot when required environment variables are missing or invalid; typed schema per config file.
+- [x] **Graceful shutdown** — drain in-flight HTTP requests and queue workers on `SIGTERM` / `SIGINT`; cooperative timeout before force exit.
+- [ ] **API stability policy** — documented semver guarantees for public `@tyravel/*` surfaces (what is stable, what is experimental, deprecation window).
+
 ## Tier X — Production-ready project
 
-Open-ended tier: done when Tyravel is a framework teams can adopt with confidence in production — not tied to a version number. Items land here when the core framework depth (Tier 4+) is in place.
+Open-ended tier: done when Tyravel is a framework teams can adopt with confidence in production — not tied to a version number. Items land here when Tiers 1–7 are in place.
 
 - [ ] **Hosted documentation** — public docs site (beyond in-repo VitePress)
 - [ ] **tyravel-mcp** — agent-oriented capability index so models can build Tyravel apps without searching the whole codebase
 - [ ] **Ecosystem guide** — how to publish and maintain third-party `@tyravel/*` packages
-- [x] **Graceful shutdown** — drain in-flight requests and queue workers on SIGTERM
-- [ ] **Config validation** — fail fast at boot when required environment variables are missing
-- [ ] **API stability policy** — documented semver guarantees for public package surfaces
 
 ## Shipped in v0.1.0
 
