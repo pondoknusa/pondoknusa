@@ -1,4 +1,5 @@
 import { existsSync } from 'node:fs';
+import { snakeCase } from '@tyravel/support';
 import { Command } from '../command.js';
 import { requireProjectRoot } from '../project.js';
 import { migration } from '../stubs.js';
@@ -55,10 +56,3 @@ function timestamp(): string {
   ].join('_');
 }
 
-function snakeCase(value: string): string {
-  return value
-    .replace(/([a-z0-9])([A-Z])/g, '$1_$2')
-    .replace(/[^a-zA-Z0-9]+/g, '_')
-    .replace(/^_+|_+$/g, '')
-    .toLowerCase();
-}

@@ -1,11 +1,7 @@
 {
-  "name": "@tyravel/cli",
+  "name": "@tyravel/support",
   "version": "0.2.1",
-  "description": "The Tyravel command-line interface",
   "type": "module",
-  "bin": {
-    "tyravel": "./dist/bin/tyravel.js"
-  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -18,26 +14,20 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
-  "dependencies": {
-    "@tyravel/support": "0.2.1",
-    "@tyravel/config": "0.2.1",
-    "@tyravel/core": "0.2.1",
-    "@tyravel/database": "0.2.1",
-    "@tyravel/queue": "0.2.1"
-  },
   "files": [
     "dist"
   ],
-  "engines": {
-    "node": ">=22"
-  },
+  "description": "String and utility helpers for Tyravel",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/thesimonharms/tyravel.git",
-    "directory": "packages/cli"
+    "directory": "packages/support"
   },
   "publishConfig": {
     "access": "public"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

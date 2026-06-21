@@ -9,6 +9,7 @@ Requires **Node.js ≥ 22**.
 | Package | Description |
 |---------|-------------|
 | `@tyravel/container` | IoC container with bindings, singletons, aliases, and callable injection |
+| `@tyravel/support` | String helpers (`Str.slug`, `camelCase`, `snakeCase`, `random`, etc.) |
 | `@tyravel/http` | Router, middleware, request/response helpers, API resources (`JsonResource`) |
 | `@tyravel/config` | Typed config loading and dotted-key `ConfigRepository` |
 | `@tyravel/validation` | Request validation with pipe rules and 422 error responses |
@@ -180,6 +181,21 @@ const name = app.make<ConfigRepository>('config').get<string>('app.name');
 ```
 
 New apps scaffold `.env` and `.env.example`. Existing shell variables are not overwritten unless you pass `{ override: true }` to `loadEnv()`.
+
+### String helpers
+
+Laravel-style string utilities live in `@tyravel/support`:
+
+```typescript
+import { Str, slug } from '@tyravel/support';
+
+slug('  My Post Title!  '); // "my-post-title"
+Str.camel('foo_bar');        // "fooBar"
+Str.snake('FooBar');         // "foo_bar"
+Str.studly('foo-bar');       // "FooBar"
+Str.kebab('FooBarBaz');      // "foo-bar-baz"
+Str.random(32);              // alphanumeric token
+```
 
 ### Validation
 

@@ -41,6 +41,7 @@ jobs:
           set -e
           PACKAGES=(
             @tyravel/container
+            @tyravel/support
             @tyravel/config
             @tyravel/http
             @tyravel/validation
