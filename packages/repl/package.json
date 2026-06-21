@@ -1,0 +1,24 @@
+{
+  "name": "@tyravel/repl",
+  "version": "0.1.0",
+  "description": "Interactive Tyravel REPL (tyravel shell)",
+  "license": "MIT",
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@tyravel/core": "^0.4.0",
+    "@tyravel/support": "^0.4.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}

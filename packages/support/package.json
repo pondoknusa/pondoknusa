@@ -29,5 +29,8 @@
   },
   "engines": {
     "node": ">=22"
+  },
+  "dependencies": {
+    "@tyravel/collection": "^0.1.0"
   }
 }

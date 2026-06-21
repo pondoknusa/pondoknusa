@@ -26,6 +26,7 @@ import { QueueFailedCommand, QueueFailedTableCommand, QueueRetryCommand } from '
 import { QueueTableCommand } from './commands/queue-table.js';
 import { QueueWorkCommand } from './commands/queue-work.js';
 import { ServeCommand } from './commands/serve.js';
+import { ShellCommand } from './commands/shell.js';
 import { VersionCommand } from './commands/version.js';
 
 export function createKernel(): ConsoleKernel {
@@ -33,6 +34,7 @@ export function createKernel(): ConsoleKernel {
     new NewCommand(),
     new AuthInstallCommand(),
     new ServeCommand(),
+    new ShellCommand(),
     new MigrateCommand(),
     new DbSeedCommand(),
     new MakeControllerCommand(),
