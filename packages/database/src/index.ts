@@ -21,6 +21,13 @@ export { Seeder } from './seeder.js';
 export { SeederRunner } from './seeder-runner.js';
 export { Model } from './model.js';
 export { ModelQueryBuilder } from './model-query-builder.js';
+export {
+  LengthAwarePaginator,
+} from './paginator.js';
+export type {
+  PaginatedResponse,
+  PaginatorMeta,
+} from './paginator.js';
 export { QueryBuilder } from './query-builder.js';
 export { BelongsToManyRelation } from './relations/belongs-to-many.js';
 export { BelongsToRelation } from './relations/belongs-to.js';

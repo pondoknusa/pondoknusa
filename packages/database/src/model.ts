@@ -1,4 +1,5 @@
 import { applyGlobalScopes, ModelQueryBuilder } from './model-query-builder.js';
+import type { LengthAwarePaginator } from './paginator.js';
 import type { ModelStatic } from './model-types.js';
 import { BelongsToManyRelation } from './relations/belongs-to-many.js';
 import { BelongsToRelation } from './relations/belongs-to.js';
@@ -72,6 +73,15 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
   ): Promise<TModel[]> {
     const model = this as unknown as ModelStatic;
     return model.query().getModels<TModel>();
+  }
+
+  static async paginate<TModel extends Model>(
+    this: new (attributes?: Partial<ModelAttributes>) => TModel,
+    perPage = 15,
+    page = 1,
+  ): Promise<LengthAwarePaginator<TModel>> {
+    const model = this as unknown as ModelStatic;
+    return model.query().paginateModels<TModel>(perPage, page);
   }
 
   static async create<TModel extends Model>(

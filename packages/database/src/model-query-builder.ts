@@ -1,5 +1,6 @@
 import type { DatabaseConnection } from './connection.js';
 import { EagerLoader } from './eager-loader.js';
+import { LengthAwarePaginator } from './paginator.js';
 import { QueryBuilder } from './query-builder.js';
 import type { Model } from './model.js';
 import type { ModelAttributes, ModelStatic } from './model-types.js';
@@ -69,6 +70,21 @@ export class ModelQueryBuilder extends QueryBuilder {
   async firstModel<TModel extends Model>(): Promise<TModel | null> {
     const rows = await this.clone().limit(1).getModels<TModel>();
     return rows[0] ?? null;
+  }
+
+  async paginateModels<TModel extends Model>(
+    perPage = 15,
+    page = 1,
+  ): Promise<LengthAwarePaginator<TModel>> {
+    const resolvedPage = LengthAwarePaginator.resolvePage(page);
+    const resolvedPerPage = LengthAwarePaginator.resolvePerPage(perPage);
+    const total = await this.clone().count();
+    const items = await this.clone()
+      .offset((resolvedPage - 1) * resolvedPerPage)
+      .limit(resolvedPerPage)
+      .getModels<TModel>();
+
+    return new LengthAwarePaginator(items, total, resolvedPerPage, resolvedPage);
   }
 }
 

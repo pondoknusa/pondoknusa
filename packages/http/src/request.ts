@@ -35,6 +35,22 @@ export class TyravelRequest {
     return this.url.searchParams.get(name) ?? fallback;
   }
 
+  page(name = 'page', fallback = 1): number {
+    return this.resolvePositiveInt(this.query(name), fallback);
+  }
+
+  perPage(name = 'per_page', fallback = 15, max = 100): number {
+    return Math.min(this.resolvePositiveInt(this.query(name), fallback), max);
+  }
+
+  private resolvePositiveInt(value: string | undefined, fallback: number): number {
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed) || parsed < 1) {
+      return fallback;
+    }
+    return Math.floor(parsed);
+  }
+
   async json<T = unknown>(): Promise<T> {
     return this.raw.json() as Promise<T>;
   }

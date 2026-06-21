@@ -1,5 +1,6 @@
 import type { DatabaseConnection } from './connection.js';
 import type { SqlGrammar } from './grammar.js';
+import { LengthAwarePaginator } from './paginator.js';
 import type { Row, RowValue, WhereClause, WhereOperator } from './types.js';
 
 export class QueryBuilder<T extends Row = Row> {
@@ -101,6 +102,42 @@ export class QueryBuilder<T extends Row = Row> {
   async first(): Promise<T | null> {
     const rows = await this.clone().limit(1).get();
     return rows[0] ?? null;
+  }
+
+  async count(column = '*'): Promise<number> {
+    const bindings: RowValue[] = [];
+    const where = this.compileWheres(bindings);
+    const countExpression =
+      column === '*'
+        ? 'COUNT(*)'
+        : `COUNT(${this.grammar.wrapIdentifier(column)})`;
+    const sql = `SELECT ${countExpression} as "aggregate" FROM ${this.grammar.wrapIdentifier(this.tableName)}${where.sql}`;
+    const result = await this.connection.query(sql, bindings);
+    const aggregate = result.rows[0]?.aggregate;
+    return Number(aggregate ?? 0);
+  }
+
+  async forPage(page: number, perPage: number): Promise<T[]> {
+    const resolvedPage = LengthAwarePaginator.resolvePage(page);
+    const resolvedPerPage = LengthAwarePaginator.resolvePerPage(perPage);
+    return this.clone()
+      .offset((resolvedPage - 1) * resolvedPerPage)
+      .limit(resolvedPerPage)
+      .get();
+  }
+
+  async paginate(
+    perPage = 15,
+    page = 1,
+  ): Promise<LengthAwarePaginator<T>> {
+    const resolvedPage = LengthAwarePaginator.resolvePage(page);
+    const resolvedPerPage = LengthAwarePaginator.resolvePerPage(perPage);
+    const [total, items] = await Promise.all([
+      this.clone().count(),
+      this.forPage(resolvedPage, resolvedPerPage),
+    ]);
+
+    return new LengthAwarePaginator(items, total, resolvedPerPage, resolvedPage);
   }
 
   async insert(attributes: Partial<T>): Promise<number | bigint | undefined> {

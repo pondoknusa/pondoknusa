@@ -311,6 +311,30 @@ await schema.create('users', (table) => {
 
 **Query scopes:** define `scopeName(builder, ...args)` on a model and call `Model.scope('name', ...args)`. Global scopes use `Model.addGlobalScope((builder) => ...)`.
 
+**Pagination:** paginate query builder or model results with total counts and page metadata:
+
+```typescript
+import { LengthAwarePaginator } from '@tyravel/database';
+
+// From a model (shorthand)
+const page = await User.paginate(15, 2);
+
+// From a model query
+const users = await User.query().orderBy('id').paginateModels(15, 2);
+
+// From a low-level query builder
+const rows = await new QueryBuilder(connection, 'users').orderBy('id').paginate(10);
+
+// In a controller — read ?page= and ?per_page= from the request
+const users = await User.query()
+  .orderBy('id')
+  .paginate(request.perPage(), request.page());
+
+return Response.json(users.toArray());
+```
+
+`LengthAwarePaginator#toArray()` returns `{ data, currentPage, perPage, total, lastPage, from, to }` for JSON APIs.
+
 ### Views / Templating
 
 Register `ViewServiceProvider`, add `config/views.ts`, and place templates in `resources/views/`:
