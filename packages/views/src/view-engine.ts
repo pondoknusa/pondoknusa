@@ -1,5 +1,12 @@
 import { readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+import {
+  cacheFileForView,
+  clearCompiledCacheDir,
+  discoverViewNames,
+  readCompiledCache,
+  writeCompiledCache,
+} from './compiled-cache.js';
 import { compile, type CompileOptions } from './compiler.js';
 import { mergeEvaluationContext } from './evaluate.js';
 import { renderOps } from './renderer.js';
@@ -19,16 +26,28 @@ interface CacheEntry {
   template: CompiledTemplate;
 }
 
+const DEFAULT_COMPILED_PATH = 'storage/framework/views';
+
 export class ViewEngine {
   private readonly cache = new Map<string, CacheEntry>();
   private readonly extension: string;
   private readonly registry = new ViewRegistry();
+  private readonly viewsRoot: string;
+  private compiledCacheDirectory?: string;
 
   constructor(
     private readonly basePath: string,
     private readonly config: ViewConfig,
   ) {
     this.extension = config.extension ?? '.tyr';
+    this.viewsRoot = join(this.basePath, this.config.path);
+
+    if (config.compiled) {
+      this.compiledCacheDirectory = join(
+        this.basePath,
+        config.compiledPath ?? DEFAULT_COMPILED_PATH,
+      );
+    }
   }
 
   directive(name: string, handler: CustomDirectiveHandler): this {
@@ -57,6 +76,11 @@ export class ViewEngine {
     return this;
   }
 
+  setCompiledCachePath(path: string | null): this {
+    this.compiledCacheDirectory = path ?? undefined;
+    return this;
+  }
+
   getRegistry(): ViewRegistry {
     return this.registry;
   }
@@ -65,17 +89,31 @@ export class ViewEngine {
     return mergeEvaluationContext(context, this.registry.getBindings());
   }
 
+  resolveName(name: string): string {
+    if (this.existsAt(name)) {
+      return name;
+    }
+
+    const anonymous = `components.${name}`;
+    if (this.existsAt(anonymous)) {
+      return anonymous;
+    }
+
+    return name;
+  }
+
   async render(
     name: string,
     context: ViewContext = {},
     parentSections?: ReadonlyMap<string, string>,
     parentStacks?: Map<string, string[]>,
+    parentOnceRendered?: Set<string>,
   ): Promise<string> {
     const template = this.loadTemplate(name);
     const renderContext = this.buildEvaluationContext(
       await this.registry.applyComposers(name, context),
     );
-    const helpers = new ViewHelpers(parentStacks);
+    const helpers = new ViewHelpers(parentStacks, parentOnceRendered);
 
     if (parentSections) {
       helpers.importSections(parentSections);
@@ -84,7 +122,10 @@ export class ViewEngine {
     await renderOps(template.ops, renderContext, helpers, this);
 
     if (template.layout) {
-      const layoutHelpers = new ViewHelpers(helpers.getStacks());
+      const layoutHelpers = new ViewHelpers(
+        helpers.getStacks(),
+        helpers.getOnceRendered(),
+      );
       layoutHelpers.importSections(helpers.getSections());
       await renderOps(
         this.loadTemplate(template.layout).ops,
@@ -99,6 +140,36 @@ export class ViewEngine {
   }
 
   exists(name: string): boolean {
+    return this.existsAt(name) || this.existsAt(`components.${name}`);
+  }
+
+  async warmCompiledCache(): Promise<number> {
+    if (!this.compiledCacheDirectory) {
+      throw new Error('Compiled view cache is disabled for this engine.');
+    }
+
+    let warmed = 0;
+    for (const name of this.listViewNames()) {
+      this.loadTemplate(name);
+      warmed += 1;
+    }
+    return warmed;
+  }
+
+  clearCompiledCache(): number {
+    if (!this.compiledCacheDirectory) {
+      return 0;
+    }
+
+    this.cache.clear();
+    return clearCompiledCacheDir(this.compiledCacheDirectory);
+  }
+
+  listViewNames(): string[] {
+    return discoverViewNames(this.viewsRoot, this.extension);
+  }
+
+  private existsAt(name: string): boolean {
     try {
       statSync(this.resolvePath(name));
       return true;
@@ -121,10 +192,35 @@ export class ViewEngine {
       return cached.template;
     }
 
-    const source = readFileSync(path, 'utf8');
     const compileOptions: CompileOptions = {
       customDirectives: this.registry.getDirectiveNames(),
     };
+
+    if (this.compiledCacheDirectory) {
+      const cacheFile = cacheFileForView(this.compiledCacheDirectory, this.viewsRoot, path);
+      const diskEntry = readCompiledCache(cacheFile);
+      if (
+        diskEntry &&
+        diskEntry.mtimeMs === stats.mtimeMs &&
+        diskEntry.registryVersion === registryVersion
+      ) {
+        this.cache.set(path, {
+          mtimeMs: stats.mtimeMs,
+          registryVersion,
+          template: diskEntry.template,
+        });
+        return diskEntry.template;
+      }
+
+      const source = readFileSync(path, 'utf8');
+      const template = compile(source, compileOptions);
+      const memoryEntry = { mtimeMs: stats.mtimeMs, registryVersion, template };
+      this.cache.set(path, memoryEntry);
+      writeCompiledCache(cacheFile, memoryEntry);
+      return template;
+    }
+
+    const source = readFileSync(path, 'utf8');
     const template = compile(source, compileOptions);
     this.cache.set(path, { mtimeMs: stats.mtimeMs, registryVersion, template });
     return template;
@@ -132,6 +228,6 @@ export class ViewEngine {
 
   private resolvePath(name: string): string {
     const relative = name.replace(/\./g, '/');
-    return join(this.basePath, this.config.path, `${relative}${this.extension}`);
+    return join(this.viewsRoot, `${relative}${this.extension}`);
   }
 }

@@ -66,6 +66,13 @@ export function positionalArgs(args: string[]): string[] {
   return args.filter((arg) => !arg.startsWith('--') && !arg.startsWith('-'));
 }
 
+export function optionFlag(
+  options: Record<string, string | boolean>,
+  key: string,
+): boolean {
+  return options[key] === true;
+}
+
 export function optionString(
   options: Record<string, string | boolean>,
   key: string,

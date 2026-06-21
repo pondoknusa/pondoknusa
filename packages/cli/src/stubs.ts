@@ -55,7 +55,26 @@ export function viewsConfig(): string {
   return `export default {
   path: 'resources/views',
   extension: '.tyr',
+  compiledPath: 'storage/framework/views',
 } as const;
+`;
+}
+
+export function componentView(name: string): string {
+  return `<div class="component component-${name}">
+  {!! $slot !!}
+</div>
+`;
+}
+
+export function componentClass(className: string, tagName: string): string {
+  return `export class ${className} {
+  readonly tag = '${tagName}';
+
+  data(): Record<string, unknown> {
+    return {};
+  }
+}
 `;
 }
 

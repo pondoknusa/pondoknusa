@@ -1,5 +1,6 @@
 import type { JsonValue } from './json-match.js';
 import { jsonContains } from './json-match.js';
+import { assertDontSee, assertSee } from './view-assertions.js';
 
 export class TestResponse {
   constructor(public readonly response: Response) {}
@@ -68,6 +69,16 @@ export class TestResponse {
 
   header(name: string): string | null {
     return this.response.headers.get(name);
+  }
+
+  async assertSee(text: string): Promise<this> {
+    assertSee(await this.text(), text);
+    return this;
+  }
+
+  async assertDontSee(text: string): Promise<this> {
+    assertDontSee(await this.text(), text);
+    return this;
   }
 }
 

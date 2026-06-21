@@ -2,7 +2,10 @@ export class ViewHelpers {
   private readonly sections = new Map<string, string>();
   private output = '';
 
-  constructor(private readonly stacks: Map<string, string[]> = new Map()) {}
+  constructor(
+    private readonly stacks: Map<string, string[]> = new Map(),
+    private readonly onceRendered: Set<string> = new Set(),
+  ) {}
 
   append(value: string): void {
     this.output += value;
@@ -42,6 +45,18 @@ export class ViewHelpers {
 
   getStacks(): Map<string, string[]> {
     return this.stacks;
+  }
+
+  getOnceRendered(): Set<string> {
+    return this.onceRendered;
+  }
+
+  hasRenderedOnce(id: string): boolean {
+    return this.onceRendered.has(id);
+  }
+
+  markOnceRendered(id: string): void {
+    this.onceRendered.add(id);
   }
 
   toString(): string {

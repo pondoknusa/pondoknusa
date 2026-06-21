@@ -3,6 +3,8 @@ export type ViewContext = Record<string, unknown>;
 export interface ViewConfig {
   path: string;
   extension?: string;
+  compiled?: boolean;
+  compiledPath?: string;
 }
 
 export interface CompiledTemplate {
@@ -26,6 +28,7 @@ export type TemplateOp =
   | { type: 'forelse'; expression: string; body: TemplateOp[]; emptyBody: TemplateOp[] }
   | { type: 'section'; name: string; body: TemplateOp[] }
   | { type: 'yield'; name: string; defaultValue?: string }
+  | { type: 'once'; id: string; body: TemplateOp[] }
   | { type: 'push'; name: string; body: TemplateOp[] }
   | { type: 'stack'; name: string; defaultValue?: string }
   | { type: 'include'; name: string; dataExpression?: string }

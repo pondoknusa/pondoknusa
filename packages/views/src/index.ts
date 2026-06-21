@@ -1,3 +1,11 @@
+export {
+  cacheFileForView,
+  clearCompiledCacheDir,
+  discoverViewNames,
+  readCompiledCache,
+  writeCompiledCache,
+} from './compiled-cache.js';
+export type { SerializedCacheEntry } from './compiled-cache.js';
 export { compile, type CompileOptions } from './compiler.js';
 export { escapeHtml } from './escape.js';
 export { evaluateExpression, mergeEvaluationContext } from './evaluate.js';

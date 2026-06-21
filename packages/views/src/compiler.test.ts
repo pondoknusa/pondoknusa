@@ -174,6 +174,24 @@ describe('compile', () => {
     );
   });
 
+  it('parses @once blocks with explicit and generated ids', () => {
+    const source = `@once('scripts')
+  <script></script>
+@endonce
+
+@once
+  <style></style>
+@endonce
+`;
+
+    const template = compile(source);
+    const explicit = template.ops.find((op) => op.type === 'once' && op.id === 'scripts');
+    const generated = template.ops.find((op) => op.type === 'once' && op.id !== 'scripts');
+
+    expect(explicit?.type).toBe('once');
+    expect(generated?.type).toBe('once');
+  });
+
   it('parses nested component blocks', () => {
     const source = `@component('components.shell')
   @component('components.alert', { message: 'Nested' })

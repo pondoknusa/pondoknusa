@@ -324,6 +324,40 @@ describe('ViewEngine', () => {
     expect(html).not.toContain('<button>Delete</button>');
   });
 
+  it('resolves anonymous components from components/', async () => {
+    const { basePath, engine } = createFixture();
+    mkdirSync(join(basePath, 'resources/views/components'), { recursive: true });
+    writeFileSync(
+      join(basePath, 'resources/views/components/alert.tyr'),
+      `<div class="alert">{{ message }}</div>`,
+    );
+    writeFileSync(
+      join(basePath, 'resources/views/anonymous.tyr'),
+      `@component('alert', { message: 'Hi' })
+`,
+    );
+
+    const html = await engine.render('anonymous', {});
+    expect(html).toContain('<div class="alert">Hi</div>');
+  });
+
+  it('renders @once blocks only once per render', async () => {
+    const { basePath, engine } = createFixture();
+    writeFileSync(
+      join(basePath, 'resources/views/once.tyr'),
+      `@once('pixel')
+  <img src="/pixel.gif" alt="">
+@endonce
+@once('pixel')
+  <img src="/pixel.gif" alt="">
+@endonce
+`,
+    );
+
+    const html = await engine.render('once', {});
+    expect(html.match(/<img src="\/pixel.gif"/g)?.length).toBe(1);
+  });
+
   it('escapes echoed values by default', async () => {
     const { basePath, engine } = createFixture();
     writeFileSync(

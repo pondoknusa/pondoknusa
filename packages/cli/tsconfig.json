@@ -10,7 +10,8 @@
     { "path": "../config" },
     { "path": "../core" },
     { "path": "../database" },
-    { "path": "../queue" }
+    { "path": "../queue" },
+    { "path": "../views" }
   ],
   "include": ["src"]
 }

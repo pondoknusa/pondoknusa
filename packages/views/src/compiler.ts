@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import type { CompiledTemplate, ConditionalMode, TemplateOp } from './types.js';
 
 export interface CompileOptions {
@@ -39,6 +40,8 @@ const BUILTIN_DIRECTIVES = new Set([
   'endguest',
   'can',
   'endcan',
+  'once',
+  'endonce',
 ]);
 
 const LAYOUT_RE = /^@layout\(\s*['"]([^'"]+)['"]\s*\)\s*$/m;
@@ -75,6 +78,8 @@ const ENDFOREACH_RE = /^@endforeach\s*$/;
 const FORELSE_RE = /^@forelse\s*\((.+)\)\s*$/;
 const FORELSE_EMPTY_RE = /^@empty\s*$/;
 const ENDFORELSE_RE = /^@endforelse\s*$/;
+const ONCE_RE = /^@once(?:\(\s*['"]([^'"]+)['"]\s*\))?\s*$/;
+const ENDONCE_RE = /^@endonce\s*$/;
 const PUSH_START_RE = /^@push\(\s*['"]([^'"]+)['"]\s*\)\s*$/;
 const PUSH_END_RE = /^@endpush\s*$/;
 const STACK_RE = /^@stack\(\s*['"]([^'"]+)['"]\s*(?:,\s*['"]([^'"]*)['"]\s*)?\)\s*$/;
@@ -227,6 +232,14 @@ function parseOps(source: string, options: CompileOptions = {}): TemplateOp[] {
     const foreachMatch = trimmed.match(FOREACH_RE);
     if (foreachMatch) {
       const block = parseForeachBlock(source, cursor, options);
+      ops.push(block.op);
+      cursor = block.end;
+      continue;
+    }
+
+    const onceMatch = trimmed.match(ONCE_RE);
+    if (onceMatch) {
+      const block = parseOnceBlock(source, cursor, onceMatch[1], options);
       ops.push(block.op);
       cursor = block.end;
       continue;
@@ -549,6 +562,30 @@ function findForelseEmptyBoundary(content: string): { start: number; end: number
   }
 
   return { start: content.length, end: content.length };
+}
+
+function parseOnceBlock(
+  source: string,
+  start: number,
+  explicitId: string | undefined,
+  options: CompileOptions = {},
+): { op: TemplateOp; end: number } {
+  const headerLine = takeLine(source, start);
+  const contentStart = start + headerLine.length;
+  const contentEnd = findNestedEnd(source, contentStart, ONCE_RE, ENDONCE_RE);
+  const endLine = takeLine(source, contentEnd);
+  const id =
+    explicitId ??
+    createHash('sha256').update(`${start}:${contentStart}:${contentEnd}`).digest('hex');
+
+  return {
+    op: {
+      type: 'once',
+      id,
+      body: parseOps(source.slice(contentStart, contentEnd), options),
+    },
+    end: contentEnd + endLine.length,
+  };
 }
 
 function parsePushBlock(

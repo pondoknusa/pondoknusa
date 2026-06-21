@@ -108,11 +108,11 @@ Make `.tyr` feel as productive as Blade for full-stack apps — TypeScript-nativ
 
 ### P2 — If scope allows
 
-- [ ] **Compiled view cache** — write compiled ops to `storage/framework/views`; `tyravel view:cache` and `view:clear` commands.
-- [ ] **Anonymous components** — `resources/views/components/*.tyr` auto-resolvable as `@component('alert')` without manual paths.
-- [ ] **View testing** — `assertSee` / `assertDontSee` helpers in `@tyravel/testing` for rendered HTML assertions.
-- [ ] **`make:component`** — scaffold component templates with slot stubs and optional class binding.
-- [ ] **@once** — render a block only once per request (useful for push/stack deduplication).
+- [x] **Compiled view cache** — write compiled ops to `storage/framework/views`; `tyravel view:cache` and `view:clear` commands.
+- [x] **Anonymous components** — `resources/views/components/*.tyr` auto-resolvable as `@component('alert')` without manual paths.
+- [x] **View testing** — `assertSee` / `assertDontSee` helpers in `@tyravel/testing` for rendered HTML assertions.
+- [x] **`make:component`** — scaffold component templates with slot stubs and optional class binding.
+- [x] **@once** — render a block only once per request (useful for push/stack deduplication).
 
 ## Tier X — Production-ready project
 

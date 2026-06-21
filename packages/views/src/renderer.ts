@@ -47,15 +47,29 @@ export async function renderOps(
         break;
       }
 
+      case 'once': {
+        if (!helpers.hasRenderedOnce(op.id)) {
+          helpers.markOnceRendered(op.id);
+          await renderOps(op.body, context, helpers, engine);
+        }
+        break;
+      }
+
       case 'section': {
-        const sectionHelpers = new ViewHelpers(helpers.getStacks());
+        const sectionHelpers = new ViewHelpers(
+          helpers.getStacks(),
+          helpers.getOnceRendered(),
+        );
         await renderOps(op.body, context, sectionHelpers, engine);
         helpers.setSection(op.name, sectionHelpers.toString());
         break;
       }
 
       case 'push': {
-        const pushHelpers = new ViewHelpers(helpers.getStacks());
+        const pushHelpers = new ViewHelpers(
+          helpers.getStacks(),
+          helpers.getOnceRendered(),
+        );
         await renderOps(op.body, context, pushHelpers, engine);
         helpers.pushStack(op.name, pushHelpers.toString());
         break;
@@ -113,24 +127,31 @@ export async function renderOps(
         };
 
         if (op.defaultSlot) {
-          const slotHelpers = new ViewHelpers(helpers.getStacks());
+          const slotHelpers = new ViewHelpers(
+            helpers.getStacks(),
+            helpers.getOnceRendered(),
+          );
           await renderOps(op.defaultSlot, context, slotHelpers, engine);
           childContext.$slot = slotHelpers.toString();
         }
 
         if (op.namedSlots) {
           for (const [slotName, slotOps] of Object.entries(op.namedSlots)) {
-            const slotHelpers = new ViewHelpers(helpers.getStacks());
+            const slotHelpers = new ViewHelpers(
+              helpers.getStacks(),
+              helpers.getOnceRendered(),
+            );
             await renderOps(slotOps, context, slotHelpers, engine);
             childContext[`$${slotName}`] = slotHelpers.toString();
           }
         }
 
         const html = await engine.render(
-          op.name,
+          engine.resolveName(op.name),
           childContext,
           helpers.getSections(),
           helpers.getStacks(),
+          helpers.getOnceRendered(),
         );
         helpers.append(html);
         break;
@@ -214,7 +235,13 @@ async function renderInclude(
   const data = dataExpression
     ? (evaluateExpression(dataExpression, context) as ViewContext)
     : context;
-  return engine.render(name, data, helpers.getSections(), helpers.getStacks());
+  return engine.render(
+    engine.resolveName(name),
+    data,
+    helpers.getSections(),
+    helpers.getStacks(),
+    helpers.getOnceRendered(),
+  );
 }
 
 async function renderForeachBody(

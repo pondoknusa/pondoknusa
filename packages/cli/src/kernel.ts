@@ -18,7 +18,9 @@ import { MakeListenerCommand } from './commands/make-listener.js';
 import { MakeMigrationCommand } from './commands/make-migration.js';
 import { MakeModelCommand } from './commands/make-model.js';
 import { MakeProviderCommand } from './commands/make-provider.js';
+import { MakeComponentCommand } from './commands/make-component.js';
 import { MakeViewCommand } from './commands/make-view.js';
+import { ViewCacheCommand, ViewClearCommand } from './commands/view-cache.js';
 import { MigrateCommand } from './commands/migrate.js';
 import { AuthInstallCommand } from './commands/auth-install.js';
 import { NewCommand } from './commands/new.js';
@@ -46,6 +48,9 @@ export function createKernel(): ConsoleKernel {
     new MakeMigrationCommand(),
     new MakeProviderCommand(),
     new MakeViewCommand(),
+    new MakeComponentCommand(),
+    new ViewCacheCommand(),
+    new ViewClearCommand(),
     new MakeJobCommand(),
     new MakeEventCommand(),
     new MakeListenerCommand(),
