@@ -174,6 +174,46 @@ describe('compile', () => {
     );
   });
 
+  it('parses P3 form and switch directives', () => {
+    const source = `<form>
+@csrf
+@method('PUT')
+@json(config)
+@checked(old('agree'))
+@selected(role === 'admin')
+@disabled(locked)
+@readonly(viewOnly)
+
+@error('email')
+  <span>Invalid email</span>
+@enderror
+
+@switch (status)
+  @case('draft')
+    <p>Draft</p>
+    @break
+  @default
+    <p>Published</p>
+@endswitch
+</form>
+`;
+
+    const template = compile(source);
+
+    expect(template.ops.some((op) => op.type === 'csrf')).toBe(true);
+    expect(template.ops.some((op) => op.type === 'method' && op.verb === 'PUT')).toBe(true);
+    expect(template.ops.some((op) => op.type === 'json')).toBe(true);
+    expect(template.ops.filter((op) => op.type === 'formAttr').length).toBe(4);
+    expect(template.ops.some((op) => op.type === 'if' && op.mode === 'error')).toBe(true);
+
+    const switchOp = template.ops.find((op) => op.type === 'switch');
+    expect(switchOp?.type).toBe('switch');
+    if (switchOp?.type === 'switch') {
+      expect(switchOp.cases.length).toBe(1);
+      expect(switchOp.defaultBody?.length).toBeGreaterThan(0);
+    }
+  });
+
   it('parses @once blocks with explicit and generated ids', () => {
     const source = `@once('scripts')
   <script></script>

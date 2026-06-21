@@ -118,11 +118,11 @@ Make `.tyr` feel as productive as Blade for full-stack apps — TypeScript-nativ
 
 Day-two ergonomics for server-rendered apps: forms, validation feedback, and control-flow sugar.
 
-- [ ] **Form directives** — `@csrf`, `@method('PUT')`, and hidden `_token` / `_method` fields wired to session and routing.
-- [ ] **Validation error blocks** — `@error('field')` … `@enderror` and `@if ($errors->any())` style access to validation messages in context.
-- [ ] **Form state helpers** — `@checked`, `@selected`, `@disabled`, and `@readonly` driven by `old()` and submitted values.
-- [ ] **`@json` directive** — safely embed JSON in `<script>` tags without manual `JSON.stringify` + escaping mistakes.
-- [ ] **`@switch` / `@case`** — cleaner multi-branch UI than nested `@if` / `@elseif` chains.
+- [x] **Form directives** — `@csrf`, `@method('PUT')`, and hidden `_token` / `_method` fields wired to session and routing.
+- [x] **Validation error blocks** — `@error('field')` … `@enderror` and `@if ($errors->any())` style access to validation messages in context.
+- [x] **Form state helpers** — `@checked`, `@selected`, `@disabled`, and `@readonly` driven by `old()` and submitted values.
+- [x] **`@json` directive** — safely embed JSON in `<script>` tags without manual `JSON.stringify` + escaping mistakes.
+- [x] **`@switch` / `@case`** — cleaner multi-branch UI than nested `@if` / `@elseif` chains.
 
 ### P4 — Component depth
 

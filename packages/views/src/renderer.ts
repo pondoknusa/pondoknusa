@@ -1,7 +1,15 @@
 import { isIterableEmpty, isViewEmpty, isViewSet } from './conditions.js';
 import { escapeHtml } from './escape.js';
 import { evaluateExpression, parseForeachExpression } from './evaluate.js';
+import {
+  encodeJsonForHtml,
+  renderCsrfField,
+  renderFormAttribute,
+  renderMethodField,
+  switchMatches,
+} from './form-helpers.js';
 import type { TemplateOp, ViewContext } from './types.js';
+import { ViewErrorBag } from './view-errors.js';
 import type { ViewEngine } from './view-engine.js';
 import { ViewHelpers } from './view-helpers.js';
 
@@ -30,6 +38,53 @@ export async function renderOps(
         } else if (op.elseBody) {
           await renderOps(op.elseBody, context, helpers, engine);
         }
+        break;
+      }
+
+      case 'switch': {
+        const switchValue = evaluateExpression(op.expression, context);
+        let matched = false;
+
+        for (const switchCase of op.cases) {
+          if (switchCase.labelExpression === undefined) {
+            continue;
+          }
+
+          const caseValue = evaluateExpression(switchCase.labelExpression, context);
+          if (switchMatches(switchValue, caseValue)) {
+            await renderOps(switchCase.body, context, helpers, engine);
+            matched = true;
+            break;
+          }
+        }
+
+        if (!matched && op.defaultBody) {
+          await renderOps(op.defaultBody, context, helpers, engine);
+        }
+        break;
+      }
+
+      case 'csrf': {
+        const token = engine.getRegistry().getForm()?.csrfToken() ?? '';
+        if (token) {
+          helpers.append(renderCsrfField(token));
+        }
+        break;
+      }
+
+      case 'method':
+        helpers.append(renderMethodField(op.verb));
+        break;
+
+      case 'json': {
+        const value = evaluateExpression(op.expression, context);
+        helpers.append(encodeJsonForHtml(value));
+        break;
+      }
+
+      case 'formAttr': {
+        const active = Boolean(evaluateExpression(op.expression, context));
+        helpers.append(renderFormAttribute(op.attribute, active));
         break;
       }
 
@@ -201,9 +256,21 @@ async function evaluateConditional(
       const result = auth.can(parsed.ability, model);
       return result instanceof Promise ? result : result;
     }
+    case 'error': {
+      const errors = resolveErrorBag(context);
+      return errors.has(op.expression);
+    }
     default:
       return Boolean(evaluateExpression(op.expression, context));
   }
+}
+
+function resolveErrorBag(context: ViewContext): ViewErrorBag {
+  const bag = context.$errors;
+  if (bag instanceof ViewErrorBag) {
+    return bag;
+  }
+  return new ViewErrorBag();
 }
 
 function parseCanExpression(expression: string): {

@@ -1,4 +1,10 @@
+import type { ViewErrorBag } from './view-errors.js';
 import type { ViewContext } from './types.js';
+
+export interface ViewFormBindings {
+  csrfToken(): string;
+  errors(): ViewErrorBag;
+}
 
 export type ViewComposerHandler = (
   viewName: string,
@@ -35,6 +41,7 @@ export class ViewRegistry {
   private shared: ViewContext = {};
   private bindings: ViewExpressionBindings = {};
   private auth?: ViewAuthBindings;
+  private form?: ViewFormBindings;
   private compileVersion = 0;
 
   directive(name: string, handler: CustomDirectiveHandler): this {
@@ -64,6 +71,15 @@ export class ViewRegistry {
   setAuth(auth: ViewAuthBindings | undefined): this {
     this.auth = auth;
     return this;
+  }
+
+  setForm(form: ViewFormBindings | undefined): this {
+    this.form = form;
+    return this;
+  }
+
+  getForm(): ViewFormBindings | undefined {
+    return this.form;
   }
 
   getShared(): ViewContext {

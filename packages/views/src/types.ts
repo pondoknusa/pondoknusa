@@ -12,7 +12,17 @@ export interface CompiledTemplate {
   ops: TemplateOp[];
 }
 
-export type ConditionalMode = 'if' | 'unless' | 'isset' | 'empty' | 'auth' | 'guest' | 'can';
+export type ConditionalMode =
+  | 'if'
+  | 'unless'
+  | 'isset'
+  | 'empty'
+  | 'auth'
+  | 'guest'
+  | 'can'
+  | 'error';
+
+export type FormAttribute = 'checked' | 'selected' | 'disabled' | 'readonly';
 
 export type TemplateOp =
   | { type: 'text'; value: string }
@@ -35,6 +45,11 @@ export type TemplateOp =
   | { type: 'includeIf'; name: string; dataExpression?: string }
   | { type: 'includeWhen'; name: string; conditionExpression: string; dataExpression?: string }
   | { type: 'custom'; name: string; expression: string }
+  | { type: 'csrf' }
+  | { type: 'method'; verb: string }
+  | { type: 'json'; expression: string }
+  | { type: 'formAttr'; attribute: FormAttribute; expression: string }
+  | { type: 'switch'; expression: string; cases: SwitchCase[]; defaultBody?: TemplateOp[] }
   | {
       type: 'component';
       name: string;
@@ -42,3 +57,8 @@ export type TemplateOp =
       defaultSlot?: TemplateOp[];
       namedSlots?: Record<string, TemplateOp[]>;
     };
+
+export interface SwitchCase {
+  labelExpression?: string;
+  body: TemplateOp[];
+}

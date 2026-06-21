@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { describe, expect, it } from 'vitest';
 import { ViewEngine } from './view-engine.js';
+import { ViewErrorBag } from './view-errors.js';
 
 function createFixture(): { basePath: string; engine: ViewEngine } {
   const basePath = join(tmpdir(), `tyravel-views-${Date.now()}-${Math.random()}`);
@@ -356,6 +357,58 @@ describe('ViewEngine', () => {
 
     const html = await engine.render('once', {});
     expect(html.match(/<img src="\/pixel.gif"/g)?.length).toBe(1);
+  });
+
+  it('renders P3 form directives, errors, and switch blocks', async () => {
+    const { basePath, engine } = createFixture();
+
+    engine.setForm({
+      csrfToken: () => 'test-token',
+      errors: () => new ViewErrorBag({ email: ['Invalid email address'] }),
+    });
+    engine.setBindings({
+      old: (key, defaultValue) => (key === 'agree' ? '1' : defaultValue),
+    });
+
+    writeFileSync(
+      join(basePath, 'resources/views/form.tyr'),
+      `<form method="POST">
+@csrf
+@method('PUT')
+<input type="checkbox" @checked(old('agree') === '1')>
+@error('email')
+  <p class="error">{{ $errors.first('email') }}</p>
+@enderror
+@if ($errors.any())
+  <p class="summary">Please fix the highlighted fields.</p>
+@endif
+@switch (status)
+  @case('draft')
+    <span>Draft</span>
+    @break
+  @case('live')
+    <span>Live</span>
+    @break
+  @default
+    <span>Unknown</span>
+@endswitch
+<script>const payload = @json({ safe: '</script>' })</script>
+</form>
+`,
+    );
+
+    const html = await engine.render('form', { status: 'draft' });
+
+    expect(html).toContain('name="_token"');
+    expect(html).toContain('value="test-token"');
+    expect(html).toContain('name="_method"');
+    expect(html).toContain('value="PUT"');
+    expect(html).toContain('checked');
+    expect(html).toContain('Invalid email address');
+    expect(html).toContain('Please fix the highlighted fields');
+    expect(html).toContain('<span>Draft</span>');
+    expect(html).not.toContain('<span>Live</span>');
+    expect(html).toContain('{"safe":"\\u003c/script\\u003e"}');
   });
 
   it('escapes echoed values by default', async () => {

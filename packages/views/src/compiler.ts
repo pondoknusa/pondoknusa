@@ -1,5 +1,11 @@
 import { createHash } from 'node:crypto';
-import type { CompiledTemplate, ConditionalMode, TemplateOp } from './types.js';
+import type {
+  CompiledTemplate,
+  ConditionalMode,
+  FormAttribute,
+  SwitchCase,
+  TemplateOp,
+} from './types.js';
 
 export interface CompileOptions {
   customDirectives?: ReadonlySet<string>;
@@ -42,6 +48,20 @@ const BUILTIN_DIRECTIVES = new Set([
   'endcan',
   'once',
   'endonce',
+  'csrf',
+  'method',
+  'json',
+  'checked',
+  'selected',
+  'disabled',
+  'readonly',
+  'error',
+  'enderror',
+  'switch',
+  'case',
+  'break',
+  'default',
+  'endswitch',
 ]);
 
 const LAYOUT_RE = /^@layout\(\s*['"]([^'"]+)['"]\s*\)\s*$/m;
@@ -83,6 +103,20 @@ const ENDONCE_RE = /^@endonce\s*$/;
 const PUSH_START_RE = /^@push\(\s*['"]([^'"]+)['"]\s*\)\s*$/;
 const PUSH_END_RE = /^@endpush\s*$/;
 const STACK_RE = /^@stack\(\s*['"]([^'"]+)['"]\s*(?:,\s*['"]([^'"]*)['"]\s*)?\)\s*$/;
+const CSRF_RE = /^@csrf\s*$/;
+const METHOD_RE = /^@method\(\s*['"]([^'"]+)['"]\s*\)\s*$/;
+const JSON_RE = /^@json\s*\((.+)\)\s*$/;
+const CHECKED_RE = /^@checked\s*\((.+)\)\s*$/;
+const SELECTED_RE = /^@selected\s*\((.+)\)\s*$/;
+const DISABLED_RE = /^@disabled\s*\((.+)\)\s*$/;
+const READONLY_RE = /^@readonly\s*\((.+)\)\s*$/;
+const ERROR_RE = /^@error\s*\(\s*['"]([^'"]+)['"]\s*\)\s*$/;
+const ENDERROR_RE = /^@enderror\s*$/;
+const SWITCH_RE = /^@switch\s*\((.+)\)\s*$/;
+const CASE_RE = /^@case\s*\((.+)\)\s*$/;
+const DEFAULT_CASE_RE = /^@default\s*$/;
+const BREAK_RE = /^@break\s*$/;
+const ENDSWITCH_RE = /^@endswitch\s*$/;
 const ECHO_RE = /\{\{\s*(.+?)\s*\}\}/g;
 const RAW_ECHO_RE = /\{!!\s*(.+?)\s*!!\}/g;
 
@@ -162,6 +196,29 @@ function parseOps(source: string, options: CompileOptions = {}): TemplateOp[] {
         CAN_RE,
         ENDCAN_RE,
         'can',
+      );
+      ops.push(block.op);
+      cursor = block.end;
+      continue;
+    }
+
+    const switchMatch = trimmed.match(SWITCH_RE);
+    if (switchMatch) {
+      const block = parseSwitchBlock(source, cursor, options);
+      ops.push(block.op);
+      cursor = block.end;
+      continue;
+    }
+
+    const errorMatch = trimmed.match(ERROR_RE);
+    if (errorMatch) {
+      const block = parseSimpleConditionalBlock(
+        source,
+        cursor,
+        ERROR_RE,
+        ENDERROR_RE,
+        'error',
+        options,
       );
       ops.push(block.op);
       cursor = block.end;
@@ -259,6 +316,70 @@ function parseOps(source: string, options: CompileOptions = {}): TemplateOp[] {
         type: 'stack',
         name: stackMatch[1]!,
         defaultValue: stackMatch[2],
+      });
+      cursor += line.length;
+      continue;
+    }
+
+    if (CSRF_RE.test(trimmed)) {
+      ops.push({ type: 'csrf' });
+      cursor += line.length;
+      continue;
+    }
+
+    const methodMatch = trimmed.match(METHOD_RE);
+    if (methodMatch) {
+      ops.push({ type: 'method', verb: methodMatch[1]! });
+      cursor += line.length;
+      continue;
+    }
+
+    const jsonMatch = trimmed.match(JSON_RE);
+    if (jsonMatch) {
+      ops.push({ type: 'json', expression: jsonMatch[1]!.trim() });
+      cursor += line.length;
+      continue;
+    }
+
+    const checkedMatch = trimmed.match(CHECKED_RE);
+    if (checkedMatch) {
+      ops.push({
+        type: 'formAttr',
+        attribute: 'checked',
+        expression: checkedMatch[1]!.trim(),
+      });
+      cursor += line.length;
+      continue;
+    }
+
+    const selectedMatch = trimmed.match(SELECTED_RE);
+    if (selectedMatch) {
+      ops.push({
+        type: 'formAttr',
+        attribute: 'selected',
+        expression: selectedMatch[1]!.trim(),
+      });
+      cursor += line.length;
+      continue;
+    }
+
+    const disabledMatch = trimmed.match(DISABLED_RE);
+    if (disabledMatch) {
+      ops.push({
+        type: 'formAttr',
+        attribute: 'disabled',
+        expression: disabledMatch[1]!.trim(),
+      });
+      cursor += line.length;
+      continue;
+    }
+
+    const readonlyMatch = trimmed.match(READONLY_RE);
+    if (readonlyMatch) {
+      ops.push({
+        type: 'formAttr',
+        attribute: 'readonly',
+        expression: readonlyMatch[1]!.trim(),
       });
       cursor += line.length;
       continue;
@@ -564,6 +685,131 @@ function findForelseEmptyBoundary(content: string): { start: number; end: number
   return { start: content.length, end: content.length };
 }
 
+function parseSwitchBlock(
+  source: string,
+  start: number,
+  options: CompileOptions = {},
+): { op: TemplateOp; end: number } {
+  const firstLine = takeLine(source, start);
+  const expression = firstLine.trim().match(SWITCH_RE)?.[1] ?? 'null';
+  const contentStart = start + firstLine.length;
+  const contentEnd = findNestedEnd(source, contentStart, SWITCH_RE, ENDSWITCH_RE);
+  const endLine = takeLine(source, contentEnd);
+  const { cases, defaultBody } = splitSwitchCases(
+    source.slice(contentStart, contentEnd),
+    options,
+  );
+
+  return {
+    op: {
+      type: 'switch',
+      expression,
+      cases,
+      defaultBody,
+    },
+    end: contentEnd + endLine.length,
+  };
+}
+
+function splitSwitchCases(
+  content: string,
+  options: CompileOptions = {},
+): { cases: SwitchCase[]; defaultBody?: TemplateOp[] } {
+  const cases: SwitchCase[] = [];
+  let defaultBody: TemplateOp[] | undefined;
+  let cursor = 0;
+  let current: SwitchCase | undefined;
+
+  const flush = (): void => {
+    if (!current) {
+      return;
+    }
+    cases.push(current);
+    current = undefined;
+  };
+
+  while (cursor < content.length) {
+    const line = takeLine(content, cursor);
+    const trimmed = line.trim();
+
+    if (CASE_RE.test(trimmed)) {
+      flush();
+      current = {
+        labelExpression: trimmed.match(CASE_RE)?.[1]?.trim(),
+        body: [],
+      };
+      cursor += line.length;
+      continue;
+    }
+
+    if (DEFAULT_CASE_RE.test(trimmed)) {
+      flush();
+      const chunkStart = cursor + line.length;
+      const chunkEnd = findSwitchChunkEnd(content, chunkStart);
+      defaultBody = parseOps(stripBreakLines(content.slice(chunkStart, chunkEnd)), options);
+      cursor = chunkEnd;
+      continue;
+    }
+
+    if (BREAK_RE.test(trimmed)) {
+      cursor += line.length;
+      continue;
+    }
+
+    if (!current) {
+      cursor += line.length;
+      continue;
+    }
+
+    const chunkEnd = findSwitchChunkEnd(content, cursor);
+    const chunk = stripBreakLines(content.slice(cursor, chunkEnd));
+    if (chunk.trim().length > 0) {
+      current.body.push(...parseOps(chunk, options));
+    }
+    cursor = chunkEnd;
+  }
+
+  flush();
+  return { cases, defaultBody };
+}
+
+function findSwitchChunkEnd(content: string, start: number): number {
+  let cursor = start;
+
+  while (cursor < content.length) {
+    const line = takeLine(content, cursor);
+    const trimmed = line.trim();
+
+    if (
+      CASE_RE.test(trimmed) ||
+      DEFAULT_CASE_RE.test(trimmed) ||
+      SWITCH_RE.test(trimmed) ||
+      ENDSWITCH_RE.test(trimmed)
+    ) {
+      return cursor;
+    }
+
+    cursor += line.length;
+  }
+
+  return content.length;
+}
+
+function stripBreakLines(content: string): string {
+  let cursor = 0;
+  let output = '';
+
+  while (cursor < content.length) {
+    const line = takeLine(content, cursor);
+    if (!BREAK_RE.test(line.trim())) {
+      output += line;
+    }
+    cursor += line.length;
+  }
+
+  return output;
+}
+
 function parseOnceBlock(
   source: string,
   start: number,
@@ -853,51 +1099,152 @@ function appendText(ops: TemplateOp[], value: string): void {
 
 function parseTextWithDirectives(text: string): TemplateOp[] {
   const ops: TemplateOp[] = [];
-  const pattern =
-    /@yield\(\s*['"]([^'"]+)['"]\s*(?:,\s*['"]([^'"]*)['"]\s*)?\)|@stack\(\s*['"]([^'"]+)['"]\s*(?:,\s*['"]([^'"]*)['"]\s*)?\)|@include\(\s*['"]([^'"]+)['"]\s*(?:,\s*(.+?))?\s*\)|@component\(\s*['"]([^'"]+)['"]\s*(?:,\s*(.+?))?\s*\)/g;
+  let cursor = 0;
 
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
-
-  while ((match = pattern.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      ops.push({ type: 'text', value: text.slice(lastIndex, match.index) });
+  while (cursor < text.length) {
+    const nextAt = text.indexOf('@', cursor);
+    if (nextAt === -1) {
+      pushTextOp(ops, text.slice(cursor));
+      break;
     }
 
-    if (match[0].startsWith('@yield')) {
-      ops.push({
-        type: 'yield',
-        name: match[1]!,
-        defaultValue: match[2],
-      });
-    } else if (match[0].startsWith('@stack')) {
-      ops.push({
-        type: 'stack',
-        name: match[3]!,
-        defaultValue: match[4],
-      });
-    } else if (match[0].startsWith('@include')) {
-      ops.push({
-        type: 'include',
-        name: match[5]!,
-        dataExpression: match[6]?.trim(),
-      });
-    } else {
-      ops.push({
-        type: 'component',
-        name: match[7]!,
-        dataExpression: match[8]?.trim(),
-      });
+    if (nextAt > cursor) {
+      pushTextOp(ops, text.slice(cursor, nextAt));
     }
 
-    lastIndex = match.index + match[0].length;
-  }
+    const remaining = text.slice(nextAt);
+    const inline = parseInlineDirective(remaining);
+    if (inline) {
+      ops.push(inline.op);
+      cursor = nextAt + inline.length;
+      continue;
+    }
 
-  if (lastIndex < text.length) {
-    ops.push({ type: 'text', value: text.slice(lastIndex) });
+    cursor = nextAt + 1;
   }
 
   return ops;
+}
+
+function pushTextOp(ops: TemplateOp[], value: string): void {
+  if (!value) {
+    return;
+  }
+  const last = ops[ops.length - 1];
+  if (last?.type === 'text') {
+    last.value += value;
+    return;
+  }
+  ops.push({ type: 'text', value });
+}
+
+function parseInlineDirective(
+  source: string,
+): { op: TemplateOp; length: number } | null {
+  const csrfMatch = source.match(/^@csrf\b\s*/);
+  if (csrfMatch) {
+    return { op: { type: 'csrf' }, length: csrfMatch[0].length };
+  }
+
+  const methodMatch = source.match(/^@method\(\s*['"]([^'"]+)['"]\s*\)/);
+  if (methodMatch) {
+    return {
+      op: { type: 'method', verb: methodMatch[1]! },
+      length: methodMatch[0].length,
+    };
+  }
+
+  const json = parseExpressionDirective(source, 'json');
+  if (json) {
+    return { op: { type: 'json', expression: json.expression }, length: json.length };
+  }
+
+  for (const attribute of ['checked', 'selected', 'disabled', 'readonly'] as const) {
+    const parsed = parseExpressionDirective(source, attribute);
+    if (parsed) {
+      return {
+        op: { type: 'formAttr', attribute, expression: parsed.expression },
+        length: parsed.length,
+      };
+    }
+  }
+
+  const yieldMatch = source.match(
+    /^@yield\(\s*['"]([^'"]+)['"]\s*(?:,\s*['"]([^'"]*)['"]\s*)?\)/,
+  );
+  if (yieldMatch) {
+    return {
+      op: { type: 'yield', name: yieldMatch[1]!, defaultValue: yieldMatch[2] },
+      length: yieldMatch[0].length,
+    };
+  }
+
+  const stackMatch = source.match(
+    /^@stack\(\s*['"]([^'"]+)['"]\s*(?:,\s*['"]([^'"]*)['"]\s*)?\)/,
+  );
+  if (stackMatch) {
+    return {
+      op: { type: 'stack', name: stackMatch[1]!, defaultValue: stackMatch[2] },
+      length: stackMatch[0].length,
+    };
+  }
+
+  const includeMatch = source.match(/^@include\(\s*['"]([^'"]+)['"]\s*(?:,\s*(.+?))?\s*\)/);
+  if (includeMatch) {
+    return {
+      op: {
+        type: 'include',
+        name: includeMatch[1]!,
+        dataExpression: includeMatch[2]?.trim(),
+      },
+      length: includeMatch[0].length,
+    };
+  }
+
+  const componentMatch = source.match(/^@component\(\s*['"]([^'"]+)['"]\s*(?:,\s*(.+?))?\s*\)/);
+  if (componentMatch) {
+    return {
+      op: {
+        type: 'component',
+        name: componentMatch[1]!,
+        dataExpression: componentMatch[2]?.trim(),
+      },
+      length: componentMatch[0].length,
+    };
+  }
+
+  return null;
+}
+
+function parseExpressionDirective(
+  source: string,
+  name: string,
+): { expression: string; length: number } | null {
+  const prefix = `@${name}(`;
+  if (!source.startsWith(prefix)) {
+    return null;
+  }
+
+  let depth = 0;
+  const expressionStart = prefix.length;
+
+  for (let index = expressionStart; index < source.length; index += 1) {
+    const char = source[index];
+    if (char === '(') {
+      depth += 1;
+    }
+    if (char === ')') {
+      if (depth === 0) {
+        return {
+          expression: source.slice(expressionStart, index).trim(),
+          length: index + 1,
+        };
+      }
+      depth -= 1;
+    }
+  }
+
+  return null;
 }
 
 export function compileInlineEchoes(source: string): TemplateOp[] {

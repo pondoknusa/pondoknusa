@@ -16,7 +16,15 @@ export {
   type ViewAuthBindings,
   type ViewComposerHandler,
   type ViewExpressionBindings,
+  type ViewFormBindings,
 } from './view-registry.js';
+export { ViewErrorBag, type ValidationErrors } from './view-errors.js';
+export {
+  encodeJsonForHtml,
+  renderCsrfField,
+  renderFormAttribute,
+  renderMethodField,
+} from './form-helpers.js';
 export type {
   CompiledTemplate,
   ConditionalMode,

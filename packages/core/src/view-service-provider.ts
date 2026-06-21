@@ -1,7 +1,13 @@
+import { randomBytes } from 'node:crypto';
 import { ConfigRepository } from '@tyravel/config';
 import type { AuthManager, Gate } from '@tyravel/auth';
 import type { TyravelRequest } from '@tyravel/http';
-import { ViewEngine, type ViewConfig } from '@tyravel/views';
+import {
+  ViewEngine,
+  ViewErrorBag,
+  type ValidationErrors,
+  type ViewConfig,
+} from '@tyravel/views';
 import { ServiceProvider } from './service-provider.js';
 import { setViewApplication, setViewRequest } from './view.js';
 
@@ -28,6 +34,25 @@ function readOldInput(
     return defaultValue;
   }
   return flash[key] ?? defaultValue;
+}
+
+function ensureCsrfToken(request: TyravelRequest | undefined): string {
+  const session = request?.session;
+  if (!session) {
+    return '';
+  }
+
+  let token = session.get<string>('_csrf_token');
+  if (!token) {
+    token = randomBytes(32).toString('base64url');
+    session.put('_csrf_token', token);
+  }
+  return token;
+}
+
+function readValidationErrors(request: TyravelRequest | undefined): ViewErrorBag {
+  const errors = request?.session?.get<ValidationErrors>('_errors') ?? {};
+  return new ViewErrorBag(errors);
 }
 
 export class ViewServiceProvider extends ServiceProvider {
@@ -58,6 +83,10 @@ export class ViewServiceProvider extends ServiceProvider {
           joinAssetUrl(String(config.get('app.asset_url', '') ?? ''), path),
         config: (key, defaultValue) => config.get(key, defaultValue),
         old: (key, defaultValue) => readOldInput(request, key, defaultValue),
+      });
+      engine.setForm({
+        csrfToken: () => ensureCsrfToken(request),
+        errors: () => readValidationErrors(request),
       });
     };
 

@@ -17,6 +17,7 @@ import {
   type ViewAuthBindings,
   type ViewComposerHandler,
   type ViewExpressionBindings,
+  type ViewFormBindings,
 } from './view-registry.js';
 import { ViewHelpers } from './view-helpers.js';
 
@@ -76,6 +77,11 @@ export class ViewEngine {
     return this;
   }
 
+  setForm(form: ViewFormBindings | undefined): this {
+    this.registry.setForm(form);
+    return this;
+  }
+
   setCompiledCachePath(path: string | null): this {
     this.compiledCacheDirectory = path ?? undefined;
     return this;
@@ -110,9 +116,8 @@ export class ViewEngine {
     parentOnceRendered?: Set<string>,
   ): Promise<string> {
     const template = this.loadTemplate(name);
-    const renderContext = this.buildEvaluationContext(
-      await this.registry.applyComposers(name, context),
-    );
+    const composed = await this.registry.applyComposers(name, context);
+    const renderContext = this.buildEvaluationContext(this.mergeFormContext(composed));
     const helpers = new ViewHelpers(parentStacks, parentOnceRendered);
 
     if (parentSections) {
@@ -224,6 +229,18 @@ export class ViewEngine {
     const template = compile(source, compileOptions);
     this.cache.set(path, { mtimeMs: stats.mtimeMs, registryVersion, template });
     return template;
+  }
+
+  private mergeFormContext(context: ViewContext): ViewContext {
+    const form = this.registry.getForm();
+    if (!form) {
+      return context;
+    }
+
+    return {
+      ...context,
+      $errors: form.errors(),
+    };
   }
 
   private resolvePath(name: string): string {
