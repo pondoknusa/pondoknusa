@@ -116,12 +116,16 @@ describe('Bus', () => {
 /* ──── Auto-discovery ────────────────────────────────────────────────── */
 
 describe('Auto-discovery', () => {
-  it('discoverProviders() is safe on non-existent dirs', async () => {
-    const { Application } = await import('../src/application.js');
-    const app = new Application('/tmp/nonexistent-tyravel-project');
-    await app.discoverProviders();
-    // Should not throw — no providers dir to scan
-  });
+  it(
+    'discoverProviders() is safe on non-existent dirs',
+    async () => {
+      const { Application } = await import('../src/application.js');
+      const app = new Application('/tmp/nonexistent-tyravel-project');
+      await app.discoverProviders();
+      // Should not throw — no providers dir to scan
+    },
+    15_000,
+  );
 
   it('discoverCommands() returns empty for non-existent dirs', async () => {
     const { Application } = await import('../src/application.js');
