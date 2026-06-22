@@ -10,7 +10,8 @@ import {
 } from '@tyravel/http';
 import { createControllerHandler, isControllerAction } from './controller.js';
 import { ServiceProvider } from './service-provider.js';
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { constants } from 'node:fs';
+import { access, readdir } from 'node:fs/promises';
 import { join, isAbsolute } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -92,10 +93,16 @@ export class Application extends Container {
   /** Discover and register all service providers in `app/providers/`. */
   async discoverProviders(): Promise<this> {
     const providersDir = join(this.basePath, 'app', 'providers');
-    if (!existsSync(providersDir)) return this;
+    try {
+      await access(providersDir, constants.F_OK);
+    } catch {
+      return this;
+    }
 
-    const files = readdirSync(providersDir)
-      .filter((f) => f.endsWith('.ts') && statSync(join(providersDir, f)).isFile())
+    const entries = await readdir(providersDir, { withFileTypes: true });
+    const files = entries
+      .filter((entry) => entry.isFile() && entry.name.endsWith('.ts'))
+      .map((entry) => entry.name)
       .sort();
 
     for (const file of files) {
@@ -120,17 +127,17 @@ export class Application extends Container {
   /** Discover and register console commands in `app/console/commands/`. */
   async discoverCommands(): Promise<string[]> {
     const cmdsDir = join(this.basePath, 'app', 'console', 'commands');
-    if (!existsSync(cmdsDir)) return [];
-
-    const files = readdirSync(cmdsDir)
-      .filter((f) => f.endsWith('.ts') && statSync(join(cmdsDir, f)).isFile())
-      .sort();
-
-    const discovered: string[] = [];
-    for (const file of files) {
-      discovered.push(file.replace(/\.ts$/, ''));
+    try {
+      await access(cmdsDir, constants.F_OK);
+    } catch {
+      return [];
     }
-    return discovered;
+
+    const entries = await readdir(cmdsDir, { withFileTypes: true });
+    return entries
+      .filter((entry) => entry.isFile() && entry.name.endsWith('.ts'))
+      .map((entry) => entry.name.replace(/\.ts$/, ''))
+      .sort();
   }
 
   router(): Router {
