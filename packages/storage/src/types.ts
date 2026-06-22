@@ -4,6 +4,17 @@ export interface Filesystem {
   exists(path: string): Promise<boolean>;
   delete(path: string): Promise<boolean>;
   url(path: string): string;
+  temporaryUrl?(path: string, expiresInSeconds: number): Promise<string>;
+}
+
+export interface TemporaryUrlFilesystem extends Filesystem {
+  temporaryUrl(path: string, expiresInSeconds: number): Promise<string>;
+}
+
+export function supportsTemporaryUrls(
+  disk: Filesystem,
+): disk is TemporaryUrlFilesystem {
+  return typeof disk.temporaryUrl === 'function';
 }
 
 export interface LocalDiskConfig {

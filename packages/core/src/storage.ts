@@ -23,6 +23,7 @@ export interface StorageFacade {
   exists(path: string): Promise<boolean>;
   delete(path: string): Promise<boolean>;
   url(path: string): string;
+  temporaryUrl(path: string, expiresInSeconds: number): Promise<string>;
   disk(name?: string): StorageRepository;
 }
 
@@ -32,6 +33,8 @@ export const Storage: StorageFacade = {
   exists: (path) => resolveStorage().exists(path),
   delete: (path) => resolveStorage().delete(path),
   url: (path) => resolveStorage().url(path),
+  temporaryUrl: (path, expiresInSeconds) =>
+    resolveStorage().temporaryUrl(path, expiresInSeconds),
   disk: (name) => {
     if (!storageApplication) {
       throw new Error('Storage facade is not ready. Boot the application first.');

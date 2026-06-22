@@ -21,6 +21,7 @@
     { "path": "packages/cache" },
     { "path": "packages/storage" },
     { "path": "packages/storage-aws-s3" },
+    { "path": "packages/storage-r2" },
     { "path": "packages/redis" },
     { "path": "packages/redis-node" },
     { "path": "packages/mail" },

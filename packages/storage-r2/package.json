@@ -1,5 +1,5 @@
 {
-  "name": "@tyravel/storage-aws-s3",
+  "name": "@tyravel/storage-r2",
   "version": "0.7.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -11,9 +11,8 @@
     }
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.840.0",
-    "@aws-sdk/s3-request-presigner": "^3.840.0",
-    "@tyravel/storage": "0.7.0"
+    "@tyravel/storage": "0.7.0",
+    "@tyravel/storage-aws-s3": "0.7.0"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -28,12 +27,12 @@
   "devDependencies": {
     "@types/node": "^22.15.30"
   },
-  "description": "AWS S3 storage driver for Tyravel",
+  "description": "Cloudflare R2 storage driver for Tyravel",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/thesimonharms/tyravel.git",
-    "directory": "packages/storage-aws-s3"
+    "directory": "packages/storage-r2"
   },
   "publishConfig": {
     "access": "public"

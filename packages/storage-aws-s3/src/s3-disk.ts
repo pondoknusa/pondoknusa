@@ -5,10 +5,11 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-import type { Filesystem } from '@tyravel/storage';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import type { TemporaryUrlFilesystem } from '@tyravel/storage';
 import type { S3DiskConfig } from './types.js';
 
-export class S3Disk implements Filesystem {
+export class S3Disk implements TemporaryUrlFilesystem {
   private readonly client: S3Client;
 
   constructor(private readonly config: S3DiskConfig) {
@@ -85,6 +86,14 @@ export class S3Disk implements Filesystem {
       return `${this.config.url.replace(/\/+$/, '')}/${key}`;
     }
     return `https://${this.config.bucket}.s3.${this.config.region}.amazonaws.com/${key}`;
+  }
+
+  async temporaryUrl(path: string, expiresInSeconds: number): Promise<string> {
+    const command = new GetObjectCommand({
+      Bucket: this.config.bucket,
+      Key: this.normalizeKey(path),
+    });
+    return getSignedUrl(this.client, command, { expiresIn: expiresInSeconds });
   }
 
   private normalizeKey(path: string): string {
