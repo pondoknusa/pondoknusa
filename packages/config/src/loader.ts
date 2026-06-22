@@ -1,4 +1,4 @@
-import { readdirSync } from 'node:fs';
+import { readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import type { ConfigTree } from './repository.js';
@@ -27,7 +27,7 @@ export async function loadConfig(
 
 export async function loadConfigWithSchemas(basePath: string): Promise<LoadedConfig> {
   const configDir = join(basePath, 'config');
-  const entries = readdirSync(configDir, { withFileTypes: true });
+  const entries = await readdir(configDir, { withFileTypes: true });
   const config: ConfigTree = {};
   const schemas: Record<string, ConfigSchema> = {};
 
