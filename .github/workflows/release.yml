@@ -63,6 +63,7 @@ jobs:
             @tyravel/storage
             @tyravel/storage-aws-s3
             @tyravel/storage-r2
+            @tyravel/storage-supabase
             @tyravel/mail
             @tyravel/notifications
             @tyravel/testing

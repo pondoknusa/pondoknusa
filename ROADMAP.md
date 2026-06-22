@@ -206,7 +206,7 @@ Make Tyravel fully async by default: no sync fallbacks, no blocking I/O in the p
 - [ ] **Async-native ORM** — query builder, model persistence, and relations return Promises by default; remove implicit sync SQLite shortcuts where they remain
 - [ ] **Async-native queue & events** — dispatch, listen, and broadcast are always async; sync driver retained only for tests
 - [ ] **Async-native filesystem & cache** — storage, cache, and session I/O are non-blocking across all drivers
-- [ ] **Supabase storage driver** — `@tyravel/storage-supabase` with bucket config, upload/download, and signed URLs via the Supabase Storage API
+- [x] **Supabase storage driver** — `@tyravel/storage-supabase` with bucket config, upload/download, and signed URLs via the Supabase Storage API
 
 ## Tier X — Production-ready project
 

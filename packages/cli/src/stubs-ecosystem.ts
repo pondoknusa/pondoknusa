@@ -19,7 +19,7 @@ export default {
 `;
 }
 
-/** Local disk by default. For S3/R2, add @tyravel/storage-aws-s3 or @tyravel/storage-r2 and register the matching service provider. */
+/** Local disk by default. For S3/R2/Supabase, add the matching @tyravel/storage-* driver package and service provider. */
 export function filesystemsConfig(): string {
   return `import type { StorageConfig } from '@tyravel/storage';
 import { env } from '@tyravel/config';
