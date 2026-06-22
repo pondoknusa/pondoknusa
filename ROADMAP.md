@@ -188,7 +188,7 @@ Make Tyravel deployable with confidence. Builds on Tier 6.1 hardening.
 - [x] **Graceful shutdown** — drain in-flight HTTP requests and queue workers on `SIGTERM` / `SIGINT`; cooperative timeout before force exit.
 - [x] **API stability policy** — documented semver guarantees for public `@tyravel/*` surfaces (what is stable, what is experimental, deprecation window). See [STABILITY.md](STABILITY.md).
 
-## Tier 8 — Ecosystem & advanced capabilities (v0.8.0)
+## Tier 8 — Ecosystem & advanced capabilities (v0.8.0) ✓
 
 Rich developer tooling, async utilities, and real-time operations.
 

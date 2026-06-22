@@ -55,10 +55,14 @@ jobs:
             @tyravel/views
             @tyravel/queue
             @tyravel/events
+            @tyravel/broadcasting
+            @tyravel/broadcasting-pusher
+            @tyravel/broadcasting-socket-io
             @tyravel/auth
             @tyravel/cache
             @tyravel/storage
             @tyravel/storage-aws-s3
+            @tyravel/storage-r2
             @tyravel/mail
             @tyravel/notifications
             @tyravel/testing
