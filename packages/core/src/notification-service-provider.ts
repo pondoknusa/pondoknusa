@@ -18,7 +18,7 @@ import { ViewEngine } from '@tyravel/views';
 import { ServiceProvider } from './service-provider.js';
 
 export class NotificationServiceProvider extends ServiceProvider {
-  override register() {
+  override async boot() {
     const config = this.app.make<ConfigRepository>('config');
     const notificationsConfig = config.get<NotificationsConfig>('notifications', {});
     const mail = this.app.make<MailManager>('mail');
@@ -26,10 +26,17 @@ export class NotificationServiceProvider extends ServiceProvider {
 
     const database = this.resolveDatabase();
     const queueBridge = this.createQueueBridge();
-    const manager = new NotificationManager(mail, database ? {
-      connection: database.connection(notificationsConfig.connection),
-      table: notificationsConfig.table,
-    } : undefined, queueBridge, registry);
+    const manager = new NotificationManager(
+      mail,
+      database
+        ? {
+            connection: database.connection(notificationsConfig.connection),
+            table: notificationsConfig.table,
+          }
+        : undefined,
+      queueBridge,
+      registry,
+    );
 
     manager.setQueueDefaults({
       connection: notificationsConfig.queueConnection,
@@ -50,9 +57,7 @@ export class NotificationServiceProvider extends ServiceProvider {
     });
 
     this.registerQueuedNotificationJob();
-  }
 
-  override boot() {
     try {
       const view = this.app.make<ViewEngine>('view');
       view.namespace('notifications', NOTIFICATIONS_VIEWS_PATH);

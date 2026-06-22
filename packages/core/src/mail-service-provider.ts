@@ -13,7 +13,7 @@ import { ViewEngine } from '@tyravel/views';
 import { ServiceProvider } from './service-provider.js';
 
 export class MailServiceProvider extends ServiceProvider {
-  override register() {
+  override async register() {
     const config = this.app.make<ConfigRepository>('config');
     const mailConfig = config.get<MailConfig>('mail');
     const queueBridge = this.createQueueBridge();
@@ -31,7 +31,7 @@ export class MailServiceProvider extends ServiceProvider {
     this.registerSendMailableJob();
   }
 
-  override boot() {
+  override async boot() {
     try {
       const view = this.app.make<ViewEngine>('view');
       const mail = this.app.make<MailManager>('mail');

@@ -13,7 +13,7 @@ import {
 import { ServiceProvider } from './service-provider.js';
 
 export class QueueServiceProvider extends ServiceProvider {
-  override register() {
+  override async register() {
     const config = this.app.make<ConfigRepository>('config');
     const queueConfig = config.get<QueueConfig>('queue');
     const registry = new JobRegistry();
@@ -21,16 +21,30 @@ export class QueueServiceProvider extends ServiceProvider {
     this.app.instance('jobs.registry', registry);
     this.app.singleton(JobRegistry, () => registry);
 
+    const worker = new QueueWorker(registry, this.app);
+    const manager = new QueueManager(
+      queueConfig,
+      worker,
+      this.resolveDatabaseManager(),
+      this.resolveRedisManager(),
+    );
+
+    this.app.instance('queue', manager);
+    this.app.singleton(QueueManager, () => manager);
+  }
+
+  override async boot() {
+    const config = this.app.make<ConfigRepository>('config');
+    const queueConfig = config.get<QueueConfig>('queue');
+    const registry = this.app.make<JobRegistry>('jobs.registry');
+    const worker = new QueueWorker(registry, this.app);
+    const manager = this.app.make<QueueManager>('queue');
     const database = this.resolveDatabaseManager();
 
-    const worker = new QueueWorker(registry, this.app);
-    const manager = new QueueManager(queueConfig, worker, database, this.resolveRedisManager());
     const dispatcher = new Dispatcher(manager.connection());
     const failedJobs = this.createFailedJobRepository(database, queueConfig);
     const processor = new QueueProcessor(manager, registry, worker, { failedJobs });
 
-    this.app.instance('queue', manager);
-    this.app.singleton(QueueManager, () => manager);
     this.app.instance('queue.dispatcher', dispatcher);
     this.app.singleton(Dispatcher, () => dispatcher);
     if (failedJobs) {

@@ -5,7 +5,7 @@ import type { DatabaseConfig } from '@tyravel/database';
 import { ServiceProvider } from './service-provider.js';
 
 export class DatabaseServiceProvider extends ServiceProvider {
-  override register() {
+  override async register() {
     this.loadMigrationsFrom(join(this.app.basePath, 'database/migrations'));
 
     const config = this.app.make<ConfigRepository>('config');
@@ -14,7 +14,10 @@ export class DatabaseServiceProvider extends ServiceProvider {
 
     this.app.instance('db', manager);
     this.app.singleton(DatabaseManager, () => manager);
+  }
 
+  override async boot() {
+    const manager = this.app.make<DatabaseManager>('db');
     const connection = manager.connection();
     Model.setConnectionResolver(() => connection);
   }

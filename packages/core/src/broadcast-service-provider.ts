@@ -14,7 +14,7 @@ import { ServiceProvider } from './service-provider.js';
 import { setBroadcastApplication } from './broadcast.js';
 
 export class BroadcastServiceProvider extends ServiceProvider {
-  override register(): void {
+  override async register(): Promise<void> {
     const config = this.app.make<ConfigRepository>('config');
     const broadcastingConfig = config.get<BroadcastingConfig>('broadcasting', {
       default: 'null',
@@ -45,7 +45,7 @@ export class BroadcastServiceProvider extends ServiceProvider {
     setBroadcastApplication(this.app);
   }
 
-  override boot(): void {
+  override async boot(): Promise<void> {
     const config = this.app.make<ConfigRepository>('config');
     const broadcastingConfig = config.get<BroadcastingConfig>('broadcasting', {
       default: 'null',

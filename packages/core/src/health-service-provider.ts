@@ -16,14 +16,14 @@ export interface HealthConfig {
 }
 
 export class HealthServiceProvider extends ServiceProvider {
-  override register() {
+  override async register() {
     const checker = new HealthChecker();
     checker.register('app', () => true);
     this.app.instance('health', checker);
     this.app.singleton(HealthChecker, () => checker);
   }
 
-  override boot() {
+  override async boot() {
     const config = this.app.make<ConfigRepository>('config');
     let healthConfig: HealthConfig | undefined;
 

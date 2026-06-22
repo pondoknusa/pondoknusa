@@ -13,7 +13,7 @@ import { Dispatcher, JobRegistry, QueueManager } from '@tyravel/queue';
 import { ServiceProvider } from './service-provider.js';
 
 export class EventServiceProvider extends ServiceProvider {
-  override register() {
+  override async register() {
     const eventRegistry = new EventRegistry();
     const listenerRegistry = new ListenerRegistry();
     const queueBridge = this.createQueueBridge();
@@ -41,7 +41,7 @@ export class EventServiceProvider extends ServiceProvider {
     this.registerQueuedListenerJob();
   }
 
-  override boot() {
+  override async boot() {
     const config = this.app.make<ConfigRepository>('config');
     const eventsConfig = config.get<EventsConfig>('events', { listen: [] });
     const dispatcher = this.app.make<EventDispatcher>('events');

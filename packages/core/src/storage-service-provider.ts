@@ -7,7 +7,7 @@ import {
 import { ServiceProvider } from './service-provider.js';
 
 export class StorageServiceProvider extends ServiceProvider {
-  override register() {
+  override async register() {
     const config = this.app.make<ConfigRepository>('config');
     const storageConfig = config.get<StorageConfig>('filesystems');
     const manager = new StorageManager(storageConfig);

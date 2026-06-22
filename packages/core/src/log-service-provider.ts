@@ -3,7 +3,7 @@ import { LogManager, LogRepository, type LogConfig } from '@tyravel/log';
 import { ServiceProvider } from './service-provider.js';
 
 export class LogServiceProvider extends ServiceProvider {
-  override register() {
+  override async register() {
     const config = this.app.make<ConfigRepository>('config');
     const logConfig = config.get<LogConfig>('log');
     const manager = new LogManager(logConfig);

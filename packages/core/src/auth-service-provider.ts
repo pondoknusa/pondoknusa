@@ -21,7 +21,7 @@ import { RedisManager } from '@tyravel/redis';
 import { ServiceProvider } from './service-provider.js';
 
 export class AuthServiceProvider extends ServiceProvider {
-  override register() {
+  override async boot() {
     const config = this.app.make<ConfigRepository>('config');
     const authConfig = config.get<AuthConfig>('auth');
     const database = this.app.make<DatabaseManager>('db');
@@ -31,7 +31,6 @@ export class AuthServiceProvider extends ServiceProvider {
       database,
       this.resolveRedisManager(),
     );
-    const sessionStore = sessionManager.driver();
 
     const providers = new Map<string, EloquentUserProvider>();
     for (const [name, providerConfig] of Object.entries(
@@ -66,7 +65,7 @@ export class AuthServiceProvider extends ServiceProvider {
           new SessionGuard(
             guardName,
             provider,
-            sessionStore,
+            sessionManager.driver(),
             authConfig.session,
           );
       } else if (guardConfig.driver === 'token') {
@@ -115,10 +114,6 @@ export class AuthServiceProvider extends ServiceProvider {
       this.app.instance('oauth', oauth);
       this.app.singleton(OAuthManager, () => oauth);
     }
-  }
-
-  override boot() {
-    const auth = this.app.make<AuthManager>('auth');
 
     this.app.use(createStartSessionMiddleware(auth));
     this.app.middleware('auth', createAuthMiddleware(auth));

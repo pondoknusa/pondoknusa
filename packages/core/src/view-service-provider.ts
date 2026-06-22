@@ -54,7 +54,7 @@ function readValidationErrors(request: TyravelRequest | undefined): ViewErrorBag
 }
 
 export class ViewServiceProvider extends ServiceProvider {
-  override register() {
+  override async register() {
     const config = this.app.make<ConfigRepository>('config');
     const viewConfig = config.get<ViewConfig>('views') ?? DEFAULT_VIEW_CONFIG;
     const engine = new ViewEngine(this.app.basePath, viewConfig);
@@ -63,7 +63,7 @@ export class ViewServiceProvider extends ServiceProvider {
     this.app.singleton(ViewEngine, () => engine);
   }
 
-  override boot() {
+  override async boot() {
     setViewApplication(this.app);
 
     const engine = this.app.make<ViewEngine>('view');

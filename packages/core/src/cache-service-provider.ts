@@ -4,7 +4,7 @@ import { RedisManager } from '@tyravel/redis';
 import { ServiceProvider } from './service-provider.js';
 
 export class CacheServiceProvider extends ServiceProvider {
-  override register() {
+  override async register() {
     const config = this.app.make<ConfigRepository>('config');
     const cacheConfig = config.get<CacheConfig>('cache');
     const manager = new CacheManager(cacheConfig, this.resolveRedisManager());
