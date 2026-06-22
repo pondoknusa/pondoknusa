@@ -11,6 +11,7 @@ export interface RedisClient {
   zRangeByScore(key: string, min: number | string, max: number | string): Promise<string[]>;
   zRem(key: string, ...members: string[]): Promise<number>;
   incr(key: string): Promise<number>;
+  publish(channel: string, message: string): Promise<number>;
   quit(): Promise<string>;
 }
 

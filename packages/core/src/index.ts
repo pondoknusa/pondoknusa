@@ -1,4 +1,5 @@
 export { AuthServiceProvider } from './auth-service-provider.js';
+export { BroadcastServiceProvider } from './broadcast-service-provider.js';
 export { CacheServiceProvider } from './cache-service-provider.js';
 export { StorageServiceProvider } from './storage-service-provider.js';
 export { LogServiceProvider } from './log-service-provider.js';
@@ -57,6 +58,8 @@ export type { LogFacade } from './log.js';
 export { Mail, setMailApplication } from './mail.js';
 export type { MailFacade } from './mail.js';
 export { Notifications, setNotificationApplication } from './notifications.js';
+export { Broadcast, setBroadcastApplication } from './broadcast.js';
+export type { BroadcastFacade } from './broadcast.js';
 export type { NotificationsFacade } from './notifications.js';
 export { serve } from './server.js';
 export type { ServeOptions } from './server.js';

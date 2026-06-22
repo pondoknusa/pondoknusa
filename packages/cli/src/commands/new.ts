@@ -4,6 +4,7 @@ import { spawn } from 'node:child_process';
 import { Command } from '../command.js';
 import { resolveNewProjectOptions } from '../new-project-options.js';
 import {
+  broadcastingConfig,
   cacheConfig,
   corsConfig,
   filesystemsConfig,
@@ -85,6 +86,7 @@ export class NewCommand extends Command {
     writeFile(projectPath(targetDir, 'config/views.ts'), viewsConfig());
     writeFile(projectPath(targetDir, 'config/queue.ts'), queueConfig(projectOptions));
     writeFile(projectPath(targetDir, 'config/events.ts'), eventsConfig());
+    writeFile(projectPath(targetDir, 'config/broadcasting.ts'), broadcastingConfig());
     writeFile(projectPath(targetDir, 'config/cache.ts'), cacheConfig(projectOptions));
     writeFile(projectPath(targetDir, 'config/filesystems.ts'), filesystemsConfig());
     writeFile(projectPath(targetDir, 'config/cors.ts'), corsConfig());

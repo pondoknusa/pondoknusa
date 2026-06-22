@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@tyravel/auth": "0.7.0",
+    "@tyravel/broadcasting": "0.7.0",
     "@tyravel/cache": "0.7.0",
     "@tyravel/config": "0.7.0",
     "@tyravel/database": "0.7.0",

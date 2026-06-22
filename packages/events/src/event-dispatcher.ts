@@ -23,6 +23,7 @@ export class EventDispatcher {
   private readonly listenerRegistry?: ListenerRegistry;
   private readonly queue?: EventDispatcherOptions['queue'];
   private queueDefaults: EventDispatcherOptions['queueDefaults'];
+  private onDispatched?: EventDispatcherOptions['onDispatched'];
 
   constructor(options: EventDispatcherOptions = {}) {
     this.container = options.container;
@@ -30,6 +31,7 @@ export class EventDispatcher {
     this.listenerRegistry = options.listenerRegistry;
     this.queue = options.queue;
     this.queueDefaults = options.queueDefaults;
+    this.onDispatched = options.onDispatched;
   }
 
   listen<TEvent extends Event>(
@@ -70,6 +72,15 @@ export class EventDispatcher {
     for (const handler of handlers) {
       await this.invokeHandler(handler, event);
     }
+
+    if (this.onDispatched) {
+      await this.onDispatched(event);
+    }
+  }
+
+  onAfterDispatch(callback: (event: Event) => Promise<void>): this {
+    this.onDispatched = callback;
+    return this;
   }
 
   async dispatchUntil<TEvent extends Event>(

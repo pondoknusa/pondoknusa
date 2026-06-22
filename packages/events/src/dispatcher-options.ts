@@ -10,10 +10,13 @@ export interface QueuedListenerBridge {
   ): Promise<void>;
 }
 
+import type { Event } from './types.js';
+
 export interface EventDispatcherOptions {
   container?: import('@tyravel/container').Container;
   eventRegistry?: EventRegistry;
   listenerRegistry?: ListenerRegistry;
   queue?: QueuedListenerBridge;
   queueDefaults?: QueuedListenerMetadata & { connection?: string };
+  onDispatched?: (event: Event) => Promise<void>;
 }

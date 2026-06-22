@@ -111,6 +111,13 @@ export class MemoryRedis implements RedisClient {
     return next;
   }
 
+  readonly published: Array<{ channel: string; message: string }> = [];
+
+  async publish(channel: string, message: string): Promise<number> {
+    this.published.push({ channel, message });
+    return 1;
+  }
+
   async quit(): Promise<string> {
     return 'OK';
   }

@@ -192,11 +192,21 @@ Make Tyravel deployable with confidence. Builds on Tier 6.1 hardening.
 
 Rich developer tooling, async utilities, and real-time operations.
 
-- [ ] **Broadcasting** — real-time event broadcasting over WebSockets (Socket.io) or Pusher with dynamic channel authorization
+- [x] **Broadcasting** — real-time event broadcasting over WebSockets (Socket.io) or Pusher with dynamic channel authorization
 - [x] **HTTP Client** — fluent, chainable HTTP wrapper around fetch with request/response mocking for testing
 - [x] **Queue depth** — job chaining, job batching, and cache-backed atomic locks
 - [ ] **ORM enhancements** — polymorphic relations morphTo/morphMany, query profiling, and pivot table attribute casting
 - [ ] **Storage depth** — Cloudflare R2 storage driver and secure time-limited temporary URLs
+
+## Tier 9 — Async-native platform (v0.9.0)
+
+Make Tyravel fully async by default: no sync fallbacks, no blocking I/O in the public API, and drivers that assume `await` everywhere.
+
+- [ ] **Async-native kernel** — application boot, config load, provider register/boot, and facades expose async-first APIs; deprecate sync-only code paths
+- [ ] **Async-native ORM** — query builder, model persistence, and relations return Promises by default; remove implicit sync SQLite shortcuts where they remain
+- [ ] **Async-native queue & events** — dispatch, listen, and broadcast are always async; sync driver retained only for tests
+- [ ] **Async-native filesystem & cache** — storage, cache, and session I/O are non-blocking across all drivers
+- [ ] **Supabase storage driver** — `@tyravel/storage-supabase` with bucket config, upload/download, and signed URLs via the Supabase Storage API
 
 ## Tier X — Production-ready project
 

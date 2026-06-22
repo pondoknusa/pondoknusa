@@ -79,6 +79,7 @@ export function mainEntry(options: NewProjectOptions): string {
 
   const coreImports = [
     'Application',
+    'BroadcastServiceProvider',
     'CacheServiceProvider',
     'ConfigRepository',
     'ConfigServiceProvider',
@@ -92,6 +93,7 @@ export function mainEntry(options: NewProjectOptions): string {
     'QueueServiceProvider',
     'StorageServiceProvider',
     'registerHttpMiddleware',
+    'setBroadcastApplication',
     'setCacheApplication',
     'setEventApplication',
     'setLogApplication',
@@ -117,6 +119,7 @@ export function mainEntry(options: NewProjectOptions): string {
     'app.register(NotificationServiceProvider);',
     'app.register(QueueServiceProvider);',
     'app.register(EventServiceProvider);',
+    'app.register(BroadcastServiceProvider);',
     'app.register(ViewServiceProvider);',
     'app.register(AppServiceProvider);',
   ];
@@ -132,6 +135,7 @@ setRouteApplication(app);
 setViewApplication(app);
 setQueueApplication(app);
 setEventApplication(app);
+setBroadcastApplication(app);
 setCacheApplication(app);
 setStorageApplication(app);
 setLogApplication(app);

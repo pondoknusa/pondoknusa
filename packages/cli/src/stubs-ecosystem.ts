@@ -79,6 +79,34 @@ export default {
 
 export { cacheConfig } from './stubs-project.js';
 
+export function broadcastingConfig(): string {
+  return `import type { BroadcastingConfig } from '@tyravel/broadcasting';
+import { env, envInt } from '@tyravel/config';
+
+export default {
+  default: env('BROADCAST_CONNECTION', 'log'),
+  connections: {
+    null: { driver: 'null' },
+    log: { driver: 'log' },
+    pusher: {
+      driver: 'pusher',
+      key: env('PUSHER_APP_KEY', ''),
+      secret: env('PUSHER_APP_SECRET', ''),
+      appId: env('PUSHER_APP_ID', ''),
+      cluster: env('PUSHER_APP_CLUSTER', 'mt1'),
+    },
+    socketio: {
+      driver: 'socketio',
+      redisConnection: env('REDIS_CONNECTION', 'default'),
+      channel: env('SOCKETIO_REDIS_CHANNEL', 'socket.io#/#'),
+    },
+  },
+  queueConnection: env('QUEUE_CONNECTION', 'database'),
+  queue: 'default',
+} satisfies BroadcastingConfig;
+`;
+}
+
 export function redisConfig(): string {
   return `import type { RedisConfig } from '@tyravel/redis';
 import { env, envInt } from '@tyravel/config';
