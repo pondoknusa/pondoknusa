@@ -49,3 +49,14 @@ fake('mail', { send: async () => {} });
 ```
 
 Wire facades to the test application with `wireFacades(app)` so `Route`, `Auth`, and `Gate` resolve correctly in tests.
+
+## Queued listeners and jobs
+
+When tests use `QUEUE_CONNECTION=database`, queued listeners and mailables persist jobs until a worker processes them. After dispatching HTTP requests that trigger queued work, drain the queue before asserting side effects:
+
+```typescript
+// See examples/hello-world/tests/support/reference-test-case.ts
+await test.drainQueue();
+```
+
+Use `MAIL_MAILER=array` (or fakes) together with queue draining to assert outbound mail in feature tests.

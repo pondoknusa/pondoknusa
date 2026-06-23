@@ -19,7 +19,7 @@ Published `@tyravel/*` packages follow the semver and deprecation rules in [STAB
 | `@tyravel/validation` | Request validation with pipe rules and 422 error responses |
 | `@tyravel/database` | Eloquent-style models, query builder, schema, and migrations |
 | `@tyravel/views` | Blade-like `.tyr` templates with layouts, sections, and components |
-| `@tyravel/queue` | Typed jobs, sync/database/redis drivers, dispatch facade, and queue worker |
+| `@tyravel/queue` | Typed jobs, database/redis drivers, dispatch facade, and queue worker |
 | `@tyravel/events` | Typed domain events, listeners, dispatcher, and `Events` facade |
 | `@tyravel/core` | Application kernel, controllers, service providers, HTTP kernel, `Route` facade |
 | `@tyravel/cli` | Project scaffolding, dev server, and code generators |
@@ -519,13 +519,14 @@ tyravel queue:failed
 tyravel queue:retry 1
 ```
 
-`config/queue.ts` supports `sync` (immediate, great for local dev), `database` (persistent, worker-driven), and `redis` (production-grade external adapter):
+`config/queue.ts` defaults to `database` (persistent, worker-driven). Use `redis` for production-grade external queues. New apps scaffold `QUEUE_CONNECTION=database` in `.env`:
 
 ```typescript
+import { env } from '@tyravel/config';
+
 export default {
-  default: 'sync',
+  default: env('QUEUE_CONNECTION', 'database'),
   connections: {
-    sync: { driver: 'sync' },
     database: {
       driver: 'database',
       table: 'jobs',
@@ -533,6 +534,7 @@ export default {
       retryAfter: 90,
     },
   },
+  failed: { table: 'failed_jobs' },
 } as const;
 ```
 

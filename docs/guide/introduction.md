@@ -8,7 +8,7 @@ Tyravel is a TypeScript-native web framework that brings Laravel-style ergonomic
 - **HTTP layer** — router with groups and named routes, middleware registry, JSON/HTML/XML responses
 - **Database** — Eloquent-style models, query builder, migrations, factories, seeders, and pagination
 - **Auth** — session and token guards, OAuth (GitHub, Google, Discord, Microsoft), policies, password reset
-- **Async work** — typed jobs, sync/database/redis queue drivers, domain events and listeners
+- **Async work** — typed jobs, database/redis queue drivers, domain events and listeners (async-native boot and I/O since v0.9.0)
 - **DX** — `tyravel` CLI for scaffolding, migrations, seeding, and a built-in dev server
 
 ## Requirements

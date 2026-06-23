@@ -1,6 +1,6 @@
 # Configuration
 
-`ConfigServiceProvider` loads `.env` from the application root, then imports every `config/*.ts` file into a `ConfigRepository`.
+`ConfigServiceProvider` loads `.env` from the application root via async `loadEnv()`, then imports every `config/*.ts` file into a `ConfigRepository`. Config file discovery uses async filesystem APIs.
 
 ```typescript
 // .env

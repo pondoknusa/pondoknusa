@@ -3,10 +3,11 @@
 Register `QueueServiceProvider` and configure `config/queue.ts`:
 
 ```typescript
+import { env } from '@tyravel/config';
+
 export default {
-  default: 'sync',
+  default: env('QUEUE_CONNECTION', 'database'),
   connections: {
-    sync: { driver: 'sync' },
     database: {
       driver: 'database',
       table: 'jobs',
@@ -20,8 +21,13 @@ export default {
       retryAfter: 90,
     },
   },
+  failed: {
+    table: 'failed_jobs',
+  },
 } as const;
 ```
+
+Set `QUEUE_CONNECTION=database` (or `redis`) in `.env`. The `sync` driver is **not** registered in `QueueManager` for production apps — use `database` or `redis`, and run `tyravel queue:work`. Framework tests may use `SyncQueue` directly when they need inline job execution.
 
 ## Jobs
 
@@ -67,3 +73,7 @@ tyravel migrate
 tyravel queue:failed
 tyravel queue:retry 1
 ```
+
+## Queued listeners in tests
+
+`QueuedListener` subclasses enqueue `CallQueuedListener` jobs instead of running inline. In feature tests with `QUEUE_CONNECTION=database`, drain pending jobs after the HTTP request before asserting side effects (mail, notifications, etc.). See `examples/hello-world/tests/support/reference-test-case.ts` (`drainQueue()`).

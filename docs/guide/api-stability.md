@@ -69,6 +69,16 @@ When we remove a **stable** API:
 
 Upgrade across minors with the [changelog](https://github.com/thesimonharms/tyravel/blob/main/CHANGELOG.md) and [GitHub releases](https://github.com/thesimonharms/tyravel/releases) open.
 
+### v0.9.0 async-native (Tier 9)
+
+**0.9.0** makes runtime I/O async-first. Deprecated sync helpers (`loadEnvSync`, CLI `*Sync` project helpers, compiled-cache `*Sync` exports) remain for one minor and are removed in **1.0.0**. Notable call-site changes:
+
+- `await View.exists(name)` — returns `Promise<boolean>`
+- `await requireProjectRoot()` / `await loadProjectConfig()` when using `@tyravel/cli` project helpers
+- `config/queue.ts` — use `database` or `redis`; remove `sync` from app config
+
+See the [0.9.0 changelog](https://github.com/thesimonharms/tyravel/blob/main/CHANGELOG.md#090---2026-06-24) for the full migration table.
+
 ## Optional drivers
 
 Packages such as `@tyravel/database-mysql`, `@tyravel/database-pg`, `@tyravel/redis-node`, and `@tyravel/storage-aws-s3` version with the monorepo but install only when needed. Their public surface is the driver config types and provider registration — not the full framework API.
