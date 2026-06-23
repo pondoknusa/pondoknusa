@@ -221,9 +221,8 @@ export function queueConfig(options: NewProjectOptions): string {
   return `import { env } from '@tyravel/config';
 
 export default {
-  default: env('QUEUE_CONNECTION', 'database'),
+  default: env('QUEUE_CONNECTION', '${options.queue}'),
   connections: {
-    sync: { driver: 'sync' },
     database: {
       driver: 'database',
       table: 'jobs',
@@ -295,7 +294,7 @@ APP_URL=http://127.0.0.1:3000
 ${dbLines}
 
 CACHE_STORE=${cacheDefault}
-QUEUE_CONNECTION=database${redisLines}
+QUEUE_CONNECTION=${options.queue}${redisLines}
 
 MAIL_MAILER=log
 MAIL_FROM_ADDRESS=hello@example.com

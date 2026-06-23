@@ -47,7 +47,7 @@ export class NewCommand extends Command {
   override readonly name = 'new';
   override readonly description = 'Create a new Tyravel application';
   override readonly usage =
-    'tyravel new <name> [--path=<directory>] [--db=sqlite|mysql|postgres] [--redis|--no-redis] [--auth|--no-auth] [--queue=database|sync|redis] [--mail=log|smtp|array]';
+    'tyravel new <name> [--path=<directory>] [--db=sqlite|mysql|postgres] [--redis|--no-redis] [--auth|--no-auth] [--queue=database|redis] [--mail=log|smtp|array]';
 
   async handle(args: string[]): Promise<number> {
     const options = parseOptions(args);

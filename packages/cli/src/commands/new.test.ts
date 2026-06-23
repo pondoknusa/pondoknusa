@@ -38,6 +38,11 @@ describe('NewCommand', () => {
       existsSync(join(projectDir, 'src/providers/app-service-provider.ts')),
     ).toBe(true);
     expect(existsSync(join(projectDir, 'config/redis.ts'))).toBe(false);
+
+    const queueConfig = readFileSync(join(projectDir, 'config/queue.ts'), 'utf8');
+    expect(queueConfig).not.toContain("driver: 'sync'");
+    expect(queueConfig).toContain("env('QUEUE_CONNECTION', 'database')");
+    expect(readFileSync(join(projectDir, '.env'), 'utf8')).toContain('QUEUE_CONNECTION=database');
   });
 
   it('scaffolds mysql and redis driver packages when requested', async () => {

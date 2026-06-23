@@ -3,7 +3,7 @@ import { stdin as input, stdout as output } from 'node:process';
 import { optionString } from './utils.js';
 
 export type DatabaseDriver = 'sqlite' | 'mysql' | 'postgres';
-export type QueueDriver = 'database' | 'sync' | 'redis';
+export type QueueDriver = 'database' | 'redis';
 export type MailDriver = 'log' | 'smtp' | 'array';
 
 export interface NewProjectOptions {
@@ -22,7 +22,6 @@ const DATABASE_CHOICES: { value: DatabaseDriver; label: string }[] = [
 
 const QUEUE_CHOICES: { value: QueueDriver; label: string }[] = [
   { value: 'database', label: 'Database (uses jobs table, durable)' },
-  { value: 'sync', label: 'Sync (synchronous, no extra deps)' },
   { value: 'redis', label: 'Redis (requires redis driver)' },
 ];
 
@@ -133,10 +132,10 @@ function parseDatabaseDriver(value: string): DatabaseDriver {
 }
 
 function parseQueueDriver(value: string): QueueDriver {
-  if (value === 'database' || value === 'sync' || value === 'redis') {
+  if (value === 'database' || value === 'redis') {
     return value;
   }
-  throw new Error(`Unsupported queue driver "${value}". Use database, sync, or redis.`);
+  throw new Error(`Unsupported queue driver "${value}". Use database or redis.`);
 }
 
 function parseMailDriver(value: string): MailDriver {
