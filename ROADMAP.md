@@ -198,14 +198,33 @@ Rich developer tooling, async utilities, and real-time operations.
 - [x] **ORM enhancements** — polymorphic relations morphTo/morphMany, query profiling, and pivot table attribute casting
 - [x] **Storage depth** — Cloudflare R2 storage driver and secure time-limited temporary URLs
 
-## Tier 9 — Async-native platform (v0.9.0)
+## Tier 9 — Async-native platform (v0.9.0) ✓
 
 Make Tyravel fully async by default: no sync fallbacks, no blocking I/O in the public API, and drivers that assume `await` everywhere.
 
-- [ ] **Async-native kernel** — application boot, config load, provider register/boot, and facades expose async-first APIs; deprecate sync-only code paths
-- [ ] **Async-native ORM** — query builder, model persistence, and relations return Promises by default; remove implicit sync SQLite shortcuts where they remain
-- [ ] **Async-native queue & events** — dispatch, listen, and broadcast are always async; sync driver retained only for tests
-- [ ] **Async-native filesystem & cache** — storage, cache, and session I/O are non-blocking across all drivers
+- [x] **Async-native kernel** — application boot, config load, provider register/boot, and facades expose async-first APIs; deprecate sync-only code paths
+  - [x] **9.1** — `loadEnv()` async via `fs/promises`; deprecate `loadEnvSync()`
+  - [x] **9.2** — async `readdir` in config loader
+  - [x] **9.3** — `ConfigServiceProvider` awaits `loadEnv()`
+  - [x] **9.4** — async `discoverProviders` / `discoverCommands`
+  - [x] **9.5** — async-first provider contract docs and tests
+  - [x] **9.6** — migrate I/O providers to async `register` / `boot`
+  - [x] **9.13** — async `View.exists()` and compiled view cache I/O
+  - [x] **9.14** — async CLI scaffold I/O (`writeFile`, `findProjectRoot`, `loadProjectConfig`)
+  - [x] **9.15** — `examples/hello-world` + CHANGELOG deprecation notes
+  - [x] **9.16** — ROADMAP Tier 9 closeout
+- [x] **Async-native ORM** — query builder, model persistence, and relations return Promises by default; remove implicit sync SQLite shortcuts where they remain
+  - [x] **9.7** — async migration file discovery
+  - [x] **9.8** — async seeder file discovery
+  - [x] **9.9** — async-native SQLite connection setup (`fs/promises`, deferred open)
+- [x] **Async-native queue & events** — dispatch, listen, and broadcast are always async; sync driver retained only for tests
+  - [x] **9.10** — `SyncQueue` test-only; removed from `QueueManager` production switch
+  - [x] **9.11** — remove `?? 'sync'` queue connection fallbacks
+  - [x] **9.12** — remove `sync` from `tyravel new` scaffold; default `database`
+- [x] **Async-native filesystem & cache** — storage, cache, and session I/O are non-blocking across all drivers
+  - [x] Storage drivers (`LocalDisk`, S3, R2, Supabase) — fetch/async APIs (pre-existing)
+  - [x] Cache drivers (`ArrayStore`, `FileStore`, Redis) — async public API (pre-existing)
+  - [x] `Queue.dispatch`, `Events.dispatch`, `Broadcast.dispatch` — async facades (pre-existing)
 - [x] **Supabase storage driver** — `@tyravel/storage-supabase` with bucket config, upload/download, and signed URLs via the Supabase Storage API
 
 ## Tier X — Production-ready project
