@@ -39,7 +39,7 @@ export function resolveQueuedListenerMetadata(
   defaults: QueuedListenerMetadata & { connection?: string } = {},
 ): { connection: string; queue: string; delaySeconds: number } {
   return {
-    connection: constructor.connection ?? defaults.connection ?? 'sync',
+    connection: constructor.connection ?? defaults.connection ?? 'database',
     queue: constructor.queue ?? defaults.queue ?? 'default',
     delaySeconds: constructor.delaySeconds ?? defaults.delaySeconds ?? 0,
   };

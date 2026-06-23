@@ -4,7 +4,7 @@ import { EventDispatcher } from './event-dispatcher.js';
 import { EventRegistry } from './event-registry.js';
 import { ListenerRegistry } from './listener-registry.js';
 import { Event, Listener } from './types.js';
-import { QueuedListener } from './should-queue.js';
+import { QueuedListener, resolveQueuedListenerMetadata } from './should-queue.js';
 
 class OrderPlaced extends Event<{ orderId: string }> {}
 
@@ -25,6 +25,18 @@ class QueuedNotify extends QueuedListener<OrderPlaced> {
 }
 
 describe('queued listeners', () => {
+  it('defaults queued listener connection to database', () => {
+    class Example extends QueuedListener<OrderPlaced> {
+      override async handle(): Promise<void> {}
+    }
+
+    expect(resolveQueuedListenerMetadata(Example)).toEqual({
+      connection: 'database',
+      queue: 'default',
+      delaySeconds: 0,
+    });
+  });
+
   it('pushes CallQueuedListener jobs instead of running synchronously', async () => {
     SyncAudit.handled = [];
     QueuedNotify.handled = [];
@@ -41,7 +53,7 @@ describe('queued listeners', () => {
           queuedJobs.push(job);
         },
       },
-      queueDefaults: { connection: 'sync', queue: 'events' },
+      queueDefaults: { connection: 'database', queue: 'events' },
     });
 
     dispatcher.listen(OrderPlaced, SyncAudit);

@@ -49,7 +49,7 @@ export class BroadcastDispatcher {
     if (this.options.queue) {
       const job = new BroadcastEvent({ connection, payload });
       await this.options.queue.dispatch(job, {
-        connection: this.queueDefaults?.connection ?? 'sync',
+        connection: this.queueDefaults?.connection ?? 'database',
         queue: broadcastable.broadcastQueue?.() ?? this.queueDefaults?.queue ?? 'default',
       });
       return;
