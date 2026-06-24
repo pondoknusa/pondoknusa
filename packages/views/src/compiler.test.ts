@@ -298,6 +298,8 @@ describe('compile', () => {
 @endlocal
 <p>@lang('messages.welcome', { name: 'Ada' })</p>
 @vite('resources/js/app.ts')
+@echo
+@echo('resources/client/custom-echo.ts')
 `;
 
     const template = compile(source);
@@ -310,5 +312,13 @@ describe('compile', () => {
     expect(template.ops.some((op) => op.type === 'if' && op.mode === 'local')).toBe(true);
     expect(template.ops.some((op) => op.type === 'lang')).toBe(true);
     expect(template.ops.some((op) => op.type === 'vite')).toBe(true);
+    expect(template.ops.some((op) => op.type === 'echoClient' && op.entry === 'resources/client/echo.ts')).toBe(
+      true,
+    );
+    expect(
+      template.ops.some(
+        (op) => op.type === 'echoClient' && op.entry === 'resources/client/custom-echo.ts',
+      ),
+    ).toBe(true);
   });
 });

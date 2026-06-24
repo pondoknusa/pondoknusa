@@ -270,8 +270,8 @@ Browser-side channel subscriptions that mirror the server broadcasting API. Serv
 #### P1 — Strong want
 
 - [ ] **Presence events** — `.here()`, `.joining()`, `.leaving()`, `.error()` callbacks on presence channels
-- [ ] **Scaffold integration** — `tyravel new` / layout stub emits an `@echo` or `@vite` companion script that bootstraps Echo from `config/broadcasting.ts` values safe for the client (key, host, driver)
-- [ ] **Echo + views** — `@echo` directive or layout stack helper to load the Echo client bundle only on pages that need real-time updates
+- [x] **Scaffold integration** — `tyravel new` / layout stub emits an `@echo` or `@vite` companion script that bootstraps Echo from `config/broadcasting.ts` values safe for the client (key, host, driver)
+- [x] **Echo + views** — `@echo` directive or layout stack helper to load the Echo client bundle only on pages that need real-time updates
 
 #### P2 — If scope allows
 

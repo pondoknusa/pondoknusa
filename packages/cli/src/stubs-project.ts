@@ -18,6 +18,8 @@ export function projectPackageJson(name: string, options: NewProjectOptions): st
     '@tyravel/support': CORE_VERSION,
     '@tyravel/validation': CORE_VERSION,
     '@tyravel/views': CORE_VERSION,
+    '@tyravel/echo': CORE_VERSION,
+    '@tyravel/ssr': CORE_VERSION,
   };
 
   if (options.auth !== false) {
@@ -32,6 +34,8 @@ export function projectPackageJson(name: string, options: NewProjectOptions): st
   }
   if (options.redis) {
     dependencies['@tyravel/redis-node'] = CORE_VERSION;
+    dependencies['@tyravel/broadcasting-socket-io'] = CORE_VERSION;
+    dependencies['socket.io-client'] = '^4.8.1';
   }
 
   return JSON.stringify(
@@ -75,6 +79,10 @@ export function mainEntry(options: NewProjectOptions): string {
   if (options.redis) {
     driverImports.push("import { NodeRedisServiceProvider } from '@tyravel/redis-node';");
     driverProviders.push('app.register(NodeRedisServiceProvider);');
+    driverImports.push(
+      "import { SocketIoBroadcastServiceProvider } from '@tyravel/broadcasting-socket-io';",
+    );
+    driverProviders.push('new SocketIoBroadcastServiceProvider(app).register();');
   }
 
   const coreImports = [
@@ -128,6 +136,7 @@ export function mainEntry(options: NewProjectOptions): string {
   ${coreImports.join(',\n  ')},
 } from '@tyravel/core';
 import { AppServiceProvider } from './providers/app-service-provider.js';
+import './routes/channels.js';
 import './routes/web.js';
 
 const app = new Application(import.meta.dir);
@@ -304,6 +313,13 @@ MAIL_FROM_NAME=Tyravel
 # MAIL_USERNAME=
 # MAIL_PASSWORD=
 # MAIL_ENCRYPTION=tls
+
+BROADCAST_CONNECTION=${options.redis ? 'socketio' : 'log'}
+# PUSHER_APP_KEY=
+# PUSHER_APP_SECRET=
+# PUSHER_APP_ID=
+# PUSHER_APP_CLUSTER=mt1
+# SOCKETIO_REDIS_CHANNEL=socket.io#/#
 
 # GITHUB_CLIENT_ID=
 # GITHUB_CLIENT_SECRET=

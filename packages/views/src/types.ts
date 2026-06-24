@@ -80,6 +80,7 @@ export type TemplateOp =
   | { type: 'includeFirst'; names: string[]; dataExpression?: string }
   | { type: 'lang'; key: string; replaceExpression?: string }
   | { type: 'vite'; entry: string }
+  | { type: 'echoClient'; entry: string }
   | { type: 'custom'; name: string; expression: string }
   | { type: 'csrf' }
   | { type: 'method'; verb: string }

@@ -346,6 +346,10 @@ export async function renderOps(
         helpers.append(engine.renderVite(op.entry));
         break;
 
+      case 'echoClient':
+        helpers.append(engine.renderEcho(op.entry));
+        break;
+
       case 'custom': {
         const handler = engine.getRegistry().getDirective(op.name);
         if (!handler) {

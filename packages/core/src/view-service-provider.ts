@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto';
 import { join } from 'node:path';
+import { resolveEchoClientConfig, type BroadcastingConfig } from '@tyravel/broadcasting';
 import { ConfigRepository } from '@tyravel/config';
 import type { AuthManager, Gate } from '@tyravel/auth';
 import type { TyravelRequest } from '@tyravel/http';
@@ -81,6 +82,13 @@ export class ViewServiceProvider extends ServiceProvider {
 
     engine.setInjector((binding) => this.app.make(binding));
 
+    const broadcasting = config.get<BroadcastingConfig>('broadcasting', {
+      default: 'null',
+      connections: { null: { driver: 'null' } },
+    });
+    const appUrl = String(config.get('app.url', 'http://127.0.0.1:3000') ?? 'http://127.0.0.1:3000');
+    engine.setEchoClientConfig(resolveEchoClientConfig(broadcasting, appUrl));
+
     const applyBindings = (request?: TyravelRequest) => {
       engine.setBindings({
         route: (name, params = {}) => {
@@ -95,6 +103,7 @@ export class ViewServiceProvider extends ServiceProvider {
         old: (key, defaultValue) => readOldInput(request, key, defaultValue),
         __: (key: string, replacements: Record<string, string | number> = {}) =>
           engine.translate(String(key), replacements),
+        csrf_token: () => ensureCsrfToken(request),
       });
       engine.setForm({
         csrfToken: () => ensureCsrfToken(request),

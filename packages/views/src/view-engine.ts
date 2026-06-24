@@ -46,6 +46,8 @@ import {
   type ViewLocaleBindings,
 } from './view-registry.js';
 import { ViewHelpers } from './view-helpers.js';
+import { renderEchoBootstrap } from './echo-helpers.js';
+import type { EchoClientConfig } from './echo-types.js';
 import { readViteManifest, renderViteTags, type ViteManifest } from './vite-helpers.js';
 
 interface CacheEntry {
@@ -71,6 +73,7 @@ export class ViewEngine {
   private localeCode: string;
   private translations: Record<string, string> = {};
   private viteManifest?: ViteManifest;
+  private echoClientConfig: EchoClientConfig | null = null;
   private compiledCacheDirectory?: string;
 
   constructor(
@@ -467,11 +470,27 @@ export class ViewEngine {
     return `${tyrPath}${programmaticExtension}`;
   }
 
+  setEchoClientConfig(config: EchoClientConfig | null): void {
+    this.echoClientConfig = config;
+  }
+
   renderVite(entry: string): string {
     if (!this.viteManifest) {
       this.viteManifest = readViteManifest(this.manifestPath);
     }
     return renderViteTags(this.viteManifest, entry, this.viteBase);
+  }
+
+  renderEcho(entry = 'resources/client/echo.ts'): string {
+    if (!this.viteManifest) {
+      this.viteManifest = readViteManifest(this.manifestPath);
+    }
+    return renderEchoBootstrap(
+      this.echoClientConfig,
+      this.viteManifest,
+      entry,
+      this.viteBase,
+    );
   }
 
   translate(

@@ -59,6 +59,8 @@ export {
   type ViteManifest,
   type ViteManifestEntry,
 } from './vite-helpers.js';
+export { ECHO_CONFIG_SCRIPT_ID, renderEchoBootstrap } from './echo-helpers.js';
+export type { EchoClientConfig } from './echo-types.js';
 export {
   ViewRegistry,
   type CustomDirectiveHandler,

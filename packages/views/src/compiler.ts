@@ -121,6 +121,8 @@ const LOCAL_RE = /^@local\s*$/;
 const ENDLOCAL_RE = /^@endlocal\s*$/;
 const LANG_RE = new RegExp(`^@lang\\(\\s*${VIEW_NAME_RE}\\s*(?:,\\s*(.+))?\\s*\\)`);
 const VITE_RE = new RegExp(`^@vite\\(\\s*${VIEW_NAME_RE}\\s*\\)`);
+const ECHO_DIRECTIVE_RE = new RegExp(`^@echo(?:\\(\\s*${VIEW_NAME_RE}\\s*\\))?\\s*$`);
+const DEFAULT_ECHO_ENTRY = 'resources/client/echo.ts';
 const CUSTOM_DIRECTIVE_RE = /^@([A-Za-z_][\w]*)\((.*)\)\s*$/;
 const COMPONENT_RE = /^@component\(\s*['"]([^'"]+)['"]\s*(?:,\s*(.+))?\)\s*$/;
 const ENDCOMPONENT_RE = /^@endcomponent\s*$/;
@@ -176,7 +178,7 @@ const CASE_RE = /^@case\s*\((.+)\)\s*$/;
 const DEFAULT_CASE_RE = /^@default\s*$/;
 const BREAK_RE = /^@break\s*$/;
 const ENDSWITCH_RE = /^@endswitch\s*$/;
-const ECHO_RE = /\{\{\s*(.+?)\s*\}\}/g;
+const MUSTACHE_ECHO_RE = /\{\{\s*(.+?)\s*\}\}/g;
 const RAW_ECHO_RE = /\{!!\s*(.+?)\s*!!\}/g;
 
 const PROPS_LINE_RE = /^@props\s*\(/;
@@ -593,6 +595,13 @@ function parseOps(source: string, options: CompileOptions = {}): TemplateOp[] {
     const viteMatch = trimmed.match(VITE_RE);
     if (viteMatch) {
       ops.push({ type: 'vite', entry: viteMatch[1]! });
+      cursor += line.length;
+      continue;
+    }
+
+    const echoMatch = trimmed.match(ECHO_DIRECTIVE_RE);
+    if (echoMatch) {
+      ops.push({ type: 'echoClient', entry: echoMatch[1] ?? DEFAULT_ECHO_ENTRY });
       cursor += line.length;
       continue;
     }
@@ -1703,6 +1712,14 @@ function parseInlineDirective(
     };
   }
 
+  const echoMatch = source.match(ECHO_DIRECTIVE_RE);
+  if (echoMatch) {
+    return {
+      op: { type: 'echoClient', entry: echoMatch[1] ?? DEFAULT_ECHO_ENTRY },
+      length: echoMatch[0].length,
+    };
+  }
+
   const yieldMatch = source.match(
     /^@yield\(\s*['"]([^'"]+)['"]\s*(?:,\s*['"]([^'"]*)['"]\s*)?\)/,
   );
@@ -1784,7 +1801,7 @@ function parseExpressionDirective(
 export function compileInlineEchoes(source: string): TemplateOp[] {
   const ops: TemplateOp[] = [];
   let lastIndex = 0;
-  const pattern = new RegExp(`${ECHO_RE.source}|${RAW_ECHO_RE.source}`, 'g');
+  const pattern = new RegExp(`${MUSTACHE_ECHO_RE.source}|${RAW_ECHO_RE.source}`, 'g');
   let match: RegExpExecArray | null;
 
   while ((match = pattern.exec(source)) !== null) {

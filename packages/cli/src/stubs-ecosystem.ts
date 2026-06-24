@@ -1,3 +1,5 @@
+import type { NewProjectOptions } from './new-project-options.js';
+
 export function logConfig(): string {
   return `import type { LogConfig } from '@tyravel/log';
 import { env } from '@tyravel/config';
@@ -79,12 +81,14 @@ export default {
 
 export { cacheConfig } from './stubs-project.js';
 
-export function broadcastingConfig(): string {
+export function broadcastingConfig(options: NewProjectOptions): string {
+  const defaultConnection = options.redis ? 'socketio' : 'log';
+
   return `import type { BroadcastingConfig } from '@tyravel/broadcasting';
 import { env, envInt } from '@tyravel/config';
 
 export default {
-  default: env('BROADCAST_CONNECTION', 'log'),
+  default: env('BROADCAST_CONNECTION', '${defaultConnection}'),
   connections: {
     null: { driver: 'null' },
     log: { driver: 'log' },
@@ -104,6 +108,47 @@ export default {
   queueConnection: env('QUEUE_CONNECTION', 'database'),
   queue: 'default',
 } satisfies BroadcastingConfig;
+`;
+}
+
+export function broadcastChannels(): string {
+  return `import { Broadcast } from '@tyravel/core';
+
+Broadcast.channel('App.Models.User.{id}', (user, id) => {
+  if (!user || typeof user !== 'object' || !('id' in user)) {
+    return false;
+  }
+
+  return String((user as { id: number | string }).id) === String(id);
+});
+`;
+}
+
+export function echoBootstrap(options: NewProjectOptions): string {
+  const socketIoImport = options.redis
+    ? "import { io } from 'socket.io-client';\n"
+    : '';
+  const socketIoFactory = options.redis
+    ? `    io: (connectorOptions) => io(connectorOptions.host ?? window.location.origin, {
+      path: '/socket.io',
+      transports: ['websocket', 'polling'],
+    }),\n`
+    : '';
+
+  return `${socketIoImport}import { Echo, readEchoConfigFromDocument } from '@tyravel/echo';
+
+const config = readEchoConfigFromDocument();
+if (!config) {
+  // Broadcasting is disabled (log/null driver) — @echo renders no client bundle.
+} else {
+  const echo = new Echo({
+    ...config,
+${socketIoFactory}  });
+
+  if (typeof window !== 'undefined') {
+    (window as Window & { Echo?: Echo }).Echo = echo;
+  }
+}
 `;
 }
 

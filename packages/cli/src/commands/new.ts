@@ -3,8 +3,10 @@ import { spawn } from 'node:child_process';
 import { Command } from '../command.js';
 import { resolveNewProjectOptions } from '../new-project-options.js';
 import {
+  broadcastChannels,
   broadcastingConfig,
   cacheConfig,
+  echoBootstrap,
   corsConfig,
   filesystemsConfig,
   healthConfig,
@@ -78,7 +80,10 @@ export class NewCommand extends Command {
     await writeFile(projectPath(targetDir, 'config/views.ts'), viewsConfig());
     await writeFile(projectPath(targetDir, 'config/queue.ts'), queueConfig(projectOptions));
     await writeFile(projectPath(targetDir, 'config/events.ts'), eventsConfig());
-    await writeFile(projectPath(targetDir, 'config/broadcasting.ts'), broadcastingConfig());
+    await writeFile(
+      projectPath(targetDir, 'config/broadcasting.ts'),
+      broadcastingConfig(projectOptions),
+    );
     await writeFile(projectPath(targetDir, 'config/cache.ts'), cacheConfig(projectOptions));
     await writeFile(projectPath(targetDir, 'config/filesystems.ts'), filesystemsConfig());
     await writeFile(projectPath(targetDir, 'config/cors.ts'), corsConfig());
@@ -122,6 +127,14 @@ export class NewCommand extends Command {
       appServiceProvider(),
     );
     await writeFile(projectPath(targetDir, 'src/routes/web.ts'), webRoutes());
+    await writeFile(
+      projectPath(targetDir, 'src/routes/channels.ts'),
+      broadcastChannels(),
+    );
+    await writeFile(
+      projectPath(targetDir, 'resources/client/echo.ts'),
+      echoBootstrap(projectOptions),
+    );
     await writeFile(projectPath(targetDir, 'vitest.config.ts'), projectVitestConfig());
     await writeFile(
       projectPath(targetDir, 'tests/feature/example.test.ts'),

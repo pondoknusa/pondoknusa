@@ -1,4 +1,6 @@
 export { createAuthTransport, readCsrfTokenFromDocument } from './auth.js';
+export { ECHO_CONFIG_SCRIPT_ID, readEchoConfigFromDocument } from './config.js';
+export type { EchoClientManifestConfig } from './config.js';
 export { EchoChannel } from './channel.js';
 export { Echo } from './echo.js';
 export { formatChannelName, normalizeListenEvent } from './event-name.js';

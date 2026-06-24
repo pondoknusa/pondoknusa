@@ -43,6 +43,19 @@ describe('NewCommand', () => {
     expect(queueConfig).not.toContain("driver: 'sync'");
     expect(queueConfig).toContain("env('QUEUE_CONNECTION', 'database')");
     expect(readFileSync(join(projectDir, '.env'), 'utf8')).toContain('QUEUE_CONNECTION=database');
+
+    expect(existsSync(join(projectDir, 'src/routes/channels.ts'))).toBe(true);
+    expect(existsSync(join(projectDir, 'resources/client/echo.ts'))).toBe(true);
+    expect(readFileSync(join(projectDir, 'config/broadcasting.ts'), 'utf8')).toContain(
+      "env('BROADCAST_CONNECTION', 'log')",
+    );
+    expect(readFileSync(join(projectDir, 'resources/views/layouts/app.tyr'), 'utf8')).toContain(
+      '@echo',
+    );
+    expect(readFileSync(join(projectDir, 'src/main.ts'), 'utf8')).toContain(
+      './routes/channels.js',
+    );
+    expect(readFileSync(join(projectDir, 'package.json'), 'utf8')).toContain('@tyravel/echo');
   });
 
   it('scaffolds mysql and redis driver packages when requested', async () => {
@@ -69,6 +82,17 @@ describe('NewCommand', () => {
     );
     expect(readFileSync(join(projectDir, 'src/main.ts'), 'utf8')).toContain(
       'NodeRedisServiceProvider',
+    );
+    expect(pkg.dependencies['@tyravel/broadcasting-socket-io']).toBeDefined();
+    expect(pkg.dependencies['socket.io-client']).toBeDefined();
+    expect(readFileSync(join(projectDir, 'config/broadcasting.ts'), 'utf8')).toContain(
+      "env('BROADCAST_CONNECTION', 'socketio')",
+    );
+    expect(readFileSync(join(projectDir, 'resources/client/echo.ts'), 'utf8')).toContain(
+      'socket.io-client',
+    );
+    expect(readFileSync(join(projectDir, 'src/main.ts'), 'utf8')).toContain(
+      'SocketIoBroadcastServiceProvider',
     );
   });
 });
