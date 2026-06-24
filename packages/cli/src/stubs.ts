@@ -73,6 +73,35 @@ export function islandViewPartial(id: string): string {
 `;
 }
 
+export function islandProgrammaticView(id: string): string {
+  return `export function render(ctx: Record<string, unknown>) {
+  const label = String(ctx.label ?? '${id}');
+  return '<button type="button" class="island-${id}">' + label + '</button>';
+}
+
+export function mount({ element, props }: {
+  element: { querySelector(selectors: string): Element | null };
+  props: Record<string, unknown>;
+}) {
+  const button = element.querySelector('button');
+  if (!(button instanceof HTMLButtonElement)) {
+    return;
+  }
+
+  let count = Number(props.count ?? 0);
+  button.textContent = String(count);
+
+  const onClick = () => {
+    count += 1;
+    button.textContent = String(count);
+  };
+
+  button.addEventListener('click', onClick);
+  return () => button.removeEventListener('click', onClick);
+}
+`;
+}
+
 export function islandClientMount(id: string): string {
   return `import { registerIsland } from '@tyravel/ssr';
 

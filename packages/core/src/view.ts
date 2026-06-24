@@ -2,6 +2,8 @@ import { Response, type SsrStreamOptions } from '@tyravel/http';
 import type { TyravelRequest } from '@tyravel/http';
 import type {
   ComponentCatalogEntry,
+  IslandCatalogEntry,
+  ViewCatalog,
   CustomDirectiveHandler,
   EscapeHandler,
   ViewAuthBindings,
@@ -55,7 +57,8 @@ export interface ViewFacade {
     options?: SsrStreamOptions,
   ): Response;
   exists(name: string): Promise<boolean>;
-  catalog(): ComponentCatalogEntry[];
+  catalog(): ViewCatalog;
+  islandCatalog(): IslandCatalogEntry[];
   escape(context: string, handler: EscapeHandler): ViewFacade;
   getHydrationManifest(): { islands: Array<{ id: string; html: string; props: Record<string, unknown> }> };
   directive(name: string, handler: CustomDirectiveHandler): ViewFacade;
@@ -94,7 +97,8 @@ export const View: ViewFacade = {
     );
   },
   exists: (name) => viewEngine().exists(name),
-  catalog: () => viewEngine().getComponentCatalog(),
+  catalog: () => viewEngine().getViewCatalog(),
+  islandCatalog: () => viewEngine().getIslandCatalog(),
   escape: (context, handler) => {
     viewEngine().escape(context, handler);
     return View;

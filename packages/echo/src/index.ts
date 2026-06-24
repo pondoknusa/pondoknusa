@@ -13,10 +13,16 @@ export {
   type SocketIoFactory,
 } from './connectors/socket-io.js';
 export type {
+  EchoChannelEventMap,
+  EchoChannelKey,
+  EchoEventPayload,
+} from './channel-events.js';
+export type {
   EchoAuthResponse,
   EchoAuthTransport,
   EchoConnector,
   EchoDriver,
+  EchoLifecycleCallbacks,
   EchoListener,
   EchoOptions,
   PresenceCallbacks,

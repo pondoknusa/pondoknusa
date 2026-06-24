@@ -49,6 +49,11 @@ export class PresenceChannel<TMember = unknown> extends EchoChannel {
     );
   }
 
+  override listen<TEvent extends string>(
+    event: TEvent,
+    listener: (payload: import('./channel-events.js').EchoEventPayload<string, TEvent>) => void,
+  ): this;
+  override listen(event: string, listener: EchoListener): this;
   override listen(event: string, listener: EchoListener): this {
     if (event === 'here' && typeof listener === 'function') {
       this.here(listener as (members: TMember[]) => void);

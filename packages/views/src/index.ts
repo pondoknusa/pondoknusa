@@ -38,11 +38,23 @@ export {
   type ComponentCatalogEntry,
 } from './component-catalog.js';
 export {
+  buildIslandCatalog,
+  buildViewCatalog,
+  type IslandCatalogEntry,
+  type ViewCatalog,
+} from './island-catalog.js';
+export {
   HydrationManifest,
   renderIslandWrapper,
   type HydrationIsland,
 } from './hydration.js';
-export { loadProgrammaticView, type ProgrammaticViewModule } from './programmatic-view.js';
+export {
+  loadProgrammaticView,
+  type IslandMountContext,
+  type IslandMountTarget,
+  type ProgrammaticIslandMountFn,
+  type ProgrammaticViewModule,
+} from './programmatic-view.js';
 export { collectStreamSections, streamPlaceholder, type StreamSection } from './streaming.js';
 export type { ViewPropsFor, ViewPropsMap } from './view-props.js';
 export { evaluateExpression, mergeEvaluationContext } from './evaluate.js';

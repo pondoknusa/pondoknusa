@@ -130,3 +130,19 @@ return Response.ssrStream(View.renderStream('dashboard', context, handlers), {
 `View.renderStream()` yields HTML in document order: shell markup, then each stream section as it resolves.
 
 Scaffold a new island with `tyravel make:island counter`. That creates `resources/views/islands/counter.tyr`, `resources/client/islands/counter.ts`, and registers the client mount in your bundle entry.
+
+Use `tyravel make:island counter --programmatic` for a single `.tyr.ts` file that exports both `render()` and `mount()`:
+
+```typescript
+@island('counter', { count: 0 })
+@endisland
+```
+
+```typescript
+import * as counterIsland from '../views/islands/counter.tyr.js';
+import { registerProgrammaticIsland } from '@tyravel/ssr';
+
+registerProgrammaticIsland('counter', counterIsland);
+```
+
+`View.catalog()` returns `{ components, islands }` so tooling can see which views declare each island id and whether a client or programmatic mount exists.

@@ -2,7 +2,13 @@ import {
   bindConnectorPresenceEvents,
   unbindConnectorPresenceEvents,
 } from '../presence-events.js';
-import type { EchoConnector, EchoListener, PresenceCallbacks } from '../types.js';
+import { LifecycleRegistry } from '../lifecycle.js';
+import type {
+  EchoConnector,
+  EchoLifecycleCallbacks,
+  EchoListener,
+  PresenceCallbacks,
+} from '../types.js';
 
 type Subscription = {
   listeners: Map<string, Set<EchoListener>>;
@@ -11,10 +17,20 @@ type Subscription = {
 export class MockConnector implements EchoConnector {
   readonly socketId = 'mock-socket-id';
   private readonly subscriptions = new Map<string, Subscription>();
+  private readonly lifecycle = new LifecycleRegistry();
   private connected = false;
 
   async connect(): Promise<void> {
     this.connected = true;
+    this.lifecycle.emit('connected');
+  }
+
+  bindLifecycle(callbacks: EchoLifecycleCallbacks): void {
+    this.lifecycle.set(callbacks);
+  }
+
+  emitLifecycle(event: keyof EchoLifecycleCallbacks): void {
+    this.lifecycle.emit(event);
   }
 
   disconnect(): void {

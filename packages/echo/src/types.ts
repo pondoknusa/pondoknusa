@@ -9,6 +9,12 @@ export interface EchoAuthTransport {
   authorize(socketId: string, channelName: string, channelData?: string): Promise<EchoAuthResponse>;
 }
 
+export interface EchoLifecycleCallbacks {
+  connected?: () => void;
+  disconnected?: () => void;
+  reconnecting?: () => void;
+}
+
 export interface EchoConnector {
   readonly socketId?: string;
   connect(): Promise<void>;
@@ -19,6 +25,7 @@ export interface EchoConnector {
   stopListening(channelName: string, event: string, listener?: EchoListener): void;
   bindPresenceEvents?(channelName: string, callbacks: PresenceCallbacks): void;
   unbindPresenceEvents?(channelName: string): void;
+  bindLifecycle?(callbacks: EchoLifecycleCallbacks): void;
 }
 
 export type EchoDriver = 'socketio' | 'pusher' | 'null';

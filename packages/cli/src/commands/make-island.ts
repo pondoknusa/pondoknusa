@@ -1,17 +1,18 @@
 import { Command } from '../command.js';
 import { registerIslandInClientBundle } from '../island-client-registry.js';
 import { requireProjectRoot } from '../project.js';
-import { islandClientMount, islandViewPartial } from '../stubs.js';
-import { parseOptions, positionalArgs, projectPath, toKebabCase, writeFile, pathExists } from '../utils.js';
+import { islandClientMount, islandProgrammaticView, islandViewPartial } from '../stubs.js';
+import { optionFlag, parseOptions, positionalArgs, projectPath, toKebabCase, writeFile, pathExists } from '../utils.js';
 
 export class MakeIslandCommand extends Command {
   override readonly name = 'make:island';
   override readonly description = 'Scaffold a paired island view partial and client mount';
-  override readonly usage = 'tyravel make:island <name>';
+  override readonly usage = 'tyravel make:island <name> [--programmatic]';
 
   async handle(args: string[]): Promise<number> {
-    parseOptions(args);
+    const options = parseOptions(args);
     const [rawName] = positionalArgs(args);
+    const programmatic = optionFlag(options, 'programmatic');
 
     if (!rawName) {
       console.error('Island name is required.');
@@ -21,6 +22,27 @@ export class MakeIslandCommand extends Command {
 
     const root = await requireProjectRoot();
     const id = toKebabCase(rawName.replace(/\\/g, '/').split('/').pop() ?? rawName);
+    if (programmatic) {
+      const programmaticTarget = projectPath(root, 'resources/views/islands', `${id}.tyr.ts`);
+
+      if (await pathExists(programmaticTarget)) {
+        console.error(`Programmatic island already exists: resources/views/islands/${id}.tyr.ts`);
+        return 1;
+      }
+
+      await writeFile(programmaticTarget, islandProgrammaticView(id));
+      console.log(`Programmatic island created: resources/views/islands/${id}.tyr.ts`);
+      console.log('');
+      console.log(`Use in a view:`);
+      console.log(`  @island('${id}', { count: 0, label: '${id}' })`);
+      console.log(`  @endisland`);
+      console.log('');
+      console.log(`Register on the client:`);
+      console.log(`  import * as ${id}Island from '../views/islands/${id}.tyr.js';`);
+      console.log(`  registerProgrammaticIsland('${id}', ${id}Island);`);
+      return 0;
+    }
+
     const viewTarget = projectPath(root, 'resources/views/islands', `${id}.tyr`);
     const clientTarget = projectPath(root, 'resources/client/islands', `${id}.ts`);
 

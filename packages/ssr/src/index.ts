@@ -6,6 +6,11 @@ export {
   unregisterIsland,
 } from './island-registry.js';
 export { hydrate, HYDRATION_SCRIPT_ID, readManifestFromDocument } from './hydrate.js';
+export {
+  registerProgrammaticIsland,
+  registerProgrammaticIslands,
+  type ProgrammaticIslandModule,
+} from './programmatic-island.js';
 export type {
   HydrateOptions,
   HydrateResult,

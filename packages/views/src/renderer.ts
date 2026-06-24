@@ -273,14 +273,21 @@ export async function renderOps(
             {})
           : {};
         const islandContext: ViewContext = { ...context, ...props };
-        const islandHelpers = new ViewHelpers(
-          helpers.getStacks(),
-          helpers.getOnceRendered(),
-          helpers.getComponentPropsStack(),
-          helpers.getStackOncePushed(),
-        );
-        await renderOps(op.body, islandContext, islandHelpers, engine, renderOptions);
-        const inner = islandHelpers.toString();
+        let inner: string;
+
+        if (isTemplateOpsEmpty(op.body)) {
+          inner = await engine.renderProgrammaticIsland(op.id, islandContext);
+        } else {
+          const islandHelpers = new ViewHelpers(
+            helpers.getStacks(),
+            helpers.getOnceRendered(),
+            helpers.getComponentPropsStack(),
+            helpers.getStackOncePushed(),
+          );
+          await renderOps(op.body, islandContext, islandHelpers, engine, renderOptions);
+          inner = islandHelpers.toString();
+        }
+
         engine.getRegistry().getHydrationManifest().register(op.id, inner, props);
         helpers.append(renderIslandWrapper(op.id, inner, props));
         break;
@@ -510,6 +517,16 @@ async function evaluateConditional(
     default:
       return Boolean(evaluateExpression(op.expression, context));
   }
+}
+
+function isTemplateOpsEmpty(ops: TemplateOp[]): boolean {
+  for (const op of ops) {
+    if (op.type !== 'text' || op.value.trim() !== '') {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 function resolveErrorBag(context: ViewContext): ViewErrorBag {

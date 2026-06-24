@@ -3,7 +3,14 @@ import {
   bindConnectorPresenceEvents,
   unbindConnectorPresenceEvents,
 } from '../presence-events.js';
-import type { EchoAuthTransport, EchoConnector, EchoListener, PresenceCallbacks } from '../types.js';
+import { LifecycleRegistry } from '../lifecycle.js';
+import type {
+  EchoAuthTransport,
+  EchoConnector,
+  EchoLifecycleCallbacks,
+  EchoListener,
+  PresenceCallbacks,
+} from '../types.js';
 
 export interface SocketIoLike {
   id?: string;
@@ -38,6 +45,9 @@ export class SocketIoConnector implements EchoConnector {
   private socket?: SocketIoLike;
   private readonly subscribed = new Set<string>();
   private readonly bindings = new Map<string, EventBinding[]>();
+  private readonly pendingSubscriptions = new Map<string, { channelData?: string }>();
+  private readonly lifecycle = new LifecycleRegistry();
+  private lifecycleBound = false;
   private readonly auth: EchoAuthTransport;
   private readonly ioFactory: SocketIoFactory;
 
@@ -64,28 +74,27 @@ export class SocketIoConnector implements EchoConnector {
       path: this.options.path ?? '/socket.io',
       transports: ['websocket', 'polling'],
     });
+    this.bindSocketLifecycle();
   }
 
   disconnect(): void {
-    const socket = this.socket;
-    if (socket) {
-      for (const [event, entries] of this.bindings.entries()) {
-        for (const entry of entries) {
-          socket.off(event, entry.socketHandler);
-        }
-      }
-    }
     this.socket?.disconnect();
     this.socket = undefined;
     this.subscribed.clear();
-    this.bindings.clear();
+    this.pendingSubscriptions.clear();
+    this.lifecycleBound = false;
+  }
+
+  bindLifecycle(callbacks: EchoLifecycleCallbacks): void {
+    this.lifecycle.set(callbacks);
   }
 
   async subscribe(channelName: string, options?: { channelData?: string }): Promise<void> {
     await this.connect();
     const socket = this.socket;
     if (!socket?.id) {
-      throw new Error('Socket.io connection is not ready.');
+      this.pendingSubscriptions.set(channelName, options ?? {});
+      return;
     }
 
     if (this.subscribed.has(channelName)) {
@@ -130,11 +139,6 @@ export class SocketIoConnector implements EchoConnector {
   }
 
   listen(channelName: string, event: string, listener: EchoListener): void {
-    const socket = this.socket;
-    if (!socket) {
-      throw new Error('Socket.io connection is not ready.');
-    }
-
     const socketHandler: EchoListener = (...args: unknown[]) => {
       if (!this.subscribed.has(channelName)) {
         return;
@@ -156,7 +160,7 @@ export class SocketIoConnector implements EchoConnector {
     const entries = this.bindings.get(event) ?? [];
     entries.push({ channelName, listener, socketHandler });
     this.bindings.set(event, entries);
-    socket.on(event, socketHandler);
+    this.socket?.on(event, socketHandler);
   }
 
   stopListening(channelName: string, event: string, listener?: EchoListener): void {
@@ -192,6 +196,43 @@ export class SocketIoConnector implements EchoConnector {
 
   unbindPresenceEvents(channelName: string): void {
     unbindConnectorPresenceEvents(this, channelName);
+  }
+
+  private bindSocketLifecycle(): void {
+    const socket = this.socket;
+    if (!socket || this.lifecycleBound) {
+      return;
+    }
+
+    this.lifecycleBound = true;
+    socket.on('connect', () => {
+      this.lifecycle.emit('connected');
+      void this.flushPendingSubscriptions();
+      this.reattachBindings();
+    });
+    socket.on('disconnect', () => this.lifecycle.emit('disconnected'));
+    socket.on('reconnect_attempt', () => this.lifecycle.emit('reconnecting'));
+  }
+
+  private async flushPendingSubscriptions(): Promise<void> {
+    const pending = [...this.pendingSubscriptions.entries()];
+    this.pendingSubscriptions.clear();
+    for (const [channelName, options] of pending) {
+      await this.subscribe(channelName, options);
+    }
+  }
+
+  private reattachBindings(): void {
+    const socket = this.socket;
+    if (!socket) {
+      return;
+    }
+
+    for (const [event, entries] of this.bindings.entries()) {
+      for (const entry of entries) {
+        socket.on(event, entry.socketHandler);
+      }
+    }
   }
 }
 

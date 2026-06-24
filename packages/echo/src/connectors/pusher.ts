@@ -3,7 +3,14 @@ import {
   bindConnectorPresenceEvents,
   unbindConnectorPresenceEvents,
 } from '../presence-events.js';
-import type { EchoAuthTransport, EchoConnector, EchoListener, PresenceCallbacks } from '../types.js';
+import { LifecycleRegistry } from '../lifecycle.js';
+import type {
+  EchoAuthTransport,
+  EchoConnector,
+  EchoLifecycleCallbacks,
+  EchoListener,
+  PresenceCallbacks,
+} from '../types.js';
 
 export interface PusherChannelLike {
   bind(event: string, listener: EchoListener): void;
@@ -11,8 +18,13 @@ export interface PusherChannelLike {
   unsubscribe(): void;
 }
 
+export interface PusherConnectionLike {
+  socket_id: string;
+  bind?(event: string, callback: () => void): void;
+}
+
 export interface PusherLike {
-  connection: { socket_id: string };
+  connection: PusherConnectionLike;
   subscribe(channelName: string): PusherChannelLike;
   disconnect(): void;
 }
@@ -38,6 +50,7 @@ export interface PusherConnectorOptions {
 export class PusherConnector implements EchoConnector {
   private client?: PusherLike;
   private readonly channels = new Map<string, PusherChannelLike>();
+  private readonly lifecycle = new LifecycleRegistry();
   private readonly auth: EchoAuthTransport;
   private readonly pusherFactory: PusherFactory;
 
@@ -81,6 +94,12 @@ export class PusherConnector implements EchoConnector {
           });
       },
     });
+
+    this.bindConnectionLifecycle();
+  }
+
+  bindLifecycle(callbacks: EchoLifecycleCallbacks): void {
+    this.lifecycle.set(callbacks);
   }
 
   disconnect(): void {
@@ -141,6 +160,18 @@ export class PusherConnector implements EchoConnector {
 
   unbindPresenceEvents(channelName: string): void {
     unbindConnectorPresenceEvents(this, channelName);
+  }
+
+  private bindConnectionLifecycle(): void {
+    const connection = this.client?.connection;
+    if (!connection?.bind) {
+      this.lifecycle.emit('connected');
+      return;
+    }
+
+    connection.bind('connected', () => this.lifecycle.emit('connected'));
+    connection.bind('disconnected', () => this.lifecycle.emit('disconnected'));
+    connection.bind('connecting', () => this.lifecycle.emit('reconnecting'));
   }
 }
 

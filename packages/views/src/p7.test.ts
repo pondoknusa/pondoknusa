@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { describe, expect, it } from 'vitest';
 import { compile } from './compiler.js';
-import { buildComponentCatalog } from './component-catalog.js';
+import { buildViewCatalog } from './island-catalog.js';
 import { escapeJs, escapeUrl } from './escape.js';
 import { ViewEngine } from './view-engine.js';
 import type { ViewPropsMap } from './view-props.js';
@@ -71,8 +71,8 @@ describe('P7 view features', () => {
 `,
     );
 
-    const catalog = buildComponentCatalog(basePath, { path: 'resources/views' });
-    const panel = catalog.find((entry) => entry.name === 'panel');
+    const catalog = buildViewCatalog(basePath, { path: 'resources/views' });
+    const panel = catalog.components.find((entry) => entry.name === 'panel');
 
     expect(panel).toMatchObject({
       name: 'panel',
@@ -158,6 +158,29 @@ describe('P7 view features', () => {
     expect(combined.indexOf('<main>Core</main>')).toBeLessThan(
       combined.indexOf('<aside>Slow sidebar</aside>'),
     );
+  });
+
+  it('renders programmatic islands from empty @island blocks', async () => {
+    const { basePath, engine } = createFixture();
+    mkdirSync(join(basePath, 'resources/views/islands'), { recursive: true });
+
+    writeFileSync(
+      join(basePath, 'resources/views/islands/counter.tyr.ts'),
+      `export function render(ctx: Record<string, unknown>) {
+  return '<button>' + String(ctx.count ?? 0) + '</button>';
+}
+`,
+    );
+    writeFileSync(
+      join(basePath, 'resources/views/programmatic-island.tyr'),
+      `@island('counter', { count: 3 })
+@endisland
+`,
+    );
+
+    const html = await engine.render('programmatic-island', {});
+    expect(html).toContain('data-tyr-island="counter"');
+    expect(html).toContain('<button>3</button>');
   });
 
   it('renders programmatic .tyr.ts views', async () => {

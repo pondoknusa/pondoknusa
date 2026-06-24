@@ -1,3 +1,4 @@
+import type { EchoEventPayload } from './channel-events.js';
 import { normalizeListenEvent } from './event-name.js';
 import type { EchoConnector, EchoListener } from './types.js';
 
@@ -23,6 +24,11 @@ export class EchoChannel {
     return this;
   }
 
+  listen<TEvent extends string>(
+    event: TEvent,
+    listener: (payload: EchoEventPayload<string, TEvent>) => void,
+  ): this;
+  listen(event: string, listener: EchoListener): this;
   listen(event: string, listener: EchoListener): this {
     const normalized = normalizeListenEvent(event);
     const bucket = this.listeners.get(normalized) ?? new Set<EchoListener>();
@@ -65,6 +71,15 @@ export class EchoChannel {
     }
     await this.connector.unsubscribe(this.name);
     this.subscribed = false;
+  }
+
+  async resubscribe(): Promise<void> {
+    const wasSubscribed = this.subscribed;
+    this.subscribed = false;
+    if (wasSubscribed) {
+      await this.connector.unsubscribe(this.name);
+    }
+    await this.subscribe();
   }
 
   protected async ensureSubscribed(): Promise<void> {

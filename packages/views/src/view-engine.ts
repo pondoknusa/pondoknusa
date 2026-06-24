@@ -21,6 +21,7 @@ import {
   buildComponentCatalog,
   type ComponentCatalogEntry,
 } from './component-catalog.js';
+import { buildViewCatalog, type IslandCatalogEntry, type ViewCatalog } from './island-catalog.js';
 import { loadProgrammaticView } from './programmatic-view.js';
 import { renderOps } from './renderer.js';
 import { streamPlaceholder } from './streaming.js';
@@ -174,6 +175,14 @@ export class ViewEngine {
 
   getComponentCatalog(): ComponentCatalogEntry[] {
     return buildComponentCatalog(this.basePath, this.config, this.namespaces);
+  }
+
+  getViewCatalog(): ViewCatalog {
+    return buildViewCatalog(this.basePath, this.config, this.namespaces);
+  }
+
+  getIslandCatalog(): IslandCatalogEntry[] {
+    return buildViewCatalog(this.basePath, this.config, this.namespaces).islands;
   }
 
   async getCompiledTemplate(name: string): Promise<CompiledTemplate> {
@@ -425,6 +434,16 @@ export class ViewEngine {
     const helpers = new ViewHelpers();
     await renderOps(body, context, helpers, this);
     return helpers.toString();
+  }
+
+  async renderProgrammaticIsland(id: string, context: ViewContext): Promise<string> {
+    for (const name of [`islands.${id}`, id]) {
+      if (await this.isProgrammatic(await this.resolveName(name))) {
+        return this.renderProgrammatic(name, context);
+      }
+    }
+
+    return '';
   }
 
   private async renderProgrammatic(name: string, context: ViewContext): Promise<string> {

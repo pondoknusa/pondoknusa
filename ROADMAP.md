@@ -251,8 +251,8 @@ Move from “render HTML strings in controllers” to a first-class SSR workflow
 
 #### P2 — If scope allows
 
-- [ ] **Island catalog** — extend `View.catalog()` with client-mount metadata for docs / IDE tooling
-- [ ] **Programmatic SSR** — `.tyr.ts` views participate in the island registry without a separate client file
+- [x] **Island catalog** — extend `View.catalog()` with client-mount metadata for docs / IDE tooling
+- [x] **Programmatic SSR** — `.tyr.ts` views participate in the island registry without a separate client file
 
 ### Laravel Echo equivalent (`@tyravel/echo`)
 
@@ -275,8 +275,8 @@ Browser-side channel subscriptions that mirror the server broadcasting API. Serv
 
 #### P2 — If scope allows
 
-- [ ] **Typed channel events** — `EchoChannelEventMap` module augmentation for `.listen()` payload inference
-- [ ] **Reconnection & offline** — connector lifecycle hooks (`connected`, `disconnected`, `reconnecting`) and queued listeners while offline
+- [x] **Typed channel events** — `EchoChannelEventMap` module augmentation for `.listen()` payload inference
+- [x] **Reconnection & offline** — connector lifecycle hooks (`connected`, `disconnected`, `reconnecting`) and queued listeners while offline
 
 ## Tier X — Production-ready project
 

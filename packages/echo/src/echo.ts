@@ -4,14 +4,43 @@ import { PusherConnector } from './connectors/pusher.js';
 import { SocketIoConnector } from './connectors/socket-io.js';
 import { formatChannelName } from './event-name.js';
 import { PresenceChannel } from './presence-channel.js';
-import type { EchoConnector, EchoOptions } from './types.js';
+import type { EchoConnector, EchoLifecycleCallbacks, EchoOptions } from './types.js';
 
 export class Echo {
   private readonly connector: EchoConnector;
   private readonly channels = new Map<string, EchoChannel | PresenceChannel>();
+  private readonly lifecycleCallbacks: EchoLifecycleCallbacks = {};
 
   constructor(options: EchoOptions) {
     this.connector = options.connector ?? createConnector(options);
+    this.bindLifecycleToConnector();
+  }
+
+  connected(callback: () => void): this {
+    this.lifecycleCallbacks.connected = chainLifecycle(
+      this.lifecycleCallbacks.connected,
+      callback,
+    );
+    this.bindLifecycleToConnector();
+    return this;
+  }
+
+  disconnected(callback: () => void): this {
+    this.lifecycleCallbacks.disconnected = chainLifecycle(
+      this.lifecycleCallbacks.disconnected,
+      callback,
+    );
+    this.bindLifecycleToConnector();
+    return this;
+  }
+
+  reconnecting(callback: () => void): this {
+    this.lifecycleCallbacks.reconnecting = chainLifecycle(
+      this.lifecycleCallbacks.reconnecting,
+      callback,
+    );
+    this.bindLifecycleToConnector();
+    return this;
   }
 
   channel(name: string): EchoChannel {
@@ -66,6 +95,23 @@ export class Echo {
     return this.connector;
   }
 
+  private bindLifecycleToConnector(): void {
+    this.connector.bindLifecycle?.({
+      connected: () => {
+        void this.resubscribeChannels();
+        this.lifecycleCallbacks.connected?.();
+      },
+      disconnected: this.lifecycleCallbacks.disconnected,
+      reconnecting: this.lifecycleCallbacks.reconnecting,
+    });
+  }
+
+  private async resubscribeChannels(): Promise<void> {
+    for (const channel of this.channels.values()) {
+      await channel.resubscribe();
+    }
+  }
+
   private rememberChannel(name: string, factory: () => EchoChannel): EchoChannel {
     const existing = this.channels.get(name);
     if (existing) {
@@ -104,4 +150,11 @@ function createConnector(options: EchoOptions): EchoConnector {
   }
 
   throw new Error(`Unsupported Echo broadcaster: ${String(options.broadcaster)}`);
+}
+
+function chainLifecycle(existing: (() => void) | undefined, next: () => void): () => void {
+  return existing ? () => {
+    existing();
+    next();
+  } : next;
 }
