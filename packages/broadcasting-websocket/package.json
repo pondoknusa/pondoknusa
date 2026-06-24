@@ -1,5 +1,5 @@
 {
-  "name": "@tyravel/broadcasting-socket-io",
+  "name": "@tyravel/broadcasting-websocket",
   "version": "0.12.1",
   "type": "module",
   "main": "./dist/index.js",
@@ -27,12 +27,12 @@
   "devDependencies": {
     "@types/node": "^26.0.1"
   },
-  "description": "Socket.io Redis broadcast driver for Tyravel",
+  "description": "Native WebSocket broadcast driver and hub for Tyravel",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/thesimonharms/tyravel.git",
-    "directory": "packages/broadcasting-socket-io"
+    "directory": "packages/broadcasting-websocket"
   },
   "publishConfig": {
     "access": "public"

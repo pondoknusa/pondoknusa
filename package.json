@@ -6,10 +6,16 @@
     "packages/*",
     "examples/*"
   ],
+  "engines": {
+    "node": ">=26"
+  },
   "scripts": {
     "build": "tsc -b && npm run build --workspace=@tyravel/cli",
+    "check:node": "node scripts/check-node.mjs",
+    "pretest": "npm run check:node",
     "test": "vitest run",
     "test:watch": "vitest",
+    "pretypecheck": "npm run check:node",
     "typecheck": "tsc -b",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",

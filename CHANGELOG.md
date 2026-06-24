@@ -2,6 +2,60 @@
 
 All notable changes to Tyravel are documented in this file.
 
+## [0.13.0] - 2026-06-25
+
+### Added
+
+- **Native WebSocket broadcasting** — New `@tyravel/broadcasting-websocket` package with RFC 6455 framing, an in-process hub at `/tyravel/ws`, and Redis pub/sub fan-out on `tyravel:broadcast`.
+- **WebSocket broadcast driver** — `driver: 'websocket'` in `config/broadcasting.ts`; channel auth tokens remain compatible with `/broadcasting/auth`.
+- **Native Echo connector** — `WebSocketConnector` in `@tyravel/echo` uses the browser/native `WebSocket` API with reconnect lifecycle hooks; no third-party realtime client libraries.
+- **Redis subscribe** — `@tyravel/redis-node` implements `subscribe()` via a duplicated `node-redis` connection for broadcast fan-out.
+- **Node version guard** — `scripts/check-node.mjs` runs before `npm test` and `npm run typecheck`; root `engines.node` is `>=26` with `engine-strict` enabled.
+
+### Changed
+
+- **Lean default install** — A vanilla `tyravel new` app (SQLite, database queue, log mail) ships with no external production npm dependencies beyond `@tyravel/*` packages. The entire monorepo has five optional third-party production deps (`pg`, `mysql2`, `redis`, two AWS SDK packages), each behind an opt-in driver package.
+- **Broadcasting scaffold** — `tyravel new --redis` installs `@tyravel/broadcasting-websocket` instead of `@tyravel/broadcasting-socket-io`; `BROADCAST_CONNECTION` defaults to `websocket`; Echo bootstrap is `new Echo(config)` with no `socket.io-client` factory wiring.
+- **Echo client config** — `resolveEchoClientConfig()` and view bootstrap emit `broadcaster: 'websocket'` with `host` and `path` (no Pusher key/cluster).
+- **HTTP server** — `@tyravel/core` attaches the broadcast WebSocket upgrade handler during `serve()` on Node.
+- **Release CI** — GitHub Actions release workflow now uses Node.js 26 (matching CI).
+
+### Removed
+
+- **`@tyravel/broadcasting-socket-io`** — Dropped from the monorepo and npm release train.
+- **`@tyravel/broadcasting-pusher`** — Dropped from the monorepo and npm release train.
+- **`socket.io-client` and `pusher-js`** — No longer peer dependencies of `@tyravel/echo`; `SocketIoConnector`, `PusherConnector`, and their drivers are gone.
+
+### Migration (0.12.x → 0.13.0)
+
+**Broadcasting config** — replace Socket.io or Pusher connections with WebSocket:
+
+```typescript
+// config/broadcasting.ts
+websocket: {
+  driver: 'websocket',
+  redisConnection: env('REDIS_CONNECTION', 'default'),
+  channel: env('BROADCAST_REDIS_CHANNEL', 'tyravel:broadcast'),
+  path: '/tyravel/ws',
+},
+```
+
+Set `BROADCAST_CONNECTION=websocket` in `.env`.
+
+**Service provider** — swap the driver package in `src/main.ts`:
+
+```typescript
+import { WebSocketBroadcastServiceProvider } from '@tyravel/broadcasting-websocket';
+
+new WebSocketBroadcastServiceProvider(app).register();
+```
+
+**Dependencies** — remove `@tyravel/broadcasting-socket-io`, `@tyravel/broadcasting-pusher`, `socket.io-client`, and `pusher-js`; add `@tyravel/broadcasting-websocket`.
+
+**Echo client** — remove any `io:` / `pusher:` factory from `resources/client/echo.ts`; the bootstrap JSON from `@echo` now carries `broadcaster`, `host`, `path`, and `authEndpoint` only.
+
+**Node.js** — upgrade to **26+** before installing (`nvm use 26` or equivalent). v0.12.1 raised the minimum; v0.13.0 enforces it at install and test time.
+
 ## [0.12.1] - 2026-06-24
 
 ### Changed

@@ -2,6 +2,8 @@
 
 Post-v0.1.0 direction. v0.1 shipped the core Laravel-shaped stack; subsequent releases focus on polish, production adapters, and real-world ergonomics.
 
+**v0.13.0 detour:** Tier 13 was originally AI-native work; it was repurposed for Node 26, native WebSocket realtime, and a lean dependency footprint. AI-native features move to Tier 14 (v0.14.0).
+
 ## Tier 1 — Credibility (v0.2.0)
 
 Make the framework trustworthy for early adopters.
@@ -192,7 +194,7 @@ Make Tyravel deployable with confidence. Builds on Tier 6.1 hardening.
 
 Rich developer tooling, async utilities, and real-time operations.
 
-- [x] **Broadcasting** — real-time event broadcasting over WebSockets (Socket.io) or Pusher with dynamic channel authorization
+- [x] **Broadcasting** — real-time event broadcasting with dynamic channel authorization (originally Socket.io / Pusher drivers; superseded by native WebSocket in v0.13.0)
 - [x] **HTTP Client** — fluent, chainable HTTP wrapper around fetch with request/response mocking for testing
 - [x] **Queue depth** — job chaining, job batching, and cache-backed atomic locks
 - [x] **ORM enhancements** — polymorphic relations morphTo/morphMany, query profiling, and pivot table attribute casting
@@ -229,7 +231,7 @@ Make Tyravel fully async by default: no sync fallbacks, no blocking I/O in the p
 
 ## Tier 10 — Full-stack interactivity (v0.10.0)
 
-Ship a complete server-rendered UI + real-time client story. Tyravel already renders `.tyr` on the server (`View.render`, `Response.html`) and broadcasts events over Socket.io / Pusher (`@tyravel/broadcasting`, `/broadcasting/auth`). Tier 6 P7 added experimental streaming layouts and `@island` hydration hooks — Tier 10 turns that foundation into a production full-stack path and adds a Laravel Echo–style browser client.
+Ship a complete server-rendered UI + real-time client story. Tyravel already renders `.tyr` on the server (`View.render`, `Response.html`) and broadcasts events over WebSockets (`@tyravel/broadcasting`, `/broadcasting/auth`). Tier 6 P7 added experimental streaming layouts and `@island` hydration hooks — Tier 10 turns that foundation into a production full-stack path and adds a Laravel Echo–style browser client.
 
 ### Server-side rendering
 
@@ -263,8 +265,8 @@ Browser-side channel subscriptions that mirror the server broadcasting API. Serv
 - [x] **`@tyravel/echo` package** — TypeScript-first browser library published alongside core
 - [x] **Channel API** — `echo.channel('orders')`, `echo.private('orders.${id}')`, `echo.join('chat')` with Laravel-compatible naming (`private-`, `presence-` prefixes)
 - [x] **Event listeners** — `.listen('.OrderShipped', handler)` and `.stopListening()`; respect `broadcastAs()` dot-prefix convention
-- [x] **Socket.io connector** — pairs with `@tyravel/broadcasting-socket-io` and Redis pub/sub; reads config from a small bootstrap snippet
-- [x] **Pusher connector** — pairs with `@tyravel/broadcasting-pusher`; uses existing `/broadcasting/auth` endpoint for private/presence signing
+- [x] **Socket.io connector** — shipped in v0.10.x; removed in v0.13.0 in favor of native WebSocket
+- [x] **Pusher connector** — shipped in v0.10.x; removed in v0.13.0 in favor of native WebSocket
 - [x] **Auth transport** — cookie/session credentials on auth requests; CSRF token support for same-origin apps
 
 #### P1 — Strong want
@@ -286,10 +288,10 @@ Harden auth for production APIs and add OAuth2 server + post-quantum crypto prim
 - [x] **API token hardening** — `tyr_` prefix, `token_prefix` / `last_used_ip` / `revoked_at` / `ip_whitelist`, `Auth.createToken()` options, revoke APIs, `request.tokenId`
 - [x] **Social OAuth depth** — PKCE on built-in providers; X, Facebook, LinkedIn, Apple; `tyravel make:social-driver`
 - [x] **OAuth2 authorization server** — `@tyravel/auth-oauth` (authorization code + PKCE, client credentials, refresh token); `oauth:install`, `oauth:client:create`, `auth:oauth` middleware
-- [x] **Post-quantum cryptography** — `@tyravel/crypto` (ML-KEM, ML-DSA, SLH-DSA, hybrid X25519 + ML-KEM-768); native OpenSSL PQC when available, `@noble/post-quantum` fallback
+- [x] **Post-quantum cryptography** — `@tyravel/crypto` (ML-KEM, ML-DSA, SLH-DSA, hybrid X25519 + ML-KEM-768); native OpenSSL PQC on Node 26+ (no JS fallback)
 - [x] **Crypto integrations** — optional AES-256-GCM session encryption at rest, ML-DSA signed OAuth tokens; `crypto:install`, `crypto:generate-keys`
 
-## Tier 12 — Production ergonomics (v0.12.0)
+## Tier 12 — Production ergonomics (v0.12.x) ✓
 
 Make Tyravel comfortable for multi-locale teams, day-two operations, and optional back-office UIs. Builds on Tier 6 P5 view localization, Tier 7 health checks, and Tier 8 query profiling.
 
@@ -356,7 +358,29 @@ Laravel Telescope / Debugbar–shaped DX, TypeScript-native. Builds on `HealthCh
 - [x] **Job / event timeline** — correlate queued work with the HTTP request that dispatched it
 - [x] **`tyravel debug:watch`** — tail recent entries during `tyravel serve`
 
-## Tier 13 — AI-native platform (v0.13.0)
+## Tier 13 — Native stack & lean dependencies (v0.13.0)
+
+**Detour from the original plan** — Tier 13 was slated for AI-native features; v0.13.0 instead hardens the Node 26 bet and removes third-party realtime / PQC fallbacks so a vanilla install stays almost dependency-free.
+
+### Runtime & crypto
+
+- [x] **Node 26 minimum** — `engines`, CI, release workflow, and `pretest` guard; native `node:sqlite`, WebSocket, and OpenSSL PQC
+- [x] **Native PQC only** — `@tyravel/crypto` uses OpenSSL exclusively; removed `@noble/post-quantum` (started in v0.12.1, completed for v0.13.0)
+
+### Native realtime
+
+- [x] **`@tyravel/broadcasting-websocket`** — RFC 6455 framing, in-process hub, Redis pub/sub fan-out; upgrade path `/tyravel/ws`
+- [x] **WebSocket broadcast driver** — replaces Socket.io and Pusher server drivers; channel auth tokens compatible with `/broadcasting/auth`
+- [x] **`WebSocketConnector` in `@tyravel/echo`** — browser/native `WebSocket`; zero peer dependencies (no `socket.io-client`, no `pusher-js`)
+- [x] **Removed legacy drivers** — `@tyravel/broadcasting-socket-io` and `@tyravel/broadcasting-pusher` dropped from the monorepo and release train
+- [x] **Scaffold updates** — `tyravel new --redis` installs `@tyravel/broadcasting-websocket` only; Echo bootstrap is `new Echo(config)` with no IO factory wiring
+
+### Supply chain
+
+- [x] **Five optional third-party production deps** — entire monorepo: `pg`, `mysql2`, `redis`, and two AWS SDK packages; everything else is `@tyravel/*`
+- [x] **Default app footprint** — SQLite + database queue + log mail ships with no external production npm dependencies beyond Tyravel packages
+
+## Tier 14 — AI-native platform (v0.14.0)
 
 First-class vector search, RAG workflows, and agent tooling. **No unified LLM provider interface** — apps use native TypeScript SDKs (`openai`, `@anthropic-ai/sdk`, etc.) directly; Tyravel focuses on data layer, retrieval, orchestration, and MCP.
 
@@ -412,7 +436,7 @@ First-class vector search, RAG workflows, and agent tooling. **No unified LLM pr
 
 - [ ] **Cursor / Claude Code rules export** — generate project-specific agent rules from the capability manifest
 
-## Tier 14 — Infrastructure depth (v0.14.0)
+## Tier 15 — Infrastructure depth (v0.15.0)
 
 Deepen cache, notifications, and testing beyond the v0.1 foundations (`@tyravel/cache`, `@tyravel/notifications`, `@tyravel/testing`). Production polish, not greenfield packages.
 
@@ -470,7 +494,7 @@ Deepen cache, notifications, and testing beyond the v0.1 foundations (`@tyravel/
 - [ ] **Parallel test runner docs** — vitest workspace guidance for large Tyravel apps
 - [ ] **Pest-style API** — optional thin wrapper for describe/it ergonomics (not a hard dependency)
 
-## Tier 15 — Core surface polish (v0.15.0)
+## Tier 16 — Core surface polish (v0.16.0)
 
 Final API pass on the three surfaces developers touch daily — models, routes, and views — before the 1.0 stability freeze.
 
@@ -518,15 +542,15 @@ Final API pass on the three surfaces developers touch daily — models, routes, 
 - [ ] **Partial reload helpers** — Turbo/HTMX-friendly fragment response helpers building on `@fragment`
 - [ ] **Broadcast channel scaffold** — `routes/channels.ts` uses `private-` prefix patterns matching Echo
 
-### v0.15 closeout
+### v0.16 closeout
 
 - [ ] **Stable API audit** — every public export in `STABILITY.md` reviewed; experimental items promoted or cut
 - [ ] **Deprecation sweep** — remove deprecated APIs slated for 1.0; document migration in CHANGELOG
-- [ ] **0.x → 1.0 migration guide** — in-repo guide for upgrading apps on 0.11–0.15
+- [ ] **0.x → 1.0 migration guide** — in-repo guide for upgrading apps on 0.11–0.16
 
 ## v1.0.0 — Documentation & semver strict
 
-Tyravel **1.0.0** is the first semver-strict era (see [STABILITY.md](STABILITY.md)). Feature work for 1.0 lands in Tiers 12–15; **1.0 itself is the full documentation release**.
+Tyravel **1.0.0** is the first semver-strict era (see [STABILITY.md](STABILITY.md)). Feature work for 1.0 lands in Tiers 12–16; **1.0 itself is the full documentation release**.
 
 ### Documentation (primary 1.0 deliverable)
 
@@ -547,7 +571,7 @@ Tyravel **1.0.0** is the first semver-strict era (see [STABILITY.md](STABILITY.m
 Items not tied to a version number. Land when useful; do not block 1.0.
 
 - [ ] **Additional OAuth / social providers** — community drivers beyond built-ins
-- [ ] **Socket.io server guide** — first-party or recommended companion server for `@tyravel/broadcasting-socket-io`
+- [ ] **Native WebSocket broadcasting guide** — deploy `/tyravel/ws` behind proxies, Redis fan-out, and Echo client setup
 - [ ] **Performance benchmarks** — published baseline for HTTP, ORM, and view compile throughput
 
 ## Shipped in v0.1.0

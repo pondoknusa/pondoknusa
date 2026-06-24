@@ -18,70 +18,26 @@ describe('resolveEchoClientConfig', () => {
     ).toBeNull();
   });
 
-  it('exposes socketio host without secrets', () => {
+  it('exposes websocket host and path without secrets', () => {
     expect(
       resolveEchoClientConfig(
         {
-          default: 'socketio',
+          default: 'websocket',
           connections: {
-            socketio: {
-              driver: 'socketio',
+            websocket: {
+              driver: 'websocket',
               redisConnection: 'default',
-              channel: 'socket.io#/#',
+              path: '/tyravel/ws',
             },
           },
         },
         'http://127.0.0.1:3000/',
       ),
     ).toEqual({
-      broadcaster: 'socketio',
+      broadcaster: 'websocket',
       host: 'http://127.0.0.1:3000',
+      path: '/tyravel/ws',
       authEndpoint: '/broadcasting/auth',
     });
-  });
-
-  it('exposes pusher key and cluster when configured', () => {
-    expect(
-      resolveEchoClientConfig(
-        {
-          default: 'pusher',
-          connections: {
-            pusher: {
-              driver: 'pusher',
-              key: 'app-key',
-              secret: 'secret',
-              appId: '1',
-              cluster: 'eu',
-            },
-          },
-        },
-        'https://app.example.com',
-      ),
-    ).toEqual({
-      broadcaster: 'pusher',
-      key: 'app-key',
-      cluster: 'eu',
-      host: 'https://app.example.com',
-      authEndpoint: '/broadcasting/auth',
-    });
-  });
-
-  it('returns null when pusher key is missing', () => {
-    expect(
-      resolveEchoClientConfig(
-        {
-          default: 'pusher',
-          connections: {
-            pusher: {
-              driver: 'pusher',
-              key: '',
-              secret: 'secret',
-              appId: '1',
-            },
-          },
-        },
-        'http://127.0.0.1:3000',
-      ),
-    ).toBeNull();
   });
 });

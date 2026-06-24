@@ -92,7 +92,7 @@ export class MockConnector implements EchoConnector {
   }
 
   bindPresenceEvents(channelName: string, callbacks: PresenceCallbacks): void {
-    bindConnectorPresenceEvents(this, channelName, callbacks, 'pusher');
+    bindConnectorPresenceEvents(this, channelName, callbacks, 'websocket');
   }
 
   unbindPresenceEvents(channelName: string): void {

@@ -83,16 +83,15 @@ describe('NewCommand', () => {
     expect(readFileSync(join(projectDir, 'src/main.ts'), 'utf8')).toContain(
       'NodeRedisServiceProvider',
     );
-    expect(pkg.dependencies['@tyravel/broadcasting-socket-io']).toBeDefined();
-    expect(pkg.dependencies['socket.io-client']).toBeDefined();
+    expect(pkg.dependencies['@tyravel/broadcasting-websocket']).toBeDefined();
     expect(readFileSync(join(projectDir, 'config/broadcasting.ts'), 'utf8')).toContain(
-      "env('BROADCAST_CONNECTION', 'socketio')",
+      "env('BROADCAST_CONNECTION', 'websocket')",
     );
-    expect(readFileSync(join(projectDir, 'resources/client/echo.ts'), 'utf8')).toContain(
+    expect(readFileSync(join(projectDir, 'resources/client/echo.ts'), 'utf8')).not.toContain(
       'socket.io-client',
     );
     expect(readFileSync(join(projectDir, 'src/main.ts'), 'utf8')).toContain(
-      'SocketIoBroadcastServiceProvider',
+      'WebSocketBroadcastServiceProvider',
     );
   });
 });

@@ -1,7 +1,6 @@
 import { EchoChannel } from './channel.js';
 import { MockConnector } from './connectors/mock.js';
-import { PusherConnector } from './connectors/pusher.js';
-import { SocketIoConnector } from './connectors/socket-io.js';
+import { WebSocketConnector } from './connectors/websocket.js';
 import { formatChannelName } from './event-name.js';
 import { PresenceChannel } from './presence-channel.js';
 import type { EchoConnector, EchoLifecycleCallbacks, EchoOptions } from './types.js';
@@ -128,22 +127,10 @@ function createConnector(options: EchoOptions): EchoConnector {
     return new MockConnector();
   }
 
-  if (options.broadcaster === 'socketio') {
-    return new SocketIoConnector({
+  if (options.broadcaster === 'websocket') {
+    return new WebSocketConnector({
       host: options.host,
-      authEndpoint: options.authEndpoint,
-      csrfToken: options.csrfToken,
-    });
-  }
-
-  if (options.broadcaster === 'pusher') {
-    if (!options.key) {
-      throw new Error('Echo pusher connector requires a `key` option.');
-    }
-    return new PusherConnector({
-      key: options.key,
-      cluster: options.cluster,
-      forceTLS: options.forceTLS,
+      path: options.path,
       authEndpoint: options.authEndpoint,
       csrfToken: options.csrfToken,
     });

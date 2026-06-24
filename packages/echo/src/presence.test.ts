@@ -22,19 +22,13 @@ describe('presence channel callbacks', () => {
 
     await echo.join('chat').subscribe();
 
-    connector.emit('presence-chat', 'pusher:subscription_succeeded', {
-      members: {
-        '1': { id: 1, name: 'Ada' },
-        '2': { id: 2, name: 'Grace' },
-      },
-    });
-    connector.emit('presence-chat', 'pusher:member_added', {
-      info: { id: 3, name: 'Alan' },
-    });
-    connector.emit('presence-chat', 'pusher:member_removed', {
-      info: { id: 2, name: 'Grace' },
-    });
-    connector.emit('presence-chat', 'pusher:subscription_error', { status: 403 });
+    connector.emit('presence-chat', 'presence:subscribed', [
+      { id: 1, name: 'Ada' },
+      { id: 2, name: 'Grace' },
+    ]);
+    connector.emit('presence-chat', 'presence:joining', { id: 3, name: 'Alan' });
+    connector.emit('presence-chat', 'presence:leaving', { id: 2, name: 'Grace' });
+    connector.emit('presence-chat', 'error', { status: 403 });
 
     expect(hereMembers).toEqual([
       { id: 1, name: 'Ada' },

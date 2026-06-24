@@ -34,8 +34,7 @@ export function projectPackageJson(name: string, options: NewProjectOptions): st
   }
   if (options.redis) {
     dependencies['@tyravel/redis-node'] = CORE_VERSION;
-    dependencies['@tyravel/broadcasting-socket-io'] = CORE_VERSION;
-    dependencies['socket.io-client'] = '^4.8.1';
+    dependencies['@tyravel/broadcasting-websocket'] = CORE_VERSION;
   }
 
   return JSON.stringify(
@@ -80,9 +79,9 @@ export function mainEntry(options: NewProjectOptions): string {
     driverImports.push("import { NodeRedisServiceProvider } from '@tyravel/redis-node';");
     driverProviders.push('app.register(NodeRedisServiceProvider);');
     driverImports.push(
-      "import { SocketIoBroadcastServiceProvider } from '@tyravel/broadcasting-socket-io';",
+      "import { WebSocketBroadcastServiceProvider } from '@tyravel/broadcasting-websocket';",
     );
-    driverProviders.push('new SocketIoBroadcastServiceProvider(app).register();');
+    driverProviders.push('new WebSocketBroadcastServiceProvider(app).register();');
   }
 
   const coreImports = [
@@ -323,12 +322,8 @@ MAIL_FROM_NAME=Tyravel
 # MAIL_PASSWORD=
 # MAIL_ENCRYPTION=tls
 
-BROADCAST_CONNECTION=${options.redis ? 'socketio' : 'log'}
-# PUSHER_APP_KEY=
-# PUSHER_APP_SECRET=
-# PUSHER_APP_ID=
-# PUSHER_APP_CLUSTER=mt1
-# SOCKETIO_REDIS_CHANNEL=socket.io#/#
+BROADCAST_CONNECTION=${options.redis ? 'websocket' : 'log'}
+# BROADCAST_REDIS_CHANNEL=tyravel:broadcast
 
 # GITHUB_CLIENT_ID=
 # GITHUB_CLIENT_SECRET=

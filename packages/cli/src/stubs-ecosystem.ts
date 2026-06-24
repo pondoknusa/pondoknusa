@@ -82,7 +82,7 @@ export default {
 export { cacheConfig } from './stubs-project.js';
 
 export function broadcastingConfig(options: NewProjectOptions): string {
-  const defaultConnection = options.redis ? 'socketio' : 'log';
+  const defaultConnection = options.redis ? 'websocket' : 'log';
 
   return `import type { BroadcastingConfig } from '@tyravel/broadcasting';
 import { env, envInt } from '@tyravel/config';
@@ -92,17 +92,11 @@ export default {
   connections: {
     null: { driver: 'null' },
     log: { driver: 'log' },
-    pusher: {
-      driver: 'pusher',
-      key: env('PUSHER_APP_KEY', ''),
-      secret: env('PUSHER_APP_SECRET', ''),
-      appId: env('PUSHER_APP_ID', ''),
-      cluster: env('PUSHER_APP_CLUSTER', 'mt1'),
-    },
-    socketio: {
-      driver: 'socketio',
+    websocket: {
+      driver: 'websocket',
       redisConnection: env('REDIS_CONNECTION', 'default'),
-      channel: env('SOCKETIO_REDIS_CHANNEL', 'socket.io#/#'),
+      channel: env('BROADCAST_REDIS_CHANNEL', 'tyravel:broadcast'),
+      path: '/tyravel/ws',
     },
   },
   queueConnection: env('QUEUE_CONNECTION', 'database'),
@@ -128,26 +122,14 @@ Broadcast.channel('presence-App.Room.{roomId}', (user, roomId) => {
 `;
 }
 
-export function echoBootstrap(options: NewProjectOptions): string {
-  const socketIoImport = options.redis
-    ? "import { io } from 'socket.io-client';\n"
-    : '';
-  const socketIoFactory = options.redis
-    ? `    io: (connectorOptions) => io(connectorOptions.host ?? window.location.origin, {
-      path: '/socket.io',
-      transports: ['websocket', 'polling'],
-    }),\n`
-    : '';
-
-  return `${socketIoImport}import { Echo, readEchoConfigFromDocument } from '@tyravel/echo';
+export function echoBootstrap(_options: NewProjectOptions): string {
+  return `import { Echo, readEchoConfigFromDocument } from '@tyravel/echo';
 
 const config = readEchoConfigFromDocument();
 if (!config) {
   // Broadcasting is disabled (log/null driver) — @echo renders no client bundle.
 } else {
-  const echo = new Echo({
-    ...config,
-${socketIoFactory}  });
+  const echo = new Echo(config);
 
   if (typeof window !== 'undefined') {
     (window as Window & { Echo?: Echo }).Echo = echo;

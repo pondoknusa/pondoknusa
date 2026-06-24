@@ -12,6 +12,7 @@ export interface RedisClient {
   zRem(key: string, ...members: string[]): Promise<number>;
   incr(key: string): Promise<number>;
   publish(channel: string, message: string): Promise<number>;
+  subscribe(channel: string, listener: (message: string) => void): Promise<void>;
   quit(): Promise<string>;
 }
 

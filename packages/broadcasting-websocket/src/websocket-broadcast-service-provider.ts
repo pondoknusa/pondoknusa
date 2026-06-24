@@ -1,16 +1,16 @@
 import type { RedisManager } from '@tyravel/redis';
-import { registerSocketIoBroadcastDriver, setSocketIoRedisManager } from './register.js';
+import { registerWebSocketBroadcastDriver, setWebSocketRedisManager } from './register.js';
 
-export class SocketIoBroadcastServiceProvider {
+export class WebSocketBroadcastServiceProvider {
   constructor(private readonly app: { make<T>(key: string): T }) {}
 
   register(): void {
     try {
       const redis = this.app.make<RedisManager>('redis');
-      setSocketIoRedisManager(redis);
+      setWebSocketRedisManager(redis);
     } catch {
       // Redis provider not registered.
     }
-    registerSocketIoBroadcastDriver();
+    registerWebSocketBroadcastDriver();
   }
 }

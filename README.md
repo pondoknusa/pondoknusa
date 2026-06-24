@@ -1,8 +1,21 @@
 # Tyravel
 
-**v0.12.1** — TypeScript-native web framework with Laravel-style ergonomics (service container, routing, middleware, queues, auth, post-quantum crypto, and an Artisan-like CLI) on standard Web APIs.
+**v0.13.0** — TypeScript-native web framework with Laravel-style ergonomics (service container, routing, middleware, queues, auth, post-quantum crypto, and an Artisan-like CLI) on standard Web APIs.
 
-Requires **Node.js ≥ 26**.
+Requires **Node.js ≥ 26** — native SQLite (`node:sqlite`), WebSocket server/client framing, and OpenSSL post-quantum crypto with no JavaScript fallbacks.
+
+## Lean by default
+
+A vanilla `tyravel new` app is almost entirely `@tyravel/*` packages. The default scaffold uses **SQLite** (no extra driver), **database queues**, and **log mail** — no Redis, no cloud SDKs, no realtime client libraries.
+
+| What you add | Optional driver package | Third-party npm dep |
+|--------------|-------------------------|---------------------|
+| PostgreSQL | `@tyravel/database-pg` | `pg` |
+| MySQL | `@tyravel/database-mysql` | `mysql2` |
+| Redis (cache, queue, broadcast) | `@tyravel/redis-node` | `redis` |
+| S3 / R2 storage | `@tyravel/storage-aws-s3` | `@aws-sdk/client-s3`, `@aws-sdk/s3-request-presigner` |
+
+That is the full set of external production dependencies across the Tyravel monorepo. Real-time broadcasting uses a **native WebSocket** hub (`@tyravel/broadcasting-websocket`) and browser `WebSocket` via `@tyravel/echo` — no `socket.io-client`, no `pusher-js`, no separate socket server to run.
 
 ## API stability
 
@@ -20,7 +33,8 @@ Published `@tyravel/*` packages follow the semver and deprecation rules in [STAB
 | `@tyravel/database` | Eloquent-style models, query builder, schema, and migrations |
 | `@tyravel/views` | Blade-like `.tyr` templates with layouts, sections, components, and SSR directives |
 | `@tyravel/ssr` | Client hydration runtime for `@island` partials (`registerIsland`, `hydrate`) |
-| `@tyravel/echo` | Laravel Echo-style browser client for real-time broadcasting |
+| `@tyravel/echo` | Laravel Echo-style browser client (native `WebSocket`, zero peer dependencies) |
+| `@tyravel/broadcasting-websocket` | Native WebSocket broadcast hub and Redis fan-out driver |
 | `@tyravel/queue` | Typed jobs, database/redis drivers, dispatch facade, and queue worker |
 | `@tyravel/events` | Typed domain events, listeners, dispatcher, and `Events` facade |
 | `@tyravel/core` | Application kernel, controllers, service providers, HTTP kernel, `Route` facade |
@@ -33,7 +47,7 @@ Published `@tyravel/*` packages follow the semver and deprecation rules in [STAB
 | `@tyravel/auth` | Session and token guards, social OAuth, CSRF, policies, password reset |
 | `@tyravel/auth-oauth` | OAuth2 authorization server (authorization code, client credentials, refresh) |
 | `@tyravel/crypto` | Post-quantum KEM/signatures, session encryption, signed OAuth tokens |
-| `@tyravel/broadcasting` | Real-time broadcasting with Pusher and Socket.IO drivers |
+| `@tyravel/broadcasting` | Real-time event broadcasting, channel auth, and Echo client config |
 | `@tyravel/storage` | File storage with local, S3, R2, and Supabase adapters |
 
 ## Quick start
@@ -813,7 +827,7 @@ export class AppServiceProvider extends ServiceProvider {
 ## Development
 
 ```bash
-npm test          # Run all package tests (574 tests)
+npm test          # Run all package tests (requires Node 26+; 599 tests)
 npm run build     # Build all packages
 npm run typecheck # Type-check via project references
 ```
@@ -845,16 +859,15 @@ Build static output with `npm run docs:build`.
 
 See [ROADMAP.md](./ROADMAP.md) for release tiers.
 
-### Shipped highlights (v0.11.0)
+### Shipped highlights (through v0.13.0)
 
 - [x] Service container, HTTP router, kernel, `Route` facade, CLI scaffolding
 - [x] Eloquent-style ORM, views, queue/events, cache, mail, notifications, broadcasting, storage
 - [x] Auth: session + API tokens, CSRF, social OAuth (PKCE), policies, password reset
-- [x] API token hardening: `tyr_` prefix, abilities, expiry, IP whitelist, revocation
-- [x] OAuth2 authorization server (`@tyravel/auth-oauth`)
-- [x] Post-quantum crypto (`@tyravel/crypto`): ML-KEM, ML-DSA, SLH-DSA, hybrid encryption
-- [x] Session encryption at rest and ML-DSA signed OAuth access tokens
-- [x] `@tyravel/testing` with HTTP test client and container fakes
+- [x] OAuth2 authorization server (`@tyravel/auth-oauth`) and `@tyravel/testing` HTTP client
+- [x] Post-quantum crypto on Node 26+ (`@tyravel/crypto`): ML-KEM, ML-DSA, SLH-DSA, hybrid encryption
+- [x] Native WebSocket broadcasting (`@tyravel/broadcasting-websocket`) and Echo client with zero peer deps
+- [x] Optional drivers only when you need them — five third-party production deps across the whole monorepo
 
 ## License
 

@@ -1,13 +1,6 @@
 import type { EchoConnector, EchoListener, PresenceCallbacks } from './types.js';
 
-const PUSHER_PRESENCE_EVENTS = {
-  here: 'pusher:subscription_succeeded',
-  joining: 'pusher:member_added',
-  leaving: 'pusher:member_removed',
-  error: 'pusher:subscription_error',
-} as const;
-
-const SOCKETIO_PRESENCE_EVENTS = {
+const PRESENCE_EVENTS = {
   here: 'presence:subscribed',
   joining: 'presence:joining',
   leaving: 'presence:leaving',
@@ -24,34 +17,33 @@ export function bindConnectorPresenceEvents(
   connector: EchoConnector,
   channelName: string,
   callbacks: PresenceCallbacks,
-  driver: 'pusher' | 'socketio',
+  _driver: 'websocket',
 ): void {
   unbindConnectorPresenceEvents(connector, channelName);
 
   const bindings: PresenceBinding[] = [];
-  const events = driver === 'pusher' ? PUSHER_PRESENCE_EVENTS : SOCKETIO_PRESENCE_EVENTS;
 
   if (callbacks.here) {
-    const listener = createHereListener(callbacks.here, driver);
-    connector.listen(channelName, events.here, listener);
-    bindings.push({ event: events.here, listener });
+    const listener = createHereListener(callbacks.here);
+    connector.listen(channelName, PRESENCE_EVENTS.here, listener);
+    bindings.push({ event: PRESENCE_EVENTS.here, listener });
   }
 
   if (callbacks.joining) {
-    const listener = createJoiningListener(callbacks.joining, driver);
-    connector.listen(channelName, events.joining, listener);
-    bindings.push({ event: events.joining, listener });
+    const listener = createJoiningListener(callbacks.joining);
+    connector.listen(channelName, PRESENCE_EVENTS.joining, listener);
+    bindings.push({ event: PRESENCE_EVENTS.joining, listener });
   }
 
   if (callbacks.leaving) {
-    const listener = createLeavingListener(callbacks.leaving, driver);
-    connector.listen(channelName, events.leaving, listener);
-    bindings.push({ event: events.leaving, listener });
+    const listener = createLeavingListener(callbacks.leaving);
+    connector.listen(channelName, PRESENCE_EVENTS.leaving, listener);
+    bindings.push({ event: PRESENCE_EVENTS.leaving, listener });
   }
 
-  if (driver === 'pusher' && callbacks.error) {
-    connector.listen(channelName, PUSHER_PRESENCE_EVENTS.error, callbacks.error);
-    bindings.push({ event: PUSHER_PRESENCE_EVENTS.error, listener: callbacks.error });
+  if (callbacks.error) {
+    connector.listen(channelName, 'error', callbacks.error);
+    bindings.push({ event: 'error', listener: callbacks.error });
   }
 
   if (bindings.length === 0) {
@@ -80,41 +72,21 @@ export function unbindConnectorPresenceEvents(
   byChannel?.delete(channelName);
 }
 
-function createHereListener(
-  callback: (members: unknown[]) => void,
-  driver: 'pusher' | 'socketio',
-): EchoListener {
+function createHereListener(callback: (members: unknown[]) => void): EchoListener {
   return (payload) => {
-    if (driver === 'pusher') {
-      const data = payload as { members?: Record<string, unknown> };
-      callback(Object.values(data.members ?? {}));
-      return;
-    }
-
     const members = Array.isArray(payload) ? payload : [];
     callback(members.map((member) => extractMemberInfo(member)));
   };
 }
 
-function createJoiningListener(
-  callback: (member: unknown) => void,
-  driver: 'pusher' | 'socketio',
-): EchoListener {
+function createJoiningListener(callback: (member: unknown) => void): EchoListener {
   return (payload) => {
-    if (driver === 'pusher') {
-      callback((payload as { info?: unknown }).info ?? payload);
-      return;
-    }
-
     callback(extractMemberInfo(payload));
   };
 }
 
-function createLeavingListener(
-  callback: (member: unknown) => void,
-  driver: 'pusher' | 'socketio',
-): EchoListener {
-  return createJoiningListener(callback, driver);
+function createLeavingListener(callback: (member: unknown) => void): EchoListener {
+  return createJoiningListener(callback);
 }
 
 function extractMemberInfo(member: unknown): unknown {

@@ -20,7 +20,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 26
           cache: npm
           registry-url: https://registry.npmjs.org
 
@@ -59,8 +59,7 @@ jobs:
             @tyravel/queue
             @tyravel/events
             @tyravel/broadcasting
-            @tyravel/broadcasting-pusher
-            @tyravel/broadcasting-socket-io
+            @tyravel/broadcasting-websocket
             @tyravel/crypto
             @tyravel/auth
             @tyravel/cache

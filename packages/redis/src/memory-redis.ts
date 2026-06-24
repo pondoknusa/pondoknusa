@@ -112,10 +112,20 @@ export class MemoryRedis implements RedisClient {
   }
 
   readonly published: Array<{ channel: string; message: string }> = [];
+  private readonly subscribers = new Map<string, Set<(message: string) => void>>();
 
   async publish(channel: string, message: string): Promise<number> {
     this.published.push({ channel, message });
+    for (const listener of this.subscribers.get(channel) ?? []) {
+      listener(message);
+    }
     return 1;
+  }
+
+  async subscribe(channel: string, listener: (message: string) => void): Promise<void> {
+    const listeners = this.subscribers.get(channel) ?? new Set();
+    listeners.add(listener);
+    this.subscribers.set(channel, listeners);
   }
 
   async quit(): Promise<string> {

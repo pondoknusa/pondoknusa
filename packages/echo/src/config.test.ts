@@ -3,17 +3,18 @@ import { describe, expect, it } from 'vitest';
 import { ECHO_CONFIG_SCRIPT_ID, readEchoConfigFromDocument } from './config.js';
 
 describe('readEchoConfigFromDocument', () => {
-  it('reads socketio config from the bootstrap script tag', () => {
+  it('reads websocket config from the bootstrap script tag', () => {
     const window = new Window();
     window.document.write(`
       <script type="application/json" id="${ECHO_CONFIG_SCRIPT_ID}">
-        {"broadcaster":"socketio","host":"http://127.0.0.1:3000","authEndpoint":"/broadcasting/auth"}
+        {"broadcaster":"websocket","host":"http://127.0.0.1:3000","path":"/tyravel/ws","authEndpoint":"/broadcasting/auth"}
       </script>
     `);
 
     expect(readEchoConfigFromDocument(window.document)).toEqual({
-      broadcaster: 'socketio',
+      broadcaster: 'websocket',
       host: 'http://127.0.0.1:3000',
+      path: '/tyravel/ws',
       authEndpoint: '/broadcasting/auth',
     });
   });

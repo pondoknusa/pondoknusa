@@ -4,9 +4,8 @@ const ECHO_CONFIG_SCRIPT_ID = 'tyr-echo-config';
 
 export interface EchoClientManifestConfig {
   broadcaster: EchoDriver;
-  key?: string;
-  cluster?: string;
   host?: string;
+  path?: string;
   authEndpoint?: string;
 }
 
@@ -51,9 +50,8 @@ export function readEchoConfigFromDocument(
 
     return {
       broadcaster: parsed.broadcaster,
-      key: parsed.key,
-      cluster: parsed.cluster,
       host: parsed.host,
+      path: parsed.path,
       authEndpoint: parsed.authEndpoint ?? '/broadcasting/auth',
     };
   } catch {

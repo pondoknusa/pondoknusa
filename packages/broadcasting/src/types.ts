@@ -1,6 +1,6 @@
 import type { Event } from '@tyravel/events';
 
-export type BroadcastDriver = 'null' | 'log' | 'pusher' | 'socketio';
+export type BroadcastDriver = 'null' | 'log' | 'websocket';
 
 export interface NullBroadcastConnectionConfig {
   driver: 'null';
@@ -10,29 +10,17 @@ export interface LogBroadcastConnectionConfig {
   driver: 'log';
 }
 
-export interface PusherBroadcastConnectionConfig {
-  driver: 'pusher';
-  key: string;
-  secret: string;
-  appId: string;
-  cluster?: string;
-  host?: string;
-  port?: number;
-  scheme?: 'http' | 'https';
-  useTLS?: boolean;
-}
-
-export interface SocketIoBroadcastConnectionConfig {
-  driver: 'socketio';
+export interface WebSocketBroadcastConnectionConfig {
+  driver: 'websocket';
   redisConnection?: string;
   channel?: string;
+  path?: string;
 }
 
 export type BroadcastConnectionConfig =
   | NullBroadcastConnectionConfig
   | LogBroadcastConnectionConfig
-  | PusherBroadcastConnectionConfig
-  | SocketIoBroadcastConnectionConfig;
+  | WebSocketBroadcastConnectionConfig;
 
 export interface BroadcastingConfig {
   default: string;
@@ -50,6 +38,7 @@ export interface BroadcastPayload {
 
 export interface Broadcaster {
   broadcast(payload: BroadcastPayload): Promise<void>;
+  signChannel?(socketId: string, channelName: string, channelData?: string): string;
 }
 
 export type BroadcasterFactory = (

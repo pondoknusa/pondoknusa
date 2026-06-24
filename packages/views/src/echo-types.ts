@@ -1,7 +1,6 @@
 export interface EchoClientConfig {
-  broadcaster: 'socketio' | 'pusher';
-  key?: string;
-  cluster?: string;
+  broadcaster: 'websocket';
   host?: string;
+  path?: string;
   authEndpoint: string;
 }

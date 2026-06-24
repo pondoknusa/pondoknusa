@@ -7,6 +7,23 @@ export { NullBroadcaster } from './null-broadcaster.js';
 export { buildBroadcastPayload, eventShouldBroadcast, normalizeChannels } from './should-broadcast.js';
 export { channel, registerBroadcastChannels, type ChannelCallback } from './register-channels.js';
 export { resolveEchoClientConfig, type EchoClientConfig } from './echo-client-config.js';
+export {
+  TYRAVEL_WS_PATH,
+  TYRAVEL_BROADCAST_REDIS_CHANNEL,
+  buildChannelAuthToken,
+  parseRedisBroadcastMessage,
+  parseWsClientMessage,
+  serializeWsServerMessage,
+  verifyChannelAuthToken,
+  type RedisBroadcastMessage,
+  type WsClientMessage,
+  type WsServerMessage,
+} from './ws-protocol.js';
+export {
+  attachBroadcastWebSocketUpgrade,
+  clearBroadcastWebSocketUpgrade,
+  setBroadcastWebSocketUpgrade,
+} from './upgrade-registry.js';
 export type {
   BroadcastAuthRequest,
   BroadcastAuthResult,
@@ -20,7 +37,6 @@ export type {
   ChannelAuthorizer,
   LogBroadcastConnectionConfig,
   NullBroadcastConnectionConfig,
-  PusherBroadcastConnectionConfig,
   ShouldBroadcast,
-  SocketIoBroadcastConnectionConfig,
+  WebSocketBroadcastConnectionConfig,
 } from './types.js';

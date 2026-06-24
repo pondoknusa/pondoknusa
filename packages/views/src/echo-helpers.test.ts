@@ -11,8 +11,9 @@ describe('renderEchoBootstrap', () => {
   it('injects client-safe config and vite tags', () => {
     const html = renderEchoBootstrap(
       {
-        broadcaster: 'socketio',
+        broadcaster: 'websocket',
         host: 'http://127.0.0.1:3000',
+        path: '/tyravel/ws',
         authEndpoint: '/broadcasting/auth',
       },
       {
@@ -25,7 +26,7 @@ describe('renderEchoBootstrap', () => {
     );
 
     expect(html).toContain(`id="${ECHO_CONFIG_SCRIPT_ID}"`);
-    expect(html).toContain('"broadcaster":"socketio"');
+    expect(html).toContain('"broadcaster":"websocket"');
     expect(html).toContain('/build/assets/echo.js');
   });
 });

@@ -1,10 +1,9 @@
 import type { BroadcastingConfig } from './types.js';
 
 export interface EchoClientConfig {
-  broadcaster: 'socketio' | 'pusher';
-  key?: string;
-  cluster?: string;
+  broadcaster: 'websocket';
   host?: string;
+  path?: string;
   authEndpoint: string;
 }
 
@@ -20,20 +19,11 @@ export function resolveEchoClientConfig(
   const authEndpoint = '/broadcasting/auth';
   const host = appUrl.replace(/\/$/, '');
 
-  if (connection.driver === 'pusher' && connection.key) {
+  if (connection.driver === 'websocket') {
     return {
-      broadcaster: 'pusher',
-      key: connection.key,
-      cluster: connection.cluster ?? 'mt1',
+      broadcaster: 'websocket',
       host,
-      authEndpoint,
-    };
-  }
-
-  if (connection.driver === 'socketio') {
-    return {
-      broadcaster: 'socketio',
-      host,
+      path: connection.path,
       authEndpoint,
     };
   }

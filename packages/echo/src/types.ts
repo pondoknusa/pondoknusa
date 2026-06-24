@@ -28,7 +28,7 @@ export interface EchoConnector {
   bindLifecycle?(callbacks: EchoLifecycleCallbacks): void;
 }
 
-export type EchoDriver = 'socketio' | 'pusher' | 'null';
+export type EchoDriver = 'websocket' | 'null';
 
 export interface EchoOptions {
   broadcaster: EchoDriver;
@@ -36,9 +36,7 @@ export interface EchoOptions {
   authTransport?: EchoAuthTransport;
   csrfToken?: string | (() => string | undefined);
   host?: string;
-  key?: string;
-  cluster?: string;
-  forceTLS?: boolean;
+  path?: string;
   connector?: EchoConnector;
 }
 

@@ -16,6 +16,7 @@ async function createNodeServer(
   port: number,
 ) {
   const { createServer } = await import('node:http');
+  const { attachBroadcastWebSocketUpgrade } = await import('@tyravel/broadcasting');
 
   let isShuttingDown = false;
   const connections = new Set<Socket>();
@@ -43,6 +44,8 @@ async function createNodeServer(
       outgoing.end('Server Error');
     }
   });
+
+  attachBroadcastWebSocketUpgrade(server);
 
   server.on('connection', (socket) => {
     connections.add(socket);
