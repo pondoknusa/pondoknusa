@@ -142,7 +142,15 @@ stubs = stubs.replaceAll(`^${currentVersion}`, `^${newVersion}`);
 stubs = stubs.replaceAll(`"${currentVersion}"`, `"${newVersion}"`);
 writeFileSync(stubsPath, stubs);
 
-console.log(`  Bumped ${bumped} package.json files + stubs.ts`);
+const stubsProjectPath = join(ROOT, 'packages/cli/src/stubs-project.ts');
+let stubsProject = readFileSync(stubsProjectPath, 'utf8');
+stubsProject = stubsProject.replace(
+  /const CORE_VERSION = '\^[\d.]+';/,
+  `const CORE_VERSION = '^${newVersion}';`,
+);
+writeFileSync(stubsProjectPath, stubsProject);
+
+console.log(`  Bumped ${bumped} package.json files + stubs.ts + stubs-project.ts`);
 
 // ── Update CHANGELOG ────────────────────────────────────────
 

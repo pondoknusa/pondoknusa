@@ -2,6 +2,20 @@
 
 All notable changes to Tyravel are documented in this file.
 
+## [0.10.0] - 2026-06-24
+
+### Added
+
+- **Tier 10 — full-stack interactivity** — `@tyravel/ssr` hydration runtime, `@tyravel/echo` Laravel Echo-style client, and scaffold integration via `tyravel new`.
+- **Streaming SSR** — `View.streamSsr()`, `Response.ssrStream()`, and `streamSsrDocument()` with chunked response flushing.
+- **Islands** — `@island` directive, `View.catalog()`, `registerProgrammaticIsland()`, and `tyravel make:island [--programmatic]`.
+- **Echo scaffold** — `@echo` views directive, `channels.ts` / `echo.ts` stubs, and `resolveEchoClientConfig`.
+- **Echo presence** — `.here()`, `.joining()`, `.leaving()`, and `.error()` callbacks on presence channels; `EchoChannelEventMap` typing; `echo.connected()` / `disconnected()` / `reconnecting()` lifecycle hooks.
+
+### Changed
+
+- **SSR and hydration APIs** — Promoted to stable (see `STABILITY.md`).
+
 
 
 
