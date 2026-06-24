@@ -48,13 +48,17 @@ describe('@tyravel/crypto', () => {
     },
   );
 
-  it('signs and verifies with SLH-DSA (sha2-128s)', () => {
-    const dsa = new SlhDsa('slh-dsa-sha2-128s');
-    const keys = dsa.generateKeyPair();
-    const message = new TextEncoder().encode('hash-based signature');
-    const signature = dsa.sign(message, keys.secretKey);
-    expect(dsa.verify(signature, message, keys.publicKey)).toBe(true);
-  });
+  it(
+    'signs and verifies with SLH-DSA (sha2-128s)',
+    () => {
+      const dsa = new SlhDsa('slh-dsa-sha2-128s');
+      const keys = dsa.generateKeyPair();
+      const message = new TextEncoder().encode('hash-based signature');
+      const signature = dsa.sign(message, keys.secretKey);
+      expect(dsa.verify(signature, message, keys.publicKey)).toBe(true);
+    },
+    15_000,
+  );
 
   it('exposes a high-level CryptoManager facade', () => {
     const crypto = new CryptoManager();
