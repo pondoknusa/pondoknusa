@@ -19,4 +19,14 @@ describe('view assertions', () => {
     view.assertSee('Dashboard').assertDontSee('Sign in');
     expect(view.toString()).toContain('Dashboard');
   });
+
+  it('assertHydrationManifest validates island props', () => {
+    const view = new RenderedView('<main></main>', {
+      islands: [{ id: 'counter', html: '<button>1</button>', props: { count: 1 } }],
+    });
+
+    view.assertHydrationManifest({
+      islands: [{ id: 'counter', html: '', props: { count: 1 } }],
+    });
+  });
 });

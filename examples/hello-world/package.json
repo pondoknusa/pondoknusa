@@ -19,6 +19,7 @@
     "@tyravel/mail": "0.9.1",
     "@tyravel/notifications": "0.9.1",
     "@tyravel/queue": "0.9.1",
+    "@tyravel/ssr": "0.9.1",
     "@tyravel/validation": "0.9.1",
     "@tyravel/views": "0.9.1"
   },

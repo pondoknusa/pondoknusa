@@ -1,4 +1,12 @@
+import {
+  buildSsrDocument,
+  type HydrationManifestPayload,
+  type SsrDocumentOptions,
+} from './ssr.js';
+
 const WebResponse = globalThis.Response;
+
+export type { HydrationManifestPayload, SsrDocumentOptions };
 
 export class ResponseFactory {
   json(data: unknown, init: ResponseInit = {}): Response {
@@ -23,6 +31,10 @@ export class ResponseFactory {
       ...init,
       headers,
     });
+  }
+
+  ssr(body: string, options: SsrDocumentOptions = {}, init: ResponseInit = {}): Response {
+    return this.html(buildSsrDocument(body, options), init);
   }
 
   streamHtml(

@@ -237,16 +237,16 @@ Move from “render HTML strings in controllers” to a first-class SSR workflow
 
 #### P0 — Must ship
 
-- [ ] **SSR document shell** — `Response.ssr()` (or equivalent) wraps rendered views in a complete HTML document: `<head>` meta, `@vite` assets, and an injected hydration manifest script tag
-- [ ] **Hydration runtime** — `@tyravel/ssr` (or `@tyravel/views/client`) browser package that reads `data-tyr-island` markers and mounts island components from a client registry
-- [ ] **Island registry API** — `registerIsland('counter', Counter)` on the client; server `@island('counter', props)` maps to the same id
+- [x] **SSR document shell** — `Response.ssr()` (or equivalent) wraps rendered views in a complete HTML document: `<head>` meta, `@vite` assets, and an injected hydration manifest script tag
+- [x] **Hydration runtime** — `@tyravel/ssr` (or `@tyravel/views/client`) browser package that reads `data-tyr-island` markers and mounts island components from a client registry
+- [x] **Island registry API** — `registerIsland('counter', Counter)` on the client; server `@island('counter', props)` maps to the same id
 - [ ] **Promote SSR APIs to stable** — graduate `View.renderStream()`, `@stream` / `@endstream`, `@island`, and the hydration manifest from experimental (see [STABILITY.md](STABILITY.md))
-- [ ] **SSR reference example** — extend `examples/hello-world` (or add `examples/ssr`) with at least one hydrated island and a streaming layout section
+- [x] **SSR reference example** — extend `examples/hello-world` (or add `examples/ssr`) with at least one hydrated island and a streaming layout section
 
 #### P1 — Strong want
 
 - [ ] **Streaming SSR middleware** — first-class chunked `Response` integration so `View.renderStream()` flushes early shell HTML without manual async iteration in every controller
-- [ ] **SSR test helpers** — assert rendered HTML *and* hydration manifest contents in `@tyravel/testing` (`assertIsland`, `assertHydrationManifest`)
+- [x] **SSR test helpers** — assert rendered HTML *and* hydration manifest contents in `@tyravel/testing` (`assertIsland`, `assertHydrationManifest`)
 - [ ] **`tyravel make:island`** — scaffold a paired server partial + client mount function with registry wiring
 
 #### P2 — If scope allows

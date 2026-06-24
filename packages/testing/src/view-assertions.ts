@@ -20,6 +20,23 @@ export class RenderedView {
     return this;
   }
 
+  assertHydrationManifest(
+    expected: HydrationManifestSnapshot | ((manifest: HydrationManifestSnapshot) => void),
+  ): this {
+    const manifest = this.hydration;
+    if (!manifest) {
+      throw new Error('Expected a hydration manifest but none was captured.');
+    }
+
+    if (typeof expected === 'function') {
+      expected(manifest);
+      return this;
+    }
+
+    expectManifestMatches(manifest, expected);
+    return this;
+  }
+
   assertSee(text: string): this {
     assertSee(this.html, text);
     return this;
@@ -44,5 +61,29 @@ export function assertSee(html: string, text: string): void {
 export function assertDontSee(html: string, text: string): void {
   if (html.includes(text)) {
     throw new Error(`Expected rendered HTML not to contain: ${JSON.stringify(text)}`);
+  }
+}
+
+function expectManifestMatches(
+  actual: HydrationManifestSnapshot,
+  expected: HydrationManifestSnapshot,
+): void {
+  if (actual.islands.length !== expected.islands.length) {
+    throw new Error(
+      `Expected ${expected.islands.length} hydration island(s) but found ${actual.islands.length}.`,
+    );
+  }
+
+  for (const island of expected.islands) {
+    const match = actual.islands.find((entry) => entry.id === island.id);
+    if (!match) {
+      throw new Error(`Expected hydration manifest to include island: ${JSON.stringify(island.id)}`);
+    }
+
+    if (JSON.stringify(match.props) !== JSON.stringify(island.props)) {
+      throw new Error(
+        `Hydration props mismatch for island ${island.id}: expected ${JSON.stringify(island.props)} got ${JSON.stringify(match.props)}`,
+      );
+    }
   }
 }

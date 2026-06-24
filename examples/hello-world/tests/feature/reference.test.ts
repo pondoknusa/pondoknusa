@@ -13,6 +13,16 @@ describe('hello-world reference app', () => {
     expect(html).toContain('Hello Tyravel');
   });
 
+  it('renders SSR hydration markers for interactive islands', async () => {
+    const response = await t.http.get('http://localhost/');
+    await response.assertOk();
+    const html = await response.text();
+
+    expect(html).toContain('id="tyr-hydration"');
+    expect(html).toContain('data-tyr-island="counter"');
+    expect(html).toContain('"count":0');
+  });
+
   it('registers a user and sends a welcome email', async () => {
     const response = await t.http.post('http://localhost/register', {
       json: {

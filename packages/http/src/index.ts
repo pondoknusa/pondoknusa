@@ -16,6 +16,13 @@ export {
 export type { SessionContract } from './session-contract.js';
 export { Response, ResponseFactory } from './response.js';
 export {
+  buildSsrDocument,
+  HYDRATION_SCRIPT_ID,
+  type HydrationIslandPayload,
+  type HydrationManifestPayload,
+  type SsrDocumentOptions,
+} from './ssr.js';
+export {
   createRouter,
   RouteNotFoundException,
   Router,
