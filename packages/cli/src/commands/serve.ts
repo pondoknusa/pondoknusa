@@ -89,7 +89,7 @@ function detectRuntime(): Runtime | undefined {
   }
 
   const nodeMajor = Number(process.versions.node.split('.')[0]);
-  if (nodeMajor >= 22) {
+  if (nodeMajor >= 26) {
     return {
       name: 'Node',
       command: process.execPath,

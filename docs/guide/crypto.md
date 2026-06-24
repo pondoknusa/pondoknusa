@@ -29,7 +29,6 @@ import { env } from '@tyravel/config';
 export default {
   kem: 'hybrid-x25519-ml-kem-768',
   signature: 'ml-dsa-65',
-  preferNative: true,
   session: {
     encrypt: env('SESSION_ENCRYPT', 'false') === 'true',
     key: env('SESSION_ENCRYPTION_KEY', ''),
@@ -57,12 +56,9 @@ export default {
 
 NIST category 3 (~AES-192 equivalent): ML-KEM-768, ML-DSA-65. Category 5 (~AES-256): ML-KEM-1024, ML-DSA-87.
 
-## Runtime backends
+## Runtime backend
 
-| Backend | When used |
-|---------|-----------|
-| **Native** | Node.js/OpenSSL exposes `ml-kem-*`, `ml-dsa-*`, `slh-dsa-*` (future Node releases) |
-| **Noble** | `@noble/post-quantum` fallback on Node 22 (current Tyravel minimum) |
+Tyravel requires **Node.js 26+** and uses native OpenSSL PQC for all algorithms, including the hybrid X25519 + ML-KEM-768 construction. The `@noble/post-quantum` fallback was removed in v0.12.1.
 
 Detect support at runtime:
 
@@ -73,8 +69,6 @@ if (supportsNativePqc()) {
   // OpenSSL PQC is available
 }
 ```
-
-Set `preferNative: true` in config to use native primitives when present.
 
 ## High-level API
 
@@ -188,7 +182,8 @@ Output is JSON with `algorithm`, `publicKey`, and `secretKey` as base64 strings.
 - Store secret keys in environment variables or a secrets manager, never in source control.
 - ML-KEM decapsulation does not authenticate the sender — combine with signatures or channel binding when both confidentiality and authenticity matter.
 - SLH-DSA variants with `s` (small) produce shorter signatures but are much slower to sign.
-- `@noble/post-quantum` is a JavaScript implementation; prefer native OpenSSL PQC on Node builds that support it for production throughput.
+- Native OpenSSL PQC on Node.js 26+ is used for production throughput.
+- Hybrid secret keys are packed PKCS#8 material (134 bytes), not the 32-byte Noble root seeds from v0.12.0 — regenerate hybrid keys after upgrading.
 - Session encryption protects data at rest in the session store; it does not replace HTTPS for data in transit.
 
 See [Authentication](/guide/auth) for guards, OAuth providers, the OAuth2 server, CSRF, and API token hardening.

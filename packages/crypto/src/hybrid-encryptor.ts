@@ -10,10 +10,8 @@ import type { EncryptedEnvelope, HybridAlgorithm, KemKeyPair } from './types.js'
 export class HybridEncryptor {
   readonly algorithm: HybridAlgorithm = 'hybrid-x25519-ml-kem-768';
 
-  constructor(private readonly preferNative = true) {}
-
   generateKeyPair(seed?: Uint8Array): KemKeyPair {
-    return generateHybridKeyPair(seed, { preferNative: this.preferNative }) as KemKeyPair;
+    return generateHybridKeyPair(seed) as KemKeyPair;
   }
 
   encapsulate(publicKey: Uint8Array) {
@@ -30,13 +28,18 @@ export class HybridEncryptor {
     return {
       version: 1,
       algorithm: this.algorithm,
-      backend: 'noble',
+      backend: 'native',
       kemCiphertext,
       ...encrypted,
     };
   }
 
   decrypt(envelope: EncryptedEnvelope, secretKey: Uint8Array): Uint8Array {
+    if (envelope.backend !== 'native') {
+      throw new Error(
+        `Encrypted envelope backend "${envelope.backend}" is no longer supported. Re-encrypt with Node.js 26+ native PQC.`,
+      );
+    }
     const sharedSecret = this.decapsulate(envelope.kemCiphertext, secretKey);
     return decryptWithSharedSecret(
       sharedSecret,

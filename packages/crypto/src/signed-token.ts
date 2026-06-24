@@ -1,6 +1,6 @@
-import { resolveDsaBackend, signMessage, verifyMessage } from './backend.js';
+import { signMessage, verifyMessage } from './backend.js';
 import { fromBase64, toBase64, toUtf8Bytes } from './encoding.js';
-import type { CryptoBackend, DsaAlgorithm, SlhDsaAlgorithm } from './types.js';
+import type { DsaAlgorithm, SlhDsaAlgorithm } from './types.js';
 
 export interface SignedTokenPayload {
   v: 1;
@@ -13,17 +13,10 @@ export interface SignedTokenOptions {
   algorithm: DsaAlgorithm | SlhDsaAlgorithm;
   publicKey: Uint8Array;
   secretKey: Uint8Array;
-  preferNative?: boolean;
 }
 
 export class SignedTokenService {
-  private readonly backend: CryptoBackend;
-
-  constructor(private readonly options: SignedTokenOptions) {
-    this.backend = resolveDsaBackend(options.algorithm, {
-      preferNative: options.preferNative,
-    });
-  }
+  constructor(private readonly options: SignedTokenOptions) {}
 
   sign(payload: SignedTokenPayload, prefix = ''): string {
     const body = toBase64(toUtf8Bytes(JSON.stringify(payload)));
@@ -31,7 +24,6 @@ export class SignedTokenService {
       this.options.algorithm,
       toUtf8Bytes(body),
       this.options.secretKey,
-      this.backend,
     );
     return `${prefix}${body}.${toBase64(signature)}`;
   }
@@ -50,7 +42,6 @@ export class SignedTokenService {
       fromBase64(signature),
       toUtf8Bytes(body),
       this.options.publicKey,
-      this.backend,
     );
 
     if (!valid) {
@@ -84,7 +75,6 @@ export function createSignedTokenServiceFromConfig(
     algorithm?: DsaAlgorithm | SlhDsaAlgorithm;
     publicKey?: string;
     secretKey?: string;
-    preferNative?: boolean;
   },
 ): SignedTokenService | null {
   if (!config.publicKey || !config.secretKey) {
@@ -95,6 +85,5 @@ export function createSignedTokenServiceFromConfig(
     algorithm: config.algorithm ?? 'ml-dsa-65',
     publicKey: fromBase64(config.publicKey),
     secretKey: fromBase64(config.secretKey),
-    preferNative: config.preferNative,
   });
 }

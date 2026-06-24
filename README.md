@@ -1,8 +1,8 @@
 # Tyravel
 
-**v0.11.0** — TypeScript-native web framework with Laravel-style ergonomics (service container, routing, middleware, queues, auth, post-quantum crypto, and an Artisan-like CLI) on standard Web APIs.
+**v0.12.1** — TypeScript-native web framework with Laravel-style ergonomics (service container, routing, middleware, queues, auth, post-quantum crypto, and an Artisan-like CLI) on standard Web APIs.
 
-Requires **Node.js ≥ 22**.
+Requires **Node.js ≥ 26**.
 
 ## API stability
 
@@ -116,7 +116,7 @@ New projects include a `tyravel.json` config file:
 }
 ```
 
-`tyravel serve` reads this config and passes `TYRAVEL_PORT` / `TYRAVEL_HOST` to the app. Bun is the recommended runtime; Node 22+ is also supported natively via the built-in HTTP adapter.
+`tyravel serve` reads this config and passes `TYRAVEL_PORT` / `TYRAVEL_HOST` to the app. Bun is the recommended runtime; Node 26+ is also supported natively via the built-in HTTP adapter.
 
 ## Application structure
 
@@ -393,7 +393,7 @@ this.app.register(LontarServiceProvider);
 
 `tyravel migrate` boots `AppServiceProvider` and runs all registered migration paths in filename order.
 
-**Drivers:** SQLite (Node 22.5+ via `node:sqlite`), PostgreSQL (`pg`), and MySQL (`mysql2`).
+**Drivers:** SQLite (Node 26+ via `node:sqlite`), PostgreSQL (`pg`), and MySQL (`mysql2`).
 
 **Query scopes:** define `scopeName(builder, ...args)` on a model and call `Model.scope('name', ...args)`. Global scopes use `Model.addGlobalScope((builder) => ...)`.
 
@@ -705,7 +705,7 @@ Register `OAuthServerServiceProvider` in `src/main.ts` (done by `oauth:install`)
 
 ### Post-quantum cryptography
 
-`@tyravel/crypto` provides ML-KEM, ML-DSA, SLH-DSA, and hybrid X25519 + ML-KEM-768 encryption. Tyravel uses `@noble/post-quantum` on Node 22 and will prefer native OpenSSL PQC when available.
+`@tyravel/crypto` provides ML-KEM, ML-DSA, SLH-DSA, and hybrid X25519 + ML-KEM-768 encryption via native OpenSSL PQC on Node.js 26+.
 
 ```bash
 tyravel crypto:generate-keys --algorithm=hybrid-x25519-ml-kem-768

@@ -18,7 +18,7 @@
     "release:prepare": "node scripts/prepare-release.mjs"
   },
   "devDependencies": {
-    "@types/node": "^22.15.30",
+    "@types/node": "^26.0.1",
     "typescript": "^5.8.3",
     "vitepress": "^1.6.3",
     "vitest": "^3.2.4"

@@ -1,29 +1,19 @@
 import {
-  nobleDecapsulate,
-  nobleEncapsulate,
-  nobleGenerateDsaKeyPair,
-  nobleGenerateHybridKeyPair,
-  nobleGenerateKemKeyPair,
-  nobleGenerateSlhDsaKeyPair,
-  nobleHybridDecapsulate,
-  nobleHybridEncapsulate,
-  nobleSign,
-  nobleVerify,
-} from './noble-backend.js';
-import {
-  aesGcmDecrypt,
-  aesGcmEncrypt,
   nativeDecapsulate,
   nativeEncapsulate,
   nativeGenerateDsaKeyPair,
   nativeGenerateKemKeyPair,
   nativeSign,
   nativeVerify,
-  supportsNativeDsa,
-  supportsNativeKem,
+  aesGcmDecrypt,
+  aesGcmEncrypt,
 } from './native-backend.js';
+import {
+  nativeGenerateHybridKeyPair,
+  nativeHybridDecapsulate,
+  nativeHybridEncapsulate,
+} from './hybrid-backend.js';
 import type {
-  CryptoBackend,
   DsaAlgorithm,
   EncapsulationResult,
   EncryptedEnvelope,
@@ -32,116 +22,48 @@ import type {
   SlhDsaAlgorithm,
 } from './types.js';
 
-export interface BackendOptions {
-  preferNative?: boolean;
+export function generateKemKeyPair(algorithm: KemAlgorithm, _seed?: Uint8Array): KeyMaterial {
+  return nativeGenerateKemKeyPair(algorithm);
 }
 
-export function resolveKemBackend(
-  algorithm: KemAlgorithm,
-  options: BackendOptions = {},
-): CryptoBackend {
-  if (options.preferNative !== false && supportsNativeKem(algorithm)) {
-    return 'native';
-  }
-  return 'noble';
+export function generateHybridKeyPair(_seed?: Uint8Array): KeyMaterial {
+  return nativeGenerateHybridKeyPair(_seed);
 }
 
-export function resolveDsaBackend(
-  algorithm: DsaAlgorithm | SlhDsaAlgorithm,
-  options: BackendOptions = {},
-): CryptoBackend {
-  if (options.preferNative !== false && supportsNativeDsa(algorithm)) {
-    return 'native';
-  }
-  return 'noble';
-}
-
-export function generateKemKeyPair(
-  algorithm: KemAlgorithm,
-  seed?: Uint8Array,
-  options: BackendOptions = {},
-): KeyMaterial {
-  const backend = resolveKemBackend(algorithm, options);
-  if (backend === 'native') {
-    return nativeGenerateKemKeyPair(algorithm);
-  }
-  return nobleGenerateKemKeyPair(algorithm, seed);
-}
-
-export function generateHybridKeyPair(
-  seed?: Uint8Array,
-  _options: BackendOptions = {},
-): KeyMaterial {
-  // Hybrid KEM uses noble's combined X25519 + ML-KEM-768 construction.
-  return nobleGenerateHybridKeyPair(seed);
-}
-
-export function encapsulate(
-  algorithm: KemAlgorithm,
-  publicKey: Uint8Array,
-  options: BackendOptions = {},
-): EncapsulationResult {
-  const backend = resolveKemBackend(algorithm, options);
-  if (backend === 'native') {
-    return nativeEncapsulate(algorithm, publicKey);
-  }
-  return nobleEncapsulate(algorithm, publicKey);
+export function encapsulate(algorithm: KemAlgorithm, publicKey: Uint8Array): EncapsulationResult {
+  return nativeEncapsulate(algorithm, publicKey);
 }
 
 export function hybridEncapsulate(publicKey: Uint8Array): EncapsulationResult {
-  return nobleHybridEncapsulate(publicKey);
+  return nativeHybridEncapsulate(publicKey);
 }
 
 export function decapsulate(
   algorithm: KemAlgorithm,
   ciphertext: Uint8Array,
   secretKey: Uint8Array,
-  backend: CryptoBackend,
 ): Uint8Array {
-  if (backend === 'native') {
-    return nativeDecapsulate(algorithm, ciphertext, secretKey);
-  }
-  return nobleDecapsulate(algorithm, ciphertext, secretKey);
+  return nativeDecapsulate(algorithm, ciphertext, secretKey);
 }
 
 export function hybridDecapsulate(ciphertext: Uint8Array, secretKey: Uint8Array): Uint8Array {
-  return nobleHybridDecapsulate(ciphertext, secretKey);
+  return nativeHybridDecapsulate(ciphertext, secretKey);
 }
 
-export function generateDsaKeyPair(
-  algorithm: DsaAlgorithm,
-  seed?: Uint8Array,
-  options: BackendOptions = {},
-): KeyMaterial {
-  const backend = resolveDsaBackend(algorithm, options);
-  if (backend === 'native') {
-    return nativeGenerateDsaKeyPair(algorithm);
-  }
-  return nobleGenerateDsaKeyPair(algorithm, seed);
+export function generateDsaKeyPair(algorithm: DsaAlgorithm, _seed?: Uint8Array): KeyMaterial {
+  return nativeGenerateDsaKeyPair(algorithm);
 }
 
-export function generateSlhDsaKeyPair(
-  algorithm: SlhDsaAlgorithm,
-  seed?: Uint8Array,
-  options: BackendOptions = {},
-): KeyMaterial {
-  const backend = resolveDsaBackend(algorithm, options);
-  if (backend === 'native') {
-    return nativeGenerateDsaKeyPair(algorithm);
-  }
-  return nobleGenerateSlhDsaKeyPair(algorithm, seed);
+export function generateSlhDsaKeyPair(algorithm: SlhDsaAlgorithm, _seed?: Uint8Array): KeyMaterial {
+  return nativeGenerateDsaKeyPair(algorithm);
 }
 
 export function signMessage(
   algorithm: DsaAlgorithm | SlhDsaAlgorithm,
   message: Uint8Array,
   secretKey: Uint8Array,
-  backend: CryptoBackend,
 ): Uint8Array {
-  if (backend === 'native') {
-    return nativeSign(algorithm, message, secretKey);
-  }
-  return nobleSign(algorithm, message, secretKey);
+  return nativeSign(algorithm, message, secretKey);
 }
 
 export function verifyMessage(
@@ -149,12 +71,8 @@ export function verifyMessage(
   signature: Uint8Array,
   message: Uint8Array,
   publicKey: Uint8Array,
-  backend: CryptoBackend,
 ): boolean {
-  if (backend === 'native') {
-    return nativeVerify(algorithm, signature, message, publicKey);
-  }
-  return nobleVerify(algorithm, signature, message, publicKey);
+  return nativeVerify(algorithm, signature, message, publicKey);
 }
 
 export function encryptWithSharedSecret(

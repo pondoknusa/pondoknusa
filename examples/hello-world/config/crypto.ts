@@ -4,7 +4,6 @@ import { env } from '@tyravel/config';
 export default {
   kem: 'hybrid-x25519-ml-kem-768',
   signature: 'ml-dsa-65',
-  preferNative: true,
   session: {
     encrypt: env('SESSION_ENCRYPT', 'false') === 'true',
     key: env('SESSION_ENCRYPTION_KEY', ''),

@@ -17,7 +17,6 @@ export interface OAuthTokenSigningConfig {
     | 'slh-dsa-sha2-256s';
   publicKey?: string;
   secretKey?: string;
-  preferNative?: boolean;
 }
 
 export interface OAuthServerConfig {

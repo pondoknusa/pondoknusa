@@ -1,6 +1,6 @@
 {
   "name": "@tyravel/admin",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,19 +15,19 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@tyravel/auth": "0.12.0",
-    "@tyravel/config": "0.12.0",
-    "@tyravel/container": "0.12.0",
-    "@tyravel/database": "0.12.0",
-    "@tyravel/http": "0.12.0",
-    "@tyravel/views": "0.12.0"
+    "@tyravel/auth": "0.12.1",
+    "@tyravel/config": "0.12.1",
+    "@tyravel/container": "0.12.1",
+    "@tyravel/database": "0.12.1",
+    "@tyravel/http": "0.12.1",
+    "@tyravel/views": "0.12.1"
   },
   "files": [
     "dist",
     "resources/views"
   ],
   "engines": {
-    "node": ">=22"
+    "node": ">=26"
   },
   "description": "Optional CRUD admin panel for Tyravel",
   "license": "MIT",

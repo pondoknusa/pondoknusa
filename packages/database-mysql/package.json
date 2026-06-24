@@ -1,6 +1,6 @@
 {
   "name": "@tyravel/database-mysql",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -11,7 +11,7 @@
     }
   },
   "dependencies": {
-    "@tyravel/database": "0.12.0",
+    "@tyravel/database": "0.12.1",
     "mysql2": "^3.14.1"
   },
   "scripts": {
@@ -22,10 +22,10 @@
     "dist"
   ],
   "engines": {
-    "node": ">=22"
+    "node": ">=26"
   },
   "devDependencies": {
-    "@types/node": "^22.15.30"
+    "@types/node": "^26.0.1"
   },
   "description": "MySQL database driver for Tyravel",
   "license": "MIT",

@@ -18,9 +18,14 @@ import type {
   SlhDsaAlgorithm,
 } from './types.js';
 
+type NativeEncapsulationResult = {
+  ciphertext: Buffer;
+  sharedKey: Buffer;
+};
+
 type NativeKemCrypto = {
-  encapsulate: (publicKey: KeyObject) => { ciphertext: Buffer; sharedSecret: Buffer };
-  decapsulate: (ciphertext: Buffer, privateKey: KeyObject) => Buffer;
+  encapsulate: (publicKey: KeyObject) => NativeEncapsulationResult;
+  decapsulate: (privateKey: KeyObject, ciphertext: Buffer) => Buffer;
 };
 
 type PqcKeyType = KemAlgorithm | DsaAlgorithm | SlhDsaAlgorithm;
@@ -140,7 +145,7 @@ export function nativeEncapsulate(algorithm: KemAlgorithm, publicKey: Uint8Array
   const result = encapsulate(key);
   return {
     ciphertext: new Uint8Array(result.ciphertext),
-    sharedSecret: new Uint8Array(result.sharedSecret),
+    sharedSecret: new Uint8Array(result.sharedKey),
   };
 }
 
@@ -151,7 +156,7 @@ export function nativeDecapsulate(
 ): Uint8Array {
   const { decapsulate } = kemCrypto();
   const key = importPrivateKey(secretKey);
-  return new Uint8Array(decapsulate(Buffer.from(ciphertext), key));
+  return new Uint8Array(decapsulate(key, Buffer.from(ciphertext)));
 }
 
 export function nativeGenerateDsaKeyPair(

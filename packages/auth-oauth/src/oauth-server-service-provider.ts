@@ -69,7 +69,6 @@ export class OAuthServerServiceProvider extends ServiceProvider {
         algorithm: cryptoConfig.oauth.algorithm ?? cryptoConfig.signature ?? 'ml-dsa-65',
         publicKey: cryptoConfig.oauth.publicKey,
         secretKey: cryptoConfig.oauth.secretKey,
-        preferNative: cryptoConfig.preferNative,
       },
     };
   }

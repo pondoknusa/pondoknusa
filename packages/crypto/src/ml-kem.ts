@@ -4,49 +4,39 @@ import {
   generateKemKeyPair,
   encryptWithSharedSecret,
   decryptWithSharedSecret,
-  resolveKemBackend,
 } from './backend.js';
-import type {
-  CryptoBackend,
-  EncryptedEnvelope,
-  KemAlgorithm,
-  KemKeyPair,
-  KeyMaterial,
-} from './types.js';
+import type { EncryptedEnvelope, KemAlgorithm, KemKeyPair, KeyMaterial } from './types.js';
 
 export class MlKem {
-  constructor(
-    readonly algorithm: KemAlgorithm,
-    private readonly preferNative = true,
-  ) {}
+  constructor(readonly algorithm: KemAlgorithm) {}
 
   generateKeyPair(seed?: Uint8Array): KemKeyPair {
-    return generateKemKeyPair(this.algorithm, seed, { preferNative: this.preferNative }) as KemKeyPair;
+    return generateKemKeyPair(this.algorithm, seed) as KemKeyPair;
   }
 
   encapsulate(publicKey: Uint8Array) {
-    return encapsulate(this.algorithm, publicKey, { preferNative: this.preferNative });
+    return encapsulate(this.algorithm, publicKey);
   }
 
-  decapsulate(ciphertext: Uint8Array, secretKey: Uint8Array, backend: CryptoBackend): Uint8Array {
-    return decapsulate(this.algorithm, ciphertext, secretKey, backend);
+  decapsulate(ciphertext: Uint8Array, secretKey: Uint8Array): Uint8Array {
+    return decapsulate(this.algorithm, ciphertext, secretKey);
   }
 
   encrypt(plaintext: Uint8Array, recipientPublicKey: Uint8Array): EncryptedEnvelope {
-    const backend = resolveKemBackend(this.algorithm, { preferNative: this.preferNative });
     const { ciphertext: kemCiphertext, sharedSecret } = this.encapsulate(recipientPublicKey);
     const encrypted = encryptWithSharedSecret(sharedSecret, plaintext);
     return {
       version: 1,
       algorithm: this.algorithm,
-      backend,
+      backend: 'native',
       kemCiphertext,
       ...encrypted,
     };
   }
 
   decrypt(envelope: EncryptedEnvelope, secretKey: Uint8Array): Uint8Array {
-    const sharedSecret = this.decapsulate(envelope.kemCiphertext, secretKey, envelope.backend);
+    assertNativeEnvelope(envelope);
+    const sharedSecret = this.decapsulate(envelope.kemCiphertext, secretKey);
     return decryptWithSharedSecret(
       sharedSecret,
       envelope.iv,
@@ -62,4 +52,12 @@ export function isKemAlgorithm(algorithm: string): algorithm is KemAlgorithm {
 
 export function createKemKeyPair(algorithm: KemAlgorithm, seed?: Uint8Array): KeyMaterial {
   return generateKemKeyPair(algorithm, seed);
+}
+
+function assertNativeEnvelope(envelope: EncryptedEnvelope): void {
+  if (envelope.backend !== 'native') {
+    throw new Error(
+      `Encrypted envelope backend "${envelope.backend}" is no longer supported. Re-encrypt with Node.js 26+ native PQC.`,
+    );
+  }
 }

@@ -218,7 +218,6 @@ export class OAuthAccessTokenRepository {
             algorithm: tokenSigning.algorithm,
             publicKey: tokenSigning.publicKey,
             secretKey: tokenSigning.secretKey,
-            preferNative: tokenSigning.preferNative,
           })
         : null;
 

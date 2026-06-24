@@ -34,7 +34,8 @@ import {
 } from '@tyravel/core';
 import { AppServiceProvider } from './providers/app-service-provider.js';
 
-const app = new Application(join(import.meta.dir, '..'));
+const appRoot = join(import.meta.dirname ?? import.meta.dir, '..');
+const app = new Application(appRoot);
 setRouteApplication(app);
 setViewApplication(app);
 setQueueApplication(app);

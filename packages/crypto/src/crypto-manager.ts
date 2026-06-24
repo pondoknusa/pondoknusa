@@ -16,8 +16,7 @@ import type {
 } from './types.js';
 import { DEFAULT_CRYPTO_CONFIG } from './types.js';
 
-type ResolvedCryptoConfig = Required<Pick<CryptoConfig, 'kem' | 'signature' | 'preferNative'>> &
-  CryptoConfig;
+type ResolvedCryptoConfig = Required<Pick<CryptoConfig, 'kem' | 'signature'>> & CryptoConfig;
 
 export class CryptoManager {
   private readonly config: ResolvedCryptoConfig;
@@ -28,16 +27,16 @@ export class CryptoManager {
 
   generateKeys(algorithm: CryptoAlgorithm, seed?: Uint8Array): KeyMaterial {
     if (isHybridAlgorithm(algorithm)) {
-      return generateHybridKeyPair(seed, { preferNative: this.config.preferNative });
+      return generateHybridKeyPair(seed);
     }
     if (isKemAlgorithm(algorithm)) {
-      return generateKemKeyPair(algorithm, seed, { preferNative: this.config.preferNative });
+      return generateKemKeyPair(algorithm, seed);
     }
     if (isMlDsaAlgorithm(algorithm)) {
-      return generateDsaKeyPair(algorithm, seed, { preferNative: this.config.preferNative });
+      return generateDsaKeyPair(algorithm, seed);
     }
     if (isSlhDsaAlgorithm(algorithm)) {
-      return generateSlhDsaKeyPair(algorithm, seed, { preferNative: this.config.preferNative });
+      return generateSlhDsaKeyPair(algorithm, seed);
     }
 
     throw new Error(`Unsupported algorithm: ${algorithm}`);
@@ -50,20 +49,20 @@ export class CryptoManager {
   ): EncryptedEnvelope {
     const payload = typeof plaintext === 'string' ? toUtf8Bytes(plaintext) : plaintext;
     if (isHybridAlgorithm(algorithm)) {
-      return new HybridEncryptor(this.config.preferNative).encrypt(payload, recipientPublicKey);
+      return new HybridEncryptor().encrypt(payload, recipientPublicKey);
     }
     if (isKemAlgorithm(algorithm)) {
-      return new MlKem(algorithm, this.config.preferNative).encrypt(payload, recipientPublicKey);
+      return new MlKem(algorithm).encrypt(payload, recipientPublicKey);
     }
     throw new Error(`Unsupported encryption algorithm: ${algorithm}`);
   }
 
   decrypt(envelope: EncryptedEnvelope, secretKey: Uint8Array): Uint8Array {
     if (isHybridAlgorithm(envelope.algorithm)) {
-      return new HybridEncryptor(this.config.preferNative).decrypt(envelope, secretKey);
+      return new HybridEncryptor().decrypt(envelope, secretKey);
     }
     if (isKemAlgorithm(envelope.algorithm)) {
-      return new MlKem(envelope.algorithm, this.config.preferNative).decrypt(envelope, secretKey);
+      return new MlKem(envelope.algorithm).decrypt(envelope, secretKey);
     }
     throw new Error(`Unsupported envelope algorithm: ${envelope.algorithm}`);
   }
@@ -75,10 +74,10 @@ export class CryptoManager {
   ): Uint8Array {
     const payload = typeof message === 'string' ? toUtf8Bytes(message) : message;
     if (isMlDsaAlgorithm(algorithm)) {
-      return new MlDsa(algorithm, this.config.preferNative).sign(payload, secretKey);
+      return new MlDsa(algorithm).sign(payload, secretKey);
     }
     if (isSlhDsaAlgorithm(algorithm)) {
-      return new SlhDsa(algorithm, this.config.preferNative).sign(payload, secretKey);
+      return new SlhDsa(algorithm).sign(payload, secretKey);
     }
     throw new Error(`Unsupported signature algorithm: ${algorithm}`);
   }
@@ -91,10 +90,10 @@ export class CryptoManager {
   ): boolean {
     const payload = typeof message === 'string' ? toUtf8Bytes(message) : message;
     if (isMlDsaAlgorithm(algorithm)) {
-      return new MlDsa(algorithm, this.config.preferNative).verify(signature, payload, publicKey);
+      return new MlDsa(algorithm).verify(signature, payload, publicKey);
     }
     if (isSlhDsaAlgorithm(algorithm)) {
-      return new SlhDsa(algorithm, this.config.preferNative).verify(signature, payload, publicKey);
+      return new SlhDsa(algorithm).verify(signature, payload, publicKey);
     }
     throw new Error(`Unsupported signature algorithm: ${algorithm}`);
   }

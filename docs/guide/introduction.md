@@ -1,6 +1,6 @@
 # Introduction
 
-Tyravel is a TypeScript-native web framework that brings Laravel-style ergonomics to Node.js 22+. It runs on standard Web APIs (`Request`, `Response`, `fetch`) and ships as a set of focused npm packages you can adopt incrementally.
+Tyravel is a TypeScript-native web framework that brings Laravel-style ergonomics to Node.js 26+. It runs on standard Web APIs (`Request`, `Response`, `fetch`) and ships as a set of focused npm packages you can adopt incrementally.
 
 ## What you get
 
@@ -14,7 +14,7 @@ Tyravel is a TypeScript-native web framework that brings Laravel-style ergonomic
 
 ## Requirements
 
-- Node.js **22+** (Bun is also supported as a runtime)
+- Node.js **26+** (Bun is also supported as a runtime)
 - npm workspaces for monorepo development; published packages install like any other dependency
 
 ## Packages

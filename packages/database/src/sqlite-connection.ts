@@ -109,7 +109,7 @@ async function loadSqliteModule(): Promise<SqliteModule> {
     return (await import('node:sqlite')) as SqliteModule;
   } catch {
     throw new Error(
-      'SQLite support requires Node.js 22.5+ with the built-in node:sqlite module.',
+      'SQLite support requires Node.js 26+ with the built-in node:sqlite module.',
     );
   }
 }

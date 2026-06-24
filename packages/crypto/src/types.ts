@@ -14,6 +14,7 @@ export type HybridAlgorithm = 'hybrid-x25519-ml-kem-768';
 
 export type CryptoAlgorithm = KemAlgorithm | DsaAlgorithm | SlhDsaAlgorithm | HybridAlgorithm;
 
+/** @deprecated Noble fallback was removed in v0.12.1; only native envelopes are supported. */
 export type CryptoBackend = 'native' | 'noble';
 
 export interface KeyMaterial {
@@ -67,15 +68,13 @@ export interface CryptoOAuthConfig {
 export interface CryptoConfig {
   kem?: KemAlgorithm | HybridAlgorithm;
   signature?: DsaAlgorithm | SlhDsaAlgorithm;
+  /** @deprecated Native OpenSSL PQC is always used on Node.js 26+. */
   preferNative?: boolean;
   session?: CryptoSessionConfig;
   oauth?: CryptoOAuthConfig;
 }
 
-export const DEFAULT_CRYPTO_CONFIG: Required<
-  Pick<CryptoConfig, 'kem' | 'signature' | 'preferNative'>
-> = {
+export const DEFAULT_CRYPTO_CONFIG: Required<Pick<CryptoConfig, 'kem' | 'signature'>> = {
   kem: 'hybrid-x25519-ml-kem-768',
   signature: 'ml-dsa-65',
-  preferNative: true,
 };

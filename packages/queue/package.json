@@ -1,6 +1,6 @@
 {
   "name": "@tyravel/queue",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,19 +15,19 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@tyravel/cache": "0.12.0",
-    "@tyravel/container": "0.12.0",
-    "@tyravel/database": "0.12.0",
-    "@tyravel/redis": "0.12.0"
+    "@tyravel/cache": "0.12.1",
+    "@tyravel/container": "0.12.1",
+    "@tyravel/database": "0.12.1",
+    "@tyravel/redis": "0.12.1"
   },
   "files": [
     "dist"
   ],
   "engines": {
-    "node": ">=22"
+    "node": ">=26"
   },
   "devDependencies": {
-    "@types/node": "^22.15.30"
+    "@types/node": "^26.0.1"
   },
   "description": "Queue and background jobs for Tyravel",
   "license": "MIT",

@@ -1,29 +1,19 @@
-import { generateDsaKeyPair, resolveDsaBackend, signMessage, verifyMessage } from './backend.js';
-import type { CryptoBackend, DsaAlgorithm, DsaKeyPair } from './types.js';
+import { generateDsaKeyPair, signMessage, verifyMessage } from './backend.js';
+import type { DsaAlgorithm, DsaKeyPair } from './types.js';
 
 export class MlDsa {
-  constructor(
-    readonly algorithm: DsaAlgorithm,
-    private readonly preferNative = true,
-  ) {}
+  constructor(readonly algorithm: DsaAlgorithm) {}
 
   generateKeyPair(seed?: Uint8Array): DsaKeyPair {
-    return generateDsaKeyPair(this.algorithm, seed, { preferNative: this.preferNative }) as DsaKeyPair;
+    return generateDsaKeyPair(this.algorithm, seed) as DsaKeyPair;
   }
 
-  sign(message: Uint8Array, secretKey: Uint8Array, backend?: CryptoBackend): Uint8Array {
-    const resolved = backend ?? resolveDsaBackend(this.algorithm, { preferNative: this.preferNative });
-    return signMessage(this.algorithm, message, secretKey, resolved);
+  sign(message: Uint8Array, secretKey: Uint8Array): Uint8Array {
+    return signMessage(this.algorithm, message, secretKey);
   }
 
-  verify(
-    signature: Uint8Array,
-    message: Uint8Array,
-    publicKey: Uint8Array,
-    backend?: CryptoBackend,
-  ): boolean {
-    const resolved = backend ?? resolveDsaBackend(this.algorithm, { preferNative: this.preferNative });
-    return verifyMessage(this.algorithm, signature, message, publicKey, resolved);
+  verify(signature: Uint8Array, message: Uint8Array, publicKey: Uint8Array): boolean {
+    return verifyMessage(this.algorithm, signature, message, publicKey);
   }
 }
 

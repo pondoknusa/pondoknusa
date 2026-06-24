@@ -2,6 +2,18 @@
 
 All notable changes to Tyravel are documented in this file.
 
+## [0.12.1] - 2026-06-24
+
+### Changed
+
+- **Node.js 26+** — Raised the minimum supported Node.js version from 22 to 26 across all `@tyravel/*` packages, CI, and documentation.
+- **Native PQC only** — `@tyravel/crypto` now uses OpenSSL post-quantum primitives exclusively; removed the `@noble/post-quantum` dependency and JavaScript fallback.
+- **Hybrid KEM** — Added a native X25519 + ML-KEM-768 implementation for Node.js 26 (hybrid secret keys are now packed PKCS#8 material, not 32-byte Noble seeds).
+
+### Fixed
+
+- **Native ML-KEM** — Updated encapsulation/decapsulation for Node.js 26's PQC API (`sharedKey` return value and `decapsulate(privateKey, ciphertext)` argument order).
+
 ## [0.12.0] - 2026-06-24
 
 ### Added
