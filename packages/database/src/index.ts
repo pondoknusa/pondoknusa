@@ -13,11 +13,14 @@ export type { ModelEventHandler, ModelEventName } from './model-events.js';
 export { Factory } from './factory.js';
 export {
   fakeEmail,
+  fakeLocalizedDate,
   fakeName,
   fakeSequence,
   fakeSlug,
   fakeText,
+  getFactoryLocale,
   resetFactoryHelpers,
+  setFactoryLocale,
 } from './factory-helpers.js';
 export {
   MysqlGrammar,
@@ -30,6 +33,7 @@ export { Migrator } from './migrator.js';
 export { Seeder } from './seeder.js';
 export { SeederRunner } from './seeder-runner.js';
 export { Model } from './model.js';
+export type { ModelStatic } from './model-types.js';
 export { ModelQueryBuilder } from './model-query-builder.js';
 export {
   LengthAwarePaginator,

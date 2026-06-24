@@ -11,6 +11,7 @@ export abstract class Notification {
   connection?: string;
   queue?: string;
   delaySeconds?: number;
+  locale?: string;
 
   toMail?(notifiable: Notifiable): MailMessage | Promise<MailMessage>;
 

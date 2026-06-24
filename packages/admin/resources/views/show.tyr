@@ -1,0 +1,66 @@
+@layout('admin::layout')
+
+@section('title')
+  {{ resource.label }}
+@endsection
+
+@section('content')
+  <div class="admin-header">
+    <h2>{{ resource.label }} #{{ recordId }}</h2>
+    <div>
+      <a class="btn" href="{{ prefix }}/{{ resource.key }}">Back</a>
+      <a class="btn" href="{{ prefix }}/{{ resource.key }}/{{ recordId }}/edit">Edit</a>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <dl>
+      @foreach (fields as field)
+        <div class="field">
+          <dt><strong>{{ field.label }}</strong></dt>
+          <dd>{{ field.value }}</dd>
+        </div>
+      @endforeach
+    </dl>
+
+    @foreach (hasMany as table)
+      <h3>{{ table.label }}</h3>
+      <table>
+        <thead>
+          <tr>
+            @foreach (table.columns as column)
+              <th>{{ column.label }}</th>
+            @endforeach
+          </tr>
+        </thead>
+        <tbody>
+          @foreach (table.rows as row)
+            <tr>
+              @foreach (row.cells as cell)
+                <td>{{ cell.value }}</td>
+              @endforeach
+            </tr>
+          @endforeach
+        </tbody>
+      </table>
+    @endforeach
+
+    @if (auditLog.length > 0)
+      <div class="admin-card" style="margin-top: 1rem;">
+        <h3>Audit log</h3>
+        <ul>
+          @foreach (auditLog as entry)
+            <li>
+              {{ entry.action }} by {{ entry.actorLabel }} at {{ entry.occurredAt }}
+            </li>
+          @endforeach
+        </ul>
+      </div>
+    @endif
+
+    <form method="POST" action="{{ prefix }}/{{ resource.key }}/{{ recordId }}/delete">
+      @csrf
+      <button class="btn btn-danger" type="submit">Delete</button>
+    </form>
+  </div>
+@endsection

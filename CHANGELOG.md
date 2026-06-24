@@ -2,6 +2,20 @@
 
 All notable changes to Tyravel are documented in this file.
 
+## [0.12.0] - 2026-06-24
+
+### Added
+
+- **Full localization** — `@tyravel/locale` with `SetLocale` middleware, fallback locale chain, nested keys, ICU pluralization, framework validation/auth/pagination catalogs, and cross-channel translation in mail, notifications, and queued jobs.
+- **Locale DX** — per-user locale resolution, `formatDate()` / `formatNumber()` / `formatCurrency()` helpers, localized route prefixes, and `tyravel lang:publish` / `lang:missing` commands.
+- **Optional admin panel** — `@tyravel/admin` with `tyravel admin:install`, resource CRUD, filters/search/pagination, policy integration, relation fields, bulk actions, dashboard stub, custom field types, and audit log.
+- **Advanced debugging** — `@tyravel/debug` request timeline and dev debug bar, slow query + N+1 warnings, request replay metadata, OpenTelemetry exporter, job/event correlation with HTTP requests, and `tyravel debug:clear` / `debug:watch` commands.
+
+### Changed
+
+- **Queue worker hook** — `setQueueWorkerProcessHook()` for post-process instrumentation (used by debug job correlation).
+- **Broadcasting scaffold** — channel rules use full `private-` / `presence-` prefixes to match Echo auth payloads.
+
 ## [0.11.0] - 2026-06-24
 
 ### Added

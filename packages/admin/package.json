@@ -1,0 +1,42 @@
+{
+  "name": "@tyravel/admin",
+  "version": "0.11.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@tyravel/auth": "0.11.0",
+    "@tyravel/config": "0.11.0",
+    "@tyravel/container": "0.11.0",
+    "@tyravel/database": "0.11.0",
+    "@tyravel/http": "0.11.0",
+    "@tyravel/views": "0.11.0"
+  },
+  "files": [
+    "dist",
+    "resources/views"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "description": "Optional CRUD admin panel for Tyravel",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thesimonharms/tyravel.git",
+    "directory": "packages/admin"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

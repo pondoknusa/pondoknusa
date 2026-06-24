@@ -278,13 +278,277 @@ Browser-side channel subscriptions that mirror the server broadcasting API. Serv
 - [x] **Typed channel events** — `EchoChannelEventMap` module augmentation for `.listen()` payload inference
 - [x] **Reconnection & offline** — connector lifecycle hooks (`connected`, `disconnected`, `reconnecting`) and queued listeners while offline
 
-## Tier X — Production-ready project
+## Tier 11 — Security & identity (v0.11.0) ✓
 
-Open-ended tier: done when Tyravel is a framework teams can adopt with confidence in production — not tied to a version number. Items land here when Tiers 1–7 are in place.
+Harden auth for production APIs and add OAuth2 server + post-quantum crypto primitives.
 
-- [ ] **Hosted documentation** — public docs site (beyond in-repo VitePress)
-- [ ] **tyravel-mcp** — agent-oriented capability index so models can build Tyravel apps without searching the whole codebase
+- [x] **Auth security hardening** — global CSRF middleware (HTTP 419), timing-safe password reset, `SESSION_SECURE` / `sameSite`, token ability middleware, `registerOAuthDriver()`
+- [x] **API token hardening** — `tyr_` prefix, `token_prefix` / `last_used_ip` / `revoked_at` / `ip_whitelist`, `Auth.createToken()` options, revoke APIs, `request.tokenId`
+- [x] **Social OAuth depth** — PKCE on built-in providers; X, Facebook, LinkedIn, Apple; `tyravel make:social-driver`
+- [x] **OAuth2 authorization server** — `@tyravel/auth-oauth` (authorization code + PKCE, client credentials, refresh token); `oauth:install`, `oauth:client:create`, `auth:oauth` middleware
+- [x] **Post-quantum cryptography** — `@tyravel/crypto` (ML-KEM, ML-DSA, SLH-DSA, hybrid X25519 + ML-KEM-768); native OpenSSL PQC when available, `@noble/post-quantum` fallback
+- [x] **Crypto integrations** — optional AES-256-GCM session encryption at rest, ML-DSA signed OAuth tokens; `crypto:install`, `crypto:generate-keys`
+
+## Tier 12 — Production ergonomics (v0.12.0)
+
+Make Tyravel comfortable for multi-locale teams, day-two operations, and optional back-office UIs. Builds on Tier 6 P5 view localization, Tier 7 health checks, and Tier 8 query profiling.
+
+### Full localization
+
+Tier 6 shipped `@lang` / `__()` and JSON locale files in views. v0.12 completes the stack across HTTP, validation, mail, and notifications.
+
+#### P0 — Must ship
+
+- [x] **Locale middleware** — `SetLocale` reads `Accept-Language`, session, or user preference; exposes active locale on the request
+- [x] **Fallback locale chain** — `config/app.ts` `locale`, `fallback_locale`, and optional `faker_locale` for factories
+- [x] **Nested keys + pluralization** — `trans('messages.items', { count: 3 })` with ICU-style plural rules in JSON/TS locale files
+- [x] **Framework message catalogs** — translated validation, auth, and pagination strings out of the box
+- [x] **Cross-channel translation** — `__()` in mail, notifications, and queued job payloads; locale passed through `Mailable` / `Notification`
+
+#### P1 — Strong want
+
+- [x] **Per-user locale** — store preference on the user model; middleware resolves authenticated locale
+- [x] **Date/number/currency formatting** — `formatDate()`, `formatNumber()`, `formatCurrency()` helpers wired to active locale
+- [x] **Localized route prefixes** — optional `/{locale}/…` route group with `URL::defaults(['locale' => …])` style helpers
+- [x] **`tyravel lang:publish` / `lang:missing`** — scaffold locale files and report untranslated keys in CI
+
+### Optional admin panel
+
+Ship as an **optional** package (`@tyravel/admin`) — not a required core dependency. Goal: CRUD back-office for internal tools, not a Filament competitor.
+
+#### P0 — Must ship
+
+- [x] **`tyravel admin:install`** — opt-in routes, layout, auth gate (`can:access-admin` or config), and `.tyr` resource views
+- [x] **Resource CRUD** — list / show / create / edit / delete generated from Eloquent-style models
+- [x] **Filters, search, and pagination** — query-builder-driven index tables
+- [x] **Policy integration** — respect `@tyravel/auth` policies on admin actions
+
+#### P1 — Strong want
+
+- [x] **Relation fields** — belongs-to selects, has-many inline tables on edit forms
+- [x] **Bulk actions** — delete / export selected rows
+- [x] **Dashboard stub** — health summary, queue depth, recent failed jobs
+
+#### P2 — If scope allows
+
+- [x] **Custom field types** — datetime, JSON, file upload via storage disk
+- [x] **Audit log** — who changed what on admin-managed records
+
+### Advanced monitoring & debugging
+
+Laravel Telescope / Debugbar–shaped DX, TypeScript-native. Builds on `HealthChecker`, `QueryProfiler`, and the debug exception handler.
+
+#### P0 — Must ship
+
+- [x] **`@tyravel/debug` package** — request timeline: HTTP, queries, cache, queue dispatches, broadcasts, mail/notifications
+- [x] **Dev debug bar** — middleware injects collapsible toolbar (or `/__debug` JSON panel) gated to `APP_DEBUG`
+- [x] **Slow query + N+1 warnings** — threshold config; surface in debug bar and structured logs
+- [x] **`tyravel debug:clear`** — prune stored debug entries
+
+#### P1 — Strong want
+
+- [x] **Request replay metadata** — copy curl / fetch snippet from debug entry
+- [x] **OpenTelemetry exporter** — optional OTEL span export for production (no debug bar)
+- [x] **Broadcasting scaffold fix** — channel rules use full `private-` / `presence-` prefixes to match Echo auth payloads
+
+#### P2 — If scope allows
+
+- [x] **Job / event timeline** — correlate queued work with the HTTP request that dispatched it
+- [x] **`tyravel debug:watch`** — tail recent entries during `tyravel serve`
+
+## Tier 13 — AI-native platform (v0.13.0)
+
+First-class vector search, RAG workflows, and agent tooling. **No unified LLM provider interface** — apps use native TypeScript SDKs (`openai`, `@anthropic-ai/sdk`, etc.) directly; Tyravel focuses on data layer, retrieval, orchestration, and MCP.
+
+### Vector database
+
+#### P0 — Must ship
+
+- [ ] **`@tyravel/vector` package** — embedding storage and similarity search API
+- [ ] **pgvector driver** — `vector` column blueprint, migration helper, cosine / L2 / inner-product operators via `@tyravel/database-pg`
+- [ ] **`VectorSearch` query API** — `Model.similarTo(embedding, { limit, threshold })` and `scopeNearest()` on query builder
+- [ ] **Chunk + embed pipeline** — `tyravel vector:embed` command; queue-backed batch embedding jobs
+
+#### P1 — Strong want
+
+- [ ] **SQLite vec / in-memory driver** — local dev and tests without Postgres
+- [ ] **Hybrid search** — combine vector similarity with full-text / `where` filters
+- [ ] **Metadata filters** — JSON column predicates alongside vector distance
+
+#### P2 — If scope allows
+
+- [ ] **Qdrant / Pinecone adapters** — external vector store drivers for apps that outgrow pgvector
+- [ ] **Embedding cache** — deduplicate embed calls via `@tyravel/cache`
+
+### RAG
+
+#### P0 — Must ship
+
+- [ ] **Document ingestion** — load plain text, markdown, and PDF into chunked records with source attribution
+- [ ] **Retrieval helper** — `Rag.retrieve(query, { topK, minScore })` returns ranked chunks ready for prompt assembly
+- [ ] **Prompt templates** — `.tyr` or TS templates for grounded Q&A with citation placeholders
+- [ ] **Example app** — `examples/rag` with ingest → embed → ask flow using a native SDK in the app layer
+
+#### P1 — Strong want
+
+- [ ] **Conversation memory** — session-scoped message history stored in database
+- [ ] **Re-ranking step** — optional second-pass scoring hook before prompt injection
+- [ ] **Streaming responses** — SSE / chunked `Response` integration for token streams from app-level SDK calls
+
+### MCP & agent ergonomics
+
+#### P0 — Must ship
+
+- [ ] **`tyravel-mcp` package** — MCP server exposing framework capabilities: routes, models, config keys, artisan commands, and docs index
+- [ ] **Capability manifest** — machine-readable index of facades, CLI commands, and stable package exports (feeds agents and IDE tooling)
+- [ ] **`tyravel make:tool`** — scaffold MCP tool handlers that call app services
+
+#### P1 — Strong want
+
+- [ ] **Agent-safe scaffolds** — `tyravel make:rag-resource` pairs model + vector migration + ingest job
+- [ ] **Prompt stubs in CLI** — `tyravel new --ai` adds RAG example routes and vector config
+
+#### P2 — If scope allows
+
+- [ ] **Cursor / Claude Code rules export** — generate project-specific agent rules from the capability manifest
+
+## Tier 14 — Infrastructure depth (v0.14.0)
+
+Deepen cache, notifications, and testing beyond the v0.1 foundations (`@tyravel/cache`, `@tyravel/notifications`, `@tyravel/testing`). Production polish, not greenfield packages.
+
+### Cache
+
+#### P0 — Must ship
+
+- [ ] **Taggable cache** — `Cache.tags(['posts', 'user:1']).flush()` across drivers that support it
+- [ ] **Cache events** — `cache:hit`, `cache:miss`, `cache:write` hooks for debug bar and metrics
+- [ ] **Memcached driver** — `@tyravel/cache-memcached` production adapter
+- [ ] **HTTP cache headers** — middleware for `ETag`, `Cache-Control`, and `304` short-circuit on safe routes
+
+#### P1 — Strong want
+
+- [ ] **Stampede protection** — `Cache::remember()` lock wrapper (extends existing cache-lock primitive)
+- [ ] **DynamoDB / Upstash drivers** — serverless-friendly cache backends
+- [ ] **Redis cluster / sentinel config** — connection options on `@tyravel/cache` Redis store
+
+#### P2 — If scope allows
+
+- [ ] **Response cache middleware** — full-page cache for anonymous GET routes
+- [ ] **Model attribute caching** — opt-in `remember()` on expensive computed attributes
+
+### Notifications
+
+#### P0 — Must ship
+
+- [ ] **Slack + webhook channels** — first-party notification drivers beyond mail and database
+- [ ] **Notification batching** — `Notification::sendNow()` vs queued; batch digest notifications
+- [ ] **Failed notification handling** — dead-letter queue entry + `tyravel notification:retry`
+
+#### P1 — Strong want
+
+- [ ] **Database notification UI helpers** — mark read / unread, pagination helpers for in-app bell
+- [ ] **Broadcast notification channel** — push real-time notification events over Echo
+- [ ] **SMS driver stub** — Twilio-compatible adapter pattern in docs + example
+
+### Testing helpers
+
+#### P0 — Must ship
+
+- [ ] **Mail / notification fakes** — `Mail.fake()`, `Notification.fake()` with assertion helpers
+- [ ] **Broadcast fake** — assert events dispatched to channels without a socket server
+- [ ] **Database transactions per test** — automatic `begin` / `rollback` wrapper in `@tyravel/testing`
+- [ ] **Time travel** — `travel(2).days()` for testing scheduled jobs and token expiry
+
+#### P1 — Strong want
+
+- [ ] **HTTP test sugar** — `actingAs(user)`, `withSession()`, `withCsrf()` on test client
+- [ ] **Factory relationships** — `UserFactory.withPosts(3)` style nested factory states
+- [ ] **Snapshot assertions** — JSON and HTML snapshot helpers with stable diff output
+
+#### P2 — If scope allows
+
+- [ ] **Parallel test runner docs** — vitest workspace guidance for large Tyravel apps
+- [ ] **Pest-style API** — optional thin wrapper for describe/it ergonomics (not a hard dependency)
+
+## Tier 15 — Core surface polish (v0.15.0)
+
+Final API pass on the three surfaces developers touch daily — models, routes, and views — before the 1.0 stability freeze.
+
+### Models
+
+#### P0 — Must ship
+
+- [ ] **Route model binding** — implicit `{post}` resolution with 404 on missing records; explicit `Route.bind()` customization
+- [ ] **API resources maturity** — nested resources, conditional attributes, pagination meta; promote to stable in `STABILITY.md`
+- [ ] **Global scopes** — `Model.addGlobalScope()` / `withoutGlobalScope()` with soft-delete integration
+- [ ] **Custom cast authoring** — documented `Cast` interface for project-specific types
+
+#### P1 — Strong want
+
+- [ ] **Prunable models** — `tyravel model:prune` for models with `prunable()` definition
+- [ ] **Model:uuid / ulid** — trait + migration helper for non-incrementing keys
+- [ ] **Lazy loading prevention** — dev-mode exception on unguarded relation access (opt-in)
+
+### Routes
+
+#### P0 — Must ship
+
+- [ ] **Named route URL generation** — `route('posts.show', { post: 1 })` with type-safe params where possible
+- [ ] **Signed URLs** — `URL.signed()` / `URL.temporarySigned()` for expiring links
+- [ ] **Route caching** — `tyravel route:cache` / `route:clear` for production boot performance
+- [ ] **Improved `route:list`** — filters by middleware, domain, and controller; JSON output for tooling
+
+#### P1 — Strong want
+
+- [ ] **Route groups in TypeScript** — `Route.group({ prefix, middleware }, () => { … })` with inferred name prefixes
+- [ ] **Rate limit per route** — fluent `->throttle('api')` on individual routes
+- [ ] **`tyravel make:controller --api`** — invokable + resource controller scaffolds aligned with binding
+
+### Views
+
+#### P0 — Must ship
+
+- [ ] **Component props inference** — generated or hand-authored prop types flow into `@props` and `View.render<T>()`
+- [ ] **Stricter `view:lint` defaults** — unclosed directives and missing components fail CI in strict mode
+- [ ] **Production compile defaults** — `compiled: true` enforced in production boot with clear error when cache is cold
+
+#### P1 — Strong want
+
+- [ ] **View component docs export** — `tyravel view:catalog --json` for design-system tooling
+- [ ] **Partial reload helpers** — Turbo/HTMX-friendly fragment response helpers building on `@fragment`
+- [ ] **Broadcast channel scaffold** — `routes/channels.ts` uses `private-` prefix patterns matching Echo
+
+### v0.15 closeout
+
+- [ ] **Stable API audit** — every public export in `STABILITY.md` reviewed; experimental items promoted or cut
+- [ ] **Deprecation sweep** — remove deprecated APIs slated for 1.0; document migration in CHANGELOG
+- [ ] **0.x → 1.0 migration guide** — in-repo guide for upgrading apps on 0.11–0.15
+
+## v1.0.0 — Documentation & semver strict
+
+Tyravel **1.0.0** is the first semver-strict era (see [STABILITY.md](STABILITY.md)). Feature work for 1.0 lands in Tiers 12–15; **1.0 itself is the full documentation release**.
+
+### Documentation (primary 1.0 deliverable)
+
+- [ ] **Hosted documentation site** — public docs beyond in-repo VitePress; versioned for 1.0
+- [ ] **Complete package reference** — every `@tyravel/*` package with API tables, config keys, and CLI commands
+- [ ] **Tutorial track** — zero-to-deploy: `tyravel new` → auth → queue → broadcasting → deploy
+- [ ] **Cookbook** — recipes for RAG, admin panel, real-time UI, multi-locale apps, and testing patterns
 - [ ] **Ecosystem guide** — how to publish and maintain third-party `@tyravel/*` packages
+
+### 1.0 gate
+
+- [ ] **No experimental APIs in core facades** — either stable or removed
+- [ ] **LTS support policy** — documented support window for 1.x
+- [ ] **Security disclosure process** — `SECURITY.md` with reporting instructions
+
+## Tier X — Ongoing
+
+Items not tied to a version number. Land when useful; do not block 1.0.
+
+- [ ] **Additional OAuth / social providers** — community drivers beyond built-ins
+- [ ] **Socket.io server guide** — first-party or recommended companion server for `@tyravel/broadcasting-socket-io`
+- [ ] **Performance benchmarks** — published baseline for HTTP, ORM, and view compile throughput
 
 ## Shipped in v0.1.0
 

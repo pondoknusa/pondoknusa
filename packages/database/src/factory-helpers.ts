@@ -1,7 +1,17 @@
 let sequence = 0;
+let factoryLocale = 'en';
 
 export function resetFactoryHelpers(): void {
   sequence = 0;
+  factoryLocale = 'en';
+}
+
+export function setFactoryLocale(locale: string): void {
+  factoryLocale = locale;
+}
+
+export function getFactoryLocale(): string {
+  return factoryLocale;
 }
 
 export function fakeSequence(): number {
@@ -27,4 +37,8 @@ export function fakeText(wordCount = 3): string {
   return Array.from({ length: wordCount }, (_, index) => `word${fakeSequence() + index}`).join(
     ' ',
   );
+}
+
+export function fakeLocalizedDate(locale = factoryLocale): string {
+  return new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date());
 }

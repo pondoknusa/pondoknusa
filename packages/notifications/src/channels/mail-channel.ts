@@ -10,6 +10,9 @@ export class MailChannel {
       throw new Error(`Notification ${notification.id()} does not implement toMail().`);
     }
     const message = await notification.toMail(notifiable);
+    if (notification.locale) {
+      message.locale = notification.locale;
+    }
     const address = notifiable.routeNotificationForMail?.();
     const recipient =
       typeof address === 'string' ? address : address?.address;

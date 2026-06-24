@@ -19,6 +19,7 @@ import {
 } from '../stubs-ecosystem.js';
 import {
   appConfig,
+  defaultLocaleFile,
   databaseConfig,
   databaseSeeder,
   appServiceProvider,
@@ -78,6 +79,7 @@ export class NewCommand extends Command {
     await writeFile(projectPath(targetDir, 'config/app.ts'), appConfig(name));
     await writeFile(projectPath(targetDir, 'config/database.ts'), databaseConfig(projectOptions));
     await writeFile(projectPath(targetDir, 'config/views.ts'), viewsConfig());
+    await writeFile(projectPath(targetDir, 'lang/en.json'), `${defaultLocaleFile()}\n`);
     await writeFile(projectPath(targetDir, 'config/queue.ts'), queueConfig(projectOptions));
     await writeFile(projectPath(targetDir, 'config/events.ts'), eventsConfig());
     await writeFile(

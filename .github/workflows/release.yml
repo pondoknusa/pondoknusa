@@ -45,6 +45,7 @@ jobs:
             @tyravel/support
             @tyravel/config
             @tyravel/log
+            @tyravel/locale
             @tyravel/http
             @tyravel/validation
             @tyravel/database
@@ -69,6 +70,8 @@ jobs:
             @tyravel/storage-supabase
             @tyravel/mail
             @tyravel/notifications
+            @tyravel/admin
+            @tyravel/debug
             @tyravel/testing
             @tyravel/core
             @tyravel/auth-oauth

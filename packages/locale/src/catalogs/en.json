@@ -1,0 +1,32 @@
+{
+  "validation": {
+    "required": "The :attribute field is required.",
+    "email": "The :attribute field must be a valid email address.",
+    "string": "The :attribute field must be a string.",
+    "integer": "The :attribute field must be an integer.",
+    "numeric": "The :attribute field must be a number.",
+    "boolean": "The :attribute field must be true or false.",
+    "array": "The :attribute field must be an array.",
+    "min": {
+      "string": "The :attribute field must be at least :min characters.",
+      "numeric": "The :attribute field must be at least :min."
+    },
+    "max": {
+      "string": "The :attribute field must not exceed :max characters.",
+      "numeric": "The :attribute field must not exceed :max."
+    },
+    "confirmed": "The :attribute confirmation does not match.",
+    "in": "The selected :attribute is invalid.",
+    "unique": "The :attribute has already been taken."
+  },
+  "auth": {
+    "failed": "These credentials do not match our records.",
+    "password": "The provided password is incorrect.",
+    "throttle": "Too many login attempts. Please try again in :seconds seconds."
+  },
+  "pagination": {
+    "previous": "&laquo; Previous",
+    "next": "Next &raquo;",
+    "showing": "Showing :from to :to of :total results"
+  }
+}

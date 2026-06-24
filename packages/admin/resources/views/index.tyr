@@ -1,0 +1,72 @@
+@layout('admin::layout')
+
+@section('title')
+  {{ resource.label }}
+@endsection
+
+@section('content')
+  <div class="admin-header">
+    <h2>{{ resource.label }}</h2>
+    <a class="btn btn-primary" href="{{ prefix }}/{{ resource.key }}/create">Create</a>
+  </div>
+
+  <div class="admin-card">
+    <form class="toolbar" method="GET" action="{{ prefix }}/{{ resource.key }}">
+      <input type="search" name="search" value="{{ search }}" placeholder="Search…">
+      @foreach (filters as filter)
+        @if (filter.options.length > 0)
+          <select name="filter_{{ filter.name }}">
+            <option value="">{{ filter.label }}</option>
+            @foreach (filter.options as option)
+              <option value="{{ option.value }}" @selected(filter.value === option.value)>{{ option.label }}</option>
+            @endforeach
+          </select>
+        @endif
+      @endforeach
+      <button class="btn" type="submit">Filter</button>
+    </form>
+
+    <form method="POST" action="{{ prefix }}/{{ resource.key }}/bulk">
+      @csrf
+      <table>
+        <thead>
+          <tr>
+            <th><input type="checkbox" onclick="document.querySelectorAll('input[name=\'ids[]\']').forEach((el) => { el.checked = this.checked; })"></th>
+            @foreach (columns as column)
+              <th>{{ column.label }}</th>
+            @endforeach
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach (rows as row)
+            <tr>
+              <td><input type="checkbox" name="ids[]" value="{{ row.id }}"></td>
+              @foreach (row.cells as cell)
+                <td>{{ cell.value }}</td>
+              @endforeach
+              <td>
+                <a class="btn" href="{{ prefix }}/{{ resource.key }}/{{ row.id }}">View</a>
+                <a class="btn" href="{{ prefix }}/{{ resource.key }}/{{ row.id }}/edit">Edit</a>
+              </td>
+            </tr>
+          @endforeach
+        </tbody>
+      </table>
+      <div class="toolbar">
+        <button class="btn btn-danger" type="submit">Delete selected</button>
+        <button class="btn" formaction="{{ prefix }}/{{ resource.key }}/bulk-export" type="submit">Export selected</button>
+      </div>
+    </form>
+
+    <div class="pagination">
+      @if (paginator.currentPage > 1)
+        <a class="btn" href="{{ prefix }}/{{ resource.key }}?page={{ paginator.currentPage - 1 }}&search={{ search }}">Previous</a>
+      @endif
+      <span>Page {{ paginator.currentPage }} of {{ paginator.lastPage }}</span>
+      @if (paginator.currentPage < paginator.lastPage)
+        <a class="btn" href="{{ prefix }}/{{ resource.key }}?page={{ paginator.currentPage + 1 }}&search={{ search }}">Next</a>
+      @endif
+    </div>
+  </div>
+@endsection

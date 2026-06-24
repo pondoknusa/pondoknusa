@@ -47,14 +47,34 @@ export const schema = s.object({
   name: s.string({ required: true, minLength: 1 }),
   debug: s.boolean(),
   url: s.string({ url: true }),
+  locale: s.string({ minLength: 2 }),
+  fallback_locale: s.string({ minLength: 2 }),
+  faker_locale: s.string({ minLength: 2 }),
 });
 
 export default {
   name: env('APP_NAME', '${name}'),
   debug: env('APP_DEBUG', true),
   url: env('APP_URL', 'http://127.0.0.1:3000'),
+  locale: env('APP_LOCALE', 'en'),
+  fallback_locale: env('APP_FALLBACK_LOCALE', 'en'),
+  faker_locale: env('APP_FAKER_LOCALE', 'en'),
+  locales_path: 'lang',
+  available_locales: ['en'],
 } as const;
 `;
+}
+
+export function defaultLocaleFile(): string {
+  return JSON.stringify(
+    {
+      messages: {
+        welcome: 'Welcome to Tyravel',
+      },
+    },
+    null,
+    2,
+  );
 }
 
 export function viewsConfig(): string {
@@ -62,6 +82,8 @@ export function viewsConfig(): string {
   path: 'resources/views',
   extension: '.tyr',
   compiledPath: 'storage/framework/views',
+  locale: 'en',
+  localesPath: 'lang',
 } as const;
 `;
 }
@@ -1170,6 +1192,141 @@ await app.boot();
 
 const kernel = new HttpKernel(app);
 await serve(kernel);
+`;
+}
+
+export function adminConfig(): string {
+  return `import { User } from '../src/models/User.js';
+
+export default {
+  enabled: true,
+  prefix: '/admin',
+  middleware: ['admin'],
+  accessAbility: 'accessAdmin',
+  accessPolicyModel: User,
+  perPage: 15,
+  auditLog: {
+    enabled: true,
+    persistPath: '.tyravel/admin-audit.json',
+    maxEntries: 500,
+  },
+} as const;
+`;
+}
+
+export function adminRoutes(): string {
+  return `import { Route } from '@tyravel/core';
+import { AdminController, registerAdminRoutes } from '@tyravel/admin';
+
+registerAdminRoutes(Route, AdminController);
+`;
+}
+
+export function adminResources(): string {
+  return `import { defineAdminResource, type AdminRegistry } from '@tyravel/admin';
+import { User } from '../models/User.js';
+import { UserPolicy } from '../policies/UserPolicy.js';
+
+export function registerAdminResources(registry: AdminRegistry): void {
+  registry.register(
+    defineAdminResource('users', User, {
+      label: 'Users',
+      policy: UserPolicy,
+      fields: [
+        { name: 'id', label: 'ID', sortable: true },
+        { name: 'name', label: 'Name', searchable: true, sortable: true },
+        { name: 'email', label: 'Email', type: 'email', searchable: true, sortable: true },
+      ],
+    }),
+  );
+}
+`;
+}
+
+export function adminPanelServiceProvider(): string {
+  return `import { ServiceProvider } from '@tyravel/core';
+import { AdminServiceProvider } from '@tyravel/admin';
+
+export class AdminPanelServiceProvider extends ServiceProvider {
+  private readonly admin = new AdminServiceProvider(this.app);
+
+  override register(): void {
+    this.admin.register();
+  }
+
+  override boot(): void {
+    this.admin.boot();
+  }
+}
+`;
+}
+
+export function userPolicyWithAdmin(): string {
+  return `import { Policy } from '@tyravel/auth';
+import type { Authenticatable } from '@tyravel/auth';
+
+export class UserPolicy extends Policy {
+  accessAdmin(user: Authenticatable): boolean {
+    return user.getAuthIdentifier() !== undefined;
+  }
+
+  viewAny(user: Authenticatable): boolean {
+    return this.accessAdmin(user);
+  }
+
+  view(user: Authenticatable, _model: unknown): boolean {
+    return this.accessAdmin(user);
+  }
+
+  create(user: Authenticatable): boolean {
+    return this.accessAdmin(user);
+  }
+
+  update(user: Authenticatable, _model: unknown): boolean {
+    return this.accessAdmin(user);
+  }
+
+  delete(user: Authenticatable, _model: unknown): boolean {
+    return this.accessAdmin(user);
+  }
+}
+`;
+}
+
+export function debugConfig(): string {
+  return `export default {
+  enabled: true,
+  path: '/__debug',
+  injectBar: true,
+  maxEntries: 50,
+  persist: true,
+  persistPath: '.tyravel/debug-entries.json',
+  slowQueryMs: 100,
+  nPlusOneThreshold: 3,
+  otel: {
+    enabled: false,
+    endpoint: 'http://127.0.0.1:4318/v1/traces',
+    serviceName: 'tyravel',
+  },
+} as const;
+`;
+}
+
+export function debugPanelServiceProvider(): string {
+  return `import { ServiceProvider } from '@tyravel/core';
+import { DebugServiceProvider } from '@tyravel/debug';
+
+export class DebugPanelServiceProvider extends ServiceProvider {
+  private readonly debug = new DebugServiceProvider(this.app);
+
+  override async register(): Promise<void> {
+    await this.debug.register();
+  }
+
+  override boot(): void {
+    this.debug.boot();
+  }
+}
 `;
 }
 

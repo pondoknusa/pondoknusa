@@ -9,6 +9,7 @@ export abstract class Mailable {
   connection?: string;
   queue?: string;
   delaySeconds?: number;
+  locale?: string;
 
   async toMessage(): Promise<MailMessage> {
     return this.build();

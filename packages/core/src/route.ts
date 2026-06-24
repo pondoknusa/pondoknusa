@@ -1,3 +1,4 @@
+import { localizedRouteGroup } from '@tyravel/locale';
 import type {
   Groupable,
   MiddlewareGroupable,
@@ -35,6 +36,7 @@ export interface RouteFacade {
   prefix(prefix: string): MiddlewareGroupable;
   namePrefix(prefix: string): MiddlewareGroupable;
   group(callback: (routes: Groupable) => void): Routable;
+  localize(callback: (routes: Groupable) => void): Routable;
   get(pattern: string, handler: RouteTarget): Routable;
   post(pattern: string, handler: RouteTarget): Routable;
   put(pattern: string, handler: RouteTarget): Routable;
@@ -50,6 +52,10 @@ export const Route: RouteFacade = {
   prefix: (prefix: string): MiddlewareGroupable => router().prefix(prefix),
   namePrefix: (prefix: string): MiddlewareGroupable => router().namePrefix(prefix),
   group: (callback: (routes: Groupable) => void): Routable => router().group(callback),
+  localize: (callback: (routes: Groupable) => void): Routable => {
+    localizedRouteGroup(router(), {}, callback);
+    return router();
+  },
   get: (pattern: string, handler: RouteTarget): Routable =>
     router().get(pattern, toHandler(handler)),
   post: (pattern: string, handler: RouteTarget): Routable =>

@@ -17,6 +17,11 @@ export type {
   ValidationRules,
 } from './rules.js';
 export {
+  setValidationMessageResolver,
+  validationMessage,
+} from './messages.js';
+export type { ValidationMessageResolver } from './messages.js';
+export {
   validateRequest,
   ValidationException,
   Validator,

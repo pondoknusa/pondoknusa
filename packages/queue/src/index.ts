@@ -64,4 +64,9 @@ export type {
   RedisQueueConnectionConfig,
   SyncQueueConnectionConfig,
 } from './types.js';
-export { QueueWorker } from './worker.js';
+export {
+  QueueWorker,
+  setQueueWorkerProcessHook,
+  type QueueWorkerProcessHook,
+  type QueueWorkerProcessResult,
+} from './worker.js';

@@ -64,9 +64,16 @@ describe('ChannelRegistry', () => {
     const registry = new ChannelRegistry();
     registry.register('public', () => true);
     registry.register('private-user.{id}', (user, id) => user === `user:${id}`);
+    registry.register('private-App.Models.User.{id}', (user, id) => user === `user:${id}`);
+    registry.register('presence-App.Room.{roomId}', (user, roomId) =>
+      Boolean(user) && roomId === 'lobby',
+    );
 
     expect(await registry.authorize('public', null)).toBe(true);
     expect(await registry.authorize('private-user.7', 'user:7')).toBe(true);
     expect(await registry.authorize('private-user.7', 'user:9')).toBe(false);
+    expect(await registry.authorize('private-App.Models.User.7', 'user:7')).toBe(true);
+    expect(await registry.authorize('presence-App.Room.lobby', 'user:1')).toBe(true);
+    expect(await registry.authorize('presence-App.Room.other', 'user:1')).toBe(false);
   });
 });

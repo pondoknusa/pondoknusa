@@ -1,0 +1,71 @@
+@layout('admin::layout')
+
+@section('title')
+  {{ mode === 'create' ? 'Create' : 'Edit' }} {{ resource.label }}
+@endsection
+
+@section('content')
+  <div class="admin-header">
+    <h2>{{ mode === 'create' ? 'Create' : 'Edit' }} {{ resource.label }}</h2>
+    <a class="btn" href="{{ prefix }}/{{ resource.key }}">Back</a>
+  </div>
+
+  <div class="admin-card">
+    <form method="POST" action="{{ action }}" enctype="multipart/form-data">
+      @csrf
+      @foreach (fields as field)
+        <div class="field">
+          <label for="{{ field.name }}">{{ field.label }}</label>
+          @if (field.type === 'boolean')
+            <input id="{{ field.name }}" name="{{ field.name }}" type="checkbox" value="1" @checked(field.checked)>
+          @elseif (field.type === 'belongs-to')
+            <select id="{{ field.name }}" name="{{ field.name }}">
+              <option value="">—</option>
+              @foreach (field.options as option)
+                <option value="{{ option.value }}" @selected(field.value === String(option.value))>{{ option.label }}</option>
+              @endforeach
+            </select>
+          @elseif (field.type === 'file')
+            @if (field.value)
+              <p><a href="{{ field.value }}" target="_blank" rel="noopener">Current file</a></p>
+            @endif
+            <input id="{{ field.name }}" name="{{ field.name }}" type="file">
+          @elseif (field.type === 'json')
+            <textarea id="{{ field.name }}" name="{{ field.name }}" rows="6">{{ field.value }}</textarea>
+          @elseif (field.type === 'number')
+            <input id="{{ field.name }}" name="{{ field.name }}" type="number" value="{{ field.value }}">
+          @elseif (field.type === 'email')
+            <input id="{{ field.name }}" name="{{ field.name }}" type="email" value="{{ field.value }}">
+          @elseif (field.type === 'datetime')
+            <input id="{{ field.name }}" name="{{ field.name }}" type="datetime-local" value="{{ field.value }}">
+          @else
+            <input id="{{ field.name }}" name="{{ field.name }}" type="text" value="{{ field.value }}">
+          @endif
+        </div>
+      @endforeach
+      @foreach (hasMany as table)
+        <h3>{{ table.label }}</h3>
+        <table>
+          <thead>
+            <tr>
+              @foreach (table.columns as column)
+                <th>{{ column.label }}</th>
+              @endforeach
+            </tr>
+          </thead>
+          <tbody>
+            @foreach (table.rows as row)
+              <tr>
+                @foreach (row.cells as cell)
+                  <td>{{ cell.value }}</td>
+                @endforeach
+              </tr>
+            @endforeach
+          </tbody>
+        </table>
+      @endforeach
+
+      <button class="btn btn-primary" type="submit">{{ mode === 'create' ? 'Create' : 'Save' }}</button>
+    </form>
+  </div>
+@endsection

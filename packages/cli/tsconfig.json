@@ -10,8 +10,10 @@
     { "path": "../support" },
     { "path": "../auth-oauth" },
     { "path": "../config" },
+    { "path": "../locale" },
     { "path": "../core" },
     { "path": "../database" },
+    { "path": "../debug" },
     { "path": "../queue" },
     { "path": "../views" },
     { "path": "../repl" }

@@ -10,6 +10,7 @@ export class TyravelRequest {
   ) {}
 
   session?: SessionContract;
+  locale?: string;
   user: unknown = null;
   tokenAbilities?: string[];
   tokenId?: number;

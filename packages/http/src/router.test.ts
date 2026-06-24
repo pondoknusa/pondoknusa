@@ -107,6 +107,17 @@ describe('Router', () => {
     );
   });
 
+  it('applies url defaults when generating named routes', () => {
+    const router = new Router();
+
+    router.get('/:locale/posts/:slug', () => Response.text('ok')).name('posts.show');
+    router.setUrlDefaults({ locale: 'en' });
+
+    expect(router.url('posts.show', { slug: 'hello-world' })).toBe(
+      '/en/posts/hello-world',
+    );
+  });
+
   it('throws when no route matches', async () => {
     const router = new Router();
 

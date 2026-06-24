@@ -1,0 +1,37 @@
+{
+  "name": "@tyravel/locale",
+  "version": "0.11.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@tyravel/http": "0.11.0"
+  },
+  "files": [
+    "dist",
+    "src/catalogs"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "description": "Localization and translation for Tyravel",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thesimonharms/tyravel.git",
+    "directory": "packages/locale"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

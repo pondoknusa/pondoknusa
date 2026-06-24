@@ -151,6 +151,10 @@ export class ViewEngine {
     return this;
   }
 
+  getLocale(): string {
+    return this.localeCode;
+  }
+
   setLocale(locale: string): this {
     this.localeCode = locale;
     this.reloadLocale();

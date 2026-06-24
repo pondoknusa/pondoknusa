@@ -24,6 +24,7 @@
     "@tyravel/events": "0.11.0",
     "@tyravel/container": "0.11.0",
     "@tyravel/http": "0.11.0",
+    "@tyravel/locale": "0.11.0",
     "@tyravel/log": "0.11.0",
     "@tyravel/mail": "0.11.0",
     "@tyravel/notifications": "0.11.0",

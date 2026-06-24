@@ -1,5 +1,12 @@
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
-import { fakeEmail, fakeName, resetFactoryHelpers } from './factory-helpers.js';
+import {
+  fakeEmail,
+  fakeLocalizedDate,
+  fakeName,
+  getFactoryLocale,
+  resetFactoryHelpers,
+  setFactoryLocale,
+} from './factory-helpers.js';
 import { Factory } from './factory.js';
 import { Model } from './model.js';
 import { SqliteConnection } from './sqlite-connection.js';
@@ -58,6 +65,12 @@ describe('Factory', () => {
 
     const found = await User.find(user.getAttribute('id')!);
     expect(found?.getAttribute('name')).toBe(user.getAttribute('name'));
+  });
+
+  it('tracks faker locale for localized helpers', () => {
+    setFactoryLocale('fr-FR');
+    expect(getFactoryLocale()).toBe('fr-FR');
+    expect(fakeLocalizedDate()).toBeTruthy();
   });
 
   it('creates multiple models with count()', async () => {

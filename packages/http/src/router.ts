@@ -70,6 +70,7 @@ export class Router implements Routable {
   private namedRoutes = new Map<string, RouteDefinition>();
   private globalMiddleware: MiddlewareInput[] = [];
   private scopeStack: RouteScope[] = [];
+  private urlDefaults: RouteParams = {};
   private readonly middlewareRegistry: MiddlewareRegistry;
   private handlerNormalizer: (handler: RouteHandler) => RouteHandler = (handler) => handler;
 
@@ -204,14 +205,30 @@ export class Router implements Routable {
     }));
   }
 
+  setUrlDefaults(defaults: RouteParams): this {
+    this.urlDefaults = { ...defaults };
+    return this;
+  }
+
+  mergeUrlDefaults(defaults: RouteParams): this {
+    this.urlDefaults = { ...this.urlDefaults, ...defaults };
+    return this;
+  }
+
+  getUrlDefaults(): RouteParams {
+    return { ...this.urlDefaults };
+  }
+
   url(name: string, params: RouteParams = {}): string {
     const route = this.namedRoutes.get(name);
     if (!route) {
       throw new Error(`Named route not found: ${name}`);
     }
 
+    const merged = { ...this.urlDefaults, ...params };
+
     return route.pattern.replace(/:([A-Za-z0-9_]+)/g, (_, key: string) => {
-      const value = params[key];
+      const value = merged[key];
       if (value === undefined) {
         throw new Error(`Missing route parameter: ${key}`);
       }

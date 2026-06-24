@@ -28,6 +28,12 @@ import { ViewWatchCommand } from './commands/view-watch.js';
 import { MigrateCommand } from './commands/migrate.js';
 import { AuthInstallCommand } from './commands/auth-install.js';
 import { CryptoGenerateKeysCommand } from './commands/crypto-generate-keys.js';
+import { AdminInstallCommand } from './commands/admin-install.js';
+import { DebugClearCommand } from './commands/debug-clear.js';
+import { DebugInstallCommand } from './commands/debug-install.js';
+import { DebugWatchCommand } from './commands/debug-watch.js';
+import { LangMissingCommand } from './commands/lang-missing.js';
+import { LangPublishCommand } from './commands/lang-publish.js';
 import { CryptoInstallCommand } from './commands/crypto-install.js';
 import { OAuthClientCreateCommand } from './commands/oauth-client-create.js';
 import { OAuthInstallCommand } from './commands/oauth-install.js';
@@ -45,6 +51,12 @@ export function createKernel(): ConsoleKernel {
     new AuthInstallCommand(),
     new OAuthInstallCommand(),
     new OAuthClientCreateCommand(),
+    new LangPublishCommand(),
+    new LangMissingCommand(),
+    new AdminInstallCommand(),
+    new DebugInstallCommand(),
+    new DebugClearCommand(),
+    new DebugWatchCommand(),
     new CryptoInstallCommand(),
     new CryptoGenerateKeysCommand(),
     new ServeCommand(),

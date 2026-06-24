@@ -32,15 +32,30 @@ export class QueryBuilder<T extends Row = Row> {
   }
 
   where(column: string, operatorOrValue: WhereOperator | RowValue, value?: RowValue): this {
+    this.pushWhere(column, operatorOrValue, value, 'and');
+    return this;
+  }
+
+  orWhere(column: string, operatorOrValue: WhereOperator | RowValue, value?: RowValue): this {
+    this.pushWhere(column, operatorOrValue, value, 'or');
+    return this;
+  }
+
+  private pushWhere(
+    column: string,
+    operatorOrValue: WhereOperator | RowValue,
+    value: RowValue | undefined,
+    boolean: 'and' | 'or',
+  ): void {
     if (value === undefined) {
       this.wheres.push({
         type: 'basic',
         column,
         operator: '=',
         value: operatorOrValue,
-        boolean: 'and',
+        boolean,
       });
-      return this;
+      return;
     }
 
     this.wheres.push({
@@ -48,9 +63,8 @@ export class QueryBuilder<T extends Row = Row> {
       column,
       operator: operatorOrValue as WhereOperator,
       value,
-      boolean: 'and',
+      boolean,
     });
-    return this;
   }
 
   whereIn(column: string, values: RowValue[]): this {

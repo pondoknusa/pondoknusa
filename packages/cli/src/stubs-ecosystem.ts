@@ -114,12 +114,16 @@ export default {
 export function broadcastChannels(): string {
   return `import { Broadcast } from '@tyravel/core';
 
-Broadcast.channel('App.Models.User.{id}', (user, id) => {
+Broadcast.channel('private-App.Models.User.{id}', (user, id) => {
   if (!user || typeof user !== 'object' || !('id' in user)) {
     return false;
   }
 
   return String((user as { id: number | string }).id) === String(id);
+});
+
+Broadcast.channel('presence-App.Room.{roomId}', (user, roomId) => {
+  return Boolean(user) && String(roomId).length > 0;
 });
 `;
 }

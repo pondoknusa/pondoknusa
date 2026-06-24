@@ -16,6 +16,7 @@ export interface MailMessage {
   textView?: string;
   viewData?: Record<string, unknown>;
   tags?: string[];
+  locale?: string;
 }
 
 export interface ArrayMailConfig {

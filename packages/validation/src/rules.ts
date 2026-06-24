@@ -1,3 +1,5 @@
+import { validationMessage } from './messages.js';
+
 export type Rule = string | ValidationRule;
 
 export interface ValidationRule {
@@ -12,7 +14,7 @@ export function required(): ValidationRule {
   return {
     validate(value, field) {
       if (value === undefined || value === null || value === '') {
-        return `The ${field} field is required.`;
+        return validationMessage('validation.required', { attribute: field });
       }
       return undefined;
     },
@@ -26,7 +28,7 @@ export function email(): ValidationRule {
         return undefined;
       }
       if (typeof value !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-        return `The ${field} field must be a valid email address.`;
+        return validationMessage('validation.email', { attribute: field });
       }
       return undefined;
     },
@@ -40,7 +42,7 @@ export function minLength(min: number): ValidationRule {
         return undefined;
       }
       if (typeof value !== 'string' || value.length < min) {
-        return `The ${field} field must be at least ${min} characters.`;
+        return validationMessage('validation.min.string', { attribute: field, min });
       }
       return undefined;
     },
@@ -54,7 +56,7 @@ export function maxLength(max: number): ValidationRule {
         return undefined;
       }
       if (typeof value !== 'string' || value.length > max) {
-        return `The ${field} field must not exceed ${max} characters.`;
+        return validationMessage('validation.max.string', { attribute: field, max });
       }
       return undefined;
     },
@@ -69,7 +71,7 @@ export function integer(): ValidationRule {
       }
       const parsed = Number(value);
       if (!Number.isInteger(parsed)) {
-        return `The ${field} field must be an integer.`;
+        return validationMessage('validation.integer', { attribute: field });
       }
       return undefined;
     },
@@ -83,7 +85,7 @@ export function string(): ValidationRule {
         return undefined;
       }
       if (typeof value !== 'string') {
-        return `The ${field} field must be a string.`;
+        return validationMessage('validation.string', { attribute: field });
       }
       return undefined;
     },
@@ -98,13 +100,19 @@ export function min(minimum: number): ValidationRule {
       }
       if (typeof value === 'string') {
         if (value.length < minimum) {
-          return `The ${field} field must be at least ${minimum} characters.`;
+          return validationMessage('validation.min.string', {
+            attribute: field,
+            min: minimum,
+          });
         }
         return undefined;
       }
       const parsed = Number(value);
       if (!Number.isFinite(parsed) || parsed < minimum) {
-        return `The ${field} field must be at least ${minimum}.`;
+        return validationMessage('validation.min.numeric', {
+          attribute: field,
+          min: minimum,
+        });
       }
       return undefined;
     },
@@ -119,13 +127,19 @@ export function max(maximum: number): ValidationRule {
       }
       if (typeof value === 'string') {
         if (value.length > maximum) {
-          return `The ${field} field must not be greater than ${maximum} characters.`;
+          return validationMessage('validation.max.string', {
+            attribute: field,
+            max: maximum,
+          });
         }
         return undefined;
       }
       const parsed = Number(value);
       if (!Number.isFinite(parsed) || parsed > maximum) {
-        return `The ${field} field must not be greater than ${maximum}.`;
+        return validationMessage('validation.max.numeric', {
+          attribute: field,
+          max: maximum,
+        });
       }
       return undefined;
     },

@@ -127,7 +127,10 @@ export class Mailer {
     };
 
     if (this.viewEngine && (merged.htmlView || merged.textView)) {
-      merged = await renderMailViews(this.viewEngine, merged);
+      const locale = mailable instanceof Mailable
+        ? mailable.locale
+        : merged.locale;
+      merged = await renderMailViews(this.viewEngine, merged, { locale });
     }
 
     if (merged.to.length === 0) {

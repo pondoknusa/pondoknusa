@@ -91,6 +91,7 @@ export function mainEntry(options: NewProjectOptions): string {
     'CacheServiceProvider',
     'ConfigRepository',
     'ConfigServiceProvider',
+    'LocaleServiceProvider',
     'LogServiceProvider',
     'DatabaseServiceProvider',
     ...(options.redis ? ['RedisServiceProvider'] : []),
@@ -104,6 +105,8 @@ export function mainEntry(options: NewProjectOptions): string {
     'setBroadcastApplication',
     'setCacheApplication',
     'setEventApplication',
+    'setLangApplication',
+    'setUrlApplication',
     'setLogApplication',
     'setMailApplication',
     'setNotificationApplication',
@@ -129,6 +132,7 @@ export function mainEntry(options: NewProjectOptions): string {
     'app.register(EventServiceProvider);',
     'app.register(BroadcastServiceProvider);',
     'app.register(ViewServiceProvider);',
+    'app.register(LocaleServiceProvider);',
     'app.register(AppServiceProvider);',
   ];
 
@@ -141,6 +145,8 @@ import './routes/web.js';
 
 const app = new Application(import.meta.dir);
 setRouteApplication(app);
+setLangApplication(app);
+setUrlApplication(app);
 setViewApplication(app);
 setQueueApplication(app);
 setEventApplication(app);
@@ -299,6 +305,9 @@ REDIS_DB=0`
 APP_NAME=${name}
 APP_DEBUG=true
 APP_URL=http://127.0.0.1:3000
+APP_LOCALE=en
+APP_FALLBACK_LOCALE=en
+APP_FAKER_LOCALE=en
 
 ${dbLines}
 

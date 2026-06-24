@@ -16,6 +16,7 @@
     { "path": "../events" },
     { "path": "../container" },
     { "path": "../http" },
+    { "path": "../locale" },
     { "path": "../log" },
     { "path": "../mail" },
     { "path": "../notifications" },

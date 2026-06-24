@@ -5,6 +5,21 @@ import type { SerializedJobPayload } from './types.js';
 
 export type JobContinuer = (payload: SerializedJobPayload, queue?: string) => Promise<void>;
 
+export interface QueueWorkerProcessResult {
+  payload: SerializedJobPayload;
+  queue: string;
+  durationMs: number;
+  error?: unknown;
+}
+
+export type QueueWorkerProcessHook = (result: QueueWorkerProcessResult) => void | Promise<void>;
+
+let processHook: QueueWorkerProcessHook | undefined;
+
+export function setQueueWorkerProcessHook(hook: QueueWorkerProcessHook | undefined): void {
+  processHook = hook;
+}
+
 export interface QueueWorkerOptions {
   maxAttempts?: number;
   batchRepository?: BatchRepository;
@@ -22,6 +37,9 @@ export class QueueWorker {
     continuer?: JobContinuer,
     queueName = 'default',
   ): Promise<void> {
+    const start = performance.now();
+    let error: unknown;
+
     try {
       const job = this.registry.create(payload.job, payload.data);
       if (this.container) {
@@ -33,11 +51,21 @@ export class QueueWorker {
       if (payload.batchId && this.options.batchRepository) {
         await this.options.batchRepository.recordSuccessfulJob(payload.batchId);
       }
-    } catch (error) {
+    } catch (caught) {
+      error = caught;
       if (payload.batchId && this.options.batchRepository) {
         await this.options.batchRepository.recordFailedJob(payload.batchId);
       }
-      throw error;
+      throw caught;
+    } finally {
+      if (processHook) {
+        await processHook({
+          payload,
+          queue: queueName,
+          durationMs: performance.now() - start,
+          error,
+        });
+      }
     }
 
     if (payload.chain && payload.chain.length > 0 && continuer) {
