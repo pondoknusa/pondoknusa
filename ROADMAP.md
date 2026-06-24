@@ -227,6 +227,57 @@ Make Tyravel fully async by default: no sync fallbacks, no blocking I/O in the p
   - [x] `Queue.dispatch`, `Events.dispatch`, `Broadcast.dispatch` — async facades (pre-existing)
 - [x] **Supabase storage driver** — `@tyravel/storage-supabase` with bucket config, upload/download, and signed URLs via the Supabase Storage API
 
+## Tier 10 — Full-stack interactivity (v0.10.0)
+
+Ship a complete server-rendered UI + real-time client story. Tyravel already renders `.tyr` on the server (`View.render`, `Response.html`) and broadcasts events over Socket.io / Pusher (`@tyravel/broadcasting`, `/broadcasting/auth`). Tier 6 P7 added experimental streaming layouts and `@island` hydration hooks — Tier 10 turns that foundation into a production full-stack path and adds a Laravel Echo–style browser client.
+
+### Server-side rendering
+
+Move from “render HTML strings in controllers” to a first-class SSR workflow with optional progressive enhancement.
+
+#### P0 — Must ship
+
+- [ ] **SSR document shell** — `Response.ssr()` (or equivalent) wraps rendered views in a complete HTML document: `<head>` meta, `@vite` assets, and an injected hydration manifest script tag
+- [ ] **Hydration runtime** — `@tyravel/ssr` (or `@tyravel/views/client`) browser package that reads `data-tyr-island` markers and mounts island components from a client registry
+- [ ] **Island registry API** — `registerIsland('counter', Counter)` on the client; server `@island('counter', props)` maps to the same id
+- [ ] **Promote SSR APIs to stable** — graduate `View.renderStream()`, `@stream` / `@endstream`, `@island`, and the hydration manifest from experimental (see [STABILITY.md](STABILITY.md))
+- [ ] **SSR reference example** — extend `examples/hello-world` (or add `examples/ssr`) with at least one hydrated island and a streaming layout section
+
+#### P1 — Strong want
+
+- [ ] **Streaming SSR middleware** — first-class chunked `Response` integration so `View.renderStream()` flushes early shell HTML without manual async iteration in every controller
+- [ ] **SSR test helpers** — assert rendered HTML *and* hydration manifest contents in `@tyravel/testing` (`assertIsland`, `assertHydrationManifest`)
+- [ ] **`tyravel make:island`** — scaffold a paired server partial + client mount function with registry wiring
+
+#### P2 — If scope allows
+
+- [ ] **Island catalog** — extend `View.catalog()` with client-mount metadata for docs / IDE tooling
+- [ ] **Programmatic SSR** — `.tyr.ts` views participate in the island registry without a separate client file
+
+### Laravel Echo equivalent (`@tyravel/echo`)
+
+Browser-side channel subscriptions that mirror the server broadcasting API. Server-side broadcasting ships in Tier 8; this tier adds the missing client half.
+
+#### P0 — Must ship
+
+- [ ] **`@tyravel/echo` package** — TypeScript-first browser library published alongside core
+- [ ] **Channel API** — `echo.channel('orders')`, `echo.private('orders.${id}')`, `echo.join('chat')` with Laravel-compatible naming (`private-`, `presence-` prefixes)
+- [ ] **Event listeners** — `.listen('.OrderShipped', handler)` and `.stopListening()`; respect `broadcastAs()` dot-prefix convention
+- [ ] **Socket.io connector** — pairs with `@tyravel/broadcasting-socket-io` and Redis pub/sub; reads config from a small bootstrap snippet
+- [ ] **Pusher connector** — pairs with `@tyravel/broadcasting-pusher`; uses existing `/broadcasting/auth` endpoint for private/presence signing
+- [ ] **Auth transport** — cookie/session credentials on auth requests; CSRF token support for same-origin apps
+
+#### P1 — Strong want
+
+- [ ] **Presence events** — `.here()`, `.joining()`, `.leaving()`, `.error()` callbacks on presence channels
+- [ ] **Scaffold integration** — `tyravel new` / layout stub emits an `@echo` or `@vite` companion script that bootstraps Echo from `config/broadcasting.ts` values safe for the client (key, host, driver)
+- [ ] **Echo + views** — `@echo` directive or layout stack helper to load the Echo client bundle only on pages that need real-time updates
+
+#### P2 — If scope allows
+
+- [ ] **Typed channel events** — `EchoChannelEventMap` module augmentation for `.listen()` payload inference
+- [ ] **Reconnection & offline** — connector lifecycle hooks (`connected`, `disconnected`, `reconnecting`) and queued listeners while offline
+
 ## Tier X — Production-ready project
 
 Open-ended tier: done when Tyravel is a framework teams can adopt with confidence in production — not tied to a version number. Items land here when Tiers 1–7 are in place.
