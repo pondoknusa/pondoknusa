@@ -46,13 +46,12 @@ Build applications against these without expecting silent breakage in patch rele
 - Session/token auth, policies, queues, events, mail, notifications
 - Config loading, `env()` / `requiredEnv()`, and optional per-file `schema` validation
 - Core view features: layouts, components, stacks, form directives, compiled cache
+- SSR and progressive enhancement: `View.renderStream()`, `@stream` / `@endstream`, `@island`, `View.getHydrationManifest()`, `Response.ssr()`, `@tyravel/ssr` hydration runtime
 
 ### Experimental (may change in minors)
 
 Useful but evolving — read release notes when upgrading minors:
 
-- Streaming layouts (`View.renderStream()`, `@stream`)
-- Partial hydration (`@island`, `data-tyr-island`, hydration manifest)
 - Programmatic `.tyr.ts` views and `View.catalog()`
 - `tyravel shell` / REPL behavior
 - `ViewPropsMap` augmentation for typed view props

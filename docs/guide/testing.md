@@ -60,3 +60,26 @@ await test.drainQueue();
 ```
 
 Use `MAIL_MAILER=array` (or fakes) together with queue draining to assert outbound mail in feature tests.
+
+## SSR and hydration assertions
+
+When testing pages that use `@island`, capture the hydration manifest alongside the HTML:
+
+```typescript
+const view = await renderView(app, 'welcome', { name: 'Ada' });
+
+view.assertSee('Hello Ada');
+view.assertIsland('counter');
+view.assertHydrationManifest({
+  islands: [{ id: 'counter', html: expect.stringContaining('button'), props: { count: 0 } }],
+});
+```
+
+HTTP feature tests can assert the injected manifest on the full document:
+
+```typescript
+const response = await test.get('/');
+response.assertStatus(200);
+response.assertSee('data-tyr-island="counter"');
+response.assertSee('id="tyr-hydration"');
+```

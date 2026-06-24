@@ -53,6 +53,7 @@ Stable APIs are safe to build production applications on. Patch releases preserv
 | **Validation** | `Validator`, `validateRequest`, pipe rules |
 | **Config** | `env`, `envBool`, `envInt`, `requiredEnv`, `loadConfig`, `ConfigRepository`, `s` config schemas |
 | **Views** | `.tyr` directives documented through Tier 6 (layouts, components, stacks, forms, `@if`/`@foreach`, etc.) |
+| **SSR & hydration** | `View.renderStream()`, `@stream` / `@endstream`, `@island` / `@endisland`, `View.getHydrationManifest()`, `data-tyr-island` markers, `Response.ssr()` / `buildSsrDocument()`, `@tyravel/ssr` (`registerIsland`, `hydrate`, `readManifestFromDocument`), `@tyravel/testing` `assertIsland` / `assertHydrationManifest` |
 | **Queue & events** | Job dispatch, workers, listeners, subscribers |
 | **Auth** | Session guard, API tokens, `Gate`, password reset, OAuth providers |
 | **CLI** | Commands listed in the root README (`tyravel new`, `serve`, `migrate`, `make:*`, `queue:*`, `view:*`, etc.) |
@@ -64,7 +65,7 @@ Experimental APIs are shipped and tested but may change in a minor release witho
 
 | Area | Experimental surface |
 |------|----------------------|
-| **Views (P7)** | `View.renderStream()`, `@stream` / `@endstream`, `data-tyr-island` hydration manifest, programmatic `.tyr.ts` views, `View.catalog()` |
+| **Views (P7)** | Programmatic `.tyr.ts` views, `View.catalog()` |
 | **DX** | `tyravel shell` / `@tyravel/repl` facade loading behavior |
 | **Bus** | Auto-discovered command/provider conventions (paths and naming may evolve) |
 | **Typed view props** | `ViewPropsMap` module augmentation pattern |

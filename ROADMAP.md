@@ -240,7 +240,7 @@ Move from “render HTML strings in controllers” to a first-class SSR workflow
 - [x] **SSR document shell** — `Response.ssr()` (or equivalent) wraps rendered views in a complete HTML document: `<head>` meta, `@vite` assets, and an injected hydration manifest script tag
 - [x] **Hydration runtime** — `@tyravel/ssr` (or `@tyravel/views/client`) browser package that reads `data-tyr-island` markers and mounts island components from a client registry
 - [x] **Island registry API** — `registerIsland('counter', Counter)` on the client; server `@island('counter', props)` maps to the same id
-- [ ] **Promote SSR APIs to stable** — graduate `View.renderStream()`, `@stream` / `@endstream`, `@island`, and the hydration manifest from experimental (see [STABILITY.md](STABILITY.md))
+- [x] **Promote SSR APIs to stable** — graduate `View.renderStream()`, `@stream` / `@endstream`, `@island`, and the hydration manifest from experimental (see [STABILITY.md](STABILITY.md))
 - [x] **SSR reference example** — extend `examples/hello-world` (or add `examples/ssr`) with at least one hydrated island and a streaming layout section
 
 #### P1 — Strong want

@@ -6,7 +6,7 @@ Requires **Node.js ≥ 22**.
 
 ## API stability
 
-Published `@tyravel/*` packages follow the semver and deprecation rules in [STABILITY.md](STABILITY.md). Patch releases preserve documented stable APIs; experimental features (streaming views, hydration islands, REPL, etc.) may change in minors.
+Published `@tyravel/*` packages follow the semver and deprecation rules in [STABILITY.md](STABILITY.md). Patch releases preserve documented stable APIs; experimental features (programmatic `.tyr.ts` views, REPL, etc.) may change in minors.
 
 ## Packages
 
@@ -18,7 +18,9 @@ Published `@tyravel/*` packages follow the semver and deprecation rules in [STAB
 | `@tyravel/config` | Typed config loading and dotted-key `ConfigRepository` |
 | `@tyravel/validation` | Request validation with pipe rules and 422 error responses |
 | `@tyravel/database` | Eloquent-style models, query builder, schema, and migrations |
-| `@tyravel/views` | Blade-like `.tyr` templates with layouts, sections, and components |
+| `@tyravel/views` | Blade-like `.tyr` templates with layouts, sections, components, and SSR directives |
+| `@tyravel/ssr` | Client hydration runtime for `@island` partials (`registerIsland`, `hydrate`) |
+| `@tyravel/echo` | Laravel Echo-style browser client for real-time broadcasting |
 | `@tyravel/queue` | Typed jobs, database/redis drivers, dispatch facade, and queue worker |
 | `@tyravel/events` | Typed domain events, listeners, dispatcher, and `Events` facade |
 | `@tyravel/core` | Application kernel, controllers, service providers, HTTP kernel, `Route` facade |
