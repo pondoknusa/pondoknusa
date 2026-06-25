@@ -4,6 +4,8 @@ import type { Notification } from './notification.js';
 import type { Notifiable } from './types.js';
 import { MailChannel } from './channels/mail-channel.js';
 import { DatabaseChannel } from './channels/database-channel.js';
+import { SlackChannel } from './channels/slack-channel.js';
+import { WebhookChannel } from './channels/webhook-channel.js';
 import type { DatabaseChannelOptions } from './channels/database-channel.js';
 import type { NotificationQueueBridge } from './queue-bridge.js';
 import type { NotificationRegistry } from './notification-registry.js';
@@ -13,6 +15,8 @@ import { serializeNotifiable } from './serialized-notifiable.js';
 
 export class NotificationManager {
   private readonly mailChannel: MailChannel;
+  private readonly slackChannel: SlackChannel;
+  private readonly webhookChannel: WebhookChannel;
   private readonly databaseChannel?: DatabaseChannel;
   private queueDefaults: { connection?: string; queue?: string } = {};
 
@@ -23,6 +27,8 @@ export class NotificationManager {
     private readonly registry?: NotificationRegistry,
   ) {
     this.mailChannel = new MailChannel(mail);
+    this.slackChannel = new SlackChannel();
+    this.webhookChannel = new WebhookChannel();
     this.databaseChannel = database ? new DatabaseChannel(database) : undefined;
   }
 
@@ -84,6 +90,12 @@ export class NotificationManager {
           throw new Error('Database notification channel is not configured.');
         }
         await this.databaseChannel.send(notifiable, notification);
+        return;
+      case 'slack':
+        await this.slackChannel.send(notifiable, notification);
+        return;
+      case 'webhook':
+        await this.webhookChannel.send(notifiable, notification);
         return;
       default:
         throw new Error(`Unknown notification channel [${channel}].`);

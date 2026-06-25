@@ -388,53 +388,53 @@ First-class vector search, RAG workflows, and agent tooling. **No unified LLM pr
 
 #### P0 — Must ship
 
-- [ ] **`@tyravel/vector` package** — embedding storage and similarity search API
-- [ ] **pgvector driver** — `vector` column blueprint, migration helper, cosine / L2 / inner-product operators via `@tyravel/database-pg`
-- [ ] **`VectorSearch` query API** — `Model.similarTo(embedding, { limit, threshold })` and `scopeNearest()` on query builder
-- [ ] **Chunk + embed pipeline** — `tyravel vector:embed` command; queue-backed batch embedding jobs
+- [x] **`@tyravel/vector` package** — embedding storage and similarity search API
+- [x] **pgvector driver** — `vector` column blueprint, migration helper, cosine / L2 / inner-product operators via `@tyravel/database-pg`
+- [x] **`VectorSearch` query API** — `Model.similarTo(embedding, { limit, threshold })` and `scopeNearest()` on query builder
+- [x] **Chunk + embed pipeline** — `tyravel vector:embed` command; queue-backed batch embedding jobs
 
 #### P1 — Strong want
 
-- [ ] **SQLite vec / in-memory driver** — local dev and tests without Postgres
-- [ ] **Hybrid search** — combine vector similarity with full-text / `where` filters
-- [ ] **Metadata filters** — JSON column predicates alongside vector distance
+- [x] **SQLite vec / in-memory driver** — local dev and tests without Postgres
+- [x] **Hybrid search** — combine vector similarity with full-text / `where` filters
+- [x] **Metadata filters** — JSON column predicates alongside vector distance
 
 #### P2 — If scope allows
 
-- [ ] **Qdrant / Pinecone adapters** — external vector store drivers for apps that outgrow pgvector
-- [ ] **Embedding cache** — deduplicate embed calls via `@tyravel/cache`
+- [x] **Qdrant / Pinecone adapters** — external vector store drivers for apps that outgrow pgvector
+- [x] **Embedding cache** — deduplicate embed calls via `@tyravel/cache`
 
 ### RAG
 
 #### P0 — Must ship
 
-- [ ] **Document ingestion** — load plain text, markdown, and PDF into chunked records with source attribution
-- [ ] **Retrieval helper** — `Rag.retrieve(query, { topK, minScore })` returns ranked chunks ready for prompt assembly
-- [ ] **Prompt templates** — `.tyr` or TS templates for grounded Q&A with citation placeholders
-- [ ] **Example app** — `examples/rag` with ingest → embed → ask flow using a native SDK in the app layer
+- [x] **Document ingestion** — load plain text, markdown, and PDF into chunked records with source attribution
+- [x] **Retrieval helper** — `Rag.retrieve(query, { topK, minScore })` returns ranked chunks ready for prompt assembly
+- [x] **Prompt templates** — `.tyr` or TS templates for grounded Q&A with citation placeholders
+- [x] **Example app** — `examples/rag` with ingest → embed → ask flow using a native SDK in the app layer
 
 #### P1 — Strong want
 
-- [ ] **Conversation memory** — session-scoped message history stored in database
-- [ ] **Re-ranking step** — optional second-pass scoring hook before prompt injection
-- [ ] **Streaming responses** — SSE / chunked `Response` integration for token streams from app-level SDK calls
+- [x] **Conversation memory** — session-scoped message history stored in database
+- [x] **Re-ranking step** — optional second-pass scoring hook before prompt injection
+- [x] **Streaming responses** — SSE / chunked `Response` integration for token streams from app-level SDK calls
 
 ### MCP & agent ergonomics
 
 #### P0 — Must ship
 
-- [ ] **`tyravel-mcp` package** — MCP server exposing framework capabilities: routes, models, config keys, artisan commands, and docs index
-- [ ] **Capability manifest** — machine-readable index of facades, CLI commands, and stable package exports (feeds agents and IDE tooling)
-- [ ] **`tyravel make:tool`** — scaffold MCP tool handlers that call app services
+- [x] **`tyravel-mcp` package** — MCP server exposing framework capabilities: routes, models, config keys, artisan commands, and docs index
+- [x] **Capability manifest** — machine-readable index of facades, CLI commands, and stable package exports (feeds agents and IDE tooling)
+- [x] **`tyravel make:tool`** — scaffold MCP tool handlers that call app services
 
 #### P1 — Strong want
 
-- [ ] **Agent-safe scaffolds** — `tyravel make:rag-resource` pairs model + vector migration + ingest job
-- [ ] **Prompt stubs in CLI** — `tyravel new --ai` adds RAG example routes and vector config
+- [x] **Agent-safe scaffolds** — `tyravel make:rag-resource` pairs model + vector migration + ingest job
+- [x] **Prompt stubs in CLI** — `tyravel new --ai` adds RAG example routes and vector config
 
 #### P2 — If scope allows
 
-- [ ] **Cursor / Claude Code rules export** — generate project-specific agent rules from the capability manifest
+- [x] **Cursor / Claude Code rules export** — generate project-specific agent rules from the capability manifest
 
 ## Tier 15 — Infrastructure depth (v0.15.0)
 
@@ -444,10 +444,10 @@ Deepen cache, notifications, and testing beyond the v0.1 foundations (`@tyravel/
 
 #### P0 — Must ship
 
-- [ ] **Taggable cache** — `Cache.tags(['posts', 'user:1']).flush()` across drivers that support it
-- [ ] **Cache events** — `cache:hit`, `cache:miss`, `cache:write` hooks for debug bar and metrics
-- [ ] **Memcached driver** — `@tyravel/cache-memcached` production adapter
-- [ ] **HTTP cache headers** — middleware for `ETag`, `Cache-Control`, and `304` short-circuit on safe routes
+- [x] **Taggable cache** — `Cache.tags(['posts', 'user:1']).flush()` across drivers that support it
+- [x] **Cache events** — `cache:hit`, `cache:miss`, `cache:write` hooks for debug bar and metrics
+- [x] **Memcached driver** — `@tyravel/cache-memcached` production adapter
+- [x] **HTTP cache headers** — middleware for `ETag`, `Cache-Control`, and `304` short-circuit on safe routes
 
 #### P1 — Strong want
 
@@ -464,9 +464,9 @@ Deepen cache, notifications, and testing beyond the v0.1 foundations (`@tyravel/
 
 #### P0 — Must ship
 
-- [ ] **Slack + webhook channels** — first-party notification drivers beyond mail and database
-- [ ] **Notification batching** — `Notification::sendNow()` vs queued; batch digest notifications
-- [ ] **Failed notification handling** — dead-letter queue entry + `tyravel notification:retry`
+- [x] **Slack + webhook channels** — first-party notification drivers beyond mail and database
+- [x] **Notification batching** — `Notification::sendNow()` vs queued; batch digest notifications
+- [x] **Failed notification handling** — dead-letter queue entry + `tyravel notification:retry`
 
 #### P1 — Strong want
 
@@ -478,10 +478,10 @@ Deepen cache, notifications, and testing beyond the v0.1 foundations (`@tyravel/
 
 #### P0 — Must ship
 
-- [ ] **Mail / notification fakes** — `Mail.fake()`, `Notification.fake()` with assertion helpers
-- [ ] **Broadcast fake** — assert events dispatched to channels without a socket server
-- [ ] **Database transactions per test** — automatic `begin` / `rollback` wrapper in `@tyravel/testing`
-- [ ] **Time travel** — `travel(2).days()` for testing scheduled jobs and token expiry
+- [x] **Mail / notification fakes** — `Mail.fake()`, `Notification.fake()` with assertion helpers
+- [x] **Broadcast fake** — assert events dispatched to channels without a socket server
+- [x] **Database transactions per test** — automatic `begin` / `rollback` wrapper in `@tyravel/testing`
+- [x] **Time travel** — `travel(2).days()` for testing scheduled jobs and token expiry
 
 #### P1 — Strong want
 

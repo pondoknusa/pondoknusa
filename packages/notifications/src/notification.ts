@@ -1,4 +1,6 @@
 import type { MailMessage } from '@tyravel/mail';
+import type { SlackMessage } from './channels/slack-channel.js';
+import type { WebhookMessage } from './channels/webhook-channel.js';
 import type { NotificationChannel, Notifiable } from './types.js';
 
 export abstract class Notification {
@@ -16,6 +18,10 @@ export abstract class Notification {
   toMail?(notifiable: Notifiable): MailMessage | Promise<MailMessage>;
 
   toDatabase?(notifiable: Notifiable): Record<string, unknown> | Promise<Record<string, unknown>>;
+
+  toSlack?(notifiable: Notifiable): SlackMessage | Promise<SlackMessage>;
+
+  toWebhook?(notifiable: Notifiable): WebhookMessage | Promise<WebhookMessage>;
 
   id(): string {
     return this.constructor.name;

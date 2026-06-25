@@ -2,6 +2,7 @@ export { BroadcastDispatcher, type BroadcastQueueBridge } from './broadcast-disp
 export { BroadcastEvent } from './broadcast-event.js';
 export { BroadcastManager } from './broadcast-manager.js';
 export { ChannelRegistry } from './channel-registry.js';
+export { ArrayBroadcaster } from './array-broadcaster.js';
 export { LogBroadcaster } from './log-broadcaster.js';
 export { NullBroadcaster } from './null-broadcaster.js';
 export { buildBroadcastPayload, eventShouldBroadcast, normalizeChannels } from './should-broadcast.js';

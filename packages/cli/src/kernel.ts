@@ -49,6 +49,7 @@ import { McpServeCommand } from './commands/mcp-serve.js';
 import { McpExportRulesCommand } from './commands/mcp-export-rules.js';
 import { MakeToolCommand } from './commands/make-tool.js';
 import { MakeRagResourceCommand } from './commands/make-rag-resource.js';
+import { NotificationFailedCommand, NotificationRetryCommand } from './commands/notification-failed.js';
 import { VersionCommand } from './commands/version.js';
 
 export function createKernel(): ConsoleKernel {
@@ -106,6 +107,8 @@ export function createKernel(): ConsoleKernel {
     new McpExportRulesCommand(),
     new MakeToolCommand(),
     new MakeRagResourceCommand(),
+    new NotificationFailedCommand(),
+    new NotificationRetryCommand(),
     new VersionCommand(),
   ]);
 }

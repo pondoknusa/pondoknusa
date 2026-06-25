@@ -5,6 +5,7 @@ import {
   setCacheApplication,
   setEventApplication,
   setGateApplication,
+  setBroadcastApplication,
   setMailApplication,
   setNotificationApplication,
   setPasswordApplication,
@@ -25,6 +26,7 @@ export function wireFacades(app: Application): void {
   setGateApplication(app);
   setPasswordApplication(app);
   setCacheApplication(app);
+  setBroadcastApplication(app);
   setMailApplication(app);
   setNotificationApplication(app);
 }

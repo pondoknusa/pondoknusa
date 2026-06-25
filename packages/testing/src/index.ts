@@ -15,3 +15,8 @@ export type { JsonValue } from './json-match.js';
 export { fake, mockInstance, spyOnBinding } from './fakes.js';
 export { wireFacades, createHttpKernel } from './application-helpers.js';
 export { withTyravelTest } from './vitest.js';
+export { MailFake, mailFake } from './mail-fake.js';
+export { NotificationFake, notificationFake, type RecordedNotification } from './notification-fake.js';
+export { BroadcastFake, broadcastFake } from './broadcast-fake.js';
+export { beginDatabaseTransaction, rollbackDatabaseTransaction } from './database-transactions.js';
+export { back, freezeTime, travel } from './travel.js';

@@ -1,3 +1,4 @@
+import { ArrayBroadcaster } from './array-broadcaster.js';
 import { LogBroadcaster } from './log-broadcaster.js';
 import { NullBroadcaster } from './null-broadcaster.js';
 import type {
@@ -45,6 +46,8 @@ export class BroadcastManager {
         return new NullBroadcaster();
       case 'log':
         return new LogBroadcaster();
+      case 'fake':
+        return new ArrayBroadcaster();
       default: {
         const factory = BroadcastManager.drivers.get(config.driver);
         if (!factory) {

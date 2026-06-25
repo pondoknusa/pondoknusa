@@ -56,6 +56,8 @@ export { createCorsMiddleware } from './cors.js';
 export type { CorsOptions } from './cors.js';
 export { createThrottleMiddleware, resetThrottleStore } from './throttle.js';
 export type { ThrottleOptions } from './throttle.js';
+export { createHttpCacheMiddleware } from './http-cache.js';
+export type { HttpCacheOptions } from './http-cache.js';
 export {
   createTrustedProxiesMiddleware,
   resolveClientIp,

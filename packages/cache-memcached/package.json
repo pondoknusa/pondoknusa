@@ -1,5 +1,5 @@
 {
-  "name": "@tyravel/testing",
+  "name": "@tyravel/cache-memcached",
   "version": "0.14.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -15,18 +15,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@tyravel/auth": "0.14.0",
-    "@tyravel/broadcasting": "0.14.0",
-    "@tyravel/container": "0.14.0",
-    "@tyravel/core": "0.14.0",
-    "@tyravel/database": "0.14.0",
-    "@tyravel/http": "0.14.0",
-    "@tyravel/mail": "0.14.0",
-    "@tyravel/notifications": "0.14.0",
-    "@tyravel/views": "0.14.0"
-  },
-  "peerDependencies": {
-    "vitest": ">=2.0.0"
+    "@tyravel/cache": "0.14.0"
   },
   "files": [
     "dist"
@@ -35,15 +24,14 @@
     "node": ">=26"
   },
   "devDependencies": {
-    "@types/node": "^26.0.1",
-    "vitest": "^3.2.4"
+    "@types/node": "^26.0.1"
   },
-  "description": "Testing utilities for Tyravel applications",
+  "description": "Memcached cache driver for Tyravel",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/thesimonharms/tyravel.git",
-    "directory": "packages/testing"
+    "directory": "packages/cache-memcached"
   },
   "publishConfig": {
     "access": "public"

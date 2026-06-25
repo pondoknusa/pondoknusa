@@ -1,4 +1,4 @@
-import type { CacheRepository } from '@tyravel/cache';
+import type { CacheRepository, TaggedCache } from '@tyravel/cache';
 import type { Application } from './application.js';
 
 let cacheApplication: Application | undefined;
@@ -21,6 +21,7 @@ export interface CacheFacade {
   has(key: string): Promise<boolean>;
   remember<T>(key: string, ttlSeconds: number, callback: () => T | Promise<T>): Promise<T>;
   flush(): Promise<void>;
+  tags(names: string[]): TaggedCache;
 }
 
 export const Cache: CacheFacade = {
@@ -30,4 +31,5 @@ export const Cache: CacheFacade = {
   has: (key) => resolveCache().has(key),
   remember: (key, ttl, callback) => resolveCache().remember(key, ttl, callback),
   flush: () => resolveCache().flush(),
+  tags: (names) => resolveCache().tags(names),
 };

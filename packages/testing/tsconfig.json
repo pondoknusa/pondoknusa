@@ -9,7 +9,11 @@
     { "path": "../container" },
     { "path": "../core" },
     { "path": "../http" },
-    { "path": "../auth" }
+    { "path": "../auth" },
+    { "path": "../broadcasting" },
+    { "path": "../database" },
+    { "path": "../mail" },
+    { "path": "../notifications" }
   ],
   "include": ["src"]
 }

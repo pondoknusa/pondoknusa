@@ -18,6 +18,7 @@
     { "path": "packages/ssr" },
     { "path": "packages/echo" },
     { "path": "packages/cache" },
+    { "path": "packages/cache-memcached" },
     { "path": "packages/queue" },
     { "path": "packages/events" },
     { "path": "packages/broadcasting" },

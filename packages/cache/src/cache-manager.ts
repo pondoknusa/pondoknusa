@@ -4,13 +4,24 @@ import { FileStore } from './file-store.js';
 import { RedisStore } from './redis-store.js';
 import type { CacheConfig, CacheConnectionConfig, CacheStore } from './types.js';
 
+export type CacheStoreFactory = (
+  config: CacheConnectionConfig,
+  manager: CacheManager,
+) => CacheStore;
+
 export class CacheManager {
+  private static readonly drivers = new Map<string, CacheStoreFactory>();
+
   private readonly stores = new Map<string, CacheStore>();
 
   constructor(
     private readonly config: CacheConfig,
     private readonly redis?: RedisManager,
   ) {}
+
+  static extend(driver: string, factory: CacheStoreFactory): void {
+    CacheManager.drivers.set(driver, factory);
+  }
 
   store(name?: string): CacheStore {
     const connection = name ?? this.config.default;
@@ -45,8 +56,14 @@ export class CacheManager {
           config.prefix ?? this.config.prefix,
         );
       }
-      default:
-        throw new Error(`Unsupported cache driver.`);
+      default: {
+        const driver = (config as { driver: string }).driver;
+        const factory = CacheManager.drivers.get(driver);
+        if (!factory) {
+          throw new Error(`Unsupported cache driver [${driver}].`);
+        }
+        return factory(config, this);
+      }
     }
   }
 

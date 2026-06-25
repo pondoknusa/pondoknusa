@@ -1,6 +1,6 @@
 import type { Event } from '@tyravel/events';
 
-export type BroadcastDriver = 'null' | 'log' | 'websocket';
+export type BroadcastDriver = 'null' | 'log' | 'fake' | 'websocket';
 
 export interface NullBroadcastConnectionConfig {
   driver: 'null';
@@ -8,6 +8,10 @@ export interface NullBroadcastConnectionConfig {
 
 export interface LogBroadcastConnectionConfig {
   driver: 'log';
+}
+
+export interface FakeBroadcastConnectionConfig {
+  driver: 'fake';
 }
 
 export interface WebSocketBroadcastConnectionConfig {
@@ -20,6 +24,7 @@ export interface WebSocketBroadcastConnectionConfig {
 export type BroadcastConnectionConfig =
   | NullBroadcastConnectionConfig
   | LogBroadcastConnectionConfig
+  | FakeBroadcastConnectionConfig
   | WebSocketBroadcastConnectionConfig;
 
 export interface BroadcastingConfig {
