@@ -13,6 +13,8 @@
     { "path": "../locale" },
     { "path": "../core" },
     { "path": "../database" },
+    { "path": "../mcp" },
+    { "path": "../vector" },
     { "path": "../debug" },
     { "path": "../queue" },
     { "path": "../views" },

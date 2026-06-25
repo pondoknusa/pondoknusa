@@ -37,6 +37,15 @@ export function projectPackageJson(name: string, options: NewProjectOptions): st
     dependencies['@tyravel/broadcasting-websocket'] = CORE_VERSION;
   }
 
+  if (options.ai) {
+    dependencies['@tyravel/graphql'] = CORE_VERSION;
+    dependencies['@tyravel/rag'] = CORE_VERSION;
+    dependencies['@tyravel/vector'] = CORE_VERSION;
+    if (options.database === 'postgres') {
+      dependencies['@tyravel/vector-pg'] = CORE_VERSION;
+    }
+  }
+
   return JSON.stringify(
     {
       name,

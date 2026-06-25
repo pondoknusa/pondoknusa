@@ -60,6 +60,13 @@ jobs:
             @tyravel/events
             @tyravel/broadcasting
             @tyravel/broadcasting-websocket
+            @tyravel/vector
+            @tyravel/vector-pg
+            @tyravel/vector-qdrant
+            @tyravel/vector-pinecone
+            @tyravel/rag
+            @tyravel/graphql
+            @tyravel/mcp
             @tyravel/crypto
             @tyravel/auth
             @tyravel/cache

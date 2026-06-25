@@ -43,6 +43,12 @@ import { QueueTableCommand } from './commands/queue-table.js';
 import { QueueWorkCommand } from './commands/queue-work.js';
 import { ServeCommand } from './commands/serve.js';
 import { ShellCommand } from './commands/shell.js';
+import { VectorEmbedCommand } from './commands/vector-embed.js';
+import { VectorInstallCommand } from './commands/vector-install.js';
+import { McpServeCommand } from './commands/mcp-serve.js';
+import { McpExportRulesCommand } from './commands/mcp-export-rules.js';
+import { MakeToolCommand } from './commands/make-tool.js';
+import { MakeRagResourceCommand } from './commands/make-rag-resource.js';
 import { VersionCommand } from './commands/version.js';
 
 export function createKernel(): ConsoleKernel {
@@ -94,6 +100,12 @@ export function createKernel(): ConsoleKernel {
     new RouteListCommand(),
     new MakeMiddlewareCommand(),
     new MakeCommandCommand(),
+    new VectorEmbedCommand(),
+    new VectorInstallCommand(),
+    new McpServeCommand(),
+    new McpExportRulesCommand(),
+    new MakeToolCommand(),
+    new MakeRagResourceCommand(),
     new VersionCommand(),
   ]);
 }

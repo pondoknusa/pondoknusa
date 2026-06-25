@@ -36,13 +36,26 @@ import {
 } from '../stubs.js';
 import { envExample } from '../stubs-project.js';
 import { featureTestStub, projectVitestConfig } from '../stubs-testing.js';
+import {
+  aiAppServiceProvider,
+  aiMainEntry,
+  conversationMessageModel,
+  conversationMessagesMigration,
+  documentModel,
+  documentsMigration,
+  embedStub,
+  graphqlRoutes,
+  groundedPromptTemplate,
+  ragRoutes,
+  vectorConfig,
+} from '../stubs-ai.js';
 import { optionString, parseOptions, positionalArgs, projectPath, toKebabCase, writeFile, pathExists } from '../utils.js';
 
 export class NewCommand extends Command {
   override readonly name = 'new';
   override readonly description = 'Create a new Tyravel application';
   override readonly usage =
-    'tyravel new <name> [--path=<directory>] [--db=sqlite|mysql|postgres] [--redis|--no-redis] [--auth|--no-auth] [--queue=database|redis] [--mail=log|smtp|array]';
+    'tyravel new <name> [--path=<directory>] [--db=sqlite|mysql|postgres] [--redis|--no-redis] [--auth|--no-auth] [--queue=database|redis] [--mail=log|smtp|array] [--ai|--no-ai]';
 
   async handle(args: string[]): Promise<number> {
     const options = parseOptions(args);
@@ -123,12 +136,39 @@ export class NewCommand extends Command {
       projectPath(targetDir, `database/migrations/${ts + 2}_create_notifications_table.ts`),
       notificationsTableMigration(),
     );
-    await writeFile(projectPath(targetDir, 'src/main.ts'), mainEntry(projectOptions));
+    await writeFile(
+      projectPath(targetDir, 'src/main.ts'),
+      projectOptions.ai ? aiMainEntry(projectOptions) : mainEntry(projectOptions),
+    );
     await writeFile(
       projectPath(targetDir, 'src/providers/app-service-provider.ts'),
-      appServiceProvider(),
+      projectOptions.ai ? aiAppServiceProvider() : appServiceProvider(),
     );
     await writeFile(projectPath(targetDir, 'src/routes/web.ts'), webRoutes());
+    if (projectOptions.ai) {
+      const ts = Date.now();
+      await writeFile(projectPath(targetDir, 'config/vector.ts'), vectorConfig());
+      await writeFile(projectPath(targetDir, 'src/embed.ts'), embedStub());
+      await writeFile(projectPath(targetDir, 'src/models/Document.ts'), documentModel());
+      await writeFile(
+        projectPath(targetDir, 'src/models/ConversationMessage.ts'),
+        conversationMessageModel(),
+      );
+      await writeFile(projectPath(targetDir, 'src/routes/rag.ts'), ragRoutes());
+      await writeFile(projectPath(targetDir, 'src/routes/graphql.ts'), graphqlRoutes());
+      await writeFile(
+        projectPath(targetDir, 'resources/prompts/grounded-qna.txt'),
+        groundedPromptTemplate(),
+      );
+      await writeFile(
+        projectPath(targetDir, `database/migrations/${ts}_create_documents_table.ts`),
+        documentsMigration(String(ts)),
+      );
+      await writeFile(
+        projectPath(targetDir, `database/migrations/${ts + 1}_create_conversation_messages_table.ts`),
+        conversationMessagesMigration(String(ts + 1)),
+      );
+    }
     await writeFile(
       projectPath(targetDir, 'src/routes/channels.ts'),
       broadcastChannels(),
@@ -150,6 +190,7 @@ export class NewCommand extends Command {
     console.log(`  Queue: ${projectOptions.queue}`);
     console.log(`  Mail: ${projectOptions.mail}`);
     console.log(`  Redis: ${projectOptions.redis ? 'yes' : 'no'}`);
+    console.log(`  AI/RAG: ${projectOptions.ai ? 'yes' : 'no'}`);
     console.log('');
     console.log(`  cd ${name}`);
     console.log('  npm install');

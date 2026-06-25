@@ -2,6 +2,25 @@
 
 All notable changes to Tyravel are documented in this file.
 
+## [0.14.0] - 2026-06-25
+
+### Added
+
+- **Vector search** — New `@tyravel/vector` package with `similarTo()`, `Model.similarTo()`, `query().scopeNearest()`, chunk embedding jobs, hybrid text+vector search, metadata filters, and optional embedding cache via `@tyravel/cache`.
+- **Vector drivers** — `@tyravel/vector-pg` (pgvector), `@tyravel/vector-qdrant`, and `@tyravel/vector-pinecone` fetch-based drivers with zero extra npm dependencies beyond the opt-in package.
+- **RAG** — `@tyravel/rag` with document ingestion (txt/md/pdf), grounded prompt templates, `ConversationMemory`, reranking hooks, and `streamRagResponse()` for retrieval-augmented generation flows.
+- **MCP server** — `@tyravel/mcp` exposes framework capabilities to AI agents; `tyravel mcp:serve` and `tyravel mcp:export-rules` scaffold Cursor/Claude agent rules from the capability manifest.
+- **GraphQL** — `@tyravel/graphql` zero-dependency GraphQL server with programmatic TypeScript schema, persisted operations, minimal query parsing, and operation/field-level caching via `@tyravel/cache`.
+- **SSE responses** — `Response.sse()` in `@tyravel/http` for streaming event payloads (used by RAG streaming routes).
+- **AI project scaffold** — `tyravel new --ai` generates vector config, embed stub, Document/ConversationMessage models, RAG routes, and GraphQL endpoint wiring.
+- **CLI generators** — `tyravel vector:embed`, `tyravel vector:install`, `tyravel make:rag-resource`, and `tyravel make:tool`.
+- **Database vector columns** — Blueprint `vector()` column helper and model query builder extensions for nearest-neighbor scopes.
+- **RAG example** — `examples/rag` demonstrates ingest → embed → ask → stream with GraphQL read API at `/graphql`.
+
+### Changed
+
+- **Release train** — `@tyravel/vector`, `@tyravel/vector-pg`, `@tyravel/vector-qdrant`, `@tyravel/vector-pinecone`, `@tyravel/rag`, `@tyravel/graphql`, and `@tyravel/mcp` join the npm publish list.
+
 ## [0.13.0] - 2026-06-25
 
 ### Added

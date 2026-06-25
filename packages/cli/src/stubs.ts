@@ -356,6 +356,24 @@ export class ${className} extends ServiceProvider {
 `;
 }
 
+export function mcpTool(name: string): string {
+  const camel = name.charAt(0).toLowerCase() + name.slice(1);
+  return `import type { McpTool } from '@tyravel/mcp';
+
+export const ${camel}Tool: McpTool = {
+  name: '${camel}',
+  description: 'Describe what ${camel} does for agents.',
+  inputSchema: {
+    type: 'object',
+    properties: {},
+  },
+  async handler() {
+    return { ok: true };
+  },
+};
+`;
+}
+
 export function job(name: string): string {
   return `import { Job } from '@tyravel/queue';
 
@@ -372,6 +390,23 @@ export class ${name} extends Job<${name}Payload> {
 }
 
 export { queueConfig } from './stubs-project.js';
+
+export function pgvectorExtensionMigration(): string {
+  return `import { Migration } from '@tyravel/database';
+import type { DatabaseConnection } from '@tyravel/database';
+import { ensurePgVectorExtension } from '@tyravel/vector-pg';
+
+export default class EnablePgVectorExtension extends Migration {
+  override async up(connection: DatabaseConnection) {
+    await ensurePgVectorExtension(connection);
+  }
+
+  override async down(connection: DatabaseConnection) {
+    await connection.exec('DROP EXTENSION IF EXISTS vector');
+  }
+}
+`;
+}
 
 export function jobsTableMigration(): string {
   return `import { Migration } from '@tyravel/database';

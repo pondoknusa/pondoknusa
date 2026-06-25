@@ -5,10 +5,11 @@ import {
   type SsrDocumentOptions,
   type SsrStreamOptions,
 } from './ssr.js';
+import { encodeSseEvents, type SseEvent } from './sse.js';
 
 const WebResponse = globalThis.Response;
 
-export type { HydrationManifestPayload, SsrDocumentOptions, SsrStreamOptions };
+export type { HydrationManifestPayload, SsrDocumentOptions, SsrStreamOptions, SseEvent };
 
 export class ResponseFactory {
   json(data: unknown, init: ResponseInit = {}): Response {
@@ -49,6 +50,24 @@ export class ResponseFactory {
     }
 
     return this.streamHtml(streamSsrDocument(source, options), init);
+  }
+
+  sse(source: AsyncIterable<SseEvent>, init: ResponseInit = {}): Response {
+    const headers = new Headers(init.headers);
+    if (!headers.has('content-type')) {
+      headers.set('content-type', 'text/event-stream; charset=utf-8');
+    }
+    if (!headers.has('cache-control')) {
+      headers.set('cache-control', 'no-cache, no-transform');
+    }
+    if (!headers.has('connection')) {
+      headers.set('connection', 'keep-alive');
+    }
+
+    return new WebResponse(readableStreamFromAsyncIterable(encodeSseEvents(source)), {
+      ...init,
+      headers,
+    });
   }
 
   streamHtml(

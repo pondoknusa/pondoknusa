@@ -15,6 +15,7 @@ export {
 } from './request.js';
 export type { SessionContract } from './session-contract.js';
 export { Response, ResponseFactory } from './response.js';
+export { formatSseEvent, encodeSseEvents, type SseEvent } from './sse.js';
 export {
   buildSsrDocument,
   HYDRATION_SCRIPT_ID,

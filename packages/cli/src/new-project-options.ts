@@ -12,6 +12,7 @@ export interface NewProjectOptions {
   auth: boolean;
   queue: QueueDriver;
   mail: MailDriver;
+  ai: boolean;
 }
 
 const DATABASE_CHOICES: { value: DatabaseDriver; label: string }[] = [
@@ -40,12 +41,14 @@ export async function resolveNewProjectOptions(
   const hasAuthFlag = options.auth !== undefined || options['no-auth'] === true;
   const hasQueueFlag = optionString(options, 'queue') !== undefined;
   const hasMailFlag = optionString(options, 'mail') !== undefined;
+  const hasAiFlag = options.ai !== undefined || options['no-ai'] === true;
 
   let database: DatabaseDriver = 'sqlite';
   let redis = false;
   let auth = true;
   let queue: QueueDriver = 'database';
   let mail: MailDriver = 'log';
+  let ai = false;
 
   if (hasDbFlag) {
     database = parseDatabaseDriver(dbFlag);
@@ -69,9 +72,15 @@ export async function resolveNewProjectOptions(
     mail = parseMailDriver(optionString(options, 'mail')!);
   }
 
+  if (options.ai === true) {
+    ai = true;
+  } else if (options['no-ai'] === true) {
+    ai = false;
+  }
+
   const interactive = process.stdin.isTTY && process.stdout.isTTY;
 
-  if (interactive && (!hasDbFlag || !hasRedisFlag || !hasAuthFlag || !hasQueueFlag || !hasMailFlag)) {
+  if (interactive && (!hasDbFlag || !hasRedisFlag || !hasAuthFlag || !hasQueueFlag || !hasMailFlag || !hasAiFlag)) {
     const rl = createInterface({ input, output });
     try {
       if (!hasDbFlag) {
@@ -116,12 +125,17 @@ export async function resolveNewProjectOptions(
         const answer = (await rl.question('Mail driver [log]: ')).trim();
         mail = answer ? parseMailDriver(answer) : 'log';
       }
+
+      if (!hasAiFlag) {
+        const answer = (await rl.question('Include AI/RAG scaffold (vector search + routes)? [y/N]: ')).trim().toLowerCase();
+        ai = answer === 'y' || answer === 'yes';
+      }
     } finally {
       rl.close();
     }
   }
 
-  return { database, redis, auth, queue, mail };
+  return { database, redis, auth, queue, mail, ai };
 }
 
 function parseDatabaseDriver(value: string): DatabaseDriver {

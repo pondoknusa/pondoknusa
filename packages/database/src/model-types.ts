@@ -10,6 +10,7 @@ export interface ModelStatic {
   table: string;
   primaryKey: string;
   morphName?: string;
+  vectorColumn?: string;
   getConnection(): DatabaseConnection;
   query(): ModelQueryBuilder;
   find(id: RowValue): Promise<unknown | null>;

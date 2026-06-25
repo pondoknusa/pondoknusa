@@ -20,6 +20,10 @@ export class ModelQueryBuilder extends QueryBuilder {
     super(connection, tableName);
   }
 
+  getModel(): ModelStatic {
+    return this.model;
+  }
+
   with(...relations: string[]): this {
     this.eagerLoad.push(...relations);
     return this;

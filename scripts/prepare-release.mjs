@@ -97,6 +97,7 @@ log('Bumping package versions');
 const pkgDirs = [
   ...readdirSync(join(ROOT, 'packages')).map((d) => join(ROOT, 'packages', d)),
   join(ROOT, 'examples/hello-world'),
+  join(ROOT, 'examples/rag'),
 ];
 
 let bumped = 0;
@@ -150,7 +151,15 @@ stubsProject = stubsProject.replace(
 );
 writeFileSync(stubsProjectPath, stubsProject);
 
-console.log(`  Bumped ${bumped} package.json files + stubs.ts + stubs-project.ts`);
+const manifestPath = join(ROOT, 'packages/mcp/src/manifest.ts');
+let manifest = readFileSync(manifestPath, 'utf8');
+manifest = manifest.replace(
+  /version: overrides\.version \?\? '[\d.]+'/,
+  `version: overrides.version ?? '${newVersion}'`,
+);
+writeFileSync(manifestPath, manifest);
+
+console.log(`  Bumped ${bumped} package.json files + stubs.ts + stubs-project.ts + manifest.ts`);
 
 log('Syncing package-lock.json');
 run('npm install', { stdio: 'inherit' });

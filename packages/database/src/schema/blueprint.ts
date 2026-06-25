@@ -41,6 +41,16 @@ export class Blueprint {
     return this;
   }
 
+  vector(name: string, dimensions: number): this {
+    if (this.grammar.driver !== 'postgres') {
+      throw new Error(
+        `vector() columns require the postgres driver (got ${this.grammar.driver}).`,
+      );
+    }
+    this.statements.push(`${this.column(name)} vector(${dimensions}) NOT NULL`);
+    return this;
+  }
+
   integer(name: string): this {
     const column = this.column(name);
     if (this.grammar.driver === 'mysql') {
