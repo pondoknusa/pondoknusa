@@ -4,6 +4,7 @@ import type { DatabaseConnection } from '@tyravel/database';
 import { createHttpKernel, wireFacades } from './application-helpers.js';
 import { beginDatabaseTransaction, rollbackDatabaseTransaction } from './database-transactions.js';
 import { HttpTestClient } from './http-test-client.js';
+import { clearTestRequestContext, createTestingMiddleware } from './test-request-context.js';
 
 type ProviderConstructor = new (app: Application) => ServiceProvider;
 
@@ -14,6 +15,9 @@ export abstract class TestCase {
 
   /** Roll back database changes after each test when enabled. */
   protected usesDatabaseTransactions = false;
+
+  /** Inject session/user state from HttpTestClient into requests. */
+  protected useTestingMiddleware = true;
 
   private databaseConnection?: DatabaseConnection;
 
@@ -32,7 +36,11 @@ export abstract class TestCase {
   /**
    * Override to load routes, config, etc. after providers register, before boot.
    */
-  protected async configureApplication(_app: Application): Promise<void> {}
+  protected async configureApplication(app: Application): Promise<void> {
+    if (this.useTestingMiddleware) {
+      app.use(createTestingMiddleware());
+    }
+  }
 
   async setUp(): Promise<void> {
     this.app = await this.createApplication();
@@ -54,6 +62,7 @@ export abstract class TestCase {
       await rollbackDatabaseTransaction(this.databaseConnection);
       this.databaseConnection = undefined;
     }
+    clearTestRequestContext();
     this.app?.flush();
     this.http?.resetCookies();
   }

@@ -5,6 +5,8 @@ import { TaggedCache } from './tagged-cache.js';
 import type { CacheStore } from './types.js';
 
 export class CacheRepository implements CacheStore {
+  private readonly pendingRemember = new Map<string, Promise<unknown>>();
+
   constructor(
     private readonly manager: CacheManager,
     private readonly connection?: string,
@@ -53,13 +55,67 @@ export class CacheRepository implements CacheStore {
     await this.store().flush();
   }
 
-  async remember<T>(key: string, ttlSeconds: number, callback: () => T | Promise<T>): Promise<T> {
+  async remember<T>(
+    key: string,
+    ttlSeconds: number,
+    callback: () => T | Promise<T>,
+    lockSeconds = 10,
+  ): Promise<T> {
     const existing = await this.get<T>(key);
     if (existing !== null) {
       return existing;
     }
-    const value = await callback();
-    await this.put(key, value, ttlSeconds);
+
+    const inflight = this.pendingRemember.get(key);
+    if (inflight) {
+      return inflight as Promise<T>;
+    }
+
+    const computation = this.rememberWithLock(key, ttlSeconds, callback, lockSeconds);
+    this.pendingRemember.set(key, computation);
+
+    try {
+      return await computation;
+    } finally {
+      this.pendingRemember.delete(key);
+    }
+  }
+
+  private async rememberWithLock<T>(
+    key: string,
+    ttlSeconds: number,
+    callback: () => T | Promise<T>,
+    lockSeconds: number,
+  ): Promise<T> {
+    const lock = this.lock(`remember:${key}`, lockSeconds);
+    let value: T | undefined;
+
+    try {
+      await lock.block(lockSeconds, async () => {
+        const cached = await this.get<T>(key);
+        if (cached !== null) {
+          value = cached;
+          return;
+        }
+        value = await callback();
+        await this.put(key, value, ttlSeconds);
+      });
+    } catch (error) {
+      const cached = await this.get<T>(key);
+      if (cached !== null) {
+        return cached;
+      }
+      throw error;
+    }
+
+    if (value === undefined) {
+      const cached = await this.get<T>(key);
+      if (cached !== null) {
+        return cached;
+      }
+      throw new Error(`Cache remember callback did not produce a value for [${key}].`);
+    }
+
     return value;
   }
 

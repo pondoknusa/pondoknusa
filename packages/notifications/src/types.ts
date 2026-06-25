@@ -1,4 +1,4 @@
-export type NotificationChannel = 'mail' | 'database' | 'slack' | 'webhook';
+export type NotificationChannel = 'mail' | 'database' | 'slack' | 'webhook' | 'broadcast' | 'sms';
 
 export interface Notifiable {
   getKey(): string | number;

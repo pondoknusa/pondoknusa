@@ -1,6 +1,7 @@
 import type { HttpKernel } from '@tyravel/core';
 import { CookieJar } from './cookie-jar.js';
 import { TestResponse } from './test-response.js';
+import { setTestRequestContext } from './test-request-context.js';
 
 export interface HttpTestOptions {
   headers?: Record<string, string>;
@@ -13,6 +14,8 @@ export class HttpTestClient {
   private defaultHeaders: Record<string, string> = {
     accept: 'application/json',
   };
+  private sessionData: Record<string, unknown> = {};
+  private authenticatedUser: unknown;
 
   constructor(private readonly kernel: HttpKernel) {}
 
@@ -30,6 +33,22 @@ export class HttpTestClient {
   withSessionCookie(name: string, value: string): this {
     this.jar.set(name, value);
     return this;
+  }
+
+  actingAs(user: unknown): this {
+    this.authenticatedUser = user;
+    return this;
+  }
+
+  withSession(data: Record<string, unknown>): this {
+    this.sessionData = { ...this.sessionData, ...data };
+    return this;
+  }
+
+  withCsrf(token?: string): this {
+    const csrfToken = token ?? String(this.sessionData._csrf_token ?? 'test-csrf-token');
+    this.sessionData._csrf_token = csrfToken;
+    return this.withHeaders({ 'x-csrf-token': csrfToken });
   }
 
   async get(url: string, options: HttpTestOptions = {}): Promise<TestResponse> {
@@ -68,6 +87,11 @@ export class HttpTestClient {
       headers.set('cookie', cookie);
     }
 
+    setTestRequestContext({
+      session: this.sessionData,
+      user: this.authenticatedUser,
+    });
+
     const init: RequestInit = {
       method,
       headers,
@@ -84,5 +108,7 @@ export class HttpTestClient {
 
   resetCookies(): void {
     this.jar.clear();
+    this.sessionData = {};
+    this.authenticatedUser = undefined;
   }
 }

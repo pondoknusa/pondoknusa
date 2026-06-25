@@ -20,3 +20,11 @@ export { NotificationFake, notificationFake, type RecordedNotification } from '.
 export { BroadcastFake, broadcastFake } from './broadcast-fake.js';
 export { beginDatabaseTransaction, rollbackDatabaseTransaction } from './database-transactions.js';
 export { back, freezeTime, travel } from './travel.js';
+export {
+  clearTestRequestContext,
+  createTestingMiddleware,
+  getTestRequestContext,
+  setTestRequestContext,
+  type TestRequestContext,
+} from './test-request-context.js';
+export { assertHtmlSnapshot, assertJsonSnapshot, type SnapshotOptions } from './snapshots.js';

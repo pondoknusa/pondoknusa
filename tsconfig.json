@@ -19,6 +19,8 @@
     { "path": "packages/echo" },
     { "path": "packages/cache" },
     { "path": "packages/cache-memcached" },
+    { "path": "packages/cache-upstash" },
+    { "path": "packages/cache-dynamodb" },
     { "path": "packages/queue" },
     { "path": "packages/events" },
     { "path": "packages/broadcasting" },

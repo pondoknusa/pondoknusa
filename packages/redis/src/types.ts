@@ -16,6 +16,20 @@ export interface RedisClient {
   quit(): Promise<string>;
 }
 
+export interface RedisClusterNode {
+  host: string;
+  port?: number;
+}
+
+export interface RedisClusterConfig {
+  nodes: Array<RedisClusterNode | string>;
+}
+
+export interface RedisSentinelConfig {
+  name: string;
+  sentinels: RedisClusterNode[];
+}
+
 export interface RedisConnectionConfig {
   url?: string;
   host?: string;
@@ -23,6 +37,8 @@ export interface RedisConnectionConfig {
   username?: string;
   password?: string;
   database?: number;
+  cluster?: RedisClusterConfig;
+  sentinel?: RedisSentinelConfig;
 }
 
 export interface RedisConfig {

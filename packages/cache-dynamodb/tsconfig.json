@@ -6,10 +6,8 @@
     "rootDir": "src"
   },
   "references": [
-    { "path": "../broadcasting" },
-    { "path": "../database" },
-    { "path": "../mail" },
-    { "path": "../queue" }
+    { "path": "../cache" }
   ],
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["src/**/*.test.ts"]
 }

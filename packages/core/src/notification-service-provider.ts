@@ -26,6 +26,7 @@ export class NotificationServiceProvider extends ServiceProvider {
 
     const database = this.resolveDatabase();
     const queueBridge = this.createQueueBridge();
+    const broadcast = this.resolveBroadcast();
     const manager = new NotificationManager(
       mail,
       database
@@ -36,6 +37,7 @@ export class NotificationServiceProvider extends ServiceProvider {
         : undefined,
       queueBridge,
       registry,
+      broadcast,
     );
 
     manager.setQueueDefaults({
@@ -63,6 +65,14 @@ export class NotificationServiceProvider extends ServiceProvider {
       view.namespace('notifications', NOTIFICATIONS_VIEWS_PATH);
     } catch {
       // View provider not registered.
+    }
+  }
+
+  private resolveBroadcast(): import('@tyravel/broadcasting').BroadcastManager | undefined {
+    try {
+      return this.app.make<import('@tyravel/broadcasting').BroadcastManager>('broadcast');
+    } catch {
+      return undefined;
     }
   }
 

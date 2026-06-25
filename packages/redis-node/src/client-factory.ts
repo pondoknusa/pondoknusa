@@ -1,5 +1,6 @@
-import { createClient } from 'redis';
+import { createClient, createCluster } from 'redis';
 import type { RedisClient, RedisConnectionConfig } from '@tyravel/redis';
+import { resolveSentinelMasterUrl } from './sentinel-discovery.js';
 
 type NodeRedisClient = {
   get(key: string): Promise<string | null>;
@@ -32,12 +33,31 @@ type NodeRedisClient = {
 export async function createNodeRedisClient(
   config: RedisConnectionConfig,
 ): Promise<RedisClient> {
-  const client = createClient(buildClientOptions(config)) as unknown as NodeRedisClient;
+  const client = await createUnderlyingClient(config);
   client.on('error', (error) => {
     process.stderr.write(`Redis error: ${String(error)}\n`);
   });
   await client.connect();
   return new NodeRedisAdapter(client);
+}
+
+async function createUnderlyingClient(config: RedisConnectionConfig): Promise<NodeRedisClient> {
+  if (config.sentinel) {
+    const url = await resolveSentinelMasterUrl(config.sentinel);
+    return createClient({ url, ...buildAuthOptions(config) }) as unknown as NodeRedisClient;
+  }
+
+  if (config.cluster) {
+    const cluster = createCluster({
+      rootNodes: config.cluster.nodes.map((node) => ({
+        url: typeof node === 'string' ? node : `redis://${node.host}:${node.port ?? 6379}`,
+      })),
+      defaults: buildAuthOptions(config),
+    }) as unknown as NodeRedisClient;
+    return cluster as unknown as NodeRedisClient;
+  }
+
+  return createClient(buildClientOptions(config)) as unknown as NodeRedisClient;
 }
 
 class NodeRedisAdapter implements RedisClient {
@@ -151,7 +171,7 @@ class NodeRedisAdapter implements RedisClient {
 
 function buildClientOptions(config: RedisConnectionConfig) {
   if (config.url) {
-    return { url: config.url };
+    return { url: config.url, ...buildAuthOptions(config) };
   }
 
   return {
@@ -159,6 +179,12 @@ function buildClientOptions(config: RedisConnectionConfig) {
       host: config.host ?? '127.0.0.1',
       port: config.port ?? 6379,
     },
+    ...buildAuthOptions(config),
+  };
+}
+
+function buildAuthOptions(config: RedisConnectionConfig) {
+  return {
     username: config.username,
     password: config.password,
     database: config.database,

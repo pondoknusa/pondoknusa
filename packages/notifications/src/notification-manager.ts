@@ -1,10 +1,13 @@
+import type { BroadcastManager } from '@tyravel/broadcasting';
 import type { MailManager } from '@tyravel/mail';
 import type { Job } from '@tyravel/queue';
 import type { Notification } from './notification.js';
 import type { Notifiable } from './types.js';
 import { MailChannel } from './channels/mail-channel.js';
 import { DatabaseChannel } from './channels/database-channel.js';
+import { BroadcastChannel } from './channels/broadcast-channel.js';
 import { SlackChannel } from './channels/slack-channel.js';
+import { SmsChannel } from './channels/sms-channel.js';
 import { WebhookChannel } from './channels/webhook-channel.js';
 import type { DatabaseChannelOptions } from './channels/database-channel.js';
 import type { NotificationQueueBridge } from './queue-bridge.js';
@@ -17,6 +20,8 @@ export class NotificationManager {
   private readonly mailChannel: MailChannel;
   private readonly slackChannel: SlackChannel;
   private readonly webhookChannel: WebhookChannel;
+  private readonly smsChannel: SmsChannel;
+  private readonly broadcastChannel?: BroadcastChannel;
   private readonly databaseChannel?: DatabaseChannel;
   private queueDefaults: { connection?: string; queue?: string } = {};
 
@@ -25,10 +30,13 @@ export class NotificationManager {
     database?: DatabaseChannelOptions,
     private readonly queue?: NotificationQueueBridge,
     private readonly registry?: NotificationRegistry,
+    broadcast?: BroadcastManager,
   ) {
     this.mailChannel = new MailChannel(mail);
     this.slackChannel = new SlackChannel();
     this.webhookChannel = new WebhookChannel();
+    this.smsChannel = new SmsChannel();
+    this.broadcastChannel = broadcast ? new BroadcastChannel(broadcast) : undefined;
     this.databaseChannel = database ? new DatabaseChannel(database) : undefined;
   }
 
@@ -96,6 +104,15 @@ export class NotificationManager {
         return;
       case 'webhook':
         await this.webhookChannel.send(notifiable, notification);
+        return;
+      case 'broadcast':
+        if (!this.broadcastChannel) {
+          throw new Error('Broadcast notification channel is not configured.');
+        }
+        await this.broadcastChannel.send(notifiable, notification);
+        return;
+      case 'sms':
+        await this.smsChannel.send(notifiable, notification);
         return;
       default:
         throw new Error(`Unknown notification channel [${channel}].`);

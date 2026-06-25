@@ -451,9 +451,9 @@ Deepen cache, notifications, and testing beyond the v0.1 foundations (`@tyravel/
 
 #### P1 — Strong want
 
-- [ ] **Stampede protection** — `Cache::remember()` lock wrapper (extends existing cache-lock primitive)
-- [ ] **DynamoDB / Upstash drivers** — serverless-friendly cache backends
-- [ ] **Redis cluster / sentinel config** — connection options on `@tyravel/cache` Redis store
+- [x] **Stampede protection** — `Cache::remember()` lock wrapper (extends existing cache-lock primitive)
+- [x] **DynamoDB / Upstash drivers** — serverless-friendly cache backends
+- [x] **Redis cluster / sentinel config** — connection options on `@tyravel/cache` Redis store
 
 #### P2 — If scope allows
 
@@ -470,9 +470,9 @@ Deepen cache, notifications, and testing beyond the v0.1 foundations (`@tyravel/
 
 #### P1 — Strong want
 
-- [ ] **Database notification UI helpers** — mark read / unread, pagination helpers for in-app bell
-- [ ] **Broadcast notification channel** — push real-time notification events over Echo
-- [ ] **SMS driver stub** — Twilio-compatible adapter pattern in docs + example
+- [x] **Database notification UI helpers** — mark read / unread, pagination helpers for in-app bell
+- [x] **Broadcast notification channel** — push real-time notification events over Echo
+- [x] **SMS driver stub** — Twilio-compatible adapter pattern in docs + example
 
 ### Testing helpers
 
@@ -485,9 +485,9 @@ Deepen cache, notifications, and testing beyond the v0.1 foundations (`@tyravel/
 
 #### P1 — Strong want
 
-- [ ] **HTTP test sugar** — `actingAs(user)`, `withSession()`, `withCsrf()` on test client
-- [ ] **Factory relationships** — `UserFactory.withPosts(3)` style nested factory states
-- [ ] **Snapshot assertions** — JSON and HTML snapshot helpers with stable diff output
+- [x] **HTTP test sugar** — `actingAs(user)`, `withSession()`, `withCsrf()` on test client
+- [x] **Factory relationships** — `UserFactory.withPosts(3)` style nested factory states
+- [x] **Snapshot assertions** — JSON and HTML snapshot helpers with stable diff output
 
 #### P2 — If scope allows
 

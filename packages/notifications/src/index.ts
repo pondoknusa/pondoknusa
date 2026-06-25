@@ -1,4 +1,7 @@
 export type { Notifiable, NotificationChannel, NotificationsConfig } from './types.js';
+export { BroadcastChannel, type BroadcastMessage } from './channels/broadcast-channel.js';
+export { SmsChannel, setSmsTransport, type SmsMessage, type SmsTransport } from './channels/sms-channel.js';
+export { DatabaseNotificationInbox, type DatabaseNotificationRecord } from './database-inbox.js';
 export { SlackChannel, type SlackMessage } from './channels/slack-channel.js';
 export { WebhookChannel, type WebhookMessage } from './channels/webhook-channel.js';
 export { FailedNotificationRepository } from './failed-notification-repository.js';
