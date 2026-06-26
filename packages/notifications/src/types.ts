@@ -3,6 +3,7 @@ export type NotificationChannel = 'mail' | 'database' | 'slack' | 'webhook' | 'b
 export interface Notifiable {
   getKey(): string | number;
   routeNotificationForMail?(): string | { address: string; name?: string };
+  routeNotificationForSms?(): string;
 }
 
 export interface NotificationsConfig {

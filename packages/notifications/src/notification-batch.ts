@@ -1,3 +1,5 @@
+import type { DigestOptions } from './digest-notification.js';
+import { NotificationDigest } from './notification-digest.js';
 import type { NotificationManager } from './notification-manager.js';
 import type { Notification } from './notification.js';
 import type { Notifiable } from './types.js';
@@ -20,5 +22,21 @@ export class NotificationBatch {
     for (const item of this.items) {
       await manager.sendNow(item.notifiable, item.notification);
     }
+  }
+
+  async sendDigest(manager: NotificationManager, options?: DigestOptions): Promise<void> {
+    const digest = new NotificationDigest();
+    for (const item of this.items) {
+      digest.add(item.notifiable, item.notification);
+    }
+    await digest.send(manager, options);
+  }
+
+  async sendDigestNow(manager: NotificationManager, options?: DigestOptions): Promise<void> {
+    const digest = new NotificationDigest();
+    for (const item of this.items) {
+      digest.add(item.notifiable, item.notification);
+    }
+    await digest.sendNow(manager, options);
   }
 }

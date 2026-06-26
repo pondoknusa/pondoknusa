@@ -5,6 +5,8 @@ export { DatabaseNotificationInbox, type DatabaseNotificationRecord } from './da
 export { SlackChannel, type SlackMessage } from './channels/slack-channel.js';
 export { WebhookChannel, type WebhookMessage } from './channels/webhook-channel.js';
 export { FailedNotificationRepository } from './failed-notification-repository.js';
+export { DigestNotification, type DigestOptions } from './digest-notification.js';
+export { NotificationDigest } from './notification-digest.js';
 export { NotificationBatch } from './notification-batch.js';
 export { Notification } from './notification.js';
 export { NotificationManager } from './notification-manager.js';

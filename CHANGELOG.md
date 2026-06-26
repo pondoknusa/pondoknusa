@@ -2,6 +2,19 @@
 
 All notable changes to Tyravel are documented in this file.
 
+## [0.15.0] - 2026-06-26
+
+### Added
+
+- **Cache depth** — Taggable cache, `cache:hit` / `cache:miss` / `cache:write` events, `@tyravel/cache-memcached`, HTTP `ETag` / `304` middleware, stampede-safe `Cache.remember()`, `@tyravel/cache-upstash` and `@tyravel/cache-dynamodb` drivers, Redis cluster/sentinel connection options, full-page response cache middleware, and `Model.rememberAttribute()` for expensive accessors.
+- **Notifications depth** — Slack and webhook channels, `Notifications.sendNow()`, `NotificationBatch` / `NotificationDigest` with `DigestNotification`, failed notification CLI (`tyravel notification:failed`, `tyravel notification:retry`), `DatabaseNotificationInbox` helpers, broadcast and SMS channels (`setSmsTransport()` Twilio-compatible stub).
+- **Testing depth** — `mailFake()` / `notificationFake()` / `broadcastFake()`, per-test database transactions, `travel()` / `freezeTime()` time helpers, HTTP test sugar (`actingAs`, `withSession`, `withCsrf`), `Factory.has()` nested states, JSON/HTML snapshot assertions, `@tyravel/testing/pest` (`uses`, `dataset`), and Vitest workspace guidance in the testing guide.
+- **SMS example** — `examples/hello-world/src/notifications/login-code-notification.ts` with `setSmsTransport()` wired in `AppServiceProvider`.
+
+### Changed
+
+- **Notifications guide** — `docs/guide/notifications.md` documents all Tier 15 channels, batching/digests, inbox helpers, failed retry CLI, and testing fakes.
+
 ## [0.14.0] - 2026-06-25
 
 ### Added
@@ -220,6 +233,7 @@ First public release of the `@tyravel/*` monorepo.
 - Requires **Node.js ≥ 22**
 - New apps default to **database** queue with `jobs`, `failed_jobs`, and `notifications` migrations scaffolded
 
+[0.15.0]: https://github.com/thesimonharms/tyravel/releases/tag/v0.15.0
 [0.14.0]: https://github.com/thesimonharms/tyravel/releases/tag/v0.14.0
 [0.13.0]: https://github.com/thesimonharms/tyravel/releases/tag/v0.13.0
 [0.1.0]: https://github.com/thesimonharms/tyravel/releases/tag/v0.1.0

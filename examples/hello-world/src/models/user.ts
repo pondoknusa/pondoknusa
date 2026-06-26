@@ -27,6 +27,10 @@ export class User extends Model<UserAttributes> implements Authenticatable {
     return String(this.getAttribute('password'));
   }
 
+  routeNotificationForSms(): string {
+    return String(this.getAttribute('phone') ?? '');
+  }
+
   posts(): HasManyRelation<Post> {
     return this.hasMany(Post);
   }
