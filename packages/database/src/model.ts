@@ -21,6 +21,12 @@ import {
   serializeAppendedValue,
 } from './model-serialization.js';
 import type { Row, RowValue } from './types.js';
+import {
+  forgetModelAttribute,
+  rememberModelAttribute,
+  setModelAttributeCacheResolver,
+  type AttributeCacheStore,
+} from './model-attribute-cache.js';
 import { singularSnakeCase } from './utils.js';
 
 type ModelAttributes = Record<string, unknown>;
@@ -35,6 +41,7 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
   static morphName?: string;
   private static resolver: (() => DatabaseConnection) | undefined;
   private static globalScopes: GlobalScope[] = [];
+  private static attributeCachePrefix = 'model:attribute';
 
   protected attributes: Partial<T>;
   private relations: Record<string, unknown> = {};
@@ -46,6 +53,14 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
 
   static setConnectionResolver(resolver: () => DatabaseConnection): void {
     this.resolver = resolver;
+  }
+
+  static setCacheResolver(resolver: () => AttributeCacheStore): void {
+    setModelAttributeCacheResolver(resolver);
+  }
+
+  static setAttributeCachePrefix(prefix: string): void {
+    this.attributeCachePrefix = prefix;
   }
 
   static useConnection(connection: DatabaseConnection): void {
@@ -300,6 +315,41 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
   getAppends(): string[] {
     const model = this.constructor as typeof Model;
     return [...new Set([...model.appends, ...this.runtimeAppends])];
+  }
+
+  async rememberAttribute<TValue>(
+    attribute: string,
+    ttlSeconds: number,
+    callback: () => TValue | Promise<TValue>,
+  ): Promise<TValue> {
+    const model = this.constructor as unknown as ModelStatic;
+    const primaryKey = model.primaryKey;
+    const id = this.attributes[primaryKey as keyof T];
+
+    if (id === undefined || id === null) {
+      return callback();
+    }
+
+    return rememberModelAttribute(
+      model,
+      id,
+      attribute,
+      ttlSeconds,
+      callback,
+      Model.attributeCachePrefix,
+    );
+  }
+
+  async forgetRememberedAttribute(attribute: string): Promise<void> {
+    const model = this.constructor as unknown as ModelStatic;
+    const primaryKey = model.primaryKey;
+    const id = this.attributes[primaryKey as keyof T];
+
+    if (id === undefined || id === null) {
+      return;
+    }
+
+    await forgetModelAttribute(model, id, attribute, Model.attributeCachePrefix);
   }
 
   toJSON(): Record<string, unknown> {

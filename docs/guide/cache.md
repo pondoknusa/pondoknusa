@@ -92,3 +92,44 @@ import { setCacheApplication } from '@tyravel/core';
 
 setCacheApplication(app);
 ```
+
+## Response cache middleware
+
+Cache full GET responses for anonymous visitors with `createResponseCacheMiddleware()` from `@tyravel/http`:
+
+```typescript
+import { createResponseCacheMiddleware } from '@tyravel/http';
+import { Cache } from '@tyravel/core';
+
+app.use(createResponseCacheMiddleware({
+  cache: Cache.store(),
+  ttlSeconds: 300,
+  anonymousOnly: true,
+}));
+```
+
+Authenticated requests (`request.user`) bypass the cache by default. Cached entries include an `x-tyravel-cache: HIT|MISS` header for debugging.
+
+## Model attribute caching
+
+Wire the cache once, then call `rememberAttribute()` inside expensive accessors:
+
+```typescript
+import { Model } from '@tyravel/database';
+import { Cache } from '@tyravel/core';
+
+Model.setCacheResolver(() => Cache.store());
+
+class Post extends Model {
+  async getCommentCountAttribute() {
+    return this.rememberAttribute('comment_count', 300, async () => {
+      return await this.hasMany(Comment).count();
+    });
+  }
+}
+
+// After mutating data that affects the accessor:
+await post.forgetRememberedAttribute('comment_count');
+```
+
+Records without a primary key always compute immediately (nothing to key on).

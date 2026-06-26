@@ -8,6 +8,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./pest": {
+      "types": "./dist/pest.d.ts",
+      "import": "./dist/pest.js"
     }
   },
   "scripts": {

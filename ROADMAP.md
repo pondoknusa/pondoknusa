@@ -457,8 +457,8 @@ Deepen cache, notifications, and testing beyond the v0.1 foundations (`@tyravel/
 
 #### P2 — If scope allows
 
-- [ ] **Response cache middleware** — full-page cache for anonymous GET routes
-- [ ] **Model attribute caching** — opt-in `remember()` on expensive computed attributes
+- [x] **Response cache middleware** — full-page cache for anonymous GET routes
+- [x] **Model attribute caching** — opt-in `remember()` on expensive computed attributes
 
 ### Notifications
 
@@ -491,8 +491,8 @@ Deepen cache, notifications, and testing beyond the v0.1 foundations (`@tyravel/
 
 #### P2 — If scope allows
 
-- [ ] **Parallel test runner docs** — vitest workspace guidance for large Tyravel apps
-- [ ] **Pest-style API** — optional thin wrapper for describe/it ergonomics (not a hard dependency)
+- [x] **Parallel test runner docs** — vitest workspace guidance for large Tyravel apps
+- [x] **Pest-style API** — optional thin wrapper for describe/it ergonomics (not a hard dependency)
 
 ## Tier 16 — Core surface polish (v0.16.0)
 

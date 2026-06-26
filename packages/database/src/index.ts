@@ -33,6 +33,15 @@ export { Migrator } from './migrator.js';
 export { Seeder } from './seeder.js';
 export { SeederRunner } from './seeder-runner.js';
 export { Model } from './model.js';
+export {
+  buildAttributeCacheKey,
+  clearModelAttributeCacheResolver,
+  forgetModelAttribute,
+  getModelAttributeCache,
+  rememberModelAttribute,
+  setModelAttributeCacheResolver,
+  type AttributeCacheStore,
+} from './model-attribute-cache.js';
 export type { ModelStatic } from './model-types.js';
 export { ModelQueryBuilder } from './model-query-builder.js';
 export {

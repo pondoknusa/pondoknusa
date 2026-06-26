@@ -83,3 +83,101 @@ response.assertStatus(200);
 response.assertSee('data-tyr-island="counter"');
 response.assertSee('id="tyr-hydration"');
 ```
+
+## Pest-style ergonomics
+
+Import Vitest helpers and Tyravel lifecycle sugar from one module:
+
+```typescript
+import { describe, expect, test, uses } from '@tyravel/testing/pest';
+
+class FeatureTest extends TestCase {
+  protected createApplication() {
+    return new Application('/tmp/app');
+  }
+}
+
+const t = uses(FeatureTest);
+
+describe('posts', () => {
+  test('lists posts', async () => {
+    await t.http.get('/posts').assertOk();
+  });
+});
+```
+
+`uses()` is an alias for `withTyravelTest()`. `dataset()` formats rows for `test.each()`:
+
+```typescript
+import { dataset, test } from '@tyravel/testing/pest';
+
+test.each(dataset([
+  { slug: 'draft', status: 201 },
+  { slug: 'published', status: 200 },
+]))('creates $slug', async ({ slug, status }) => {
+  // ...
+});
+```
+
+## Parallel test runner (Vitest workspaces)
+
+Large Tyravel apps benefit from Vitest workspaces so unit, feature, and package suites run in parallel without sharing one giant config.
+
+**Monorepo root** — keep package tests isolated per project:
+
+```typescript
+// vitest.workspace.ts
+import { defineWorkspace } from 'vitest/config';
+
+export default defineWorkspace([
+  'packages/*',
+  'examples/*/vitest.config.ts',
+]);
+```
+
+**Application** — split fast unit tests from HTTP feature tests:
+
+```typescript
+// vitest.config.ts
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    name: 'unit',
+    include: ['tests/unit/**/*.test.ts'],
+    pool: 'forks',
+    fileParallelism: true,
+  },
+});
+```
+
+```typescript
+// vitest.feature.config.ts
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    name: 'feature',
+    include: ['tests/feature/**/*.test.ts'],
+    pool: 'forks',
+    fileParallelism: false, // one app boot at a time per worker
+    maxWorkers: 2,
+  },
+});
+```
+
+Register both in the workspace:
+
+```typescript
+export default defineWorkspace([
+  './vitest.config.ts',
+  './vitest.feature.config.ts',
+]);
+```
+
+Guidelines for Tyravel feature tests:
+
+- Prefer `uses(FeatureTest)` / `withTyravelTest()` so each example gets a fresh `Application`.
+- Enable `usesDatabaseTransactions` on `TestCase` when tests touch SQLite/Postgres — avoids cross-test pollution when files run in parallel.
+- Keep `MAIL_MAILER=array`, `QUEUE_CONNECTION=sync` (or fakes) in the test `.env` so parallel workers do not contend on shared mail/queue state.
+- Run `npm test -- --project feature` to execute only the feature project in CI.

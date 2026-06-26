@@ -58,6 +58,12 @@ export { createThrottleMiddleware, resetThrottleStore } from './throttle.js';
 export type { ThrottleOptions } from './throttle.js';
 export { createHttpCacheMiddleware } from './http-cache.js';
 export type { HttpCacheOptions } from './http-cache.js';
+export { createResponseCacheMiddleware } from './response-cache.js';
+export type {
+  CachedHttpResponse,
+  ResponseCacheOptions,
+  ResponseCacheStore,
+} from './response-cache.js';
 export {
   createTrustedProxiesMiddleware,
   resolveClientIp,
