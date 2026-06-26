@@ -9,7 +9,8 @@ export type HttpMethod =
   | 'OPTIONS'
   | 'HEAD';
 
-export type RouteParams = Record<string, string>;
+export type RouteParamValue = string | object;
+export type RouteParams = Record<string, RouteParamValue>;
 
 export type RouteHandler = (
   request: TyravelRequest,

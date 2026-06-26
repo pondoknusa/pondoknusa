@@ -6,11 +6,26 @@ export type CastType =
   | 'array'
   | 'datetime';
 
-export type ModelCastMap = Record<string, CastType>;
+export interface Cast {
+  get(value: unknown): unknown;
+  set(value: unknown): unknown;
+}
 
-export function castAttribute(value: unknown, type: CastType): unknown {
+export type ModelCast = CastType | Cast;
+
+export type ModelCastMap = Record<string, ModelCast>;
+
+export function isCustomCast(value: ModelCast): value is Cast {
+  return typeof value === 'object' && value !== null && 'get' in value && 'set' in value;
+}
+
+export function castAttribute(value: unknown, type: ModelCast): unknown {
   if (value === null || value === undefined) {
     return value;
+  }
+
+  if (isCustomCast(type)) {
+    return type.get(value);
   }
 
   switch (type) {
@@ -55,9 +70,13 @@ export function castAttribute(value: unknown, type: CastType): unknown {
   }
 }
 
-export function serializeCast(value: unknown, type: CastType): unknown {
+export function serializeCast(value: unknown, type: ModelCast): unknown {
   if (value === null || value === undefined) {
     return value;
+  }
+
+  if (isCustomCast(type)) {
+    return type.set(value);
   }
 
   switch (type) {

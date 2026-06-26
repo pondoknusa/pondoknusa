@@ -2,7 +2,14 @@ import { TyravelRequest } from './request.js';
 import { Response } from './response.js';
 import {
   MethodNotAllowedException,
+  NotFoundHttpException,
 } from './http-exception.js';
+import { normalizeRouteParams } from './route-params.js';
+import {
+  createRouteBinding,
+  type RouteBinding,
+  type RouteBindingResolver,
+} from './route-binding.js';
 import {
   joinRoutePaths,
   RouteGroupBuilder,
@@ -35,6 +42,27 @@ interface CompiledRoute {
   definition: RouteDefinition;
   regex: RegExp;
   paramNames: string[];
+}
+
+export interface RouteCacheManifest {
+  version: 1;
+  routes: Array<{
+    method: HttpMethod;
+    pattern: string;
+    name?: string;
+    middleware: string[];
+    action: string;
+    paramNames: string[];
+  }>;
+}
+
+export interface RouteListEntry {
+  method: HttpMethod;
+  uri: string;
+  name?: string;
+  middleware: string[];
+  action: string;
+  domain?: string;
 }
 
 class RouteRegistrar implements ScopedRouteRegistrar {
@@ -71,6 +99,9 @@ export class Router implements Routable {
   private globalMiddleware: MiddlewareInput[] = [];
   private scopeStack: RouteScope[] = [];
   private urlDefaults: RouteParams = {};
+  private readonly bindings = new Map<string, RouteBinding>();
+  private readonly implicitBindings = new Map<string, RouteBinding>();
+  private compiledCache: CompiledRoute[] | null = null;
   private readonly middlewareRegistry: MiddlewareRegistry;
   private handlerNormalizer: (handler: RouteHandler) => RouteHandler = (handler) => handler;
 
@@ -85,6 +116,26 @@ export class Router implements Routable {
   setHandlerNormalizer(normalizer: (handler: RouteHandler) => RouteHandler): this {
     this.handlerNormalizer = normalizer;
     return this;
+  }
+
+  bind(parameter: string, binding: RouteBinding | RouteBindingResolver): this {
+    const resolved = typeof binding === 'function'
+      ? createRouteBinding(binding)
+      : binding;
+    this.bindings.set(parameter, resolved);
+    return this;
+  }
+
+  registerImplicitBinding(parameter: string, binding: RouteBinding | RouteBindingResolver): this {
+    const resolved = typeof binding === 'function'
+      ? createRouteBinding(binding)
+      : binding;
+    this.implicitBindings.set(parameter, resolved);
+    return this;
+  }
+
+  getBindings(): ReadonlyMap<string, RouteBinding> {
+    return this.bindings;
   }
 
   prefix(prefix: string): MiddlewareGroupable {
@@ -154,7 +205,7 @@ export class Router implements Routable {
     middleware: MiddlewareInput[] = [],
   ): Routable {
     const activeScope = this.mergeScopes([...this.scopeStack, scope]);
-    const fullPattern = joinRoutePaths(activeScope.prefix, pattern);
+    const fullPattern = normalizeRoutePattern(joinRoutePaths(activeScope.prefix, pattern));
 
     const middlewareInputs = [
       ...this.globalMiddleware,
@@ -189,20 +240,56 @@ export class Router implements Routable {
     return this;
   }
 
-  listRoutes(): Array<{
-    method: HttpMethod;
-    uri: string;
+  listRoutes(filters: {
+    middleware?: string;
     name?: string;
-    middleware: string[];
-    action: string;
-  }> {
-    return this.routes.map((route) => ({
-      method: route.method,
-      uri: route.pattern,
-      name: route.name,
-      middleware: route.middlewareLabels ?? [],
-      action: route.handlerLabel ?? 'Closure',
-    }));
+    action?: string;
+  } = {}): RouteListEntry[] {
+    return this.routes
+      .map((route) => ({
+        method: route.method,
+        uri: route.pattern,
+        name: route.name,
+        middleware: route.middlewareLabels ?? [],
+        action: route.handlerLabel ?? 'Closure',
+      }))
+      .filter((route) => {
+        if (filters.middleware && !route.middleware.includes(filters.middleware)) {
+          return false;
+        }
+        if (filters.name && route.name !== filters.name) {
+          return false;
+        }
+        if (filters.action && !route.action.includes(filters.action)) {
+          return false;
+        }
+        return true;
+      });
+  }
+
+  exportRouteCache(): RouteCacheManifest {
+    const compiled = this.compile();
+    return {
+      version: 1,
+      routes: compiled.map((route) => ({
+        method: route.definition.method,
+        pattern: route.definition.pattern,
+        name: route.definition.name,
+        middleware: route.definition.middlewareLabels ?? [],
+        action: route.definition.handlerLabel ?? 'Closure',
+        paramNames: route.paramNames,
+      })),
+    };
+  }
+
+  warmRouteCache(): this {
+    this.compiledCache = this.buildCompiledRoutes();
+    return this;
+  }
+
+  clearRouteCache(): this {
+    this.compiledCache = null;
+    return this;
   }
 
   setUrlDefaults(defaults: RouteParams): this {
@@ -219,20 +306,23 @@ export class Router implements Routable {
     return { ...this.urlDefaults };
   }
 
-  url(name: string, params: RouteParams = {}): string {
+  url(name: string, params: RouteParams | Record<string, unknown> = {}): string {
     const route = this.namedRoutes.get(name);
     if (!route) {
       throw new Error(`Named route not found: ${name}`);
     }
 
-    const merged = { ...this.urlDefaults, ...params };
+    const merged = {
+      ...normalizeRouteParams(this.urlDefaults as Record<string, unknown>),
+      ...normalizeRouteParams(params as Record<string, unknown>),
+    };
 
     return route.pattern.replace(/:([A-Za-z0-9_]+)/g, (_, key: string) => {
       const value = merged[key];
       if (value === undefined) {
         throw new Error(`Missing route parameter: ${key}`);
       }
-      return encodeURIComponent(value);
+      return encodeURIComponent(String(value));
     });
   }
 
@@ -259,9 +349,10 @@ export class Router implements Routable {
       }
 
       const params = this.extractParams(route.paramNames, match);
+      const resolved = await this.resolveBindings(params);
       const tyravelRequest = new TyravelRequest(
         request,
-        params,
+        resolved,
         route.definition.name,
       );
 
@@ -319,7 +410,42 @@ export class Router implements Routable {
     );
   }
 
+  private async resolveBindings(params: RouteParams): Promise<RouteParams> {
+    const resolved: RouteParams = { ...params };
+
+    for (const [name, value] of Object.entries(params)) {
+      if (typeof value !== 'string') {
+        continue;
+      }
+
+      const binding = this.bindings.get(name) ?? this.implicitBindings.get(name);
+      if (!binding) {
+        continue;
+      }
+
+      const result = await binding.resolve(value);
+      if (result === null || result === undefined) {
+        if (binding.required !== false) {
+          throw new NotFoundHttpException(`No matching record for route parameter [${name}].`);
+        }
+        continue;
+      }
+
+      resolved[name] = result;
+    }
+
+    return resolved;
+  }
+
   private compile(): CompiledRoute[] {
+    if (this.compiledCache) {
+      return this.compiledCache;
+    }
+
+    return this.buildCompiledRoutes();
+  }
+
+  private buildCompiledRoutes(): CompiledRoute[] {
     return this.routes.map((definition) => {
       const paramNames: string[] = [];
       const pattern = definition.pattern
@@ -352,6 +478,10 @@ export class Router implements Routable {
 
     return params;
   }
+}
+
+function normalizeRoutePattern(pattern: string): string {
+  return pattern.replace(/\{([A-Za-z0-9_]+)\}/g, ':$1');
 }
 
 function resolveHandlerLabel(handler: RouteHandler): string {

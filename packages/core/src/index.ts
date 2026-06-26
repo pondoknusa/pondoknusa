@@ -31,7 +31,7 @@ export {
 export type { FormRequestConstructor } from './form-request.js';
 export { HttpKernel } from './http-kernel.js';
 export { ExceptionHandler } from './exception-handler.js';
-export { Route, setRouteApplication } from './route.js';
+export { Route, route, setRouteApplication } from './route.js';
 export type { RouteFacade } from './route.js';
 export { Auth, setAuthApplication } from './auth.js';
 export type { AuthFacade } from './auth.js';

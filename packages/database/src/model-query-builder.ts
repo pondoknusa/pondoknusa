@@ -11,6 +11,9 @@ export class ModelQueryBuilder extends QueryBuilder {
   protected eagerLoad: string[] = [];
   private withTrashed = false;
   private onlyTrashed = false;
+  private ignoredGlobalScopes = new Set<string>();
+  private pendingGlobalScopes: GlobalScope[] = [];
+  private globalScopesApplied = false;
 
   constructor(
     connection: DatabaseConnection,
@@ -40,6 +43,42 @@ export class ModelQueryBuilder extends QueryBuilder {
     return this;
   }
 
+  withoutGlobalScope(scope: GlobalScope | string): this {
+    const name = typeof scope === 'string' ? scope : scope.name;
+    this.ignoredGlobalScopes.add(name);
+    return this;
+  }
+
+  withoutGlobalScopes(): this {
+    this.ignoredGlobalScopes.add('*');
+    return this;
+  }
+
+  setGlobalScopes(scopes: GlobalScope[]): this {
+    this.pendingGlobalScopes = scopes;
+    return this;
+  }
+
+  shouldApplyGlobalScope(name: string): boolean {
+    return !this.ignoredGlobalScopes.has('*') && !this.ignoredGlobalScopes.has(name);
+  }
+
+  private applyPendingGlobalScopes(): void {
+    if (this.globalScopesApplied) {
+      return;
+    }
+
+    for (const scope of this.pendingGlobalScopes) {
+      if (!this.shouldApplyGlobalScope(scope.name)) {
+        continue;
+      }
+
+      scope.apply(this);
+    }
+
+    this.globalScopesApplied = true;
+  }
+
   override clone(): ModelQueryBuilder {
     const builder = new ModelQueryBuilder(
       this.connection,
@@ -56,10 +95,13 @@ export class ModelQueryBuilder extends QueryBuilder {
       builder.eagerLoad = [...this.eagerLoad];
       builder.withTrashed = this.withTrashed;
       builder.onlyTrashed = this.onlyTrashed;
+      builder.ignoredGlobalScopes = new Set(this.ignoredGlobalScopes);
+      builder.pendingGlobalScopes = [...this.pendingGlobalScopes];
+      builder.globalScopesApplied = this.globalScopesApplied;
     }
   }
 
-  protected applySoftDeleteScope(): void {
+  applySoftDeleteScope(): void {
     const model = this.model as typeof Model;
     if (!model.softDeletes || this.withTrashed) {
       return;
@@ -74,12 +116,12 @@ export class ModelQueryBuilder extends QueryBuilder {
   }
 
   override async get(): Promise<Record<string, unknown>[]> {
-    this.applySoftDeleteScope();
+    this.applyPendingGlobalScopes();
     return super.get();
   }
 
   override async count(column = '*'): Promise<number> {
-    this.applySoftDeleteScope();
+    this.applyPendingGlobalScopes();
     return super.count(column);
   }
 
@@ -144,7 +186,11 @@ export function applyGlobalScopes(
 ): ModelQueryBuilder {
   let current = builder;
   for (const scope of scopes) {
-    const result = scope(current);
+    if (!current.shouldApplyGlobalScope(scope.name)) {
+      continue;
+    }
+
+    const result = scope.apply(current);
     if (result) {
       current = result;
     }

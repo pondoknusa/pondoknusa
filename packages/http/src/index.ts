@@ -6,6 +6,7 @@ export {
   isResourceCollection,
 } from './api-resource.js';
 export type {
+  ConditionalValue,
   PaginatorLike,
   ResourcePayload,
 } from './api-resource.js';
@@ -30,7 +31,21 @@ export {
   createRouter,
   RouteNotFoundException,
   Router,
+  type RouteCacheManifest,
+  type RouteListEntry,
 } from './router.js';
+export {
+  createRouteBinding,
+  type RouteBinding,
+  type RouteBindingResolver,
+} from './route-binding.js';
+export { normalizeRouteParams, routeParamKey } from './route-params.js';
+export {
+  signRouteUrl,
+  temporarySignedRouteParams,
+  verifySignedRouteUrl,
+  type SignedUrlOptions,
+} from './signed-url.js';
 export {
   HttpException,
   MethodNotAllowedException,

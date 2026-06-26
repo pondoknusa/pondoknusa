@@ -1,4 +1,4 @@
-import { applyGlobalScopes, ModelQueryBuilder } from './model-query-builder.js';
+import { ModelQueryBuilder } from './model-query-builder.js';
 import type { LengthAwarePaginator } from './paginator.js';
 import type { ModelStatic } from './model-types.js';
 import { BelongsToManyRelation } from './relations/belongs-to-many.js';
@@ -10,7 +10,7 @@ import { MorphManyRelation } from './relations/morph-many.js';
 import { MorphToRelation } from './relations/morph-to.js';
 import { getContextConnection } from './connection-context.js';
 import type { DatabaseConnection } from './connection.js';
-import type { GlobalScope } from './scopes.js';
+import { SoftDeletingScope, type GlobalScope } from './scopes.js';
 import {
   serializeAttributesForStorage,
   type ModelCastMap,
@@ -68,7 +68,14 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
   }
 
   static addGlobalScope(scope: GlobalScope): void {
+    if (this.globalScopes.some((existing) => existing.name === scope.name)) {
+      return;
+    }
     this.globalScopes.push(scope);
+  }
+
+  static withoutGlobalScope(scope: GlobalScope | string): ModelQueryBuilder {
+    return this.query().withoutGlobalScope(scope);
   }
 
   static getConnection(): DatabaseConnection {
@@ -87,12 +94,16 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
 
   static query(): ModelQueryBuilder {
     const model = this as unknown as ModelStatic;
+    if (model.softDeletes && !this.globalScopes.some((scope) => scope.name === SoftDeletingScope.name)) {
+      this.addGlobalScope(SoftDeletingScope);
+    }
+
     const builder = new ModelQueryBuilder(
       model.getConnection(),
       model.table,
       model,
     );
-    return applyGlobalScopes(builder, this.globalScopes);
+    return builder.setGlobalScopes(this.globalScopes);
   }
 
   static scope(name: string, ...args: unknown[]): ModelQueryBuilder {

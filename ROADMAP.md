@@ -502,10 +502,10 @@ Final API pass on the three surfaces developers touch daily — models, routes, 
 
 #### P0 — Must ship
 
-- [ ] **Route model binding** — implicit `{post}` resolution with 404 on missing records; explicit `Route.bind()` customization
-- [ ] **API resources maturity** — nested resources, conditional attributes, pagination meta; promote to stable in `STABILITY.md`
-- [ ] **Global scopes** — `Model.addGlobalScope()` / `withoutGlobalScope()` with soft-delete integration
-- [ ] **Custom cast authoring** — documented `Cast` interface for project-specific types
+- [x] **Route model binding** — implicit `{post}` resolution with 404 on missing records; explicit `Route.bind()` customization
+- [x] **API resources maturity** — nested resources, conditional attributes, pagination meta; promote to stable in `STABILITY.md`
+- [x] **Global scopes** — `Model.addGlobalScope()` / `withoutGlobalScope()` with soft-delete integration
+- [x] **Custom cast authoring** — documented `Cast` interface for project-specific types
 
 #### P1 — Strong want
 
@@ -517,10 +517,10 @@ Final API pass on the three surfaces developers touch daily — models, routes, 
 
 #### P0 — Must ship
 
-- [ ] **Named route URL generation** — `route('posts.show', { post: 1 })` with type-safe params where possible
-- [ ] **Signed URLs** — `URL.signed()` / `URL.temporarySigned()` for expiring links
-- [ ] **Route caching** — `tyravel route:cache` / `route:clear` for production boot performance
-- [ ] **Improved `route:list`** — filters by middleware, domain, and controller; JSON output for tooling
+- [x] **Named route URL generation** — `route('posts.show', { post: 1 })` with type-safe params where possible
+- [x] **Signed URLs** — `URL.signed()` / `URL.temporarySigned()` for expiring links
+- [x] **Route caching** — `tyravel route:cache` / `route:clear` for production boot performance
+- [x] **Improved `route:list`** — filters by middleware, domain, and controller; JSON output for tooling
 
 #### P1 — Strong want
 

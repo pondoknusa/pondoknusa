@@ -1,8 +1,11 @@
 import { localizedRouteGroup } from '@tyravel/locale';
+import type { ModelStatic } from '@tyravel/database';
 import type {
   Groupable,
   MiddlewareGroupable,
   MiddlewareInput,
+  RouteBinding,
+  RouteBindingResolver,
   RouteHandler,
   Routable,
   Router,
@@ -10,6 +13,7 @@ import type {
 } from '@tyravel/http';
 import type { ControllerAction } from './controller.js';
 import type { Application } from './application.js';
+import { implicitBindingParameter, modelRouteBinding } from './route-model-binding.js';
 
 let activeApp: Application | undefined;
 
@@ -45,6 +49,8 @@ export interface RouteFacade {
   middleware(...middleware: MiddlewareInput[]): ScopedRouteRegistrar;
   use(...middleware: MiddlewareInput[]): Routable;
   name(name: string): Routable;
+  bind(parameter: string, binding: RouteBinding | RouteBindingResolver | ModelStatic): Routable;
+  implicitModels(...models: ModelStatic[]): Routable;
   url(name: string, params?: Parameters<Router['url']>[1]): string;
 }
 
@@ -70,5 +76,30 @@ export const Route: RouteFacade = {
     router().middleware(...middleware),
   use: (...middleware: MiddlewareInput[]): Routable => router().use(...middleware),
   name: (name: string): Routable => router().name(name),
+  bind: (parameter, binding): Routable => {
+    const resolved = isModelStatic(binding) ? modelRouteBinding(binding) : binding;
+    router().bind(parameter, resolved);
+    return router();
+  },
+  implicitModels: (...models): Routable => {
+    for (const model of models) {
+      router().registerImplicitBinding(implicitBindingParameter(model), modelRouteBinding(model));
+    }
+    return router();
+  },
   url: (name: string, params?) => router().url(name, params),
 };
+
+function isModelStatic(value: unknown): value is ModelStatic {
+  return (
+    typeof value === 'function' &&
+    'find' in value &&
+    typeof (value as ModelStatic).find === 'function' &&
+    'table' in value
+  );
+}
+
+/** Named route URL generation helper (alias for `Route.url` / `URL.route`). */
+export function route(name: string, params?: Parameters<Router['url']>[1]): string {
+  return router().url(name, params);
+}

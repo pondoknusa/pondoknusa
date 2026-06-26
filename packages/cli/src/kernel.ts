@@ -9,6 +9,7 @@ import { MakeControllerCommand } from './commands/make-controller.js';
 import { MakeMiddlewareCommand } from './commands/make-middleware.js';
 import { MakeRequestCommand } from './commands/make-request.js';
 import { MakeResourceCommand } from './commands/make-resource.js';
+import { RouteCacheCommand, RouteClearCommand } from './commands/route-cache.js';
 import { RouteListCommand } from './commands/route-list.js';
 import { ScheduleRunCommand } from './commands/schedule-run.js';
 import { SessionPruneCommand } from './commands/session-prune.js';
@@ -99,6 +100,8 @@ export function createKernel(): ConsoleKernel {
     new ScheduleRunCommand(),
     new SessionPruneCommand(),
     new RouteListCommand(),
+    new RouteCacheCommand(),
+    new RouteClearCommand(),
     new MakeMiddlewareCommand(),
     new MakeCommandCommand(),
     new VectorEmbedCommand(),

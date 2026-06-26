@@ -9,6 +9,7 @@ export interface ModelStatic {
   name: string;
   table: string;
   primaryKey: string;
+  softDeletes?: boolean;
   morphName?: string;
   vectorColumn?: string;
   getConnection(): DatabaseConnection;

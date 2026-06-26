@@ -1,5 +1,5 @@
 import { resolveClientIp, resolveSecure } from './trusted-proxies.js';
-import type { RouteParams } from './types.js';
+import type { RouteParamValue, RouteParams } from './types.js';
 import type { SessionContract } from './session-contract.js';
 
 export class TyravelRequest {
@@ -34,7 +34,54 @@ export class TyravelRequest {
   }
 
   param(name: string, fallback?: string): string | undefined {
-    return this.params[name] ?? fallback;
+    const value = this.params[name];
+    if (value === undefined) {
+      return fallback;
+    }
+
+    if (typeof value === 'string') {
+      return value;
+    }
+
+    return this.routeKey(value) ?? fallback;
+  }
+
+  routeModel<T = unknown>(name: string): T | undefined {
+    const value = this.params[name];
+    if (value === undefined || typeof value === 'string') {
+      return undefined;
+    }
+
+    return value as T;
+  }
+
+  private routeKey(value: RouteParamValue): string | undefined {
+    if (typeof value === 'string') {
+      return value;
+    }
+
+    if (typeof value === 'object' && value !== null) {
+      if ('getKey' in value && typeof (value as { getKey: () => unknown }).getKey === 'function') {
+        return String((value as { getKey: () => unknown }).getKey());
+      }
+
+      if (
+        'getAttribute' in value &&
+        typeof (value as { getAttribute: (key: string) => unknown }).getAttribute === 'function'
+      ) {
+        const model = value as {
+          getAttribute: (key: string) => unknown;
+          constructor?: { primaryKey?: string };
+        };
+        const primaryKey = model.constructor?.primaryKey ?? 'id';
+        const id = model.getAttribute(primaryKey);
+        if (id !== undefined && id !== null) {
+          return String(id);
+        }
+      }
+    }
+
+    return undefined;
   }
 
   query(name: string, fallback?: string): string | undefined {

@@ -19,10 +19,46 @@ export function isPaginatorLike(value: unknown): value is PaginatorLike {
   );
 }
 
+export type ConditionalValue<T> = T | null | undefined | false;
+
 export abstract class JsonResource<T = unknown> {
   static wrap: string | null = 'data';
 
   constructor(protected readonly resource: T) {}
+
+  protected when(
+    condition: unknown,
+    value: ResourcePayload | (() => ResourcePayload),
+  ): ResourcePayload | undefined {
+    if (!condition) {
+      return undefined;
+    }
+
+    return typeof value === 'function' ? value() : value;
+  }
+
+  protected whenLoaded(
+    relation: string,
+    value: ResourcePayload | (() => ResourcePayload),
+  ): ResourcePayload | undefined {
+    const model = this.resource as { relationLoaded?: (name: string) => boolean };
+    if (typeof model?.relationLoaded !== 'function' || !model.relationLoaded(relation)) {
+      return undefined;
+    }
+
+    return typeof value === 'function' ? value() : value;
+  }
+
+  protected mergeWhen(
+    condition: unknown,
+    value: ResourcePayload,
+  ): ResourcePayload {
+    if (!condition) {
+      return {};
+    }
+
+    return value;
+  }
 
   static make<TResource extends JsonResource>(
     this: new (resource: never) => TResource,

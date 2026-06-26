@@ -90,6 +90,33 @@ describe('API resources', () => {
     });
   });
 
+  it('supports conditional and nested resource helpers', async () => {
+    class UserWithAuthorResource extends JsonResource<UserLike & { relationLoaded?: (name: string) => boolean }> {
+      override toArray() {
+        return {
+          id: this.resource.id,
+          ...this.mergeWhen(this.resource.name === 'Ada', { featured: true }),
+          ...this.whenLoaded('author', { author: { name: 'Grace' } }),
+        };
+      }
+    }
+
+    const withRelations = new UserWithAuthorResource({
+      id: 1,
+      name: 'Ada',
+      email: 'ada@example.com',
+      relationLoaded(name: string) {
+        return name === 'author';
+      },
+    });
+
+    expect(await withRelations.toArray()).toEqual({
+      id: 1,
+      featured: true,
+      author: { name: 'Grace' },
+    });
+  });
+
   it('allows unwrapped resources when wrap is disabled', async () => {
     class PlainUserResource extends JsonResource<UserLike> {
       static override wrap = null;

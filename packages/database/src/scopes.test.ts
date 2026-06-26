@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Model } from './model.js';
+import { createGlobalScope } from './scopes.js';
 import type { ModelQueryBuilder } from './model-query-builder.js';
 import { SqliteConnection } from './sqlite-connection.js';
 
@@ -46,7 +47,7 @@ describe('query scopes', () => {
 
     const connection = new SqliteConnection(':memory:');
     Post.useConnection(connection);
-    Post.addGlobalScope((builder) => builder.where('published', 1));
+    Post.addGlobalScope(createGlobalScope('published', (builder) => builder.where('published', 1)));
 
     await connection.exec(`
       CREATE TABLE "posts" (
