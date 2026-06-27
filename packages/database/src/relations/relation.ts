@@ -1,12 +1,42 @@
+import { assertLazyLoadingAllowed } from '../lazy-loading.js';
 import type { Model } from '../model.js';
 import type { ModelStatic } from '../model-types.js';
 import type { RowValue } from '../types.js';
 
 export abstract class Relation<Related extends Model = Model> {
+  private relationName?: string;
+
   constructor(
     protected readonly parent: Model,
     protected readonly relatedModel: ModelStatic,
   ) {}
+
+  setRelationName(name: string): this {
+    this.relationName = name;
+    return this;
+  }
+
+  protected getRelationName(): string | undefined {
+    return this.relationName;
+  }
+
+  protected async resolveGet<TResult extends Related | Related[] | null>(
+    loader: () => Promise<TResult>,
+  ): Promise<TResult> {
+    const name = this.relationName;
+    if (name && this.parent.relationLoaded(name)) {
+      return this.parent.getRelation(name) as TResult;
+    }
+
+    assertLazyLoadingAllowed(this.parent, name);
+    const result = await loader();
+
+    if (name) {
+      this.parent.setRelation(name, result);
+    }
+
+    return result;
+  }
 
   abstract get(): Promise<Related | Related[] | null>;
 

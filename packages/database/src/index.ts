@@ -34,6 +34,20 @@ export { Migrator } from './migrator.js';
 export { Seeder } from './seeder.js';
 export { SeederRunner } from './seeder-runner.js';
 export { Model } from './model.js';
+export { HasUuids } from './concerns/has-uuids.js';
+export { HasUlids } from './concerns/has-ulids.js';
+export {
+  isPrunableModel,
+  pruneModel,
+  type PrunableModelStatic,
+} from './concerns/prunable.js';
+export { pruneModels, type ModelPruneReport } from './model-pruner.js';
+export {
+  LazyLoadingViolationError,
+  setPreventLazyLoading,
+  shouldPreventLazyLoading,
+} from './lazy-loading.js';
+export { generateUlid } from './ulid.js';
 export {
   buildAttributeCacheKey,
   clearModelAttributeCacheResolver,

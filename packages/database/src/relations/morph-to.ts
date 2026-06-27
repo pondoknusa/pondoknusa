@@ -18,26 +18,29 @@ export class MorphToRelation<Related extends Model = Model> extends Relation<Rel
     super(parent, parent.constructor as ModelStatic);
     this.morphType = morphType ?? `${name}_type`;
     this.morphId = morphId ?? `${name}_id`;
+    this.setRelationName(name);
   }
 
   async get(): Promise<Related | null> {
-    const type = this.parent.getAttribute(this.morphType as never) as string | undefined;
-    const id = this.parent.getAttribute(this.morphId as never) as RowValue;
-    if (!type || id === undefined || id === null) {
-      return null;
-    }
+    return this.resolveGet(async () => {
+      const type = this.parent.getAttribute(this.morphType as never) as string | undefined;
+      const id = this.parent.getAttribute(this.morphId as never) as RowValue;
+      if (!type || id === undefined || id === null) {
+        return null;
+      }
 
-    const relatedModel = resolveMorphModel(type);
-    const key = this.ownerKey ?? relatedModel.primaryKey;
-    const row = await relatedModel.query().where(key, id).first();
-    if (!row) {
-      return null;
-    }
+      const relatedModel = resolveMorphModel(type);
+      const key = this.ownerKey ?? relatedModel.primaryKey;
+      const row = await relatedModel.query().where(key, id).first();
+      if (!row) {
+        return null;
+      }
 
-    const ModelClass = relatedModel as new (
-      attributes?: Record<string, unknown>,
-    ) => Related;
-    return new ModelClass(row);
+      const ModelClass = relatedModel as new (
+        attributes?: Record<string, unknown>,
+      ) => Related;
+      return new ModelClass(row);
+    });
   }
 
   override eagerLoadKeys(parents: Model[]): RowValue[] {

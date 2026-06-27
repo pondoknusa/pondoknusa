@@ -27,6 +27,8 @@ import {
   setModelAttributeCacheResolver,
   type AttributeCacheStore,
 } from './model-attribute-cache.js';
+import { setPreventLazyLoading } from './lazy-loading.js';
+import type { Relation } from './relations/relation.js';
 import { singularSnakeCase } from './utils.js';
 
 type ModelAttributes = Record<string, unknown>;
@@ -34,6 +36,8 @@ type ModelAttributes = Record<string, unknown>;
 export class Model<T extends ModelAttributes = ModelAttributes> {
   static table = '';
   static primaryKey = 'id';
+  static incrementing = true;
+  static keyType: 'int' | 'string' = 'int';
   static appends: string[] = [];
   static casts: ModelCastMap = {};
   static softDeletes = false;
@@ -61,6 +65,14 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
 
   static setAttributeCachePrefix(prefix: string): void {
     this.attributeCachePrefix = prefix;
+  }
+
+  static preventLazyLoading(enabled = true): void {
+    setPreventLazyLoading(enabled);
+  }
+
+  protected relation<T extends Relation>(name: string, factory: () => T): T {
+    return factory().setRelationName(name);
   }
 
   static useConnection(connection: DatabaseConnection): void {
@@ -149,7 +161,7 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
       model.casts,
     );
     const id = await model.query().insert(payload);
-    if (id !== undefined) {
+    if (id !== undefined && model.incrementing) {
       instance.setAttribute(model.primaryKey as keyof ModelAttributes, id as never);
     }
 
@@ -399,7 +411,7 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
 
     if (isNew) {
       const insertedId = await model.query().insert(payload);
-      if (insertedId !== undefined) {
+      if (insertedId !== undefined && model.incrementing) {
         this.setAttribute(primaryKey as keyof T, insertedId as T[keyof T]);
       }
       await fireModelEvent(this, 'created');

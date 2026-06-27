@@ -32,12 +32,13 @@ export class BelongsToManyRelation<Related extends Model = Model> extends Relati
   }
 
   async get(): Promise<Related[]> {
-    const parentId = this.parent.getAttribute(this.parentKey as never) as RowValue;
-    if (parentId === undefined || parentId === null) {
-      return [];
-    }
+    return this.resolveGet(async () => {
+      const parentId = this.parent.getAttribute(this.parentKey as never) as RowValue;
+      if (parentId === undefined || parentId === null) {
+        return [];
+      }
 
-    const grammar = this.relatedModel.getConnection().grammar;
+      const grammar = this.relatedModel.getConnection().grammar;
     const relatedTable = this.relatedModel.table;
     const pivot = grammar.wrapIdentifier(this.pivotTable);
     const related = grammar.wrapIdentifier(relatedTable);
@@ -57,7 +58,8 @@ export class BelongsToManyRelation<Related extends Model = Model> extends Relati
       attributes?: Record<string, unknown>,
     ) => Related;
 
-    return result.rows.map((row) => this.hydrateRelated(ModelClass, row));
+      return result.rows.map((row) => this.hydrateRelated(ModelClass, row));
+    });
   }
 
   override eagerLoadKeys(parents: Model[]): RowValue[] {

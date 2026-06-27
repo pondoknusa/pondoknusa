@@ -18,6 +18,7 @@ import { MakeSubscriberCommand } from './commands/make-subscriber.js';
 import { MakeListenerCommand } from './commands/make-listener.js';
 import { MakeMigrationCommand } from './commands/make-migration.js';
 import { MakeModelCommand } from './commands/make-model.js';
+import { ModelPruneCommand } from './commands/model-prune.js';
 import { MakeProviderCommand } from './commands/make-provider.js';
 import { MakeComponentCommand } from './commands/make-component.js';
 import { MakeIslandCommand } from './commands/make-island.js';
@@ -77,6 +78,7 @@ export function createKernel(): ConsoleKernel {
     new MakeRequestCommand(),
     new MakeResourceCommand(),
     new MakeModelCommand(),
+    new ModelPruneCommand(),
     new MakeFactoryCommand(),
     new MakeSeederCommand(),
     new MakeMigrationCommand(),

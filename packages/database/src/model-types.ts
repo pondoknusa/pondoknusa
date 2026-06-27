@@ -9,6 +9,8 @@ export interface ModelStatic {
   name: string;
   table: string;
   primaryKey: string;
+  incrementing?: boolean;
+  keyType?: 'int' | 'string';
   softDeletes?: boolean;
   morphName?: string;
   vectorColumn?: string;

@@ -20,7 +20,7 @@ export class HasManyRelation<Related extends Model = Model> extends Relation<Rel
   }
 
   async get(): Promise<Related[]> {
-    return this.query().getModels<Related>();
+    return this.resolveGet(async () => this.query().getModels<Related>());
   }
 
   override eagerLoadKeys(parents: Model[]): RowValue[] {

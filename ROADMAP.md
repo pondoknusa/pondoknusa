@@ -509,9 +509,9 @@ Final API pass on the three surfaces developers touch daily — models, routes, 
 
 #### P1 — Strong want
 
-- [ ] **Prunable models** — `tyravel model:prune` for models with `prunable()` definition
-- [ ] **Model:uuid / ulid** — trait + migration helper for non-incrementing keys
-- [ ] **Lazy loading prevention** — dev-mode exception on unguarded relation access (opt-in)
+- [x] **Prunable models** — `tyravel model:prune` for models with `prunable()` definition
+- [x] **Model:uuid / ulid** — trait + migration helper for non-incrementing keys
+- [x] **Lazy loading prevention** — dev-mode exception on unguarded relation access (opt-in)
 
 ### Routes
 

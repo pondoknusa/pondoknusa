@@ -27,6 +27,20 @@ describe('Blueprint', () => {
     );
   });
 
+  it('compiles uuid and ulid primary key columns', () => {
+    const sqliteUuid = new Blueprint('devices', new SqliteGrammar());
+    sqliteUuid.uuid('id');
+    expect(sqliteUuid.toCreateSql()).toContain('"id" TEXT NOT NULL PRIMARY KEY');
+
+    const postgresUuid = new Blueprint('devices', new PostgresGrammar());
+    postgresUuid.uuid('id');
+    expect(postgresUuid.toCreateSql()).toContain('"id" UUID PRIMARY KEY');
+
+    const mysqlUlid = new Blueprint('sessions', new MysqlGrammar());
+    mysqlUlid.ulid('id');
+    expect(mysqlUlid.toCreateSql()).toContain('`id` CHAR(26) NOT NULL PRIMARY KEY');
+  });
+
   it('compiles mysql create table SQL', () => {
     const blueprint = new Blueprint('jobs', new MysqlGrammar());
     blueprint.id();

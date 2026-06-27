@@ -238,8 +238,34 @@ export class ${className} extends FormRequest {
 `;
 }
 
-export function model(name: string): string {
+export function model(name: string, keyType: 'int' | 'uuid' | 'ulid' = 'int'): string {
   const table = `${name.charAt(0).toLowerCase()}${name.slice(1)}s`;
+
+  if (keyType === 'uuid') {
+    return `import { HasUuids } from '@tyravel/database';
+
+export interface ${name}Attributes {
+  id: string;
+}
+
+export class ${name} extends HasUuids<${name}Attributes> {
+  static override table = '${table}';
+}
+`;
+  }
+
+  if (keyType === 'ulid') {
+    return `import { HasUlids } from '@tyravel/database';
+
+export interface ${name}Attributes {
+  id: string;
+}
+
+export class ${name} extends HasUlids<${name}Attributes> {
+  static override table = '${table}';
+}
+`;
+  }
 
   return `import { Model } from '@tyravel/database';
 
@@ -249,6 +275,42 @@ export interface ${name}Attributes {
 
 export class ${name} extends Model<${name}Attributes> {
   static override table = '${table}';
+}
+`;
+}
+
+export function uuidModelMigration(tableName: string): string {
+  return `import { Migration } from '@tyravel/database';
+
+export default class Create${tableName.charAt(0).toUpperCase()}${tableName.slice(1)}Table extends Migration {
+  async up(): Promise<void> {
+    await this.schema.create('${tableName}', (table) => {
+      table.uuid('id');
+      table.timestamps();
+    });
+  }
+
+  async down(): Promise<void> {
+    await this.schema.drop('${tableName}');
+  }
+}
+`;
+}
+
+export function ulidModelMigration(tableName: string): string {
+  return `import { Migration } from '@tyravel/database';
+
+export default class Create${tableName.charAt(0).toUpperCase()}${tableName.slice(1)}Table extends Migration {
+  async up(): Promise<void> {
+    await this.schema.create('${tableName}', (table) => {
+      table.ulid('id');
+      table.timestamps();
+    });
+  }
+
+  async down(): Promise<void> {
+    await this.schema.drop('${tableName}');
+  }
 }
 `;
 }

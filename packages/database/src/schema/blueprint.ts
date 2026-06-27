@@ -8,6 +8,36 @@ export class Blueprint {
     private readonly grammar: SqlGrammar,
   ) {}
 
+  uuid(name = 'id'): this {
+    const column = this.column(name);
+    switch (this.grammar.driver) {
+      case 'postgres':
+        this.statements.push(`${column} UUID PRIMARY KEY`);
+        break;
+      case 'mysql':
+        this.statements.push(`${column} CHAR(36) NOT NULL PRIMARY KEY`);
+        break;
+      default:
+        this.statements.push(`${column} TEXT NOT NULL PRIMARY KEY`);
+        break;
+    }
+    return this;
+  }
+
+  ulid(name = 'id'): this {
+    const column = this.column(name);
+    switch (this.grammar.driver) {
+      case 'postgres':
+      case 'mysql':
+        this.statements.push(`${column} CHAR(26) NOT NULL PRIMARY KEY`);
+        break;
+      default:
+        this.statements.push(`${column} TEXT NOT NULL PRIMARY KEY`);
+        break;
+    }
+    return this;
+  }
+
   id(name = 'id'): this {
     const column = this.column(name);
     switch (this.grammar.driver) {

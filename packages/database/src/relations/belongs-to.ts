@@ -20,12 +20,14 @@ export class BelongsToRelation<Related extends Model = Model> extends Relation<R
   }
 
   async get(): Promise<Related | null> {
-    const foreignValue = this.parent.getAttribute(this.foreignKey as never) as RowValue;
-    if (foreignValue === undefined || foreignValue === null) {
-      return null;
-    }
+    return this.resolveGet(async () => {
+      const foreignValue = this.parent.getAttribute(this.foreignKey as never) as RowValue;
+      if (foreignValue === undefined || foreignValue === null) {
+        return null;
+      }
 
-    return this.query().firstModel<Related>();
+      return this.query().firstModel<Related>();
+    });
   }
 
   override eagerLoadKeys(parents: Model[]): RowValue[] {

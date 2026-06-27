@@ -20,6 +20,7 @@ export class MorphManyRelation<Related extends Model = Model> extends Relation<R
     super(parent, relatedModel);
     this.morphType = morphType ?? `${name}_type`;
     this.morphId = morphId ?? `${name}_id`;
+    this.setRelationName(name);
   }
 
   query(): ModelQueryBuilder {
@@ -34,7 +35,7 @@ export class MorphManyRelation<Related extends Model = Model> extends Relation<R
   }
 
   async get(): Promise<Related[]> {
-    return this.query().getModels<Related>();
+    return this.resolveGet(async () => this.query().getModels<Related>());
   }
 
   override eagerLoadKeys(parents: Model[]): RowValue[] {
