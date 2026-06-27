@@ -18,5 +18,8 @@ describe('API stability policy', () => {
 
     expect(policy).toContain('Deep imports');
     expect(guide).toContain('STABILITY.md');
+    expect(policy).toContain('upgrading-to-1.0.md');
+    expect(guide).toContain('/guide/upgrading-to-1.0');
+    expect(readFileSync(join(ROOT, 'docs/guide/upgrading-to-1.0.md'), 'utf8')).toContain('Removed sync helpers');
   });
 });

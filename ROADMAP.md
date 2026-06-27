@@ -494,7 +494,7 @@ Deepen cache, notifications, and testing beyond the v0.1 foundations (`@tyravel/
 - [x] **Parallel test runner docs** — vitest workspace guidance for large Tyravel apps
 - [x] **Pest-style API** — optional thin wrapper for describe/it ergonomics (not a hard dependency)
 
-## Tier 16 — Core surface polish (v0.16.0)
+## Tier 16 — Core surface polish (v0.16.0) ✓
 
 Final API pass on the three surfaces developers touch daily — models, routes, and views — before the 1.0 stability freeze.
 

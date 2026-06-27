@@ -6,7 +6,7 @@ The canonical policy lives in [STABILITY.md](https://github.com/thesimonharms/ty
 
 ## Version numbers
 
-All first-party packages share one version (for example `0.6.1`) and ship together on each release.
+All first-party packages share one version (for example `0.16.0`) and ship together on each release.
 
 | Release | What to expect |
 |---------|----------------|

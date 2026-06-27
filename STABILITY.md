@@ -4,7 +4,7 @@ Tyravel publishes the `@tyravel/*` packages as a versioned monorepo. This docume
 
 ## Versioning
 
-All first-party packages share a single version (for example `0.6.1`) and are released together.
+All first-party packages share a single version (for example `0.16.0`) and are released together.
 
 | Segment | Meaning |
 |---------|---------|

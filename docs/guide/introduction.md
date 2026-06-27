@@ -33,4 +33,4 @@ See the [monorepo README](https://github.com/thesimonharms/tyravel#packages) for
 
 ## Upgrading
 
-Tyravel is pre-1.0 but documents which APIs are stable vs experimental. Read [API stability](/guide/api-stability) before upgrading across minor versions.
+Tyravel is pre-1.0 but documents which APIs are stable vs experimental. Read [API stability](/guide/api-stability) before upgrading across minor versions. Apps on **0.11–0.16** should follow [Upgrading to 1.0](/guide/upgrading-to-1.0) to drop removed sync helpers and adopt async catalog APIs.

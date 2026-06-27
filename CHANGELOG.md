@@ -257,6 +257,7 @@ First public release of the `@tyravel/*` monorepo.
 - Requires **Node.js ≥ 22**
 - New apps default to **database** queue with `jobs`, `failed_jobs`, and `notifications` migrations scaffolded
 
+[0.16.0]: https://github.com/thesimonharms/tyravel/releases/tag/v0.16.0
 [0.15.0]: https://github.com/thesimonharms/tyravel/releases/tag/v0.15.0
 [0.14.0]: https://github.com/thesimonharms/tyravel/releases/tag/v0.14.0
 [0.13.0]: https://github.com/thesimonharms/tyravel/releases/tag/v0.13.0

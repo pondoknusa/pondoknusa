@@ -1,6 +1,6 @@
 # Tyravel
 
-**v0.13.0** — TypeScript-native web framework with Laravel-style ergonomics (service container, routing, middleware, queues, auth, post-quantum crypto, and an Artisan-like CLI) on standard Web APIs.
+**v0.16.0** — TypeScript-native web framework with Laravel-style ergonomics (service container, routing, middleware, queues, auth, post-quantum crypto, and an Artisan-like CLI) on standard Web APIs.
 
 Requires **Node.js ≥ 26** — native SQLite (`node:sqlite`), WebSocket server/client framing, and OpenSSL post-quantum crypto with no JavaScript fallbacks.
 
@@ -19,7 +19,7 @@ That is the full set of external production dependencies across the Tyravel mono
 
 ## API stability
 
-Published `@tyravel/*` packages follow the semver and deprecation rules in [STABILITY.md](STABILITY.md). Patch releases preserve documented stable APIs; experimental features (programmatic `.tyr.ts` views, REPL, etc.) may change in minors.
+Published `@tyravel/*` packages follow the semver and deprecation rules in [STABILITY.md](STABILITY.md). Patch releases preserve documented stable APIs; experimental features (programmatic `.tyr.ts` views, REPL, etc.) may change in minors. See [Upgrading to 1.0](docs/guide/upgrading-to-1.0.md) when moving from 0.x.
 
 ## Packages
 
@@ -827,7 +827,7 @@ export class AppServiceProvider extends ServiceProvider {
 ## Development
 
 ```bash
-npm test          # Run all package tests (requires Node 26+; 599 tests)
+npm test          # Run all package tests (requires Node 26+; 700+ tests)
 npm run build     # Build all packages
 npm run typecheck # Type-check via project references
 ```
@@ -859,7 +859,7 @@ Build static output with `npm run docs:build`.
 
 See [ROADMAP.md](./ROADMAP.md) for release tiers.
 
-### Shipped highlights (through v0.13.0)
+### Shipped highlights (through v0.16.0)
 
 - [x] Service container, HTTP router, kernel, `Route` facade, CLI scaffolding
 - [x] Eloquent-style ORM, views, queue/events, cache, mail, notifications, broadcasting, storage
@@ -867,6 +867,9 @@ See [ROADMAP.md](./ROADMAP.md) for release tiers.
 - [x] OAuth2 authorization server (`@tyravel/auth-oauth`) and `@tyravel/testing` HTTP client
 - [x] Post-quantum crypto on Node 26+ (`@tyravel/crypto`): ML-KEM, ML-DSA, SLH-DSA, hybrid encryption
 - [x] Native WebSocket broadcasting (`@tyravel/broadcasting-websocket`) and Echo client with zero peer deps
+- [x] AI-native stack (v0.14): vector search, RAG, GraphQL, MCP server
+- [x] Infrastructure depth (v0.15): taggable cache, notification channels, testing fakes
+- [x] Core surface polish (v0.16): route model binding, signed URLs, typed view props, `view:catalog`, prunable models — pre-1.0 sync API sweep complete
 - [x] Optional drivers only when you need them — five third-party production deps across the whole monorepo
 
 ## License
