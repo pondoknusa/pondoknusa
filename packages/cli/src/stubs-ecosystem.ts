@@ -60,6 +60,9 @@ export default {
     enabled: true,
     limit: 60,
     windowMs: 60_000,
+    limits: {
+      api: { limit: 60, windowMs: 60_000 },
+    },
   },
 } satisfies HttpConfig;
 `;

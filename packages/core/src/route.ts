@@ -6,6 +6,7 @@ import type {
   MiddlewareInput,
   RouteBinding,
   RouteBindingResolver,
+  RouteGroupOptions,
   RouteHandler,
   Routable,
   Router,
@@ -39,6 +40,7 @@ function toHandler(handler: RouteTarget): RouteHandler {
 export interface RouteFacade {
   prefix(prefix: string): MiddlewareGroupable;
   namePrefix(prefix: string): MiddlewareGroupable;
+  group(options: RouteGroupOptions, callback: (routes: Groupable) => void): Routable;
   group(callback: (routes: Groupable) => void): Routable;
   localize(callback: (routes: Groupable) => void): Routable;
   get(pattern: string, handler: RouteTarget): Routable;
@@ -49,6 +51,7 @@ export interface RouteFacade {
   middleware(...middleware: MiddlewareInput[]): ScopedRouteRegistrar;
   use(...middleware: MiddlewareInput[]): Routable;
   name(name: string): Routable;
+  throttle(preset: string): Routable;
   bind(parameter: string, binding: RouteBinding | RouteBindingResolver | ModelStatic): Routable;
   implicitModels(...models: ModelStatic[]): Routable;
   url(name: string, params?: Parameters<Router['url']>[1]): string;
@@ -57,7 +60,16 @@ export interface RouteFacade {
 export const Route: RouteFacade = {
   prefix: (prefix: string): MiddlewareGroupable => router().prefix(prefix),
   namePrefix: (prefix: string): MiddlewareGroupable => router().namePrefix(prefix),
-  group: (callback: (routes: Groupable) => void): Routable => router().group(callback),
+  group: (
+    optionsOrCallback: RouteGroupOptions | ((routes: Groupable) => void),
+    maybeCallback?: (routes: Groupable) => void,
+  ): Routable => {
+    if (typeof optionsOrCallback === 'function') {
+      return router().group(optionsOrCallback);
+    }
+
+    return router().group(optionsOrCallback, maybeCallback!);
+  },
   localize: (callback: (routes: Groupable) => void): Routable => {
     localizedRouteGroup(router(), {}, callback);
     return router();
@@ -76,6 +88,7 @@ export const Route: RouteFacade = {
     router().middleware(...middleware),
   use: (...middleware: MiddlewareInput[]): Routable => router().use(...middleware),
   name: (name: string): Routable => router().name(name),
+  throttle: (preset: string): Routable => router().throttle(preset),
   bind: (parameter, binding): Routable => {
     const resolved = isModelStatic(binding) ? modelRouteBinding(binding) : binding;
     router().bind(parameter, resolved);

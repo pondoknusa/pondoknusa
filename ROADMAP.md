@@ -524,9 +524,9 @@ Final API pass on the three surfaces developers touch daily — models, routes, 
 
 #### P1 — Strong want
 
-- [ ] **Route groups in TypeScript** — `Route.group({ prefix, middleware }, () => { … })` with inferred name prefixes
-- [ ] **Rate limit per route** — fluent `->throttle('api')` on individual routes
-- [ ] **`tyravel make:controller --api`** — invokable + resource controller scaffolds aligned with binding
+- [x] **Route groups in TypeScript** — `Route.group({ prefix, middleware }, () => { … })` with inferred name prefixes
+- [x] **Rate limit per route** — fluent `->throttle('api')` on individual routes
+- [x] **`tyravel make:controller --api`** — invokable + resource controller scaffolds aligned with binding
 
 ### Views
 

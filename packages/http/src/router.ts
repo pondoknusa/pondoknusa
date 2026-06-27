@@ -16,9 +16,12 @@ import {
   type Groupable,
   type MiddlewareGroupable,
   type Routable,
+  type RouteGroupOptions,
   type RouteScope,
   type ScopedRouteRegistrar,
 } from './route-group.js';
+import { applyRouteGroupOptions } from './route-group-options.js';
+import { throttleMiddlewareAlias } from './throttle.js';
 import {
   MiddlewareRegistry,
   type MiddlewareInput,
@@ -146,8 +149,21 @@ export class Router implements Routable {
     return new RouteGroupBuilder(this).namePrefix(prefix);
   }
 
-  group(callback: (routes: Groupable) => void): Routable {
-    return new RouteGroupBuilder(this).group(callback);
+  group(
+    options: RouteGroupOptions,
+    callback: (routes: Groupable) => void,
+  ): Routable;
+  group(callback: (routes: Groupable) => void): Routable;
+  group(
+    optionsOrCallback: RouteGroupOptions | ((routes: Groupable) => void),
+    maybeCallback?: (routes: Groupable) => void,
+  ): Routable {
+    if (typeof optionsOrCallback === 'function') {
+      return new RouteGroupBuilder(this).group(optionsOrCallback);
+    }
+
+    const builder = applyRouteGroupOptions(new RouteGroupBuilder(this), optionsOrCallback);
+    return builder.group(maybeCallback!);
   }
 
   middleware(...middleware: MiddlewareInput[]): ScopedRouteRegistrar {
@@ -161,6 +177,10 @@ export class Router implements Routable {
     } finally {
       this.scopeStack.pop();
     }
+  }
+
+  hasActiveScope(): boolean {
+    return this.scopeStack.length > 0;
   }
 
   get(pattern: string, handler: RouteHandler): Routable {
@@ -237,6 +257,21 @@ export class Router implements Routable {
 
     route.name = scopedName;
     this.namedRoutes.set(scopedName, route);
+    return this;
+  }
+
+  throttle(preset: string): Routable {
+    const route = this.routes.at(-1);
+    if (!route) {
+      throw new Error('Cannot throttle a route before defining one.');
+    }
+
+    const label = throttleMiddlewareAlias(preset);
+    route.middlewareLabels = [...(route.middlewareLabels ?? []), label];
+    route.middleware = [
+      ...route.middleware,
+      this.middlewareRegistry.resolve(label),
+    ];
     return this;
   }
 

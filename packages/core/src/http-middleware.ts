@@ -2,7 +2,9 @@ import {
   createCorsMiddleware,
   createThrottleMiddleware,
   createTrustedProxiesMiddleware,
+  registerThrottlePresets,
   type CorsOptions,
+  type ThrottlePresetMap,
 } from '@tyravel/http';
 import type { ConfigRepository } from '@tyravel/config';
 import type { Application } from './application.js';
@@ -17,6 +19,7 @@ export interface HttpConfig {
     enabled?: boolean;
     limit: number;
     windowMs: number;
+    limits?: ThrottlePresetMap;
   };
 }
 
@@ -41,5 +44,11 @@ export function registerHttpMiddleware(
         windowMs: httpConfig.throttle.windowMs,
       }),
     );
+
+    if (httpConfig.throttle.limits) {
+      registerThrottlePresets((name, middleware) => {
+        app.middleware(name, middleware);
+      }, httpConfig.throttle.limits);
+    }
   }
 }

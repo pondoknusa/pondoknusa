@@ -1,11 +1,17 @@
 import type { MiddlewareInput } from './middleware-registry.js';
 import type { Router } from './router.js';
+import {
+  applyRouteGroupOptions,
+  type RouteGroupOptions,
+} from './route-group-options.js';
 import type {
   HttpMethod,
   Middleware,
   RouteHandler,
   RouteParams,
 } from './types.js';
+
+export type { RouteGroupOptions } from './route-group-options.js';
 
 export interface RouteScope {
   prefix: string;
@@ -21,6 +27,7 @@ export interface Routable {
   delete(pattern: string, handler: RouteHandler): Routable;
   use(...middleware: MiddlewareInput[]): Routable;
   name(name: string): Routable;
+  throttle(preset: string): Routable;
   url(name: string, params?: RouteParams): string;
 }
 
@@ -119,11 +126,18 @@ export class RouteGroupBuilder implements MiddlewareGroupable {
     return this.router.name(name);
   }
 
+  throttle(preset: string): Routable {
+    return this.router.throttle(preset);
+  }
+
   url(name: string, params?: RouteParams): string {
     return this.router.url(name, params);
   }
 
   private add(method: HttpMethod, pattern: string, handler: RouteHandler): Routable {
-    return this.router.addScoped(this.scope, method, pattern, handler);
+    const scope = this.router.hasActiveScope()
+      ? { prefix: '', middleware: [] as MiddlewareInput[] }
+      : this.scope;
+    return this.router.addScoped(scope, method, pattern, handler);
   }
 }

@@ -51,3 +51,20 @@ export function createThrottleMiddleware(options: ThrottleOptions): Middleware {
 export function resetThrottleStore(): void {
   store.clear();
 }
+
+export interface ThrottlePresetMap {
+  [preset: string]: ThrottleOptions;
+}
+
+export function throttleMiddlewareAlias(preset: string): string {
+  return `throttle:${preset}`;
+}
+
+export function registerThrottlePresets(
+  register: (name: string, middleware: Middleware) => void,
+  presets: ThrottlePresetMap,
+): void {
+  for (const [name, options] of Object.entries(presets)) {
+    register(throttleMiddlewareAlias(name), createThrottleMiddleware(options));
+  }
+}

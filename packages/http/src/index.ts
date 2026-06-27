@@ -69,7 +69,12 @@ export type {
 export {
   joinRoutePaths,
   RouteGroupBuilder,
+  type RouteGroupOptions,
 } from './route-group.js';
+export {
+  applyRouteGroupOptions,
+  normalizeMiddlewareInput,
+} from './route-group-options.js';
 export {
   MiddlewareNotFoundException,
   MiddlewareRegistry,
@@ -77,8 +82,13 @@ export {
 export type { MiddlewareInput } from './middleware-registry.js';
 export { createCorsMiddleware } from './cors.js';
 export type { CorsOptions } from './cors.js';
-export { createThrottleMiddleware, resetThrottleStore } from './throttle.js';
-export type { ThrottleOptions } from './throttle.js';
+export {
+  createThrottleMiddleware,
+  registerThrottlePresets,
+  resetThrottleStore,
+  throttleMiddlewareAlias,
+} from './throttle.js';
+export type { ThrottleOptions, ThrottlePresetMap } from './throttle.js';
 export { createHttpCacheMiddleware } from './http-cache.js';
 export type { HttpCacheOptions } from './http-cache.js';
 export { createResponseCacheMiddleware } from './response-cache.js';

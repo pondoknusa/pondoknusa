@@ -204,6 +204,90 @@ export class ${className} {
 `;
 }
 
+export function invokableController(name: string): string {
+  const className = `${name}Controller`;
+
+  return `import type { TyravelRequest } from '@tyravel/http';
+import { Response } from '@tyravel/http';
+
+export class ${className} {
+  async __invoke(_request: TyravelRequest) {
+    return Response.json({
+      message: '${className}',
+    });
+  }
+}
+`;
+}
+
+export function apiResourceController(name: string): string {
+  const className = `${name}Controller`;
+  const parameter = name.charAt(0).toLowerCase() + name.slice(1);
+  const table = `${parameter}s`;
+
+  return `import type { TyravelRequest } from '@tyravel/http';
+import { Response } from '@tyravel/http';
+import { ${name}, type ${name} } from '../models/${name}.js';
+
+export class ${className} {
+  async index() {
+    const records = await ${name}.all();
+    return Response.json(records.map((record) => record.toJSON()));
+  }
+
+  async show(request: TyravelRequest) {
+    const ${parameter} = request.routeModel<${name}>('${parameter}');
+    return Response.json(${parameter}?.toJSON() ?? null);
+  }
+
+  async store(request: TyravelRequest) {
+    const record = await ${name}.create(await request.json());
+    return Response.json(record.toJSON(), { status: 201 });
+  }
+
+  async update(request: TyravelRequest) {
+    const ${parameter} = request.routeModel<${name}>('${parameter}');
+    if (!${parameter}) {
+      return Response.json({ message: 'Not found.' }, { status: 404 });
+    }
+
+    await ${parameter}.update(await request.json());
+    return Response.json(${parameter}.toJSON());
+  }
+
+  async destroy(request: TyravelRequest) {
+    const ${parameter} = request.routeModel<${name}>('${parameter}');
+    if (!${parameter}) {
+      return Response.json({ message: 'Not found.' }, { status: 404 });
+    }
+
+    await ${parameter}.delete();
+    return Response.noContent();
+  }
+}
+`;
+}
+
+export function apiResourceRouteHint(name: string, invokable = false): string {
+  const className = `${name}Controller`;
+  const parameter = name.charAt(0).toLowerCase() + name.slice(1);
+  const path = `${parameter}s`;
+
+  if (invokable) {
+    return `Route.implicitModels(${name});
+Route.get('/${path}/{${parameter}}', ${className}).name('${path}.show');`;
+  }
+
+  return `Route.implicitModels(${name});
+Route.group({ prefix: 'api', as: 'api.' }, () => {
+  Route.get('/${path}', [${className}, 'index']).name('${path}.index');
+  Route.get('/${path}/{${parameter}}', [${className}, 'show']).name('${path}.show');
+  Route.post('/${path}', [${className}, 'store']).name('${path}.store');
+  Route.put('/${path}/{${parameter}}', [${className}, 'update']).name('${path}.update');
+  Route.delete('/${path}/{${parameter}}', [${className}, 'destroy']).name('${path}.destroy');
+});`;
+}
+
 export function apiResource(name: string): string {
   const className = name.endsWith('Resource') ? name : `${name}Resource`;
 
