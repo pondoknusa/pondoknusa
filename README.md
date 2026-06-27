@@ -847,13 +847,21 @@ See [CHANGELOG.md](./CHANGELOG.md) for release notes.
 
 ## Documentation
 
-Tutorial guides live in the [docs site](./docs/). Run locally:
+The [docs site](./docs/) includes:
+
+- **Guide** — concepts (routing, ORM, auth, views, …)
+- **Reference** — auto-generated `@tyravel/*` package exports and CLI commands (`npm run docs:generate`)
+- **Tutorials** — zero-to-deploy track
+- **Cookbook** — focused recipes (realtime, RAG, testing)
+
+Run locally:
 
 ```bash
-npm run docs:dev
+npm run docs:dev      # regenerates reference + starts VitePress
+npm run docs:build    # production build (also runs in CI)
 ```
 
-Build static output with `npm run docs:build`.
+Published to GitHub Pages via `.github/workflows/docs.yml` (configure Pages in repo settings).
 
 ## Roadmap
 

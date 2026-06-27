@@ -10,16 +10,19 @@ hero:
       text: Get started
       link: /guide/getting-started
     - theme: alt
-      text: View on GitHub
-      link: https://github.com/thesimonharms/tyravel
+      text: Tutorial track
+      link: /tutorials/
+    - theme: alt
+      text: Package reference
+      link: /reference/
 
 features:
   - title: Familiar patterns
     details: Route groups, controllers, service providers, facades, and form requests modeled after Laravel.
   - title: TypeScript-first
     details: Typed config, models, jobs, events, and validation rules with full IDE support.
-  - title: Production adapters
-    details: Redis cache and queue drivers, SMTP mail, database sessions, social OAuth, and an OAuth2 server.
+  - title: Full documentation
+    details: Guide chapters, auto-generated package & CLI reference, zero-to-deploy tutorials, and a cookbook.
   - title: Post-quantum ready
     details: ML-KEM and ML-DSA via @tyravel/crypto — session encryption at rest and signed OAuth tokens.
 ---

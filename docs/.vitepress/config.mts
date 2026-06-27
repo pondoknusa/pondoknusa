@@ -1,4 +1,10 @@
 import { defineConfig } from 'vitepress';
+import {
+  cookbookSidebar,
+  guideSidebar,
+  referenceSidebar,
+  tutorialsSidebar,
+} from './sidebar.mts';
 
 export default defineConfig({
   title: 'Tyravel',
@@ -23,6 +29,9 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: 'Guide', link: '/guide/introduction', activeMatch: '/guide/' },
+      { text: 'Reference', link: '/reference/', activeMatch: '/reference/' },
+      { text: 'Tutorials', link: '/tutorials/', activeMatch: '/tutorials/' },
+      { text: 'Cookbook', link: '/cookbook/', activeMatch: '/cookbook/' },
       {
         text: 'v0.16.0',
         items: [
@@ -30,63 +39,17 @@ export default defineConfig({
           { text: 'API stability', link: '/guide/api-stability' },
           { text: 'Upgrading to 1.0', link: '/guide/upgrading-to-1.0' },
           { text: 'Roadmap', link: 'https://github.com/thesimonharms/tyravel/blob/main/ROADMAP.md' },
-          { text: 'Contributing', link: 'https://github.com/thesimonharms/tyravel' },
+          { text: 'GitHub', link: 'https://github.com/thesimonharms/tyravel' },
         ],
       },
     ],
 
-    sidebar: [
-      {
-        text: 'Getting started',
-        items: [
-          { text: 'Introduction', link: '/guide/introduction' },
-          { text: 'Installation', link: '/guide/getting-started' },
-          { text: 'Application structure', link: '/guide/application-structure' },
-          { text: 'API stability', link: '/guide/api-stability' },
-          { text: 'Upgrading to 1.0', link: '/guide/upgrading-to-1.0' },
-        ],
-      },
-      {
-        text: 'Core concepts',
-        items: [
-          { text: 'Configuration', link: '/guide/configuration' },
-          { text: 'Routing', link: '/guide/routing' },
-          { text: 'Controllers & middleware', link: '/guide/controllers' },
-          { text: 'Validation & form requests', link: '/guide/validation' },
-        ],
-      },
-      {
-        text: 'Data & APIs',
-        items: [
-          { text: 'Database & ORM', link: '/guide/database' },
-          { text: 'API resources', link: '/guide/api-resources' },
-          { text: 'Pagination', link: '/guide/pagination' },
-        ],
-      },
-      {
-        text: 'Platform features',
-        items: [
-          { text: 'Authentication', link: '/guide/auth' },
-          { text: 'Post-quantum crypto', link: '/guide/crypto' },
-          { text: 'Cache', link: '/guide/cache' },
-          { text: 'Mail', link: '/guide/mail' },
-          { text: 'Notifications', link: '/guide/notifications' },
-          { text: 'Storage', link: '/guide/storage' },
-          { text: 'Queues & jobs', link: '/guide/queues' },
-          { text: 'Events', link: '/guide/events' },
-          { text: 'Views & templating', link: '/guide/views' },
-          { text: 'Testing', link: '/guide/testing' },
-        ],
-      },
-      {
-        text: 'Packages',
-        items: [
-          { text: 'Service container', link: '/guide/container' },
-          { text: 'Collections', link: '/guide/collection' },
-          { text: 'Support utilities', link: '/guide/support' },
-        ],
-      },
-    ],
+    sidebar: {
+      '/guide/': guideSidebar,
+      '/reference/': referenceSidebar,
+      '/tutorials/': tutorialsSidebar,
+      '/cookbook/': cookbookSidebar,
+    },
 
     editLink: {
       pattern: 'https://github.com/thesimonharms/tyravel/edit/main/docs/:path',

@@ -1,0 +1,367 @@
+{
+  "generatedAt": "2026-06-27T13:28:51.634Z",
+  "version": "0.16.0",
+  "packages": [
+    {
+      "name": "@tyravel/admin",
+      "slug": "admin",
+      "description": "Optional CRUD admin panel for Tyravel",
+      "path": "reference/generated/packages/admin"
+    },
+    {
+      "name": "@tyravel/auth",
+      "slug": "auth",
+      "description": "Authentication and authorization for Tyravel",
+      "path": "reference/generated/packages/auth"
+    },
+    {
+      "name": "@tyravel/auth-oauth",
+      "slug": "auth-oauth",
+      "description": "OAuth2 authorization server for Tyravel",
+      "path": "reference/generated/packages/auth-oauth"
+    },
+    {
+      "name": "@tyravel/broadcasting",
+      "slug": "broadcasting",
+      "description": "Real-time event broadcasting for Tyravel",
+      "path": "reference/generated/packages/broadcasting"
+    },
+    {
+      "name": "@tyravel/broadcasting-websocket",
+      "slug": "broadcasting-websocket",
+      "description": "Native WebSocket broadcast driver and hub for Tyravel",
+      "path": "reference/generated/packages/broadcasting-websocket"
+    },
+    {
+      "name": "@tyravel/cache",
+      "slug": "cache",
+      "description": "Cache stores and repository for Tyravel",
+      "path": "reference/generated/packages/cache"
+    },
+    {
+      "name": "@tyravel/cache-dynamodb",
+      "slug": "cache-dynamodb",
+      "description": "DynamoDB cache driver for Tyravel",
+      "path": "reference/generated/packages/cache-dynamodb"
+    },
+    {
+      "name": "@tyravel/cache-memcached",
+      "slug": "cache-memcached",
+      "description": "Memcached cache driver for Tyravel",
+      "path": "reference/generated/packages/cache-memcached"
+    },
+    {
+      "name": "@tyravel/cache-upstash",
+      "slug": "cache-upstash",
+      "description": "Upstash Redis REST cache driver for Tyravel",
+      "path": "reference/generated/packages/cache-upstash"
+    },
+    {
+      "name": "@tyravel/cli",
+      "slug": "cli",
+      "description": "The Tyravel command-line interface",
+      "path": "reference/generated/packages/cli"
+    },
+    {
+      "name": "@tyravel/collection",
+      "slug": "collection",
+      "description": "Fluent, typed collection pipeline for Tyravel",
+      "path": "reference/generated/packages/collection"
+    },
+    {
+      "name": "@tyravel/config",
+      "slug": "config",
+      "description": "Typed configuration loading for Tyravel",
+      "path": "reference/generated/packages/config"
+    },
+    {
+      "name": "@tyravel/container",
+      "slug": "container",
+      "description": "IoC service container for Tyravel",
+      "path": "reference/generated/packages/container"
+    },
+    {
+      "name": "@tyravel/core",
+      "slug": "core",
+      "description": "Tyravel application kernel, providers, and facades",
+      "path": "reference/generated/packages/core"
+    },
+    {
+      "name": "@tyravel/crypto",
+      "slug": "crypto",
+      "description": "Post-quantum cryptography for Tyravel",
+      "path": "reference/generated/packages/crypto"
+    },
+    {
+      "name": "@tyravel/database",
+      "slug": "database",
+      "description": "Database ORM, query builder, and migrations for Tyravel",
+      "path": "reference/generated/packages/database"
+    },
+    {
+      "name": "@tyravel/database-mysql",
+      "slug": "database-mysql",
+      "description": "MySQL database driver for Tyravel",
+      "path": "reference/generated/packages/database-mysql"
+    },
+    {
+      "name": "@tyravel/database-pg",
+      "slug": "database-pg",
+      "description": "PostgreSQL database driver for Tyravel",
+      "path": "reference/generated/packages/database-pg"
+    },
+    {
+      "name": "@tyravel/debug",
+      "slug": "debug",
+      "description": "Request timeline and debug bar for Tyravel",
+      "path": "reference/generated/packages/debug"
+    },
+    {
+      "name": "@tyravel/echo",
+      "slug": "echo",
+      "description": "Laravel Echo-style browser client for Tyravel broadcasting",
+      "path": "reference/generated/packages/echo"
+    },
+    {
+      "name": "@tyravel/events",
+      "slug": "events",
+      "description": "Domain events and listeners for Tyravel",
+      "path": "reference/generated/packages/events"
+    },
+    {
+      "name": "@tyravel/graphql",
+      "slug": "graphql",
+      "description": "Zero-dependency GraphQL server with programmatic schema and operation caching for Tyravel",
+      "path": "reference/generated/packages/graphql"
+    },
+    {
+      "name": "@tyravel/http",
+      "slug": "http",
+      "description": "HTTP router and middleware for Tyravel",
+      "path": "reference/generated/packages/http"
+    },
+    {
+      "name": "@tyravel/locale",
+      "slug": "locale",
+      "description": "Localization and translation for Tyravel",
+      "path": "reference/generated/packages/locale"
+    },
+    {
+      "name": "@tyravel/log",
+      "slug": "log",
+      "description": "Structured logging channels and repository for Tyravel",
+      "path": "reference/generated/packages/log"
+    },
+    {
+      "name": "@tyravel/mail",
+      "slug": "mail",
+      "description": "Mail manager, mailables, and SMTP for Tyravel",
+      "path": "reference/generated/packages/mail"
+    },
+    {
+      "name": "@tyravel/mcp",
+      "slug": "mcp",
+      "description": "MCP server and capability manifest for Tyravel agents",
+      "path": "reference/generated/packages/mcp"
+    },
+    {
+      "name": "@tyravel/notifications",
+      "slug": "notifications",
+      "description": "Multi-channel notifications for Tyravel",
+      "path": "reference/generated/packages/notifications"
+    },
+    {
+      "name": "@tyravel/queue",
+      "slug": "queue",
+      "description": "Queue and background jobs for Tyravel",
+      "path": "reference/generated/packages/queue"
+    },
+    {
+      "name": "@tyravel/rag",
+      "slug": "rag",
+      "description": "RAG ingestion and retrieval helpers for Tyravel",
+      "path": "reference/generated/packages/rag"
+    },
+    {
+      "name": "@tyravel/redis",
+      "slug": "redis",
+      "description": "Redis connection manager for Tyravel",
+      "path": "reference/generated/packages/redis"
+    },
+    {
+      "name": "@tyravel/redis-node",
+      "slug": "redis-node",
+      "description": "node-redis client driver for Tyravel",
+      "path": "reference/generated/packages/redis-node"
+    },
+    {
+      "name": "@tyravel/repl",
+      "slug": "repl",
+      "description": "Interactive Tyravel REPL (tyravel shell)",
+      "path": "reference/generated/packages/repl"
+    },
+    {
+      "name": "@tyravel/ssr",
+      "slug": "ssr",
+      "description": "Client-side hydration runtime for Tyravel SSR islands",
+      "path": "reference/generated/packages/ssr"
+    },
+    {
+      "name": "@tyravel/storage",
+      "slug": "storage",
+      "description": "Filesystem storage and repository for Tyravel",
+      "path": "reference/generated/packages/storage"
+    },
+    {
+      "name": "@tyravel/storage-aws-s3",
+      "slug": "storage-aws-s3",
+      "description": "AWS S3 storage driver for Tyravel",
+      "path": "reference/generated/packages/storage-aws-s3"
+    },
+    {
+      "name": "@tyravel/storage-r2",
+      "slug": "storage-r2",
+      "description": "Cloudflare R2 storage driver for Tyravel",
+      "path": "reference/generated/packages/storage-r2"
+    },
+    {
+      "name": "@tyravel/storage-supabase",
+      "slug": "storage-supabase",
+      "description": "Supabase storage driver for Tyravel",
+      "path": "reference/generated/packages/storage-supabase"
+    },
+    {
+      "name": "@tyravel/support",
+      "slug": "support",
+      "description": "String and utility helpers for Tyravel",
+      "path": "reference/generated/packages/support"
+    },
+    {
+      "name": "@tyravel/testing",
+      "slug": "testing",
+      "description": "Testing utilities for Tyravel applications",
+      "path": "reference/generated/packages/testing"
+    },
+    {
+      "name": "@tyravel/validation",
+      "slug": "validation",
+      "description": "Request validation for Tyravel",
+      "path": "reference/generated/packages/validation"
+    },
+    {
+      "name": "@tyravel/vector",
+      "slug": "vector",
+      "description": "Embedding storage and vector similarity search for Tyravel",
+      "path": "reference/generated/packages/vector"
+    },
+    {
+      "name": "@tyravel/vector-pg",
+      "slug": "vector-pg",
+      "description": "pgvector driver for Tyravel vector search",
+      "path": "reference/generated/packages/vector-pg"
+    },
+    {
+      "name": "@tyravel/vector-pinecone",
+      "slug": "vector-pinecone",
+      "description": "Pinecone vector store driver for Tyravel",
+      "path": "reference/generated/packages/vector-pinecone"
+    },
+    {
+      "name": "@tyravel/vector-qdrant",
+      "slug": "vector-qdrant",
+      "description": "Qdrant vector store driver for Tyravel",
+      "path": "reference/generated/packages/vector-qdrant"
+    },
+    {
+      "name": "@tyravel/views",
+      "slug": "views",
+      "description": "Blade-like view engine for Tyravel",
+      "path": "reference/generated/packages/views"
+    }
+  ],
+  "commands": [
+    "admin:install",
+    "auth:install",
+    "crypto:generate-keys",
+    "crypto:install",
+    "db:seed",
+    "debug:clear",
+    "debug:install",
+    "debug:watch",
+    "lang:missing",
+    "lang:publish",
+    "make:command",
+    "make:component",
+    "make:controller",
+    "make:event",
+    "make:factory",
+    "make:island",
+    "make:job",
+    "make:listener",
+    "make:middleware",
+    "make:migration",
+    "make:model",
+    "make:provider",
+    "make:rag-resource",
+    "make:request",
+    "make:resource",
+    "make:seeder",
+    "make:social-driver",
+    "make:subscriber",
+    "make:test",
+    "make:tool",
+    "make:view",
+    "mcp:export-rules",
+    "mcp:serve",
+    "migrate",
+    "model:prune",
+    "new",
+    "notification:failed",
+    "notification:retry",
+    "oauth:client:create",
+    "oauth:install",
+    "queue:failed",
+    "queue:failed-table",
+    "queue:retry",
+    "queue:table",
+    "queue:work",
+    "route:cache",
+    "route:clear",
+    "route:list",
+    "schedule:run",
+    "serve",
+    "session:prune",
+    "shell",
+    "vector:embed",
+    "vector:install",
+    "version",
+    "view:cache",
+    "view:catalog",
+    "view:clear",
+    "view:lint",
+    "view:types",
+    "view:watch"
+  ],
+  "facades": [
+    "Route",
+    "DB",
+    "Auth",
+    "Cache",
+    "Queue",
+    "Events",
+    "Log",
+    "Mail",
+    "Notifications",
+    "Schedule",
+    "Storage",
+    "View",
+    "Config",
+    "Broadcast"
+  ],
+  "sections": [
+    "guide",
+    "reference",
+    "tutorials",
+    "cookbook"
+  ]
+}

@@ -554,10 +554,14 @@ Tyravel **1.0.0** is the first semver-strict era (see [STABILITY.md](STABILITY.m
 
 ### Documentation (primary 1.0 deliverable)
 
-- [ ] **Hosted documentation site** — public docs beyond in-repo VitePress; versioned for 1.0
-- [ ] **Complete package reference** — every `@tyravel/*` package with API tables, config keys, and CLI commands
-- [ ] **Tutorial track** — zero-to-deploy: `tyravel new` → auth → queue → broadcasting → deploy
-- [ ] **Cookbook** — recipes for RAG, admin panel, real-time UI, multi-locale apps, and testing patterns
+- [x] **In-repo documentation system** — VitePress guide + reference + tutorials + cookbook; `npm run docs:generate` for package/CLI manifests; GitHub Pages workflow (`.github/workflows/docs.yml`)
+- [ ] **Hosted documentation site** — public docs beyond in-repo VitePress; versioned for 1.0 (GitHub Pages / tyravel.dev)
+- [x] **Package & CLI reference (generated)** — every `@tyravel/*` package with exports table; full `tyravel` command list from `@tyravel/cli`
+- [ ] **Complete package reference** — per-package config keys, facade method tables, and deeper API prose beyond generated exports
+- [x] **Tutorial track (scaffold)** — zero-to-deploy outline: install → auth → queue → realtime/deploy (`docs/tutorials/`)
+- [ ] **Tutorial track (complete)** — flesh out steps with verified commands, example repo links, and deploy provider notes
+- [x] **Cookbook (scaffold)** — starter recipes for realtime Echo, RAG Q&A, and testing fakes (`docs/cookbook/`)
+- [ ] **Cookbook (complete)** — recipes for admin panel, multi-locale apps, and additional production patterns
 - [ ] **Ecosystem guide** — how to publish and maintain third-party `@tyravel/*` packages
 
 ### 1.0 gate

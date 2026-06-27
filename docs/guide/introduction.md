@@ -29,7 +29,16 @@ Tyravel is a TypeScript-native web framework that brings Laravel-style ergonomic
 | `@tyravel/crypto` | Post-quantum encryption and signatures |
 | `@tyravel/cli` | Project scaffolding and generators |
 
-See the [monorepo README](https://github.com/thesimonharms/tyravel#packages) for the full package list.
+See the [package reference](/reference/generated/packages) for every `@tyravel/*` package, or the [monorepo README](https://github.com/thesimonharms/tyravel#packages) for a quick overview.
+
+## Documentation map
+
+| Section | Best for |
+|---------|----------|
+| [Guide](/guide/introduction) | Concepts and how things work |
+| [Reference](/reference/) | Package exports, CLI commands, facades |
+| [Tutorials](/tutorials/) | Zero-to-deploy learning path |
+| [Cookbook](/cookbook/) | Focused recipes (realtime, RAG, testing) |
 
 ## Upgrading
 
