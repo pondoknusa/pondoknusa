@@ -24,10 +24,11 @@ export default defineConfig({
     nav: [
       { text: 'Guide', link: '/guide/introduction', activeMatch: '/guide/' },
       {
-        text: 'v0.11.0',
+        text: 'v0.16.0',
         items: [
           { text: 'Changelog', link: 'https://github.com/thesimonharms/tyravel/blob/main/CHANGELOG.md' },
           { text: 'API stability', link: '/guide/api-stability' },
+          { text: 'Upgrading to 1.0', link: '/guide/upgrading-to-1.0' },
           { text: 'Roadmap', link: 'https://github.com/thesimonharms/tyravel/blob/main/ROADMAP.md' },
           { text: 'Contributing', link: 'https://github.com/thesimonharms/tyravel' },
         ],
@@ -42,6 +43,7 @@ export default defineConfig({
           { text: 'Installation', link: '/guide/getting-started' },
           { text: 'Application structure', link: '/guide/application-structure' },
           { text: 'API stability', link: '/guide/api-stability' },
+          { text: 'Upgrading to 1.0', link: '/guide/upgrading-to-1.0' },
         ],
       },
       {

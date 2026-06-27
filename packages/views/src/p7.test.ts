@@ -58,7 +58,7 @@ describe('P7 view features', () => {
     expect(html).toContain('Hello Ada');
   });
 
-  it('builds a component catalog with props and slots', () => {
+  it('builds a component catalog with props and slots', async () => {
     const { basePath } = createFixture();
 
     writeFileSync(
@@ -71,7 +71,7 @@ describe('P7 view features', () => {
 `,
     );
 
-    const catalog = buildViewCatalog(basePath, { path: 'resources/views' });
+    const catalog = await buildViewCatalog(basePath, { path: 'resources/views' });
     const panel = catalog.components.find((entry) => entry.name === 'panel');
 
     expect(panel).toMatchObject({

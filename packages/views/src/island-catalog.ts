@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { compile } from './compiler.js';
-import { discoverViewNamesSync } from './compiled-cache.js';
+import { discoverViewNames } from './compiled-cache.js';
 import type { ComponentCatalogEntry } from './component-catalog.js';
 import { buildComponentCatalog } from './component-catalog.js';
 import type { TemplateOp, ViewConfig } from './types.js';
@@ -23,30 +23,33 @@ export interface ViewCatalog {
   islands: IslandCatalogEntry[];
 }
 
-export function buildViewCatalog(
+export async function buildViewCatalog(
   basePath: string,
   config: ViewConfig,
   namespaces: ReadonlyMap<string, string> = new Map(),
-): ViewCatalog {
+): Promise<ViewCatalog> {
   return {
-    components: buildComponentCatalog(basePath, config, namespaces),
-    islands: buildIslandCatalog(basePath, config),
+    components: await buildComponentCatalog(basePath, config, namespaces),
+    islands: await buildIslandCatalog(basePath, config),
   };
 }
 
-export function buildIslandCatalog(basePath: string, config: ViewConfig): IslandCatalogEntry[] {
+export async function buildIslandCatalog(
+  basePath: string,
+  config: ViewConfig,
+): Promise<IslandCatalogEntry[]> {
   const extension = config.extension ?? '.tyr';
   const programmaticExtension = config.programmaticExtension ?? '.tyr.ts';
   const viewsRoot = join(basePath, config.path);
   const byId = new Map<string, IslandCatalogEntry>();
 
-  for (const relative of discoverViewNamesSync(viewsRoot, extension)) {
+  for (const relative of await discoverViewNames(viewsRoot, extension)) {
     const viewName = relative.replace(/\//g, '.');
     const path = join(viewsRoot, `${relative.replace(/\./g, '/')}${extension}`);
     collectIslandsFromView(viewName, path, byId);
   }
 
-  for (const relative of discoverViewNamesSync(viewsRoot, programmaticExtension)) {
+  for (const relative of await discoverViewNames(viewsRoot, programmaticExtension)) {
     const path = join(viewsRoot, `${relative.replace(/\./g, '/')}${programmaticExtension}`);
     const id = relative.split('.').pop() ?? relative;
     const entry = ensureIslandEntry(byId, id);
@@ -56,7 +59,7 @@ export function buildIslandCatalog(basePath: string, config: ViewConfig): Island
 
   const clientRoot = join(basePath, 'resources/client/islands');
   if (existsSync(clientRoot)) {
-    for (const file of discoverViewNamesSync(clientRoot, '.ts')) {
+    for (const file of await discoverViewNames(clientRoot, '.ts')) {
       const id = file.split('/').pop() ?? file;
       const path = join(clientRoot, `${file.replace(/\./g, '/')}.ts`);
       const entry = ensureIslandEntry(byId, id);

@@ -1,5 +1,4 @@
 import { constants } from 'node:fs';
-import { existsSync, readFileSync } from 'node:fs';
 import { access, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -23,24 +22,6 @@ export async function loadEnv(
   }
 
   const content = await readFile(envPath, 'utf8');
-  applyEnvVariables(parseEnv(content), options.override);
-  return true;
-}
-
-/**
- * @deprecated Use `await loadEnv()` instead. Removed in 1.0.0.
- */
-export function loadEnvSync(
-  basePath: string,
-  options: LoadEnvOptions = {},
-): boolean {
-  const envPath = options.path ?? join(basePath, '.env');
-
-  if (!existsSync(envPath)) {
-    return false;
-  }
-
-  const content = readFileSync(envPath, 'utf8');
   applyEnvVariables(parseEnv(content), options.override);
   return true;
 }

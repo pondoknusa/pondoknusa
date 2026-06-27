@@ -48,15 +48,16 @@ Stable APIs are safe to build production applications on. Patch releases preserv
 |------|----------------|
 | **Kernel** | `Application`, `ServiceProvider`, `HttpKernel`, `ExceptionHandler`, `serve()` |
 | **Facades** | `Route`, `DB`, `Auth`, `Cache`, `Queue`, `Events`, `Log`, `Mail`, `Notifications`, `Schedule`, `Storage`, `View`, `Config` (via repository) |
-| **HTTP** | `Router`, middleware registry, `Request`/`Response` helpers, CORS/throttle middleware, API resources |
-| **Database** | `Model`, query builder, relations, migrations, factories, seeders, pagination |
+| **HTTP** | `Router`, middleware registry, `Request`/`Response` helpers, CORS/throttle middleware, API resources (nested resources, conditional attributes, pagination meta) |
+| **Database** | `Model`, query builder, relations, migrations, factories, seeders, pagination; route model binding; global scopes; custom `Cast` authoring; `HasUuids` / `HasUlids` base classes; `prunable()` models; `Model.preventLazyLoading()` |
+| **Routing** | Implicit `{model}` binding with `Route.bind()` customization; `route()` URL generation; `URL.signed()` / `URL.temporarySigned()`; route caching (`tyravel route:cache` / `route:clear`); `Route.group({ prefix, middleware, as })`; per-route `throttle()` presets |
 | **Validation** | `Validator`, `validateRequest`, pipe rules |
 | **Config** | `env`, `envBool`, `envInt`, `requiredEnv`, `loadConfig`, `ConfigRepository`, `s` config schemas |
-| **Views** | `.tyr` directives documented through Tier 6 (layouts, components, stacks, forms, `@if`/`@foreach`, etc.) |
+| **Views** | `.tyr` directives through Tier 6; typed component props (`ViewPropsMap`, `DefineViewProps`, `tyravel view:types`); strict `view:lint`; production compiled-cache enforcement; `View.renderFragment()` / `View.partial()`; `Response.partial()`; `tyravel view:catalog` |
 | **SSR & hydration** | `View.renderStream()`, `View.streamSsr()`, `@stream` / `@endstream`, `@island` / `@endisland`, `View.getHydrationManifest()`, `data-tyr-island` markers, `Response.ssr()` / `Response.ssrStream()` / `buildSsrDocument()` / `streamSsrDocument()`, `@tyravel/ssr` (`registerIsland`, `hydrate`, `readManifestFromDocument`), `@tyravel/testing` `assertIsland` / `assertHydrationManifest` |
 | **Queue & events** | Job dispatch, workers, listeners, subscribers |
 | **Auth** | Session guard, API tokens, `Gate`, password reset, OAuth providers |
-| **CLI** | Commands listed in the root README (`tyravel new`, `serve`, `migrate`, `make:*`, `queue:*`, `view:*`, etc.) |
+| **CLI** | Commands listed in the root README (`tyravel new`, `serve`, `migrate`, `make:*`, `queue:*`, `view:*`, `route:cache`, `model:prune`, etc.) |
 | **Testing** | `@tyravel/testing` `TestCase`, HTTP client, `renderView`, assertion helpers |
 
 ### Experimental
@@ -65,10 +66,9 @@ Experimental APIs are shipped and tested but may change in a minor release witho
 
 | Area | Experimental surface |
 |------|----------------------|
-| **Views (P7)** | Programmatic `.tyr.ts` views, `View.catalog()` |
+| **Views (P7)** | Programmatic `.tyr.ts` views, `View.catalog()` runtime API |
 | **DX** | `tyravel shell` / `@tyravel/repl` facade loading behavior |
 | **Bus** | Auto-discovered command/provider conventions (paths and naming may evolve) |
-| **Typed view props** | `ViewPropsMap` module augmentation pattern |
 
 Experimental APIs may be promoted to **stable** in a minor release once documented and covered by compatibility tests.
 
@@ -112,3 +112,4 @@ If a patch release breaks documented stable behavior, please [open an issue](htt
 - [CHANGELOG.md](CHANGELOG.md) — version history
 - [ROADMAP.md](ROADMAP.md) — planned features and tier completion
 - [docs/guide/api-stability.md](docs/guide/api-stability.md) — guide-oriented summary
+- [docs/guide/upgrading-to-1.0.md](docs/guide/upgrading-to-1.0.md) — migration guide for 0.x apps

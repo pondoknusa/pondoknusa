@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { fileURLToPath } from 'node:url';
-import { loadEnv, loadEnvSync, parseEnv } from './load-env.js';
+import { loadEnv, parseEnv } from './load-env.js';
 
 const fixturePath = fileURLToPath(
   new URL('./fixtures/.env.sample', import.meta.url),
@@ -67,16 +67,3 @@ describe('loadEnv', () => {
   });
 });
 
-describe('loadEnvSync', () => {
-  it('remains available for transitional sync callers', () => {
-    process.env.APP_NAME = 'OldName';
-
-    expect(
-      loadEnvSync(process.cwd(), {
-        path: fixturePath,
-        override: true,
-      }),
-    ).toBe(true);
-    expect(process.env.APP_NAME).toBe('FixtureApp');
-  });
-});

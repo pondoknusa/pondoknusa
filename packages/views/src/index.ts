@@ -1,13 +1,9 @@
 export {
   cacheFileForView,
   clearCompiledCacheDir,
-  clearCompiledCacheDirSync,
   discoverViewNames,
-  discoverViewNamesSync,
   readCompiledCache,
-  readCompiledCacheSync,
   writeCompiledCache,
-  writeCompiledCacheSync,
 } from './compiled-cache.js';
 export type { SerializedCacheEntry } from './compiled-cache.js';
 export { DEFAULT_VIEW_CONFIG } from './default-config.js';

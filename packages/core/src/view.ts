@@ -72,8 +72,8 @@ export interface ViewFacade {
     options?: SsrStreamOptions,
   ): Response;
   exists(name: string): Promise<boolean>;
-  catalog(): ViewCatalog;
-  islandCatalog(): IslandCatalogEntry[];
+  catalog(): Promise<ViewCatalog>;
+  islandCatalog(): Promise<IslandCatalogEntry[]>;
   escape(context: string, handler: EscapeHandler): ViewFacade;
   getHydrationManifest(): { islands: Array<{ id: string; html: string; props: Record<string, unknown> }> };
   directive(name: string, handler: CustomDirectiveHandler): ViewFacade;

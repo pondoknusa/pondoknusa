@@ -1,4 +1,3 @@
-import { existsSync, readFileSync } from 'node:fs';
 import { access, readFile } from 'node:fs/promises';
 import { constants } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -41,41 +40,9 @@ export async function findProjectRoot(startDir = process.cwd()): Promise<string 
   }
 }
 
-/**
- * @deprecated Use `await findProjectRoot()` instead. Removed in 1.0.0.
- */
-export function findProjectRootSync(startDir = process.cwd()): string | undefined {
-  let current = resolve(startDir);
-
-  while (true) {
-    if (PROJECT_MARKERS.every((marker) => existsSync(join(current, marker)))) {
-      return current;
-    }
-
-    const parent = dirname(current);
-    if (parent === current) {
-      return undefined;
-    }
-    current = parent;
-  }
-}
-
 export async function loadProjectConfig(root: string): Promise<TyravelConfig> {
   const configPath = join(root, 'tyravel.json');
   const raw = await readFile(configPath, 'utf8');
-  try {
-    return JSON.parse(raw) as TyravelConfig;
-  } catch {
-    throw new Error(`Invalid JSON in ${configPath}`);
-  }
-}
-
-/**
- * @deprecated Use `await loadProjectConfig()` instead. Removed in 1.0.0.
- */
-export function loadProjectConfigSync(root: string): TyravelConfig {
-  const configPath = join(root, 'tyravel.json');
-  const raw = readFileSync(configPath, 'utf8');
   try {
     return JSON.parse(raw) as TyravelConfig;
   } catch {
@@ -93,15 +60,3 @@ export async function requireProjectRoot(startDir = process.cwd()): Promise<stri
   return root;
 }
 
-/**
- * @deprecated Use `await requireProjectRoot()` instead. Removed in 1.0.0.
- */
-export function requireProjectRootSync(startDir = process.cwd()): string {
-  const root = findProjectRootSync(startDir);
-  if (!root) {
-    throw new Error(
-      'Could not find a Tyravel project. Run this command from an app directory or use `tyravel new`.',
-    );
-  }
-  return root;
-}

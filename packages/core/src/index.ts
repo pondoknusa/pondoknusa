@@ -104,7 +104,6 @@ export {
   envBool,
   envInt,
   loadEnv,
-  loadEnvSync,
 } from '@tyravel/config';
 export { Mailable, SendMailable } from '@tyravel/mail';
 export { Notification, type Notifiable, NotificationRegistry } from '@tyravel/notifications';

@@ -544,9 +544,9 @@ Final API pass on the three surfaces developers touch daily — models, routes, 
 
 ### v0.16 closeout
 
-- [ ] **Stable API audit** — every public export in `STABILITY.md` reviewed; experimental items promoted or cut
-- [ ] **Deprecation sweep** — remove deprecated APIs slated for 1.0; document migration in CHANGELOG
-- [ ] **0.x → 1.0 migration guide** — in-repo guide for upgrading apps on 0.11–0.16
+- [x] **Stable API audit** — every public export in `STABILITY.md` reviewed; experimental items promoted or cut
+- [x] **Deprecation sweep** — remove deprecated APIs slated for 1.0; document migration in CHANGELOG
+- [x] **0.x → 1.0 migration guide** — in-repo guide for upgrading apps on 0.11–0.16
 
 ## v1.0.0 — Documentation & semver strict
 

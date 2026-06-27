@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { compile } from './compiler.js';
-import { discoverViewNamesSync } from './compiled-cache.js';
+import { discoverViewNames } from './compiled-cache.js';
 import type { TemplateOp, ViewConfig } from './types.js';
 import { parseViewName } from './view-namespaces.js';
 
@@ -13,11 +13,11 @@ export interface ComponentCatalogEntry {
   aware: string[];
 }
 
-export function buildComponentCatalog(
+export async function buildComponentCatalog(
   basePath: string,
   config: ViewConfig,
   namespaces: ReadonlyMap<string, string> = new Map(),
-): ComponentCatalogEntry[] {
+): Promise<ComponentCatalogEntry[]> {
   const extension = config.extension ?? '.tyr';
   const viewsRoot = join(basePath, config.path);
   const entries: ComponentCatalogEntry[] = [];
@@ -34,7 +34,7 @@ export function buildComponentCatalog(
   }
 
   for (const { prefix, root } of componentRoots) {
-    for (const relative of discoverViewNamesSync(root, extension)) {
+    for (const relative of await discoverViewNames(root, extension)) {
       const name = `${prefix}.${relative}`;
       const path = join(root, `${relative.replace(/\./g, '/')}${extension}`);
       entries.push(inspectComponent(name, path));

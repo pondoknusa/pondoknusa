@@ -1,4 +1,3 @@
-import { mkdirSync, writeFileSync as writeFileSyncFs } from 'node:fs';
 import { access, mkdir, writeFile as writeFileAsync } from 'node:fs/promises';
 import { constants } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -33,14 +32,6 @@ export async function pathExists(path: string): Promise<boolean> {
 export async function writeFile(path: string, contents: string): Promise<void> {
   await mkdir(dirname(path), { recursive: true });
   await writeFileAsync(path, contents, 'utf8');
-}
-
-/**
- * @deprecated Use `await writeFile()` instead. Removed in 1.0.0.
- */
-export function writeFileSync(path: string, contents: string): void {
-  mkdirSync(dirname(path), { recursive: true });
-  writeFileSyncFs(path, contents, 'utf8');
 }
 
 export function projectPath(root: string, ...segments: string[]): string {

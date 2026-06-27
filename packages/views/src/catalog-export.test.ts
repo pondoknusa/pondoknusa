@@ -6,7 +6,7 @@ import { buildViewCatalog } from './island-catalog.js';
 import { serializeViewCatalog } from './catalog-export.js';
 
 describe('serializeViewCatalog', () => {
-  it('adds typed prop schemas for design-system export', () => {
+  it('adds typed prop schemas for design-system export', async () => {
     const basePath = join(tmpdir(), `tyravel-catalog-export-${Date.now()}`);
     const viewsPath = join(basePath, 'resources/views/components');
     mkdirSync(viewsPath, { recursive: true });
@@ -19,7 +19,7 @@ describe('serializeViewCatalog', () => {
     );
 
     const exported = serializeViewCatalog(
-      buildViewCatalog(basePath, { path: 'resources/views' }),
+      await buildViewCatalog(basePath, { path: 'resources/views' }),
     );
 
     expect(exported.generatedAt).toBeTruthy();

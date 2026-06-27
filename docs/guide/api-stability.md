@@ -42,19 +42,20 @@ Build applications against these without expecting silent breakage in patch rele
 
 - Application boot, service providers, HTTP kernel, `serve()`
 - Routing, middleware, controllers, form requests, validation
-- Eloquent-style models, migrations, factories, seeders
+- Eloquent-style models, migrations, factories, seeders; route model binding; global scopes; `HasUuids` / `HasUlids`; `prunable()` models; lazy-load prevention
+- API resources with nested resources, conditional attributes, and pagination meta
+- Routing: `route()` URL generation, signed URLs, route caching, `Route.group()`, per-route `throttle()`
 - Session/token auth, policies, queues, events, mail, notifications
 - Config loading, `env()` / `requiredEnv()`, and optional per-file `schema` validation
-- Core view features: layouts, components, stacks, form directives, compiled cache
+- Core view features: layouts, components, stacks, form directives, compiled cache, typed props (`ViewPropsMap`, `tyravel view:types`), `view:lint --strict`, partial reload helpers (`View.partial()`, `Response.partial()`), `tyravel view:catalog`
 - SSR and progressive enhancement: `View.renderStream()`, `View.streamSsr()`, `@stream` / `@endstream`, `@island`, `View.getHydrationManifest()`, `Response.ssr()` / `Response.ssrStream()`, `@tyravel/ssr` hydration runtime
 
 ### Experimental (may change in minors)
 
 Useful but evolving — read release notes when upgrading minors:
 
-- Programmatic `.tyr.ts` views and `View.catalog()`
+- Programmatic `.tyr.ts` views and the runtime `View.catalog()` API
 - `tyravel shell` / REPL behavior
-- `ViewPropsMap` augmentation for typed view props
 - `@tyravel/crypto` algorithms, key formats, and envelope serialization
 - `@tyravel/auth-oauth` OAuth2 server grants, signed token layout, and repository APIs
 - Session encryption at rest and ML-DSA OAuth token signing integration flags
@@ -73,13 +74,18 @@ Upgrade across minors with the [changelog](https://github.com/thesimonharms/tyra
 
 ### v0.9.0 async-native (Tier 9)
 
-**0.9.0** makes runtime I/O async-first. Deprecated sync helpers (`loadEnvSync`, CLI `*Sync` project helpers, compiled-cache `*Sync` exports) remain for one minor and are removed in **1.0.0**. Notable call-site changes:
+**0.9.0** made runtime I/O async-first. Sync helpers were deprecated then and **removed in 0.16.0** ahead of **1.0.0**. Notable call-site changes:
 
 - `await View.exists(name)` — returns `Promise<boolean>`
+- `await View.catalog()` / `await View.islandCatalog()` — catalog discovery is async
 - `await requireProjectRoot()` / `await loadProjectConfig()` when using `@tyravel/cli` project helpers
 - `config/queue.ts` — use `database` or `redis`; remove `sync` from app config
 
-See the [0.9.0 changelog](https://github.com/thesimonharms/tyravel/blob/main/CHANGELOG.md#090---2026-06-24) for the full migration table.
+See [Upgrading to 1.0](/guide/upgrading-to-1.0) for the full removal table and checklist.
+
+### v0.16.0 core surface polish (Tier 16)
+
+**0.16.0** promotes models, routes, and views APIs listed above to stable and completes the pre-1.0 deprecation sweep. Read the [0.16.0 changelog](https://github.com/thesimonharms/tyravel/blob/main/CHANGELOG.md#0160---2026-06-27) for feature details.
 
 ## Optional drivers
 

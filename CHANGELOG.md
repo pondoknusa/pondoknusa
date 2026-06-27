@@ -2,6 +2,30 @@
 
 All notable changes to Tyravel are documented in this file.
 
+## [0.16.0] - 2026-06-27
+
+### Added
+
+- **Models (Tier 16)** — Route model binding with `Route.bind()` customization; API resources maturity (nested resources, conditional attributes, pagination meta); global scopes; custom `Cast` authoring; `HasUuids` / `HasUlids` base classes; `prunable()` models with `tyravel model:prune`; `Model.preventLazyLoading()` dev guard.
+- **Routes (Tier 16)** — `route()` URL generation; `URL.signed()` / `URL.temporarySigned()`; `tyravel route:cache` / `route:clear`; improved `route:list` filters and JSON output; `Route.group({ prefix, middleware, as })`; per-route `.throttle()` presets; `tyravel make:controller --api`.
+- **Views (Tier 16)** — Typed component props (`ViewPropsMap`, `DefineViewProps`, `tyravel view:types`); stricter `view:lint --strict`; production compiled-cache enforcement with `CompiledViewCacheMissError`; `tyravel view:catalog --json`; `View.renderFragment()` / `View.partial()` and `Response.partial()` for Turbo/HTMX-style reloads; broadcast channel scaffold with `private-` prefix patterns.
+- **Migration guide** — `docs/guide/upgrading-to-1.0.md` for apps on 0.11–0.16.
+
+### Changed
+
+- **API stability** — Tier 16 models, routes, and views surfaces promoted to stable in `STABILITY.md` and `docs/guide/api-stability.md`. Typed view props graduate from experimental; runtime `View.catalog()` remains experimental.
+- **View catalog I/O** — `buildViewCatalog()`, `View.catalog()`, and `View.islandCatalog()` are async (use `await`).
+
+### Removed
+
+- **Deprecated sync helpers (pre-1.0 sweep)** — `loadEnvSync()`, CLI `findProjectRootSync()` / `loadProjectConfigSync()` / `requireProjectRootSync()`, CLI `writeFileSync()`, and compiled-cache `*Sync` exports (`readCompiledCacheSync`, `writeCompiledCacheSync`, `clearCompiledCacheDirSync`, `discoverViewNamesSync`). Use async counterparts documented in [Upgrading to 1.0](docs/guide/upgrading-to-1.0.md).
+
+### Migration
+
+- Search your app for `*Sync` helpers from `@tyravel/config`, `@tyravel/cli`, and `@tyravel/views`.
+- Add `await` to `View.catalog()` and `View.islandCatalog()` call sites.
+- See [docs/guide/upgrading-to-1.0.md](docs/guide/upgrading-to-1.0.md) for the full 0.x → 1.0 checklist.
+
 ## [0.15.0] - 2026-06-26
 
 ### Added

@@ -15,7 +15,7 @@ export class ViewCatalogCommand extends Command {
 
     const root = await requireProjectRoot();
     const { engine } = await bootViewApplication(root);
-    const catalog = serializeViewCatalog(engine.getViewCatalog());
+    const catalog = serializeViewCatalog(await engine.getViewCatalog());
 
     if (options.json) {
       console.log(JSON.stringify(catalog, null, 2));

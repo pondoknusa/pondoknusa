@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { buildViewCatalog } from './island-catalog.js';
 
 describe('buildViewCatalog', () => {
-  it('indexes islands from views, client mounts, and programmatic modules', () => {
+  it('indexes islands from views, client mounts, and programmatic modules', async () => {
     const basePath = join(tmpdir(), `tyravel-island-catalog-${Date.now()}`);
     mkdirSync(join(basePath, 'resources/views/islands'), { recursive: true });
     mkdirSync(join(basePath, 'resources/client/islands'), { recursive: true });
@@ -26,7 +26,7 @@ describe('buildViewCatalog', () => {
       'export function render() { return "<span>1</span>"; }\nexport function mount() {}\n',
     );
 
-    const catalog = buildViewCatalog(basePath, { path: 'resources/views' });
+    const catalog = await buildViewCatalog(basePath, { path: 'resources/views' });
     const counter = catalog.islands.find((entry) => entry.id === 'counter');
     const timer = catalog.islands.find((entry) => entry.id === 'timer');
 

@@ -181,16 +181,16 @@ export class ViewEngine {
     return this;
   }
 
-  getComponentCatalog(): ComponentCatalogEntry[] {
+  async getComponentCatalog(): Promise<ComponentCatalogEntry[]> {
     return buildComponentCatalog(this.basePath, this.config, this.namespaces);
   }
 
-  getViewCatalog(): ViewCatalog {
+  async getViewCatalog(): Promise<ViewCatalog> {
     return buildViewCatalog(this.basePath, this.config, this.namespaces);
   }
 
-  getIslandCatalog(): IslandCatalogEntry[] {
-    return buildViewCatalog(this.basePath, this.config, this.namespaces).islands;
+  async getIslandCatalog(): Promise<IslandCatalogEntry[]> {
+    return (await buildViewCatalog(this.basePath, this.config, this.namespaces)).islands;
   }
 
   async getCompiledTemplate(name: string): Promise<CompiledTemplate> {
