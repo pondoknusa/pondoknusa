@@ -1,3 +1,4 @@
+export { discoverMcpTools } from './discover-tools.js';
 export { flattenConfigKeys } from './config-keys.js';
 export { discoverDocs } from './docs-index.js';
 export { discoverModels } from './discover-models.js';

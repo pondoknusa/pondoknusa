@@ -1,5 +1,3 @@
-import { join } from 'node:path';
-import { pathToFileURL } from 'node:url';
 import { loadConfig } from '@tyravel/config';
 import { ConfigRepository } from '@tyravel/config';
 import {
@@ -15,9 +13,9 @@ import {
   flattenConfigKeys,
   TyravelMcpServer,
   type AppMcpContext,
-  type McpTool,
 } from '@tyravel/mcp';
 import { createKernel } from '../kernel.js';
+import { McpToolsServiceProvider, resolveMcpTools } from '../mcp-tools-provider.js';
 import { Command } from '../command.js';
 import { requireProjectRoot } from '../project.js';
 import { importAppServiceProvider } from '../project-bootstrap.js';
@@ -39,6 +37,10 @@ export class McpServeCommand extends Command {
     const app = new Application(root);
     setRouteApplication(app);
     app.register(ConfigServiceProvider);
+    app.registerLazy(McpToolsServiceProvider, {
+      commands: ['mcp:serve', 'mcp:export-rules'],
+      bindings: ['mcp.tools'],
+    });
 
     const providerModule = await importAppServiceProvider(root);
     if (providerModule?.AppServiceProvider) {
@@ -68,7 +70,7 @@ export class McpServeCommand extends Command {
       },
     };
 
-    const appTools = await loadAppTools(root);
+    const appTools = await resolveMcpTools(app);
     const server = TyravelMcpServer.fromApp(context, appTools);
     await server.runStdio();
 
@@ -76,39 +78,3 @@ export class McpServeCommand extends Command {
   }
 }
 
-async function loadAppTools(root: string): Promise<McpTool[]> {
-  const toolsDir = join(root, 'src/mcp/tools');
-  let files: string[];
-  try {
-    const { readdir } = await import('node:fs/promises');
-    files = await readdir(toolsDir);
-  } catch {
-    return [];
-  }
-
-  const tools: McpTool[] = [];
-  for (const file of files) {
-    if (!/\.(ts|js)$/.test(file)) {
-      continue;
-    }
-
-    const module = await import(pathToFileURL(join(toolsDir, file)).href) as Record<string, unknown>;
-    for (const exported of Object.values(module)) {
-      if (isMcpTool(exported)) {
-        tools.push(exported);
-      }
-    }
-  }
-
-  return tools;
-}
-
-function isMcpTool(value: unknown): value is McpTool {
-  return Boolean(
-    value
-    && typeof value === 'object'
-    && 'name' in value
-    && 'handler' in value
-    && typeof (value as McpTool).handler === 'function',
-  );
-}

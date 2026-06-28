@@ -1,7 +1,7 @@
 import { readFile, writeFile as fsWriteFile } from 'node:fs/promises';
 import { Command } from '../command.js';
 import { requireProjectRoot } from '../project.js';
-import { debugConfig, debugPanelServiceProvider } from '../stubs.js';
+import { debugConfig, debugLazyRegistration, debugPanelServiceProvider } from '../stubs.js';
 import { projectPath, writeFile, pathExists } from '../utils.js';
 
 export class DebugInstallCommand extends Command {
@@ -48,7 +48,7 @@ export class DebugInstallCommand extends Command {
       );
       main = main.replace(
         'app.register(AppServiceProvider);',
-        'app.register(DebugPanelServiceProvider);\napp.register(AppServiceProvider);',
+        `${debugLazyRegistration()}\napp.register(AppServiceProvider);`,
       );
     }
 

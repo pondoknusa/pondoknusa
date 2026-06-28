@@ -11,6 +11,18 @@ export { LogServiceProvider } from './log-service-provider.js';
 export { MailServiceProvider } from './mail-service-provider.js';
 export { NotificationServiceProvider } from './notification-service-provider.js';
 export { Application } from './application.js';
+export type { RegisterLazyOptions } from './application.js';
+export {
+  bindingMatches,
+  normalizePathPrefix,
+  pathMatchesPrefix,
+  resolveLazyRoutePrefixes,
+} from './lazy-provider.js';
+export type {
+  LazyProviderRegistration,
+  LazyRoutePrefixResolver,
+  ProviderConstructor,
+} from './lazy-provider.js';
 export { ConfigServiceProvider } from './config-service-provider.js';
 export { DatabaseServiceProvider } from './database-service-provider.js';
 export { EventServiceProvider } from './events-service-provider.js';

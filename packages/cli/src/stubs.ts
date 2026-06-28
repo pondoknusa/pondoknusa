@@ -1452,6 +1452,17 @@ export function registerAdminResources(registry: AdminRegistry): void {
 `;
 }
 
+export function adminLazyRegistration(): string {
+  return `app.registerLazy(AdminPanelServiceProvider, { routePrefixes: ['/admin'] });`;
+}
+
+export function debugLazyRegistration(): string {
+  return `app.registerLazy(DebugPanelServiceProvider, {
+  routePrefixes: (app) => [String(app.make('config').get('debug.path', '/__debug'))],
+  bootWhen: (app) => app.make('config').get('app.debug', false) === true,
+});`;
+}
+
 export function adminPanelServiceProvider(): string {
   return `import { ServiceProvider } from '@tyravel/core';
 import { AdminServiceProvider } from '@tyravel/admin';

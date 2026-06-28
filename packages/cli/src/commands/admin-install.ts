@@ -3,6 +3,7 @@ import { Command } from '../command.js';
 import { requireProjectRoot } from '../project.js';
 import {
   adminConfig,
+  adminLazyRegistration,
   adminPanelServiceProvider,
   adminResources,
   adminRoutes,
@@ -79,7 +80,7 @@ export class AdminInstallCommand extends Command {
       );
       main = main.replace(
         'app.register(AppServiceProvider);',
-        'app.register(AdminPanelServiceProvider);\napp.register(AppServiceProvider);',
+        `${adminLazyRegistration()}\napp.register(AppServiceProvider);`,
       );
     }
 

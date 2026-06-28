@@ -10,6 +10,8 @@ export class HttpKernel {
 
   async handle(request: Request): Promise<Response> {
     try {
+      const pathname = new URL(request.url).pathname;
+      await this.app.bootLazyProvidersForRequest(pathname);
       return await this.app.router().dispatch(request);
     } catch (error) {
       return this.handler.render(error, request);

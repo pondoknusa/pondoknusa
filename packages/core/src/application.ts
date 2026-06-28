@@ -9,16 +9,30 @@ import {
   type Router,
 } from '@tyravel/http';
 import { createControllerHandler, isControllerAction } from './controller.js';
+import {
+  bindingMatches,
+  pathMatchesPrefix,
+  resolveLazyRoutePrefixes,
+  type LazyProviderRegistration,
+  type ProviderConstructor,
+} from './lazy-provider.js';
 import { ServiceProvider } from './service-provider.js';
 import { constants } from 'node:fs';
 import { access, readdir } from 'node:fs/promises';
 import { join, isAbsolute } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-type ProviderConstructor = new (app: Application) => ServiceProvider;
+export interface RegisterLazyOptions {
+  routePrefixes?: LazyProviderRegistration['routePrefixes'];
+  bootWhen?: LazyProviderRegistration['bootWhen'];
+  commands?: string[];
+  bindings?: Abstract[];
+}
 
 export class Application extends Container {
   private providers: ProviderConstructor[] = [];
+  private readonly lazyProviders: LazyProviderRegistration[] = [];
+  private readonly bootedLazyProviders = new Set<ProviderConstructor>();
   private booted = false;
   private readonly middlewareRegistry = new MiddlewareRegistry();
   private readonly registeredMigrationPaths: string[] = [];
@@ -54,6 +68,72 @@ export class Application extends Container {
   register(provider: ProviderConstructor): this {
     this.providers.push(provider);
     return this;
+  }
+
+  registerLazy(provider: ProviderConstructor, options: RegisterLazyOptions = {}): this {
+    this.lazyProviders.push({
+      provider,
+      routePrefixes: options.routePrefixes,
+      bootWhen: options.bootWhen,
+      commands: options.commands,
+      bindings: options.bindings,
+    });
+    return this;
+  }
+
+  hasBootedLazyProvider(provider: ProviderConstructor): boolean {
+    return this.bootedLazyProviders.has(provider);
+  }
+
+  async bootLazyProvider(provider: ProviderConstructor): Promise<void> {
+    if (this.bootedLazyProviders.has(provider)) {
+      return;
+    }
+
+    this.bootedLazyProviders.add(provider);
+    const instance = new provider(this);
+    await instance.register();
+    await instance.boot();
+  }
+
+  async bootLazyProvidersForRequest(pathname: string): Promise<void> {
+    for (const entry of this.lazyProviders) {
+      if (this.bootedLazyProviders.has(entry.provider)) {
+        continue;
+      }
+
+      const prefixes = resolveLazyRoutePrefixes(this, entry.routePrefixes);
+      const routeMatch = prefixes.some((prefix) => pathMatchesPrefix(pathname, prefix));
+      const bootWhen = entry.bootWhen?.(this) ?? false;
+
+      if (routeMatch || bootWhen) {
+        await this.bootLazyProvider(entry.provider);
+      }
+    }
+  }
+
+  async bootLazyProvidersForCommand(commandName: string): Promise<void> {
+    for (const entry of this.lazyProviders) {
+      if (this.bootedLazyProviders.has(entry.provider)) {
+        continue;
+      }
+
+      if (entry.commands?.includes(commandName)) {
+        await this.bootLazyProvider(entry.provider);
+      }
+    }
+  }
+
+  async bootLazyProvidersForBinding(abstract: Abstract): Promise<void> {
+    for (const entry of this.lazyProviders) {
+      if (this.bootedLazyProviders.has(entry.provider)) {
+        continue;
+      }
+
+      if (entry.bindings?.some((binding) => bindingMatches(abstract, binding))) {
+        await this.bootLazyProvider(entry.provider);
+      }
+    }
   }
 
   addMigrationPath(path: string): this {
