@@ -1,5 +1,6 @@
 import type { AuthManager } from '@tyravel/auth';
 import { ConfigRepository } from '@tyravel/config';
+import { withMiddlewareMeta } from '@tyravel/http';
 import {
   createRouteLocaleMiddleware,
   createSetLocaleMiddleware,
@@ -70,18 +71,23 @@ export class LocaleServiceProvider extends ServiceProvider {
     router.mergeUrlDefaults({ locale: translator.getLocale() });
 
     this.app.use(
-      createSetLocaleMiddleware({
-        translator,
-        resolveLocale: (request) => this.resolveUserLocale(request),
-      }),
+      withMiddlewareMeta(
+        createSetLocaleMiddleware({
+          translator,
+          resolveLocale: (request) => this.resolveUserLocale(request),
+        }),
+        { tag: 'locale' },
+      ),
     );
 
-    this.app.use(async (request, next) => {
-      if (request.locale) {
-        router.mergeUrlDefaults({ locale: request.locale });
-      }
-      return next();
-    });
+    this.app.use(
+      withMiddlewareMeta(async (request, next) => {
+        if (request.locale) {
+          router.mergeUrlDefaults({ locale: request.locale });
+        }
+        return next();
+      }, { tag: 'locale' }),
+    );
 
     this.syncViewLocale(translator);
   }

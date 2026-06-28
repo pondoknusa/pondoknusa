@@ -1,6 +1,7 @@
 import { timingSafeEqual } from 'node:crypto';
 import { HttpException } from '@tyravel/http';
 import type { Middleware } from '@tyravel/http';
+import { withMiddlewareMeta } from '@tyravel/http';
 import type { TyravelRequest } from '@tyravel/http';
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
@@ -21,7 +22,7 @@ export function createVerifyCsrfTokenMiddleware(
 ): Middleware {
   const except = options.except ?? [];
 
-  return async (request, next) => {
+  return withMiddlewareMeta(async (request, next) => {
     if (SAFE_METHODS.has(request.method)) {
       return next();
     }
@@ -41,7 +42,7 @@ export function createVerifyCsrfTokenMiddleware(
     }
 
     return next();
-  };
+  }, { tag: 'csrf' });
 }
 
 function readSubmittedToken(request: TyravelRequest): Promise<string | undefined> {

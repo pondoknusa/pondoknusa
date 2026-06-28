@@ -4,6 +4,7 @@ import { resolveEchoClientConfig, type BroadcastingConfig } from '@tyravel/broad
 import { ConfigRepository } from '@tyravel/config';
 import type { AuthManager, Gate } from '@tyravel/auth';
 import type { TyravelRequest } from '@tyravel/http';
+import { withMiddlewareMeta } from '@tyravel/http';
 import {
   createViewWatcher,
   DEFAULT_VIEW_CONFIG,
@@ -113,17 +114,19 @@ export class ViewServiceProvider extends ServiceProvider {
 
     applyBindings();
 
-    this.app.use(async (request, next) => {
-      setViewRequest(request);
-      applyBindings(request);
+    this.app.use(
+      withMiddlewareMeta(async (request, next) => {
+        setViewRequest(request);
+        applyBindings(request);
 
-      try {
-        return await next();
-      } finally {
-        setViewRequest(undefined);
-        applyBindings();
-      }
-    });
+        try {
+          return await next();
+        } finally {
+          setViewRequest(undefined);
+          applyBindings();
+        }
+      }, { tag: 'view' }),
+    );
 
     try {
       const auth = this.app.make<AuthManager>('auth');

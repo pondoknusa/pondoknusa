@@ -28,6 +28,55 @@ const DEFAULTS = {
   boot: { iterations: QUICK ? 3 : 10 },
 };
 
+export async function measureHttpJsonFast({
+  warmup = DEFAULTS.http.warmup,
+  requests = DEFAULTS.http.requests,
+  concurrency = DEFAULTS.http.concurrency,
+} = {}) {
+  const { withMiddlewareMeta } = await import('@tyravel/http');
+
+  const app = new Application();
+  setRouteApplication(app);
+
+  app.use(
+    withMiddlewareMeta(async (_request, next) => next(), { tag: 'session' }),
+  );
+  Route.get('/api/v1/health', () => Response.json({ status: 'ok' }));
+
+  const kernel = new HttpKernel(app);
+  const server = await serve(kernel, { port: 0, hostname: '127.0.0.1', quiet: true });
+  const url = `http://${server.hostname}:${server.port}/api/v1/health`;
+
+  const runOnce = async () => {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`JSON fast-path benchmark failed with status ${response.status}`);
+    }
+    await response.arrayBuffer();
+  };
+
+  for (let i = 0; i < warmup; i++) {
+    await runOnce();
+  }
+
+  const start = performance.now();
+  for (let offset = 0; offset < requests; offset += concurrency) {
+    const batch = Math.min(concurrency, requests - offset);
+    await Promise.all(Array.from({ length: batch }, () => runOnce()));
+  }
+  const elapsedMs = performance.now() - start;
+  await server.close();
+
+  return {
+    name: 'http.json.fast',
+    label: 'HTTP JSON fast path (session skipped)',
+    unit: 'req/s',
+    samples: requests,
+    elapsedMs,
+    value: Math.round((requests / elapsedMs) * 1000),
+  };
+}
+
 export async function measureHttp({
   warmup = DEFAULTS.http.warmup,
   requests = DEFAULTS.http.requests,
@@ -235,6 +284,7 @@ export async function runBenchmarks(options = {}) {
   const results = [
     await measureBootCold(options.boot),
     await measureHttp(options.http),
+    await measureHttpJsonFast(options.http),
     await measureMiddlewareStack(options.middleware),
     await measureOrm(options.orm),
     measureViewCompile(options.views),

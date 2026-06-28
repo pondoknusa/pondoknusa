@@ -73,15 +73,19 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `createThrottleMiddleware`
 - `createTrustedProxiesMiddleware`
 - `encodeSseEvents`
+- `filterFastPathMiddleware`
 - `formatSseEvent`
+- `getMiddlewareMeta`
 - `isHtmxRequest`
 - `isJsonResource`
 - `isPaginatorLike`
 - `isResourceCollection`
 - `isTurboFrameRequest`
 - `joinRoutePaths`
+- `middlewareHasTag`
 - `normalizeMiddlewareInput`
 - `normalizeRouteParams`
+- `qualifiesForJsonFastPath`
 - `registerThrottlePresets`
 - `resetThrottleStore`
 - `resolveClientIp`
@@ -93,6 +97,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `temporarySignedRouteParams`
 - `throttleMiddlewareAlias`
 - `verifySignedRouteUrl`
+- `withMiddlewareMeta`
 
 ### Types
 
@@ -105,6 +110,8 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `Middleware`
 - `MiddlewareGroupable`
 - `MiddlewareInput`
+- `MiddlewareMeta`
+- `MiddlewareTag`
 - `PaginatorLike`
 - `ResourcePayload`
 - `ResponseCacheOptions`

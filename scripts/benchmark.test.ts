@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   measureBootCold,
   measureHttp,
+  measureHttpJsonFast,
   measureMiddlewareStack,
   measureOrm,
   measureViewCompile,
@@ -33,6 +34,12 @@ describe('benchmarks', () => {
     expect(result.value).toBeGreaterThan(0);
   });
 
+  it('measures JSON fast-path throughput', async () => {
+    const result = await measureHttpJsonFast({ warmup: 5, requests: 10, concurrency: 5 });
+    expect(result.name).toBe('http.json.fast');
+    expect(result.value).toBeGreaterThan(0);
+  });
+
   it('measures middleware stack throughput', async () => {
     const result = await measureMiddlewareStack({ warmup: 5, requests: 10, concurrency: 5 });
     expect(result.name).toBe('middleware.stack');
@@ -48,7 +55,7 @@ describe('benchmarks', () => {
       views: { warmup: 2, iterations: 5 },
     });
 
-    expect(report.results).toHaveLength(5);
+    expect(report.results).toHaveLength(6);
     for (const result of report.results) {
       expect(result.value).toBeGreaterThan(0);
     }

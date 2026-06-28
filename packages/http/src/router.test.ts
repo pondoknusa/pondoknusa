@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { MethodNotAllowedException } from './http-exception.js';
+import { withMiddlewareMeta } from './middleware-meta.js';
 import { MiddlewareRegistry } from './middleware-registry.js';
 import { Response } from './response.js';
 import { RouteNotFoundException, Router } from './router.js';
@@ -180,5 +181,53 @@ describe('Router', () => {
       expect(e.headers.get('allow')).toContain('GET');
       expect(e.headers.get('allow')).toContain('POST');
     }
+  });
+
+  it('skips session middleware on JSON fast-path routes', async () => {
+    const router = new Router();
+    const order: string[] = [];
+
+    router.use(
+      withMiddlewareMeta(async (_request, next) => {
+        order.push('session');
+        return next();
+      }, { tag: 'session' }),
+    );
+
+    router.get('/api/v1/health', () => {
+      order.push('handler');
+      return Response.json({ status: 'ok' });
+    });
+
+    await router.dispatch(new Request('http://localhost/api/v1/health'));
+
+    expect(order).toEqual(['handler']);
+  });
+
+  it('keeps session middleware on routes that require it', async () => {
+    const registry = new MiddlewareRegistry();
+    const router = new Router(registry);
+    const order: string[] = [];
+
+    registry.alias('guest', async (_request, next) => {
+      order.push('guest');
+      return next();
+    });
+
+    router.use(
+      withMiddlewareMeta(async (_request, next) => {
+        order.push('session');
+        return next();
+      }, { tag: 'session' }),
+    );
+
+    router.middleware('guest').get('/login', () => {
+      order.push('handler');
+      return Response.json({ ok: true });
+    });
+
+    await router.dispatch(new Request('http://localhost/login'));
+
+    expect(order).toEqual(['session', 'guest', 'handler']);
   });
 });

@@ -738,7 +738,7 @@ First-class backend-only Tyravel: JSON APIs without views, SSR, Echo, or client 
 
 #### P0 — Must ship
 
-- [ ] **JSON response fast path** — bypass unnecessary middleware and body parsing on simple `Response.json()` API routes when no session/CSRF is required
+- [x] **JSON response fast path** — skip session/CSRF/view/locale middleware on stateless JSON routes (`http.jsonFastPath`, default on)
 - [x] **Route cache at boot** — `prepareHttpServer()` validates and warms `storage/framework/routes.json` in production
 - [x] **Middleware resolution cache** — `MiddlewareRegistry` caches resolved alias middleware per worker
 

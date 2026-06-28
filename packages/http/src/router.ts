@@ -23,6 +23,10 @@ import {
 import { applyRouteGroupOptions, flattenMiddlewareInputs } from './route-group-options.js';
 import { throttleMiddlewareAlias } from './throttle.js';
 import {
+  filterFastPathMiddleware,
+  qualifiesForJsonFastPath,
+} from './json-fast-path.js';
+import {
   MiddlewareRegistry,
   type MiddlewareInput,
 } from './middleware-registry.js';
@@ -107,6 +111,7 @@ export class Router implements Routable {
   private compiledCache: CompiledRoute[] | null = null;
   private readonly middlewareRegistry: MiddlewareRegistry;
   private handlerNormalizer: (handler: RouteHandler) => RouteHandler = (handler) => handler;
+  private jsonFastPathEnabled = true;
 
   constructor(middlewareRegistry = new MiddlewareRegistry()) {
     this.middlewareRegistry = middlewareRegistry;
@@ -119,6 +124,15 @@ export class Router implements Routable {
   setHandlerNormalizer(normalizer: (handler: RouteHandler) => RouteHandler): this {
     this.handlerNormalizer = normalizer;
     return this;
+  }
+
+  setJsonFastPath(enabled: boolean): this {
+    this.jsonFastPathEnabled = enabled;
+    return this;
+  }
+
+  isJsonFastPathEnabled(): boolean {
+    return this.jsonFastPathEnabled;
   }
 
   bind(parameter: string, binding: RouteBinding | RouteBindingResolver): this {
@@ -413,7 +427,7 @@ export class Router implements Routable {
     request: TyravelRequest,
     route: RouteDefinition,
   ): Promise<Response> {
-    const middleware = route.middleware;
+    const middleware = this.resolvePipelineMiddleware(route);
     let index = -1;
 
     const next = async (): Promise<Response> => {
@@ -440,6 +454,19 @@ export class Router implements Routable {
 
   private resolveMiddleware(inputs: MiddlewareInput[]): Middleware[] {
     return this.middlewareRegistry.resolveMany(inputs);
+  }
+
+  private resolvePipelineMiddleware(route: RouteDefinition): Middleware[] {
+    if (!this.jsonFastPathEnabled) {
+      return route.middleware;
+    }
+
+    const labels = route.middlewareLabels ?? [];
+    if (!qualifiesForJsonFastPath(route.method, labels)) {
+      return route.middleware;
+    }
+
+    return filterFastPathMiddleware(route.middleware);
   }
 
   private mergeScopes(scopes: RouteScope[]): RouteScope {

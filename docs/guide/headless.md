@@ -58,6 +58,10 @@ Run `tyravel auth:install` for guards and migrations. On headless projects it sc
 
 Headless apps return JSON errors by default — no HTML error pages. Use Bearer tokens (`auth:api`) or session login at `POST /api/v1/login`.
 
+## JSON fast path
+
+Stateless API routes (GET `/api/v1/health`, `auth:api` Bearer routes, etc.) automatically skip session, CSRF, locale, and view middleware when `config/http.ts` has `jsonFastPath: true` (default in headless scaffolds). Routes with `guest`, `auth`, or `csrf` middleware always use the full stack.
+
 ## Boot profile
 
 After `await app.boot()`, call `prepareHttpServer()` — it applies the headless profile, registers HTTP middleware, loads `storage/framework/routes.json` in production, and starts hot reload in development:

@@ -2,6 +2,7 @@ import type { HttpConfig } from '@tyravel/core';
 
 export default {
   trustedProxies: ['127.0.0.1', '::1'],
+  jsonFastPath: true,
   throttle: {
     enabled: true,
     limit: 120,

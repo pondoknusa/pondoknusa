@@ -1,6 +1,6 @@
 import type { TyravelRequest } from '@tyravel/http';
 import type { Middleware } from '@tyravel/http';
-import { Response as HttpResponse } from '@tyravel/http';
+import { Response as HttpResponse, withMiddlewareMeta } from '@tyravel/http';
 import { AuthorizationException } from './authorization-exceptions.js';
 import { AuthenticationException } from './exceptions.js';
 import { tokenCanAny } from './token-abilities.js';
@@ -79,10 +79,14 @@ export class AuthManager {
     await this.sessionGuard().logout();
   }
 
-  async startRequest(request: TyravelRequest): Promise<void> {
+  primeRequest(request: TyravelRequest): void {
     for (const guard of this.guards.values()) {
       guard.setRequest(request);
     }
+  }
+
+  async startRequest(request: TyravelRequest): Promise<void> {
+    this.primeRequest(request);
 
     await this.sessionGuard().startSession();
 
@@ -100,6 +104,8 @@ export class AuthManager {
 
 export function createAuthMiddleware(auth: AuthManager, guardName?: string): Middleware {
   return async (request, next) => {
+    auth.primeRequest(request);
+
     const guard = auth.guard(guardName);
     const ok = guard.check();
     const authenticated = ok instanceof Promise ? await ok : ok;
@@ -138,11 +144,11 @@ export function createTokenAbilityMiddleware(
 }
 
 export function createStartSessionMiddleware(auth: AuthManager): Middleware {
-  return async (request, next) => {
+  return withMiddlewareMeta(async (request, next) => {
     await auth.startRequest(request);
     const response = await next();
     return auth.endRequest(response);
-  };
+  }, { tag: 'session' });
 }
 
 export { SessionGuard } from './session-guard.js';

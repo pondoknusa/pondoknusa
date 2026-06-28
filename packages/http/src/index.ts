@@ -80,6 +80,16 @@ export {
   MiddlewareRegistry,
 } from './middleware-registry.js';
 export type { MiddlewareInput } from './middleware-registry.js';
+export {
+  filterFastPathMiddleware,
+  qualifiesForJsonFastPath,
+} from './json-fast-path.js';
+export {
+  getMiddlewareMeta,
+  middlewareHasTag,
+  withMiddlewareMeta,
+} from './middleware-meta.js';
+export type { MiddlewareMeta, MiddlewareTag } from './middleware-meta.js';
 export { createCorsMiddleware } from './cors.js';
 export type { CorsOptions } from './cors.js';
 export {

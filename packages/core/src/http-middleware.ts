@@ -15,6 +15,8 @@ export interface CorsConfig extends CorsOptions {
 
 export interface HttpConfig {
   trustedProxies?: string[];
+  /** Skip session/CSRF/view middleware on stateless JSON routes (default: true). */
+  jsonFastPath?: boolean;
   throttle?: {
     enabled?: boolean;
     limit: number;
@@ -35,6 +37,10 @@ export function registerHttpMiddleware(
   const httpConfig = config.get<HttpConfig | undefined>('http');
   if (httpConfig?.trustedProxies?.length) {
     app.use(createTrustedProxiesMiddleware({ proxies: httpConfig.trustedProxies }));
+  }
+
+  if (httpConfig?.jsonFastPath === false) {
+    app.router().setJsonFastPath(false);
   }
 
   if (httpConfig?.throttle && httpConfig.throttle.enabled !== false) {
