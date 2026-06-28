@@ -11,6 +11,8 @@ Short, goal-oriented recipes for common Tyravel tasks. Each recipe assumes **0.1
 | [Testing with fakes](/cookbook/testing-fakes) | Assert mail, notifications, and broadcasts in Vitest |
 | [Admin panel](/cookbook/admin-panel) | Optional CRUD UI with audit log |
 | [Multi-locale apps](/cookbook/multi-locale) | JSON locales, `lang:publish`, missing-key checks |
+| [Production observability](/cookbook/observability) | Health probes, structured logs, queue failure signals |
+| [Multi-tenant apps](/cookbook/multi-tenant) | Subdomain tenancy with global scopes and channel isolation |
 
 ## Conventions
 

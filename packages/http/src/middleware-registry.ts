@@ -7,7 +7,7 @@ export class MiddlewareNotFoundException extends Error {
   }
 }
 
-export type MiddlewareInput = Middleware | string;
+export type MiddlewareInput = Middleware | string | MiddlewareInput[];
 
 export class MiddlewareRegistry {
   private aliases = new Map<string, Middleware>();
@@ -22,6 +22,12 @@ export class MiddlewareRegistry {
   }
 
   resolve(input: MiddlewareInput): Middleware {
+    if (Array.isArray(input)) {
+      throw new Error(
+        'Nested middleware arrays must be flattened before resolve(). Use flattenMiddlewareInputs().',
+      );
+    }
+
     if (typeof input !== 'string') {
       return input;
     }

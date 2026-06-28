@@ -30,7 +30,19 @@ describe('users', () => {
 
 - `get`, `post`, `put`, `patch`, `delete` — run through `HttpKernel`
 - `withToken('...')` — attach Bearer token
+- `withCsrf()` — set session `_csrf_token` and send `X-CSRF-TOKEN` (required for routes behind `csrf` middleware)
+- `actingAs(user)` / `withSession({ ... })` — inject auth and session state (requires `createTestingMiddleware()` on the app)
 - Cookie jar persists session cookies between requests
+
+Routes using the `csrf` middleware reject POST requests without a matching token (HTTP 419). Chain `withCsrf()` before mutating requests:
+
+```typescript
+await test.http.withCsrf().post('http://localhost/register', {
+  json: { name: 'Ada', email: 'ada@example.com', password: 'secret' },
+});
+```
+
+`TestCase` registers `createTestingMiddleware()` automatically. Custom test cases that override `setUp()` must call `app.use(createTestingMiddleware())` before boot — see `examples/hello-world/tests/support/reference-test-case.ts`.
 
 ## Assertions
 

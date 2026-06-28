@@ -2,6 +2,7 @@ import type { MiddlewareInput } from './middleware-registry.js';
 import type { Router } from './router.js';
 import {
   applyRouteGroupOptions,
+  flattenMiddlewareInputs,
   type RouteGroupOptions,
 } from './route-group-options.js';
 import type {
@@ -82,7 +83,7 @@ export class RouteGroupBuilder implements MiddlewareGroupable {
   middleware(...middleware: MiddlewareInput[]): MiddlewareGroupable {
     return new RouteGroupBuilder(this.router, {
       ...this.scope,
-      middleware: [...this.scope.middleware, ...middleware],
+      middleware: [...this.scope.middleware, ...flattenMiddlewareInputs(...middleware)],
     });
   }
 

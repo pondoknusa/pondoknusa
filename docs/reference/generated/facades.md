@@ -24,6 +24,128 @@ Documented for Tyravel **0.16.0**. See [API stability](/guide/api-stability) for
 | `Config` | `@tyravel/config` | [/guide/configuration](/guide/configuration) |
 | `Broadcast` | `@tyravel/core` | [/guide/broadcasting](/guide/broadcasting) |
 
+## Methods
+
+### `Route`
+
+- `get(pattern, handler)`
+- `post(pattern, handler)`
+- `put / patch / delete`
+- `group(options, callback)`
+- `prefix(prefix)`
+- `middleware(...names)`
+- `name(name)`
+- `throttle(preset)`
+- `bind(param, model|resolver)`
+- `implicitModels(...models)`
+- `url(name, params?)`
+
+### `DB`
+
+- `connection(name?)`
+- `transaction(callback, name?)`
+
+### `Auth`
+
+- `user(guard?)`
+- `id(guard?)`
+- `check(guard?)`
+- `attempt(credentials)`
+- `login(user)`
+- `logout()`
+- `createToken(name, abilities?, options?)`
+- `revokeToken(id)`
+- `revokeAllTokens(userId?)`
+
+### `Cache`
+
+- `get(key)`
+- `put(key, value, ttl?)`
+- `forget(key)`
+- `has(key)`
+- `remember(key, ttl, callback)`
+- `flush()`
+- `tags(names)`
+
+### `Queue`
+
+- `connection(name?)`
+- `dispatch(job, queue?)`
+- `later(seconds, job, queue?)`
+
+### `Events`
+
+- `listen(EventClass, handler)`
+- `dispatch(event)`
+- `dispatchUntil(event, predicate)`
+
+### `Log`
+
+- `debug(message, context?)`
+- `info(...)`
+- `warn(...)`
+- `error(...)`
+
+### `Mail`
+
+- `mailer(connection?)`
+- `to(address)`
+- `send(mailable)`
+
+### `Notifications`
+
+- `send(notifiable, notification)`
+- `sendNow(notifiable, notification)`
+
+### `Schedule`
+
+Resolved from the container: `app.make(Schedule)`
+
+- `everyMinute(cb)`
+- `hourly(cb)`
+- `daily(cb)`
+- `call(cb, cron)`
+- `getDueEvents(date?)`
+
+### `Storage`
+
+- `put(path, contents)`
+- `get(path)`
+- `exists(path)`
+- `delete(path)`
+- `url(path)`
+- `temporaryUrl(path, expiresIn)`
+- `disk(name?)`
+
+### `View`
+
+- `render(name, props?)`
+- `renderFragment(name, fragment, props?)`
+- `partial(name, props?, options?)`
+- `renderStream / streamSsr`
+- `exists(name)`
+- `catalog()`
+- `islandCatalog()`
+- `share(data)`
+- `component(name, binding)`
+- `directive(name, handler)`
+
+### `Config`
+
+Use `app.make(ConfigRepository)` — not a static facade
+
+- `get(key, default?)`
+- `set(key, value)`
+- `has(key)`
+- `merge(key, defaults)`
+- `all()`
+
+### `Broadcast`
+
+- `connection(name?)`
+- `dispatch(ShouldBroadcast event)`
+- `channel(pattern, authorizer)`
+
 ## Usage
 
 Import facades from `@tyravel/core` (or `@tyravel/config` for `Config`) after booting the application:

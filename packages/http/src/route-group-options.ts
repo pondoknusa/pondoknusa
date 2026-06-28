@@ -20,6 +20,13 @@ export function normalizeMiddlewareInput(
   return Array.isArray(middleware) ? middleware : [middleware];
 }
 
+/** Flatten `middleware('a', 'b')` and `middleware(['a', 'b'])` to the same list. */
+export function flattenMiddlewareInputs(...middleware: MiddlewareInput[]): MiddlewareInput[] {
+  return middleware.flatMap((entry) =>
+    Array.isArray(entry) ? (entry as MiddlewareInput[]) : [entry],
+  );
+}
+
 export function applyRouteGroupOptions(
   builder: RouteGroupBuilder,
   options: RouteGroupOptions,

@@ -20,7 +20,7 @@ import {
   type RouteScope,
   type ScopedRouteRegistrar,
 } from './route-group.js';
-import { applyRouteGroupOptions } from './route-group-options.js';
+import { applyRouteGroupOptions, flattenMiddlewareInputs } from './route-group-options.js';
 import { throttleMiddlewareAlias } from './throttle.js';
 import {
   MiddlewareRegistry,
@@ -167,7 +167,7 @@ export class Router implements Routable {
   }
 
   middleware(...middleware: MiddlewareInput[]): ScopedRouteRegistrar {
-    return new RouteRegistrar(this, 'GET', middleware);
+    return new RouteRegistrar(this, 'GET', flattenMiddlewareInputs(...middleware));
   }
 
   runInScope(scope: RouteScope, callback: () => void): void {

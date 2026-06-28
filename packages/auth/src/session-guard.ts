@@ -36,12 +36,16 @@ export class SessionGuard implements Guard {
       throw new Error('Request not set on guard');
     }
 
-    const cookieName = this.sessionConfig.cookie;
-    const existingId = readCookie(this.request, cookieName);
-    const id = existingId ?? randomBytes(32).toString('base64url');
-    const data = await this.store.read(id);
-    this.session = new Session(id, data);
-    this.request.session = this.session;
+    if (this.request.session instanceof Session) {
+      this.session = this.request.session;
+    } else {
+      const cookieName = this.sessionConfig.cookie;
+      const existingId = readCookie(this.request, cookieName);
+      const id = existingId ?? randomBytes(32).toString('base64url');
+      const data = await this.store.read(id);
+      this.session = new Session(id, data);
+      this.request.session = this.session;
+    }
 
     const userId = this.session.get<string | number>(sessionKey(this.name));
     if (userId !== undefined) {

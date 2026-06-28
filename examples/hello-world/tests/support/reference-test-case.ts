@@ -21,7 +21,7 @@ import {
   QueueWorker,
   isWorkerQueue,
 } from '@tyravel/queue';
-import { TestCase, createHttpKernel, wireFacades } from '@tyravel/testing';
+import { TestCase, createHttpKernel, createTestingMiddleware, wireFacades } from '@tyravel/testing';
 import { HttpTestClient } from '@tyravel/testing';
 import { AppServiceProvider } from '../../src/providers/app-service-provider.js';
 
@@ -53,6 +53,7 @@ export class ReferenceTestCase extends TestCase {
     process.env.QUEUE_CONNECTION = 'database';
 
     this.app = await this.createApplication();
+    this.app.use(createTestingMiddleware());
 
     for (const Provider of this.providers()) {
       this.app.register(Provider);
@@ -68,7 +69,7 @@ export class ReferenceTestCase extends TestCase {
 
     wireFacades(this.app);
     this.kernel = createHttpKernel(this.app);
-    this.http = new HttpTestClient(this.kernel);
+    this.http = new HttpTestClient(this.kernel).withCsrf();
 
     const db = this.app.make(DatabaseManager);
     const migrator = new Migrator(db.connection(), this.app.migrationPaths());

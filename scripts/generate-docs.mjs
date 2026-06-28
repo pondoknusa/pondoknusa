@@ -88,20 +88,114 @@ const PACKAGE_CATEGORIES = [
 ];
 
 const FACADES = [
-  { name: 'Route', package: '@tyravel/core', guide: '/guide/routing' },
-  { name: 'DB', package: '@tyravel/core', guide: '/guide/database' },
-  { name: 'Auth', package: '@tyravel/core', guide: '/guide/auth' },
-  { name: 'Cache', package: '@tyravel/core', guide: '/guide/cache' },
-  { name: 'Queue', package: '@tyravel/core', guide: '/guide/queues' },
-  { name: 'Events', package: '@tyravel/core', guide: '/guide/events' },
-  { name: 'Log', package: '@tyravel/core', guide: '/guide/configuration' },
-  { name: 'Mail', package: '@tyravel/core', guide: '/guide/mail' },
-  { name: 'Notifications', package: '@tyravel/core', guide: '/guide/notifications' },
-  { name: 'Schedule', package: '@tyravel/core', guide: '/guide/queues' },
-  { name: 'Storage', package: '@tyravel/core', guide: '/guide/storage' },
-  { name: 'View', package: '@tyravel/core', guide: '/guide/views' },
-  { name: 'Config', package: '@tyravel/config', guide: '/guide/configuration' },
-  { name: 'Broadcast', package: '@tyravel/core', guide: '/guide/broadcasting' },
+  {
+    name: 'Route',
+    package: '@tyravel/core',
+    guide: '/guide/routing',
+    methods: [
+      'get(pattern, handler)', 'post(pattern, handler)', 'put / patch / delete',
+      'group(options, callback)', 'prefix(prefix)', 'middleware(...names)',
+      'name(name)', 'throttle(preset)', 'bind(param, model|resolver)',
+      'implicitModels(...models)', 'url(name, params?)',
+    ],
+  },
+  {
+    name: 'DB',
+    package: '@tyravel/core',
+    guide: '/guide/database',
+    methods: ['connection(name?)', 'transaction(callback, name?)'],
+  },
+  {
+    name: 'Auth',
+    package: '@tyravel/core',
+    guide: '/guide/auth',
+    methods: [
+      'user(guard?)', 'id(guard?)', 'check(guard?)', 'attempt(credentials)',
+      'login(user)', 'logout()', 'createToken(name, abilities?, options?)',
+      'revokeToken(id)', 'revokeAllTokens(userId?)',
+    ],
+  },
+  {
+    name: 'Cache',
+    package: '@tyravel/core',
+    guide: '/guide/cache',
+    methods: [
+      'get(key)', 'put(key, value, ttl?)', 'forget(key)', 'has(key)',
+      'remember(key, ttl, callback)', 'flush()', 'tags(names)',
+    ],
+  },
+  {
+    name: 'Queue',
+    package: '@tyravel/core',
+    guide: '/guide/queues',
+    methods: ['connection(name?)', 'dispatch(job, queue?)', 'later(seconds, job, queue?)'],
+  },
+  {
+    name: 'Events',
+    package: '@tyravel/core',
+    guide: '/guide/events',
+    methods: ['listen(EventClass, handler)', 'dispatch(event)', 'dispatchUntil(event, predicate)'],
+  },
+  {
+    name: 'Log',
+    package: '@tyravel/core',
+    guide: '/guide/configuration',
+    methods: ['debug(message, context?)', 'info(...)', 'warn(...)', 'error(...)'],
+  },
+  {
+    name: 'Mail',
+    package: '@tyravel/core',
+    guide: '/guide/mail',
+    methods: ['mailer(connection?)', 'to(address)', 'send(mailable)'],
+  },
+  {
+    name: 'Notifications',
+    package: '@tyravel/core',
+    guide: '/guide/notifications',
+    methods: ['send(notifiable, notification)', 'sendNow(notifiable, notification)'],
+  },
+  {
+    name: 'Schedule',
+    package: '@tyravel/core',
+    guide: '/guide/queues',
+    note: 'Resolved from the container: `app.make(Schedule)`',
+    methods: ['everyMinute(cb)', 'hourly(cb)', 'daily(cb)', 'call(cb, cron)', 'getDueEvents(date?)'],
+  },
+  {
+    name: 'Storage',
+    package: '@tyravel/core',
+    guide: '/guide/storage',
+    methods: [
+      'put(path, contents)', 'get(path)', 'exists(path)', 'delete(path)',
+      'url(path)', 'temporaryUrl(path, expiresIn)', 'disk(name?)',
+    ],
+  },
+  {
+    name: 'View',
+    package: '@tyravel/core',
+    guide: '/guide/views',
+    methods: [
+      'render(name, props?)', 'renderFragment(name, fragment, props?)',
+      'partial(name, props?, options?)', 'renderStream / streamSsr',
+      'exists(name)', 'catalog()', 'islandCatalog()', 'share(data)',
+      'component(name, binding)', 'directive(name, handler)',
+    ],
+  },
+  {
+    name: 'Config',
+    package: '@tyravel/config',
+    guide: '/guide/configuration',
+    note: 'Use `app.make(ConfigRepository)` — not a static facade',
+    methods: ['get(key, default?)', 'set(key, value)', 'has(key)', 'merge(key, defaults)', 'all()'],
+  },
+  {
+    name: 'Broadcast',
+    package: '@tyravel/core',
+    guide: '/guide/broadcasting',
+    methods: [
+      'connection(name?)', 'dispatch(ShouldBroadcast event)', 'channel(pattern, authorizer)',
+    ],
+  },
 ];
 
 function ensureBuiltCli() {
@@ -468,8 +562,22 @@ function writeFacadesReference(version) {
     lines.push(`| \`${facade.name}\` | \`${facade.package}\` | [${facade.guide}](${facade.guide}) |`);
   }
 
+  lines.push('', '## Methods', '');
+
+  for (const facade of FACADES) {
+    lines.push(`### \`${facade.name}\``, '');
+    if (facade.note) {
+      lines.push(facade.note, '');
+    }
+    if (facade.methods?.length) {
+      for (const method of facade.methods) {
+        lines.push(`- \`${method}\``);
+      }
+      lines.push('');
+    }
+  }
+
   lines.push(
-    '',
     '## Usage',
     '',
     'Import facades from `@tyravel/core` (or `@tyravel/config` for `Config`) after booting the application:',
@@ -641,6 +749,8 @@ export const cookbookSidebar = [
       { text: 'Testing with fakes', link: '/cookbook/testing-fakes' },
       { text: 'Admin panel', link: '/cookbook/admin-panel' },
       { text: 'Multi-locale apps', link: '/cookbook/multi-locale' },
+      { text: 'Production observability', link: '/cookbook/observability' },
+      { text: 'Multi-tenant apps', link: '/cookbook/multi-tenant' },
     ],
   },
 ];

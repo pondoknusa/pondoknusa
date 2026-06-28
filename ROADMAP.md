@@ -559,12 +559,12 @@ Tyravel **1.0.0** is the first semver-strict era (see [STABILITY.md](STABILITY.m
 - [ ] **Hosted documentation site (live)** — enable GitHub Pages in repo settings; verify tyravel.dev DNS
 - [x] **Package & CLI reference (generated)** — every `@tyravel/*` package with exports table; full `tyravel` command list from `@tyravel/cli`
 - [x] **Configuration reference** — `docs/guide/configuration-reference.md` for scaffold config keys and env vars
-- [ ] **Complete package reference** — per-package facade method tables and deeper API prose beyond generated exports
+- [x] **Complete package reference** — facade method tables in generated reference (`docs/reference/generated/facades.md`); per-package exports remain auto-generated
 - [x] **Tutorial track (scaffold)** — zero-to-deploy outline: install → auth → queue → realtime/deploy (`docs/tutorials/`)
 - [x] **Tutorial track (verified links)** — hello-world feature tests cited for steps 1–3; broadcasting guide for step 4
 - [x] **Tutorial track (complete)** — deploy provider walkthroughs (Fly, Railway, Docker) with copy-paste manifests in `examples/hello-world/deploy/` and `docs/guide/deployment/`
 - [x] **Cookbook (core recipes)** — realtime Echo, RAG Q&A, testing fakes, admin panel, multi-locale (`docs/cookbook/`)
-- [ ] **Cookbook (complete)** — additional production patterns (observability, multi-tenant, etc.)
+- [x] **Cookbook (complete)** — observability and multi-tenant recipes (`docs/cookbook/observability.md`, `docs/cookbook/multi-tenant.md`)
 - [x] **Ecosystem guide** — `docs/guide/ecosystem.md` for third-party package authors
 - [x] **Broadcasting guide** — `docs/guide/broadcasting.md` (deploy, Echo, channels)
 
@@ -579,7 +579,7 @@ Tyravel **1.0.0** is the first semver-strict era (see [STABILITY.md](STABILITY.m
 Items not tied to a version number. Land when useful; do not block 1.0.
 
 - [ ] **Additional OAuth / social providers** — community drivers beyond built-ins
-- [ ] **Native WebSocket broadcasting guide** — deploy `/tyravel/ws` behind proxies, Redis fan-out, and Echo client setup
+- [x] **Native WebSocket broadcasting guide** — proxy, Redis fan-out, and Echo setup in `docs/guide/broadcasting.md`
 - [ ] **Performance benchmarks** — published baseline for HTTP, ORM, and view compile throughput
 
 ## Shipped in v0.1.0

@@ -67,6 +67,32 @@ describe('Router', () => {
     expect(order).toEqual(['auth']);
   });
 
+  it('accepts middleware arrays like middleware([\'csrf\', \'guest\'])', async () => {
+    const registry = new MiddlewareRegistry();
+    const router = new Router(registry);
+    const order: string[] = [];
+
+    registry.alias('csrf', async (_request, next) => {
+      order.push('csrf');
+      return next();
+    });
+    registry.alias('guest', async (_request, next) => {
+      order.push('guest');
+      return next();
+    });
+
+    router.middleware(['csrf', 'guest']).post('/register', () => {
+      order.push('handler');
+      return Response.text('ok');
+    });
+
+    await router.dispatch(
+      new Request('http://localhost/register', { method: 'POST' }),
+    );
+
+    expect(order).toEqual(['csrf', 'guest', 'handler']);
+  });
+
   it('applies route groups with prefix and middleware', async () => {
     const router = new Router();
     const order: string[] = [];

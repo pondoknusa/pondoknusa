@@ -345,6 +345,8 @@ export const cookbookSidebar = [
       { text: 'Testing with fakes', link: '/cookbook/testing-fakes' },
       { text: 'Admin panel', link: '/cookbook/admin-panel' },
       { text: 'Multi-locale apps', link: '/cookbook/multi-locale' },
+      { text: 'Production observability', link: '/cookbook/observability' },
+      { text: 'Multi-tenant apps', link: '/cookbook/multi-tenant' },
     ],
   },
 ];

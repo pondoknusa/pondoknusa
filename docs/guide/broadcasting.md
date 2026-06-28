@@ -95,8 +95,24 @@ if (config) {
 | **Redis** | Required when running multiple app processes |
 | **TLS** | Terminate WSS at the proxy; Echo uses `wss://` from `APP_URL` |
 | **Auth** | `/broadcasting/auth` issues channel tokens — keep behind session middleware |
+| **Sticky sessions** | Not required when Redis pub/sub fan-out is configured |
 
-### Nginx sketch
+### Redis fan-out
+
+Each app process runs a local WebSocket hub. When one process broadcasts, it publishes to the Redis channel configured in `config/broadcasting.ts` (`BROADCAST_REDIS_CHANNEL`, default `tyravel:broadcast`). Other processes subscribe and push the event to their connected clients.
+
+Single-process deploys work for development. Production with horizontal scale **requires** Redis — see [Deploy with Docker](/guide/deployment/docker) for adding a `redis` service to compose.
+
+### Reverse proxy
+
+Terminate TLS at the proxy and forward upgrade headers for both the WebSocket path and channel auth:
+
+| Path | Purpose |
+|------|---------|
+| `/tyravel/ws` | WebSocket upgrade |
+| `/broadcasting/auth` | Private/presence channel authorization (session + CSRF) |
+
+#### Nginx
 
 ```nginx
 location /tyravel/ws {
@@ -105,8 +121,43 @@ location /tyravel/ws {
   proxy_set_header Upgrade $http_upgrade;
   proxy_set_header Connection "upgrade";
   proxy_set_header Host $host;
+  proxy_read_timeout 86400;
+}
+
+location /broadcasting/auth {
+  proxy_pass http://127.0.0.1:3000;
+  proxy_set_header Host $host;
+  proxy_set_header X-Forwarded-Proto $scheme;
 }
 ```
+
+#### Caddy
+
+```caddyfile
+reverse_proxy /tyravel/ws 127.0.0.1:3000 {
+  header_up Host {host}
+  transport http {
+    versions h2c 1.1
+  }
+}
+```
+
+#### Fly.io / Railway
+
+Both platforms pass WebSocket upgrades on the same HTTP port as your app. Set `BROADCAST_CONNECTION=websocket`, attach Redis (Fly Redis, Upstash, or Railway Redis plugin), and ensure `REDIS_URL` / `REDIS_HOST` env vars match your Redis config.
+
+### Echo client in production
+
+```typescript
+const echo = new Echo({
+  broadcaster: 'websocket',
+  host: window.location.host,
+  path: '/tyravel/ws',
+  forceTLS: window.location.protocol === 'https:',
+});
+```
+
+`readEchoConfigFromDocument()` reads values injected by the view layer when `BROADCAST_CONNECTION=websocket` — prefer that over hard-coding hosts in `.tyr` templates.
 
 ## Local development
 

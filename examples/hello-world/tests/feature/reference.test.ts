@@ -36,7 +36,7 @@ describe('hello-world reference app', () => {
   });
 
   it('registers a user and sends a welcome email', async () => {
-    const response = await t.http.post('http://localhost/register', {
+    const response = await t.http.withCsrf().post('http://localhost/register', {
       json: {
         name: 'Ada',
         email: 'ada@example.com',
@@ -59,7 +59,7 @@ describe('hello-world reference app', () => {
   });
 
   it('authenticates with session after login', async () => {
-    await t.http.post('http://localhost/register', {
+    await t.http.withCsrf().post('http://localhost/register', {
       json: {
         name: 'Grace',
         email: 'grace@example.com',
@@ -67,10 +67,10 @@ describe('hello-world reference app', () => {
       },
     });
 
-    await t.http.post('http://localhost/logout');
+    await t.http.withCsrf().post('http://localhost/logout');
     t.http.resetCookies();
 
-    const login = await t.http.post('http://localhost/login', {
+    const login = await t.http.withCsrf().post('http://localhost/login', {
       json: { email: 'grace@example.com', password: 'secret' },
     });
     await login.assertOk();
