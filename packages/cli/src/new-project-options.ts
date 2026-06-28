@@ -45,6 +45,7 @@ export async function resolveNewProjectOptions(
   const hasQueueFlag = optionString(options, 'queue') !== undefined;
   const hasMailFlag = optionString(options, 'mail') !== undefined;
   const hasAiFlag = options.ai !== undefined || options['no-ai'] === true;
+  const hasTemplateFlag = optionString(options, 'template') !== undefined;
 
   let database: DatabaseDriver = 'sqlite';
   let redis = false;
@@ -89,9 +90,24 @@ export async function resolveNewProjectOptions(
 
   const interactive = process.stdin.isTTY && process.stdout.isTTY;
 
-  if (interactive && (!hasDbFlag || !hasRedisFlag || !hasAuthFlag || !hasQueueFlag || !hasMailFlag || !hasAiFlag)) {
+  if (
+    interactive
+    && (!hasDbFlag || !hasRedisFlag || !hasAuthFlag || !hasQueueFlag || !hasMailFlag || !hasAiFlag || !hasTemplateFlag)
+  ) {
     const rl = createInterface({ input, output });
     try {
+      if (!hasTemplateFlag) {
+        console.log('');
+        console.log('Select a project template:');
+        console.log('  default - JSON API starter');
+        console.log('  api     - API-only routes');
+        console.log('  ssr     - Server-rendered welcome page');
+        console.log('  saas    - Auth-ready SaaS starter');
+        const answer = (await rl.question('Template [default]: ')).trim();
+        const { parseProjectTemplate } = await import('./stubs-templates.js');
+        template = parseProjectTemplate(answer || 'default');
+      }
+
       if (!hasDbFlag) {
         console.log('');
         console.log('Select a database driver:');

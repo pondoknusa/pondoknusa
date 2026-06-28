@@ -28,6 +28,17 @@ describe('Bus', () => {
     expect(result).toBe('Hello, World!');
   });
 
+  it('register() is an alias for map()', async () => {
+    class EchoCommand {
+      constructor(public text: string) {}
+    }
+
+    Bus.register(EchoCommand, (cmd: EchoCommand) => cmd.text);
+    const result = await Bus.dispatch(new EchoCommand('hi'));
+    expect(result).toBe('hi');
+    Bus.forget('EchoCommand');
+  });
+
   it('dispatches to a function handler', async () => {
     class DoubleCommand {
       constructor(public value: number) {}

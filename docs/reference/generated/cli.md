@@ -18,13 +18,14 @@ tyravel help <command>
 
 | Command | Description | Usage |
 |---------|-------------|-------|
-| `dev` | Start the local development server with hot reload | `tyravel dev [--port=<port>] [--host=<hostname>]` |
-| `doctor` | Run environment and project health checks | `tyravel doctor` |
+| `dev` | Start the local development server with hot reload | `tyravel dev [--port=<port>] [--host=<hostname>] [--tls] [--no-queue] [--no-watch]` |
+| `doctor` | Run environment and project health checks | `tyravel doctor [--perf]` |
 | `migrate` | Run database migrations | `tyravel migrate` |
 | `new` | Create a new Tyravel application | `tyravel new <name> [--path=<directory>] [--template=default\|api\|ssr\|saas] [--db=sqlite\|mysql\|postgres] [--redis\|--no-redis] [--auth\|--no-auth] [--queue=database\|redis] [--mail=log\|smtp\|array] [--ai\|--no-ai]` |
-| `serve` | Start the development server | `tyravel serve [--port=<port>] [--host=<hostname>]` |
+| `serve` | Start the development server | `tyravel serve [--port=<port>] [--host=<hostname>] [--tls]` |
 | `shell` | Start an interactive Tyravel shell (REPL) | — |
 | `start` | Start the production server | `tyravel start [--port=<port>] [--host=<hostname>]` |
+| `test` | Run the project test suite via Vitest | `tyravel test [-- <vitest args>]` |
 | `version` | Show the Tyravel CLI version | — |
 
 ## Database
@@ -55,7 +56,7 @@ tyravel help <command>
 | `make:seeder` | Create a new database seeder class | `tyravel make:seeder <Name>` |
 | `make:social-driver` | Scaffold a custom social OAuth driver | `tyravel make:social-driver <provider>` |
 | `make:subscriber` | Create an event subscriber class | `tyravel make:subscriber <Name>` |
-| `make:test` | Create a feature test class | `tyravel make:test <Name>` |
+| `make:test` | Create a feature test class | `tyravel make:test <Name> [--feature]` |
 | `make:tool` | Scaffold an MCP tool handler for @tyravel/mcp | `tyravel make:tool <Name>` |
 | `make:view` | Create a new Tyr template view | `tyravel make:view <name>` |
 
@@ -82,10 +83,10 @@ tyravel help <command>
 | Command | Description | Usage |
 |---------|-------------|-------|
 | `view:cache` | Compile all Tyr templates for production | `tyravel view:cache` |
-| `view:catalog` | Export component and island catalog metadata | `tyravel view:catalog [--json]` |
+| `view:catalog` | Export component and island catalog metadata | `tyravel view:catalog [--json] [--ide=vscode]` |
 | `view:clear` | Clear compiled Tyr template cache | `tyravel view:clear` |
 | `view:lint` | Lint Tyr templates for common issues | `tyravel view:lint [--strict]` |
-| `view:types` | Generate ViewPropsMap types from @props directives | `tyravel view:types [--output=types/view-props.generated.d.ts]` |
+| `view:types` | Generate ViewPropsMap types from @props directives | `tyravel view:types [--output=types/view-props.generated.d.ts] [--check]` |
 | `view:watch` | Watch Tyr templates and recompile on change | `tyravel view:watch` |
 
 ## Models
@@ -167,3 +168,9 @@ tyravel help <command>
 | Command | Description | Usage |
 |---------|-------------|-------|
 | `session:prune` | Prune expired database sessions | `tyravel session:prune` |
+
+## deploy
+
+| Command | Description | Usage |
+|---------|-------------|-------|
+| `deploy:check` | Run pre-deploy checks (doctor, routes, views) | `tyravel deploy:check` |

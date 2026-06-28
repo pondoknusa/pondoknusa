@@ -1,5 +1,30 @@
 # Testing
 
+Run the project suite with the Tyravel CLI wrapper (sets `APP_ENV=testing` consistently):
+
+```bash
+tyravel test
+tyravel test -- --watch
+```
+
+Scaffolded apps use `tyravel test` in `package.json` instead of calling Vitest directly.
+
+## In-memory SQLite (recommended default)
+
+For fast, isolated feature tests, point each worker at an in-memory database:
+
+```env
+# .env.testing
+DB_CONNECTION=sqlite
+DB_DATABASE=:memory:
+QUEUE_CONNECTION=sync
+MAIL_MAILER=array
+```
+
+In `vitest.config.ts`, load `.env.testing` or set `env` in the test config. When using `:memory:` with parallel workers, give each worker its own database (Vitest `pool: 'forks'` with `fileParallelism: true` is safe because each fork gets a fresh process and memory DB).
+
+Use `usesDatabaseTransactions` on `TestCase` when tests share a file-backed SQLite file.
+
 Use `@tyravel/testing` with Vitest:
 
 ```typescript
@@ -61,6 +86,63 @@ fake('mail', { send: async () => {} });
 ```
 
 Wire facades to the test application with `wireFacades(app)` so `Route`, `Auth`, and `Gate` resolve correctly in tests.
+
+## OAuth feature tests
+
+OAuth redirect flows need session state for CSRF/PKCE. Use the HTTP client session helpers:
+
+```typescript
+const redirect = await t.http.get('http://localhost/auth/github/redirect');
+redirect.assertStatus(302);
+const location = redirect.headers.get('location');
+expect(location).toContain('github.com');
+
+// Simulate provider callback (stub OAuth driver in tests or use array mail + fakes)
+await t.http.get('http://localhost/auth/github/callback?code=test&state=...');
+```
+
+Fake the OAuth manager in unit tests:
+
+```typescript
+import { fake } from '@tyravel/testing';
+
+fake('oauth', {
+  redirectUrl: () => 'https://provider.test/authorize',
+  handleCallback: async () => ({ id: '1', email: 'ada@example.com', name: 'Ada' }),
+});
+```
+
+## Broadcasting assertions
+
+When `BROADCAST_CONNECTION=log`, inspect dispatched events via the log driver or fake the broadcaster:
+
+```typescript
+const events: string[] = [];
+fake('broadcast', {
+  channel: () => ({
+    broadcast: async (event: string) => { events.push(event); },
+  }),
+});
+
+await t.http.post('http://localhost/posts', { json: { title: 'Hi' } }).assertStatus(201);
+expect(events).toContain('PostCreated');
+```
+
+See [Broadcasting](./broadcasting.md) for Echo and WebSocket setup in integration environments.
+
+## Partial reload assertions
+
+Turbo/HTMX-style partial responses expose fragment HTML:
+
+```typescript
+const response = await t.http
+  .withHeader('X-Tyravel-Partial', 'comments')
+  .get('http://localhost/posts/1');
+response.assertStatus(200);
+response.assertSee('class="comment"');
+```
+
+Use `View.partial()` / `Response.partial()` in controllers; assert the fragment without the full layout.
 
 ## Queued listeners and jobs
 

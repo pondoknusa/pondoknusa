@@ -22,6 +22,7 @@ npm install @tyravel/repl
 
 ## Tyravel dependencies
 
+- [@tyravel/config](/reference/generated/packages/config)
 - [@tyravel/core](/reference/generated/packages/core)
 - [@tyravel/support](/reference/generated/packages/support)
 

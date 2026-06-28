@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-28T09:28:22.037Z",
+  "generatedAt": "2026-06-28T10:26:42.481Z",
   "version": "1.0.1",
   "packages": [
     {
@@ -288,6 +288,7 @@
     "debug:clear",
     "debug:install",
     "debug:watch",
+    "deploy:check",
     "dev",
     "doctor",
     "lang:missing",
@@ -335,6 +336,7 @@
     "session:prune",
     "shell",
     "start",
+    "test",
     "vector:embed",
     "vector:install",
     "version",

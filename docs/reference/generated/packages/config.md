@@ -28,6 +28,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 
 - `ConfigRepository`
 - `ConfigValidationError`
+- `collectBootEnvFailures`
 - `collectConfigValidationFailures`
 - `env`
 - `envBool`
@@ -40,6 +41,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `parseEnv`
 - `requiredEnv`
 - `s`
+- `validateBootEnv`
 - `validateConfig`
 
 ### Types

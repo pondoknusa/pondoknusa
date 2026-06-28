@@ -3,6 +3,7 @@ import { Command } from '../command.js';
 import { requireProjectRoot } from '../project.js';
 import { parseOptions, positionalArgs, writeFile } from '../utils.js';
 import { bootViewApplication } from '../view-bootstrap.js';
+import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const DEFAULT_OUTPUT = 'types/view-props.generated.d.ts';
@@ -10,7 +11,7 @@ const DEFAULT_OUTPUT = 'types/view-props.generated.d.ts';
 export class ViewTypesCommand extends Command {
   override readonly name = 'view:types';
   override readonly description = 'Generate ViewPropsMap types from @props directives';
-  override readonly usage = 'tyravel view:types [--output=types/view-props.generated.d.ts]';
+  override readonly usage = 'tyravel view:types [--output=types/view-props.generated.d.ts] [--check]';
 
   async handle(args: string[]): Promise<number> {
     const options = parseOptions(args);
@@ -33,6 +34,25 @@ export class ViewTypesCommand extends Command {
     }
 
     const contents = generateViewPropsDeclarationFile(entries);
+
+    if (options.check) {
+      let existing = '';
+      try {
+        existing = await readFile(outputPath, 'utf8');
+      } catch {
+        console.error(`Missing ${outputPath}. Run tyravel view:types to generate it.`);
+        return 1;
+      }
+
+      if (existing !== contents) {
+        console.error('View prop types are out of date. Run tyravel view:types and commit the changes.');
+        return 1;
+      }
+
+      console.log(`View prop types are up to date (${Object.keys(entries).length} view(s)).`);
+      return 0;
+    }
+
     await writeFile(outputPath, contents);
 
     const count = Object.keys(entries).length;

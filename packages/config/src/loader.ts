@@ -4,6 +4,7 @@ import { pathToFileURL } from 'node:url';
 import type { ConfigTree } from './repository.js';
 import type { ConfigSchema } from './schema.js';
 import { validateConfig } from './validate-config.js';
+import { validateBootEnv } from './validate-boot-env.js';
 
 export interface LoadedConfig {
   config: ConfigTree;
@@ -19,8 +20,11 @@ export async function loadConfig(
   options: LoadConfigOptions = {},
 ): Promise<ConfigTree> {
   const loaded = await loadConfigWithSchemas(basePath);
-  if (options.validate !== false && Object.keys(loaded.schemas).length > 0) {
-    validateConfig(loaded.config, loaded.schemas);
+  if (options.validate !== false) {
+    if (Object.keys(loaded.schemas).length > 0) {
+      validateConfig(loaded.config, loaded.schemas);
+    }
+    validateBootEnv(loaded.config);
   }
   return loaded.config;
 }

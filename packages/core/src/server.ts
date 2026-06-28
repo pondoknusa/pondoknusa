@@ -6,6 +6,11 @@ export interface ServeOptions {
   hostname?: string;
   /** Suppress startup/shutdown log lines (useful for JSON benchmark output). */
   quiet?: boolean;
+  /** PEM certificate and key paths for local HTTPS (Node adapter only). */
+  tls?: {
+    certPath: string;
+    keyPath: string;
+  };
 }
 
 interface BunServe {
@@ -23,6 +28,12 @@ export async function serve(
   const port = options.port ?? (Number(process.env.TYRAVEL_PORT) || 3000);
   const hostname = options.hostname ?? (process.env.TYRAVEL_HOST || '127.0.0.1');
   const quiet = options.quiet === true;
+  const tls = options.tls ?? (
+    process.env.TYRAVEL_TLS_CERT && process.env.TYRAVEL_TLS_KEY
+      ? { certPath: process.env.TYRAVEL_TLS_CERT, keyPath: process.env.TYRAVEL_TLS_KEY }
+      : undefined
+  );
+  const scheme = tls ? 'https' : 'http';
   const bun = (globalThis as { Bun?: BunServe }).Bun;
 
   if (bun) {
@@ -33,7 +44,10 @@ export async function serve(
     });
 
     if (!quiet) {
-      console.log(`Tyravel server running at http://${server.hostname}:${server.port}`);
+      if (tls) {
+        console.warn('TLS is not supported on Bun yet — serving over HTTP.');
+      }
+      console.log(`Tyravel server running at ${scheme}://${server.hostname}:${server.port}`);
     }
 
     const shutdown = () => {
@@ -64,9 +78,9 @@ export async function serve(
     };
   }
 
-  const server = await serveWithNode(kernel, hostname, port);
+  const server = await serveWithNode(kernel, hostname, port, { tls });
   if (!quiet) {
-    console.log(`Tyravel server running at http://${server.hostname}:${server.port}`);
+    console.log(`Tyravel server running at ${scheme}://${server.hostname}:${server.port}`);
   }
 
   const shutdown = async () => {

@@ -3,6 +3,8 @@ import { createRequire } from 'node:module';
 import { join, resolve } from 'node:path';
 import { start as startReplServer, type REPLServer } from 'node:repl';
 import { homedir } from 'node:os';
+import { listProjectRoutes } from './list-routes.js';
+import type { Application } from '@tyravel/core';
 
 const CYAN = '\x1b[36m';
 const GREEN = '\x1b[32m';
@@ -105,6 +107,9 @@ export async function startRepl(projectRoot: string): Promise<number> {
     }
   }
 
+  const historyFile = join(homedir(), '.tyravel_shell_history');
+  const bootedApp = context.app as Application | undefined;
+
   // ── Colorized greeting ───────────────────────────────────────────────
   console.log('');
   console.log(`  ${CYAN}⚡ Tyravel Shell${RESET}`);
@@ -115,12 +120,11 @@ export async function startRepl(projectRoot: string): Promise<number> {
       console.log(`  ${GREEN}Models:${RESET} ${modelCount} loaded`);
     }
   }
-  console.log(`  ${YELLOW}Tip:${RESET} Type .exit to quit, or .help for REPL commands`);
+  console.log(`  ${YELLOW}Tip:${RESET} Type .exit to quit, .routes / .models, or await User.find(1) for models`);
+  console.log(`  ${YELLOW}History:${RESET} ${historyFile}`);
   console.log('');
 
   // ── Start REPL server ────────────────────────────────────────────────
-  const historyFile = join(homedir(), '.tyravel_shell_history');
-
   const server: REPLServer = startReplServer({
     prompt: `${CYAN}tyravel>${RESET} `,
     eval: evaluateInContext(context),
@@ -151,6 +155,32 @@ export async function startRepl(projectRoot: string): Promise<number> {
         }
       }
       this.displayPrompt();
+    },
+  });
+
+  server.defineCommand('routes', {
+    help: 'List registered HTTP routes',
+    action(this: REPLServer) {
+      void listProjectRoutes(projectRoot, bootedApp)
+        .then((routes) => {
+          if (routes.length === 0) {
+            console.log('No routes registered.');
+            return;
+          }
+
+          console.log(`Routes (${routes.length}):`);
+          for (const route of routes) {
+            const name = route.name ? `  ${route.name}` : '';
+            console.log(`${route.method.padEnd(7)} ${route.uri.padEnd(28)} ${route.action}${name}`);
+          }
+        })
+        .catch((error: unknown) => {
+          const message = error instanceof Error ? error.message : String(error);
+          console.log(`Could not load routes: ${message}`);
+        })
+        .finally(() => {
+          this.displayPrompt();
+        });
     },
   });
 

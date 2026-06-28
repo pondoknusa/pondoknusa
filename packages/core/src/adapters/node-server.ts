@@ -1,27 +1,39 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import type { Server as HttpServer } from 'node:http';
+import type { Server as HttpsServer } from 'node:https';
 import type { Socket } from 'node:net';
 import type { HttpKernel } from '../http-kernel.js';
+
+export interface NodeServeOptions {
+  tls?: {
+    certPath: string;
+    keyPath: string;
+  };
+}
 
 export async function serveWithNode(
   kernel: HttpKernel,
   hostname: string,
   port: number,
+  options: NodeServeOptions = {},
 ): Promise<{ hostname: string; port: number; close: () => Promise<void> }> {
-  return createNodeServer(kernel, hostname, port);
+  return createNodeServer(kernel, hostname, port, options);
 }
 
 async function createNodeServer(
   kernel: HttpKernel,
   hostname: string,
   port: number,
+  options: NodeServeOptions = {},
 ) {
-  const { createServer } = await import('node:http');
+  const { readFileSync } = await import('node:fs');
   const { attachBroadcastWebSocketUpgrade } = await import('@tyravel/broadcasting');
 
   let isShuttingDown = false;
   const connections = new Set<Socket>();
+  const scheme = options.tls ? 'https' : 'http';
 
-  const server = createServer(async (incoming, outgoing) => {
+  const requestListener = async (incoming: IncomingMessage, outgoing: ServerResponse) => {
     try {
       if (isShuttingDown) {
         outgoing.setHeader('Connection', 'close');
@@ -30,7 +42,7 @@ async function createNodeServer(
         return;
       }
 
-      const request = await toFetchRequest(incoming);
+      const request = await toFetchRequest(incoming, scheme);
       const response = await kernel.handle(request);
 
       if (isShuttingDown) {
@@ -43,28 +55,40 @@ async function createNodeServer(
       outgoing.statusCode = 500;
       outgoing.end('Server Error');
     }
-  });
+  };
+
+  const server: HttpServer | HttpsServer = options.tls
+    ? (await import('node:https')).createServer(
+        {
+          cert: readFileSync(options.tls.certPath),
+          key: readFileSync(options.tls.keyPath),
+        },
+        requestListener,
+      )
+    : (await import('node:http')).createServer(requestListener);
 
   attachBroadcastWebSocketUpgrade(server);
 
   server.on('connection', (socket) => {
     connections.add(socket);
-    (socket as any)._activeRequests = 0;
+    (socket as { _activeRequests?: number })._activeRequests = 0;
     socket.on('close', () => {
       connections.delete(socket);
     });
   });
 
   server.on('request', (incoming, outgoing) => {
-    const socket = incoming.socket;
-    (socket as any)._activeRequests = ((socket as any)._activeRequests || 0) + 1;
+    const socket = incoming.socket as Socket & { _activeRequests?: number };
+    socket._activeRequests = (socket._activeRequests ?? 0) + 1;
 
     let decremented = false;
     const decrement = () => {
-      if (decremented) return;
+      if (decremented) {
+        return;
+      }
       decremented = true;
-      (socket as any)._activeRequests = Math.max(0, ((socket as any)._activeRequests || 0) - 1);
-      if (isShuttingDown && (socket as any)._activeRequests === 0) {
+      socket._activeRequests = Math.max(0, (socket._activeRequests ?? 0) - 1);
+      if (isShuttingDown && socket._activeRequests === 0) {
         socket.end();
       }
     };
@@ -92,14 +116,13 @@ async function createNodeServer(
         server.close((error) => (error ? reject(error) : resolve()));
       });
 
-      // End all idle connections immediately
       for (const socket of connections) {
-        if ((socket as any)._activeRequests === 0) {
+        const active = (socket as Socket & { _activeRequests?: number })._activeRequests ?? 0;
+        if (active === 0) {
           socket.end();
         }
       }
 
-      // If connections still exist, give them a timeout (5 seconds) to finish
       let timeout: NodeJS.Timeout | undefined;
       if (connections.size > 0) {
         timeout = setTimeout(() => {
@@ -120,9 +143,9 @@ async function createNodeServer(
   };
 }
 
-async function toFetchRequest(incoming: IncomingMessage): Promise<Request> {
+async function toFetchRequest(incoming: IncomingMessage, scheme: string): Promise<Request> {
   const host = incoming.headers.host ?? 'localhost';
-  const url = new URL(incoming.url ?? '/', `http://${host}`);
+  const url = new URL(incoming.url ?? '/', `${scheme}://${host}`);
   const method = incoming.method ?? 'GET';
   const headers = new Headers();
 

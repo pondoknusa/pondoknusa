@@ -1,0 +1,33 @@
+{
+  "Tyravel layout": {
+    "prefix": "tyr-layout",
+    "body": [
+      "@layout('${1:layouts/app}')",
+      "",
+      "@section('content')",
+      "$0",
+      "@endsection"
+    ],
+    "description": "Layout section block"
+  },
+  "Tyravel component": {
+    "prefix": "tyr-component",
+    "body": [
+      "@component('${1:components/alert}', {",
+      "  ${2:type}: '${3:info}',",
+      "})",
+      "  $0",
+      "@endcomponent"
+    ],
+    "description": "Component with props"
+  },
+  "Tyravel props": {
+    "prefix": "tyr-props",
+    "body": [
+      "@props({",
+      "  ${1:name}: '${2:string}',",
+      "})"
+    ],
+    "description": "Typed component props for view:types"
+  }
+}

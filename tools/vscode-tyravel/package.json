@@ -1,0 +1,42 @@
+{
+  "name": "tyravel",
+  "displayName": "Tyravel",
+  "description": "Syntax highlighting and snippets for Tyravel .tyr templates",
+  "version": "0.1.0",
+  "publisher": "tyravel",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Programming Languages", "Snippets"],
+  "contributes": {
+    "languages": [
+      {
+        "id": "tyr",
+        "aliases": ["Tyravel", "tyr"],
+        "extensions": [".tyr"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "tyr",
+        "scopeName": "source.tyr",
+        "path": "./syntaxes/tyr.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "tyr",
+        "path": "./snippets/tyravel.code-snippets"
+      }
+    ]
+  },
+  "scripts": {
+    "package": "vsce package"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thesimonharms/tyravel.git",
+    "directory": "tools/vscode-tyravel"
+  }
+}

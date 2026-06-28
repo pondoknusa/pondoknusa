@@ -45,7 +45,7 @@ import {
   railwayToml,
 } from '../stubs-deploy.js';
 import { envExample } from '../stubs-project.js';
-import { featureTestStub, projectVitestConfig } from '../stubs-testing.js';
+import { featureTestStub, projectVitestConfig, viewTypesWorkflow } from '../stubs-testing.js';
 import {
   aiAppServiceProvider,
   aiMainEntry,
@@ -59,6 +59,7 @@ import {
   ragRoutes,
   vectorConfig,
 } from '../stubs-ai.js';
+import { printFirstRunChecklist } from '../first-run-checklist.js';
 import { optionString, parseOptions, positionalArgs, projectPath, toKebabCase, writeFile, pathExists } from '../utils.js';
 
 export class NewCommand extends Command {
@@ -218,6 +219,10 @@ export class NewCommand extends Command {
     await writeFile(projectPath(targetDir, 'deploy/railway.toml'), railwayToml());
     await writeFile(projectPath(targetDir, 'deploy/README.md'), deployReadme());
     await writeFile(projectPath(targetDir, '.dockerignore'), dockerignore());
+    await writeFile(
+      projectPath(targetDir, '.github/workflows/view-types.yml'),
+      viewTypesWorkflow(),
+    );
 
     console.log(`Tyravel application created successfully.`);
     console.log('');
@@ -229,30 +234,21 @@ export class NewCommand extends Command {
     console.log(`  Redis: ${projectOptions.redis ? 'yes' : 'no'}`);
     console.log(`  AI/RAG: ${projectOptions.ai ? 'yes' : 'no'}`);
     console.log('');
-    console.log(`  cd ${name}`);
-    console.log('  npm install');
-    console.log('  npm test');
-    console.log('  tyravel dev       # development');
-    console.log('  tyravel start     # production');
-    if (projectOptions.auth) {
-      console.log('');
-      console.log('  Auth dependency included — run tyravel auth:install to scaffold guards and routes.');
-    }
-
     // Run npm install with inline spinner (only in interactive mode)
+    let npmInstalled = false;
     if (process.stdout.isTTY) {
       console.log('');
       console.log('Running npm install...');
       const installCode = await runNpmInstall(targetDir);
+      npmInstalled = installCode === 0;
       if (installCode === 0) {
         console.log('✓ npm install complete');
       } else {
         console.log('⚠ npm install finished with warnings (run `npm install` manually)');
       }
-    } else {
-      console.log('');
-      console.log('  Run: npm install');
     }
+
+    printFirstRunChecklist(name, projectOptions, npmInstalled);
 
     return 0;
   }

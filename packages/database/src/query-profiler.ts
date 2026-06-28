@@ -5,6 +5,8 @@ export interface QueryProfileEntry {
   sql: string;
   bindings: RowValue[];
   durationMs: number;
+  /** First application frame where the query was issued (when profiling is enabled). */
+  source?: string;
 }
 
 export class QueryProfiler {
@@ -48,9 +50,30 @@ export class QueryProfiler {
         sql,
         bindings: [...bindings],
         durationMs: performance.now() - start,
+        source: captureQuerySource(),
       });
     }
   }
+}
+
+function captureQuerySource(): string | undefined {
+  const stack = new Error().stack;
+  if (!stack) {
+    return undefined;
+  }
+
+  const lines = stack.split('\n').slice(3);
+  for (const line of lines) {
+    if (line.includes('query-profiler') || line.includes('node_modules')) {
+      continue;
+    }
+    const trimmed = line.trim();
+    if (trimmed.length > 0) {
+      return trimmed;
+    }
+  }
+
+  return undefined;
 }
 
 export function wrapConnectionWithProfiler(

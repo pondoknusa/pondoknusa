@@ -61,7 +61,8 @@ Stable APIs are safe to build production applications on. Patch releases preserv
 | **Queue & events** | Job dispatch, workers, listeners, subscribers |
 | **Auth** | Session guard, API tokens, `Gate`, password reset, OAuth providers |
 | **CLI** | Commands listed in the root README (`tyravel new`, `dev`, `serve`, `start`, `doctor`, `migrate`, `make:*`, `queue:*`, `view:*`, `route:cache`, `model:prune`, etc.) |
-| **REPL** | `tyravel shell`, `@tyravel/repl` `startRepl()`, facade imports, `.models` / `.facades` commands, persistent history file |
+| **REPL** | `tyravel shell`, `@tyravel/repl` `startRepl()`, facade imports, `.routes` / `.models` / `.facades` commands, persistent history at `~/.tyravel_shell_history` |
+| **Bus** | `Bus.dispatch()`, `Bus.register()` / `Bus.map()`, self-handling commands, container auto-resolution (`CommandNameHandler`) |
 | **Programmatic views** | `.tyr.ts` templates exporting `render()` and optional `mount()`; programmatic island registration via `View.catalog()` metadata |
 | **Testing** | `@tyravel/testing` `TestCase`, HTTP client, `renderView`, assertion helpers |
 
@@ -71,8 +72,6 @@ Experimental APIs are shipped and tested but may change in a minor release witho
 
 | Area | Experimental surface |
 |------|----------------------|
-
-| **Bus** | Auto-discovered command/provider conventions (paths and naming may evolve) — `Bus` is not a facade |
 
 Experimental APIs may be promoted to **stable** in a minor release once documented and covered by compatibility tests.
 

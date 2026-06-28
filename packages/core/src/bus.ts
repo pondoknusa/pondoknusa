@@ -40,6 +40,11 @@ class CommandBus {
     return this;
   }
 
+  /** Alias for {@link map} — preferred stable name for explicit handler registration. */
+  register<TCommand>(command: new (...args: unknown[]) => TCommand, handler: CommandHandler<TCommand>): this {
+    return this.map(command, handler);
+  }
+
   /** Map multiple handlers at once. */
   maps(mappings: Record<string, CommandHandler>): this {
     for (const [key, handler] of Object.entries(mappings)) {

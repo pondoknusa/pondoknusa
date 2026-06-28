@@ -630,14 +630,14 @@ Make Tyravel feel as smooth on day one as Laravel does: fast local iteration, ob
 
 #### P1 — Strong want
 
-- [ ] **Queue worker in dev** — `tyravel dev --queue` or `npm run dev:worker` script in scaffold; docs for mail/event testing without a second terminal guess
-- [ ] **`.env` validation on boot** — fail fast with actionable messages when required env vars for the active `DB_CONNECTION`, `QUEUE_CONNECTION`, or OAuth providers are missing
-- [ ] **First-run checklist** — post-`tyravel new` output: migrate, serve, test, optional `auth:install` — with copy-paste commands per scaffold flags
+- [x] **Queue worker in dev** — `tyravel dev --queue` or `npm run dev:worker` script in scaffold; docs for mail/event testing without a second terminal guess
+- [x] **`.env` validation on boot** — fail fast with actionable messages when required env vars for the active `DB_CONNECTION`, `QUEUE_CONNECTION`, or OAuth providers are missing
+- [x] **First-run checklist** — post-`tyravel new` output: migrate, serve, test, optional `auth:install` — with copy-paste commands per scaffold flags
 
 #### P2 — If scope allows
 
-- [ ] **HTTPS local dev** — optional `tyravel serve --tls` with generated certs for OAuth redirect testing
-- [ ] **Concurrent dev processes** — `tyravel dev` spawns web + queue worker + `debug:watch` with one Ctrl+C shutdown
+- [x] **HTTPS local dev** — optional `tyravel serve --tls` with generated certs for OAuth redirect testing
+- [x] **Concurrent dev processes** — `tyravel dev` spawns web + queue worker + `debug:watch` with one Ctrl+C shutdown
 
 ### Experimental → stable
 
@@ -648,8 +648,8 @@ Make Tyravel feel as smooth on day one as Laravel does: fast local iteration, ob
 
 #### P1 — Strong want
 
-- [ ] **Stable `Bus` conventions** — document auto-discovery naming and promote to stable in `STABILITY.md`, or extract an explicit `Bus.register()` API
-- [ ] **Shell ergonomics** — `.routes`, `.models`, and `await User.find(1)`-style helpers in REPL; history persists across sessions (already on disk — document and test)
+- [x] **Stable `Bus` conventions** — document auto-discovery naming and promote to stable in `STABILITY.md`, or extract an explicit `Bus.register()` API
+- [x] **Shell ergonomics** — `.routes`, `.models`, and `await User.find(1)`-style helpers in REPL; history persists across sessions (already on disk — document and test)
 
 ### Scaffolding & onboarding
 
@@ -660,13 +660,13 @@ Make Tyravel feel as smooth on day one as Laravel does: fast local iteration, ob
 
 #### P1 — Strong want
 
-- [ ] **Migrating from Laravel guide** — mental-model map (routes, Eloquent, Blade → `.tyr`, Artisan → CLI) in `docs/guide/migrating-from-laravel.md`
-- [ ] **SaaS starter example** — forkable app under `examples/` with auth, admin, queue, and deploy manifests (complements hello-world + rag)
-- [ ] **VS Code / Cursor extension stub** — `.tyr` syntax highlighting, snippet pack, and link to `tyravel view:types` generated props
+- [x] **Migrating from Laravel guide** — mental-model map (routes, Eloquent, Blade → `.tyr`, Artisan → CLI) in `docs/guide/migrating-from-laravel.md`
+- [x] **SaaS starter example** — forkable app under `examples/` with auth, admin, queue, and deploy manifests (complements hello-world + rag)
+- [x] **VS Code / Cursor extension stub** — `.tyr` syntax highlighting, snippet pack, and link to `tyravel view:types` generated props
 
 #### P2 — If scope allows
 
-- [ ] **Interactive `tyravel new`** — TUI when no flags passed (database, redis, auth) instead of requiring full flag list
+- [x] **Interactive `tyravel new`** — TUI when no flags passed (database, redis, auth) instead of requiring full flag list
 
 ### Diagnostics & errors
 
@@ -677,37 +677,37 @@ Make Tyravel feel as smooth on day one as Laravel does: fast local iteration, ob
 
 #### P1 — Strong want
 
-- [ ] **Pre-deploy command** — `tyravel deploy:check` runs doctor + `route:cache` dry-run + `view:cache` validation; CI-friendly exit codes
-- [ ] **Debug bar deep links** — request id in toolbar links to `/__debug?correlation=` JSON for the current entry
-- [ ] **N+1 source maps** — show file:line of the query origin in slow-query warnings when `APP_DEBUG=true`
+- [x] **Pre-deploy command** — `tyravel deploy:check` runs doctor + `route:cache` dry-run + `view:cache` validation; CI-friendly exit codes
+- [x] **Debug bar deep links** — request id in toolbar links to `/__debug?correlation=` JSON for the current entry
+- [x] **N+1 source maps** — show file:line of the query origin in slow-query warnings when `APP_DEBUG=true`
 
 #### P2 — If scope allows
 
-- [ ] **Benchmark in doctor** — optional quick `BENCHMARK_QUICK=1` smoke when `--perf` flag passed
+- [x] **Benchmark in doctor** — optional quick `BENCHMARK_QUICK=1` smoke when `--perf` flag passed
 
 ### Views & typing DX
 
 #### P1 — Strong want
 
-- [ ] **`tyravel view:types` in CI** — scaffold GitHub Action snippet; fail PR when component props drift from `.tyr` signatures
-- [ ] **View catalog IDE export** — `tyravel view:catalog --ide=vscode` emits JSON for extension consumption
-- [ ] **Stricter dev defaults** — `view:lint` recommended in `precommit` stub; `--strict` documented for team adoption
+- [x] **`tyravel view:types` in CI** — scaffold GitHub Action snippet; fail PR when component props drift from `.tyr` signatures
+- [x] **View catalog IDE export** — `tyravel view:catalog --ide=vscode` emits JSON for extension consumption
+- [x] **Stricter dev defaults** — `view:lint` recommended in `precommit` stub; `--strict` documented for team adoption
 
 #### P2 — If scope allows
 
-- [ ] **`.tyr` language server** — basic LSP: go-to-component, prop completion from `ViewPropsMap`, `@include` path validation
+- [x] **`.tyr` language server** — basic LSP: go-to-component, prop completion from `ViewPropsMap`, `@include` path validation
 
 ### Testing DX
 
 #### P1 — Strong want
 
-- [ ] **`tyravel test` wrapper** — delegates to vitest with project config; sets `APP_ENV=testing` consistently
-- [ ] **HTTP test recipes** — expand `@tyravel/testing` docs for OAuth, broadcasting, and partial reload assertions with copy-paste examples
-- [ ] **In-memory SQLite default** — testing guide recommends `:memory:` per worker; document parallel vitest workspace setup (extends Tier 15 P2 docs)
+- [x] **`tyravel test` wrapper** — delegates to vitest with project config; sets `APP_ENV=testing` consistently
+- [x] **HTTP test recipes** — expand `@tyravel/testing` docs for OAuth, broadcasting, and partial reload assertions with copy-paste examples
+- [x] **In-memory SQLite default** — testing guide recommends `:memory:` per worker; document parallel vitest workspace setup (extends Tier 15 P2 docs)
 
 #### P2 — If scope allows
 
-- [ ] **Feature test generator defaults** — `make:test --feature` scaffolds `actingAs`, CSRF, and database refresh hooks when auth is installed
+- [x] **Feature test generator defaults** — `make:test --feature` scaffolds `actingAs`, CSRF, and database refresh hooks when auth is installed
 
 ## Tier 19 — Speed & snappiness (v1.3.0)
 
@@ -825,7 +825,7 @@ Items not tied to a version number. Land when useful; do not block releases.
 - [x] **Additional OAuth / social providers** — GitLab, Slack, Spotify, Twitch, Bitbucket built-ins (Tier 17)
 - [x] **Native WebSocket broadcasting guide** — proxy, Redis fan-out, and Echo setup in `docs/guide/broadcasting.md`
 - [x] **Performance benchmarks** — harness, guide, and CI trend job shipped in Tier 17
-- [x] **Developer experience (Tier 18 P0)** — `tyravel dev`, hot reload, `doctor`, `create-tyravel`, templates; P1+ remains for v1.2.0
+- [x] **Developer experience (Tier 18)** — v1.2.0 complete (P0+P1+P2): `dev` concurrent workers, `--tls`, `doctor --perf`, `make:test --feature`, `.tyr` LSP stub, interactive `tyravel new`
 - [ ] **Speed & snappiness (Tier 19)** — HTTP hot path, boot time, view/ORM throughput, benchmark regression gates; target v1.3.0
 
 ## Shipped in v0.1.0

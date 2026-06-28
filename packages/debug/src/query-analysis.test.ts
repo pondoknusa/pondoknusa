@@ -16,4 +16,22 @@ describe('analyzeQueries', () => {
     expect(warnings.some((warning) => warning.type === 'slow_query')).toBe(true);
     expect(warnings.some((warning) => warning.type === 'n_plus_one')).toBe(true);
   });
+
+  it('includes query source in slow-query warnings', () => {
+    const warnings = analyzeQueries(
+      [
+        {
+          sql: 'SELECT * FROM users WHERE id = 1',
+          bindings: [1],
+          durationMs: 200,
+          source: 'at UserController.show (src/controllers/user.ts:12:5)',
+        },
+      ],
+      { slowQueryMs: 100 },
+    );
+
+    const slow = warnings.find((warning) => warning.type === 'slow_query');
+    expect(slow?.message).toContain('user.ts');
+    expect(slow?.metadata?.source).toContain('UserController');
+  });
 });

@@ -13,6 +13,7 @@ export function renderDebugBar(entry: DebugRequestEntry, debugPath: string): str
   <span>${entry.durationMs.toFixed(1)}ms</span>
   <span>${queryCount} queries</span>
   <span>${warningCount} warnings</span>
+  <a href="${debugPath}?correlation=${entry.id}" target="_blank" rel="noopener">correlation</a>
   <a href="${debugPath}/${entry.id}" target="_blank" rel="noopener">JSON</a>
   ${entry.replay ? '<span title="curl / fetch snippets available in JSON">replay</span>' : ''}
 </div>

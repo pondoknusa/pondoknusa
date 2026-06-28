@@ -54,8 +54,9 @@ export function projectPackageJson(name: string, options: NewProjectOptions): st
       scripts: {
         dev: 'tyravel dev',
         start: 'tyravel start',
-        worker: 'tyravel queue:work',
-        test: 'vitest run',
+        'dev:worker': 'tyravel queue:work',
+        test: 'tyravel test',
+        precommit: 'tyravel view:lint',
       },
       dependencies: {
         ...dependencies,
@@ -185,7 +186,18 @@ await serve(kernel);
 export function databaseConfig(options: NewProjectOptions): string {
   if (options.database === 'mysql') {
     return `import type { MysqlConnectionConfig } from '@tyravel/database-mysql';
-import { env, envInt } from '@tyravel/config';
+import { env, envInt, s } from '@tyravel/config';
+
+export const schema = s.object({
+  default: s.string({ required: true, minLength: 1 }),
+  connections: s.object({
+    mysql: s.object({
+      driver: s.string({ enum: ['mysql'] }),
+      host: s.string({ required: true, minLength: 1 }),
+      database: s.string({ required: true, minLength: 1 }),
+    }),
+  }),
+});
 
 export default {
   default: env('DB_CONNECTION', 'mysql'),
@@ -205,7 +217,18 @@ export default {
 
   if (options.database === 'postgres') {
     return `import type { PgConnectionConfig } from '@tyravel/database-pg';
-import { env, envInt } from '@tyravel/config';
+import { env, envInt, s } from '@tyravel/config';
+
+export const schema = s.object({
+  default: s.string({ required: true, minLength: 1 }),
+  connections: s.object({
+    postgres: s.object({
+      driver: s.string({ enum: ['postgres'] }),
+      host: s.string({ required: true, minLength: 1 }),
+      database: s.string({ required: true, minLength: 1 }),
+    }),
+  }),
+});
 
 export default {
   default: env('DB_CONNECTION', 'postgres'),
@@ -223,7 +246,17 @@ export default {
 `;
   }
 
-  return `import { env } from '@tyravel/config';
+  return `import { env, s } from '@tyravel/config';
+
+export const schema = s.object({
+  default: s.string({ required: true, minLength: 1 }),
+  connections: s.object({
+    sqlite: s.object({
+      driver: s.string({ enum: ['sqlite'] }),
+      database: s.string({ required: true, minLength: 1 }),
+    }),
+  }),
+});
 
 export default {
   default: env('DB_CONNECTION', 'sqlite'),
@@ -247,7 +280,11 @@ export function queueConfig(options: NewProjectOptions): string {
     },`
     : '';
 
-  return `import { env } from '@tyravel/config';
+  return `import { env, s } from '@tyravel/config';
+
+export const schema = s.object({
+  default: s.string({ required: true, minLength: 1 }),
+});
 
 export default {
   default: env('QUEUE_CONNECTION', '${options.queue}'),

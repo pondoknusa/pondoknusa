@@ -7,7 +7,7 @@ import { bootViewApplication } from '../view-bootstrap.js';
 export class ViewCatalogCommand extends Command {
   override readonly name = 'view:catalog';
   override readonly description = 'Export component and island catalog metadata';
-  override readonly usage = 'tyravel view:catalog [--json]';
+  override readonly usage = 'tyravel view:catalog [--json] [--ide=vscode]';
 
   async handle(args: string[]): Promise<number> {
     const options = parseOptions(args);
@@ -17,8 +17,15 @@ export class ViewCatalogCommand extends Command {
     const { engine } = await bootViewApplication(root);
     const catalog = serializeViewCatalog(await engine.getViewCatalog());
 
-    if (options.json) {
-      console.log(JSON.stringify(catalog, null, 2));
+    if (options.json || options.ide === 'vscode') {
+      const payload = options.ide === 'vscode'
+        ? {
+            $schema: 'https://tyravel.dev/schemas/view-catalog-vscode.json',
+            generator: 'tyravel view:catalog --ide=vscode',
+            ...catalog,
+          }
+        : catalog;
+      console.log(JSON.stringify(payload, null, 2));
       return 0;
     }
 

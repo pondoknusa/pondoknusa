@@ -12,3 +12,4 @@ export { s } from './schema.js';
 export type { ConfigSchema } from './schema.js';
 export { collectConfigValidationFailures, validateConfig } from './validate-config.js';
 export type { ConfigSchemaMap } from './validate-config.js';
+export { collectBootEnvFailures, validateBootEnv } from './validate-boot-env.js';

@@ -1,13 +1,15 @@
 import { join } from 'node:path';
 import type { ChildProcess } from 'node:child_process';
 import { loadProjectConfig } from './project.js';
+import { ensureLocalTlsCerts } from './local-tls.js';
 import {
   describeRuntimeIssue,
   detectTypeScriptRuntime,
   printRuntimeInfo,
   spawnTypeScriptEntry,
 } from './runtime.js';
-import { optionNumber, optionString } from './utils.js';
+import { spawnTyravelCommand } from './spawn-cli.js';
+import { optionNumber, optionString, pathExists } from './utils.js';
 
 export interface DevServerOptions {
   root: string;
@@ -17,7 +19,6 @@ export interface DevServerOptions {
 
 export async function startDevServer({
   root,
-  cliArgs,
   options,
 }: DevServerOptions): Promise<{ code: number; children: ChildProcess[] }> {
   const config = await loadProjectConfig(root);
@@ -32,27 +33,71 @@ export async function startDevServer({
   const port = optionNumber(options, 'port', config.serve.port);
   const hostname = optionString(options, 'host', config.serve.hostname) ?? config.serve.hostname;
   const children: ChildProcess[] = [];
+  const withTls = options.tls === true;
+  const withQueue = options['no-queue'] !== true;
+  const debugInstalled = await pathExists(join(root, 'config/debug.ts'));
+  const withWatch = options['no-watch'] !== true && debugInstalled;
+
+  let scheme = 'http';
+  const serverEnv: NodeJS.ProcessEnv = {
+    ...process.env,
+    TYRAVEL_PORT: String(port),
+    TYRAVEL_HOST: hostname,
+    TYRAVEL_VIEW_WATCH: '1',
+    TYRAVEL_HOT_RELOAD: '1',
+  };
+
+  if (withTls) {
+    try {
+      const { certPath, keyPath } = await ensureLocalTlsCerts(root);
+      serverEnv.TYRAVEL_TLS_CERT = certPath;
+      serverEnv.TYRAVEL_TLS_KEY = keyPath;
+      scheme = 'https';
+    } catch (error) {
+      console.error(error instanceof Error ? error.message : String(error));
+      return { code: 1, children: [] };
+    }
+  }
+
+  const displayHost = hostname === '0.0.0.0' ? '127.0.0.1' : hostname;
 
   console.log('Starting Tyravel development server...');
   printRuntimeInfo(runtime);
-  console.log(`URL: http://${hostname === '0.0.0.0' ? '127.0.0.1' : hostname}:${port}`);
+  console.log(`URL: ${scheme}://${displayHost}:${port}`);
+  if (withTls) {
+    console.log(`TLS certs: storage/framework/tls/localhost.crt`);
+  }
   console.log('');
-  console.log('Dev tips:');
-  console.log('  • Views, config, and routes hot-reload in this process');
-  console.log('  • Run `tyravel debug:watch` in another terminal after `tyravel debug:install`');
-  console.log('  • Run `tyravel queue:work` when testing queued mail or jobs');
-  console.log('');
+
+  const spawned: string[] = [];
+
+  if (withQueue) {
+    const worker = spawnTyravelCommand(root, ['queue:work']);
+    children.push(worker);
+    spawned.push('queue worker');
+  }
+
+  if (withWatch) {
+    const watcher = spawnTyravelCommand(root, ['debug:watch', '--correlations']);
+    children.push(watcher);
+    spawned.push('debug:watch');
+  }
+
+  if (spawned.length > 0) {
+    console.log(`Concurrent dev: ${spawned.join(', ')} (one Ctrl+C shuts down all)`);
+    console.log('');
+  } else {
+    console.log('Dev tips:');
+    console.log('  • Views, config, and routes hot-reload in this process');
+    console.log('  • Run `tyravel debug:install` then `tyravel dev` to tail debug entries');
+    console.log('  • Use `--no-queue` or `--no-watch` to disable background workers');
+    console.log('');
+  }
 
   const server = spawnTypeScriptEntry({
     entry,
     cwd: root,
-    env: {
-      ...process.env,
-      TYRAVEL_PORT: String(port),
-      TYRAVEL_HOST: hostname,
-      TYRAVEL_VIEW_WATCH: '1',
-      TYRAVEL_HOT_RELOAD: '1',
-    },
+    env: serverEnv,
   });
   children.push(server);
 
@@ -71,6 +116,7 @@ export async function startDevServer({
     server.on('exit', (exitCode) => {
       process.off('SIGINT', shutdown);
       process.off('SIGTERM', shutdown);
+      shutdown();
       resolve(exitCode ?? 1);
     });
     server.on('error', (error) => {

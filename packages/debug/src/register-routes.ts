@@ -10,7 +10,20 @@ export function registerDebugRoutes(
 ): void {
   const path = (options.path ?? '/__debug').replace(/\/$/, '');
 
-  routes.get(path, () => Response.json({ entries: store.all() }));
+  routes.get(path, (request) => {
+    const correlation = request.query('correlation');
+    if (correlation) {
+      const entry = store.get(correlation);
+      if (!entry) {
+        return Response.json({ message: 'Debug entry not found.' }, { status: 404 });
+      }
+
+      const executions = options.correlationStore?.getForRequest(correlation) ?? [];
+      return Response.json(executions.length > 0 ? { ...entry, executions } : entry);
+    }
+
+    return Response.json({ entries: store.all() });
+  });
   routes.get(`${path}/:id`, (request) => {
     const entry = store.get(request.param('id') ?? '');
     if (!entry) {

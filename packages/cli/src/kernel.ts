@@ -46,7 +46,9 @@ import { QueueFailedCommand, QueueFailedTableCommand, QueueRetryCommand } from '
 import { QueueTableCommand } from './commands/queue-table.js';
 import { QueueWorkCommand } from './commands/queue-work.js';
 import { DevCommand } from './commands/dev.js';
+import { DeployCheckCommand } from './commands/deploy-check.js';
 import { DoctorCommand } from './commands/doctor.js';
+import { TestCommand } from './commands/test.js';
 import { ServeCommand } from './commands/serve.js';
 import { StartCommand } from './commands/start.js';
 import { ShellCommand } from './commands/shell.js';
@@ -77,6 +79,8 @@ export function createKernel(): ConsoleKernel {
     new ServeCommand(),
     new StartCommand(),
     new DoctorCommand(),
+    new DeployCheckCommand(),
+    new TestCommand(),
     new ShellCommand(),
     new MigrateCommand(),
     new DbSeedCommand(),

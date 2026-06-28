@@ -1,0 +1,22 @@
+{
+  "name": "Tyravel",
+  "scopeName": "source.tyr",
+  "patterns": [
+    {
+      "name": "comment.line.double-slash.tyr",
+      "match": "//.*$"
+    },
+    {
+      "name": "keyword.control.directive.tyr",
+      "match": "@(layout|section|endsection|yield|component|endcomponent|props|include|if|elseif|else|endif|foreach|endforeach|island|endisland|stack|push|endpush)\\b"
+    },
+    {
+      "name": "variable.other.interpolation.tyr",
+      "match": "\\{\\{[^}]+\\}\\}"
+    },
+    {
+      "name": "string.quoted.double.tyr",
+      "match": "\"(?:\\\\.|[^\"\\\\])*\""
+    }
+  ]
+}

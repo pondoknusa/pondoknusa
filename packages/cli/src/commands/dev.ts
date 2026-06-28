@@ -7,7 +7,8 @@ import { parseOptions, pathExists, positionalArgs } from '../utils.js';
 export class DevCommand extends Command {
   override readonly name = 'dev';
   override readonly description = 'Start the local development server with hot reload';
-  override readonly usage = 'tyravel dev [--port=<port>] [--host=<hostname>]';
+  override readonly usage =
+    'tyravel dev [--port=<port>] [--host=<hostname>] [--tls] [--no-queue] [--no-watch]';
 
   async handle(args: string[]): Promise<number> {
     const options = parseOptions(args);

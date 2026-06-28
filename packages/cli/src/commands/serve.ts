@@ -7,7 +7,7 @@ import { parseOptions, pathExists, positionalArgs } from '../utils.js';
 export class ServeCommand extends Command {
   override readonly name = 'serve';
   override readonly description = 'Start the development server';
-  override readonly usage = 'tyravel serve [--port=<port>] [--host=<hostname>]';
+  override readonly usage = 'tyravel serve [--port=<port>] [--host=<hostname>] [--tls]';
 
   async handle(args: string[]): Promise<number> {
     const options = parseOptions(args);
