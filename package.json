@@ -24,6 +24,8 @@
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "tyravel": "node packages/cli/dist/bin/tyravel.js",
+    "prebenchmark": "npm run build",
+    "benchmark": "node scripts/benchmark.mjs",
     "release:prepare": "node scripts/prepare-release.mjs"
   },
   "devDependencies": {

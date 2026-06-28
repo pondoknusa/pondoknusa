@@ -575,13 +575,44 @@ Tyravel **1.0.0** is the first semver-strict era (see [STABILITY.md](STABILITY.m
 - [x] **LTS support policy** — documented in `STABILITY.md` (6-month security window on previous minor)
 - [x] **Security disclosure process** — `SECURITY.md` with reporting instructions
 
+## Tier 17 — Performance & ecosystem (v1.1.0)
+
+First post-1.0 minor. Focus on measurable throughput, community extensibility, and closing the remaining v1.0 ops gap.
+
+### Performance benchmarks
+
+#### P0 — Must ship
+
+- [x] **Benchmark harness** — `npm run benchmark` measures HTTP JSON, ORM select, and view compile throughput (`scripts/benchmark.mjs`)
+- [x] **Benchmark guide** — `docs/guide/benchmarks.md` documents how to run and interpret baselines
+
+#### P1 — Strong want
+
+- [ ] **CI benchmark job** — informational workflow step on `main`; store JSON artifact for trend comparison
+- [ ] **Regression notes** — document expected ranges per Node 26 on Linux CI in the benchmark guide
+
+#### P2 — If scope allows
+
+- [ ] **Hello-world route bench** — optional full-stack bench using `examples/hello-world` SSR route (not just JSON stub)
+
+### Community ecosystem
+
+#### P1 — Strong want
+
+- [ ] **Community OAuth cookbook** — third-party social driver recipe building on `tyravel make:social-driver`
+- [ ] **Example community driver** — reference package under `examples/` showing `registerOAuthDriver()` wiring
+
+### v1.0 ops closeout
+
+- [ ] **Custom domain (tyravel.dev)** — point DNS at GitHub Pages, verify HTTPS; `docs/public/CNAME` is already in the build artifact
+
 ## Tier X — Ongoing
 
-Items not tied to a version number. Land when useful; do not block 1.0.
+Items not tied to a version number. Land when useful; do not block releases.
 
-- [ ] **Additional OAuth / social providers** — community drivers beyond built-ins
+- [ ] **Additional OAuth / social providers** — community drivers beyond built-ins (see Tier 17)
 - [x] **Native WebSocket broadcasting guide** — proxy, Redis fan-out, and Echo setup in `docs/guide/broadcasting.md`
-- [ ] **Performance benchmarks** — published baseline for HTTP, ORM, and view compile throughput
+- [x] **Performance benchmarks** — harness + guide shipped in Tier 17; CI trend job remains open
 
 ## Shipped in v0.1.0
 

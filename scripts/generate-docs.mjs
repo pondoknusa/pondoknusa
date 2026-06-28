@@ -678,6 +678,7 @@ export const guideSidebar = [
       { text: 'Docker', link: '/guide/deployment/docker' },
       { text: 'Fly.io', link: '/guide/deployment/fly' },
       { text: 'Railway', link: '/guide/deployment/railway' },
+      { text: 'Benchmarks', link: '/guide/benchmarks' },
     ],
   },
   {

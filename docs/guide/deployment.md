@@ -72,6 +72,7 @@ Scaffolded apps expose `GET /health` when `config/health.ts` is enabled. Point l
 
 ## Related
 
+- [Benchmarks](/guide/benchmarks) — local throughput baselines for HTTP, ORM, and view compile
 - [Tutorial 4: Realtime & deploy](/tutorials/04-realtime-and-deploy)
 - [Broadcasting](/guide/broadcasting) — WebSocket proxy headers
 - [Upgrading to 1.0](/guide/upgrading-to-1.0)
