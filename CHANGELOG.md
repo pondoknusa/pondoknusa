@@ -2,6 +2,27 @@
 
 All notable changes to Tyravel are documented in this file.
 
+## [1.0.0] - 2026-06-28
+
+Tyravel **1.0.0** is the first semver-strict release. Feature work through Tiers 12–16 is complete; this release marks the **documentation and stability gate** described in [STABILITY.md](STABILITY.md) and [ROADMAP.md](ROADMAP.md).
+
+### Added
+
+- **Hosted documentation** — VitePress site deployed to GitHub Pages ([thesimonharms.github.io/tyravel](https://thesimonharms.github.io/tyravel/)); `docs/public/CNAME` ready for `tyravel.dev`
+- **Deploy walkthroughs** — Fly.io, Railway, and Docker guides with copy-paste manifests in `examples/hello-world/deploy/`
+- **Cookbook (complete)** — observability and multi-tenant recipes
+- **Facade reference** — generated method tables in `docs/reference/generated/facades.md`
+- **Brand** — new `Ty` gradient logo for README, docs site, and favicon
+
+### Changed
+
+- **Semver policy** — 1.0.0 begins strict semver for stable APIs; see [API stability](docs/guide/api-stability.md)
+- **Package versions** — all `@tyravel/*` packages published at `1.0.0`
+
+### Migration
+
+- Apps on 0.11–0.16: see [Upgrading to 1.0](docs/guide/upgrading-to-1.0.md). Breaking removals landed in 0.16.0; 1.0.0 is primarily documentation and the stability declaration.
+
 ## [0.16.0] - 2026-06-27
 
 ### Added
@@ -275,3 +296,4 @@ First public release of the `@tyravel/*` monorepo.
 [0.11.0]: https://github.com/thesimonharms/tyravel/releases/tag/v0.11.0
 [0.10.0]: https://github.com/thesimonharms/tyravel/releases/tag/v0.10.0
 [0.9.1]: https://github.com/thesimonharms/tyravel/releases/tag/v0.9.1
+[1.0.0]: https://github.com/thesimonharms/tyravel/releases/tag/v1.0.0
