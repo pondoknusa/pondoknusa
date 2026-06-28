@@ -667,6 +667,7 @@ Make Tyravel feel as smooth on day one as Laravel does: fast local iteration, ob
 #### P2 — If scope allows
 
 - [x] **Interactive `tyravel new`** — TUI when no flags passed (database, redis, auth) instead of requiring full flag list
+- [x] **Headless API template (planning)** — `tyravel new --headless` / `--template=headless` option on roadmap; first-class backend-only scaffold ships in Tier 19
 
 ### Diagnostics & errors
 
@@ -712,6 +713,26 @@ Make Tyravel feel as smooth on day one as Laravel does: fast local iteration, ob
 ## Tier 19 — Speed & snappiness (v1.3.0)
 
 Make Tyravel feel **fast by default**: low cold-start latency, high request throughput, and instant feedback in dev. Builds on Tier 17 benchmarks, Tier 15 response/model caching, and Tier 16 route/view compile caches. Success is measurable — higher benchmark baselines, lower p95 in real apps, and fewer “why is boot slow?” surprises.
+
+### Headless API mode
+
+First-class backend-only Tyravel: JSON APIs without views, SSR, Echo, or client assets. Planned in Tier 18; ships here as a stable scaffold and tooling path.
+
+#### P0 — Must ship
+
+- [ ] **`tyravel new --headless`** — slim `package.json`, `src/routes/api.ts`, `config/app.ts` with `headless: true`, `tyravel.json` `mode: "headless"`
+- [ ] **Headless-aware CLI** — `doctor` skips view-cache checks; `deploy:check` skips view compilation; `tyravel dev` omits view watch
+- [ ] **Headless guide** — `docs/guide/headless.md` with quick start, auth, deploy, and conversion notes
+
+#### P1 — Strong want
+
+- [ ] **Headless example app** — `examples/headless-api` with auth tokens, queue worker, and deploy manifests
+- [ ] **`npm create tyravel@latest -- --headless`** — document in getting-started and create-tyravel README
+- [ ] **Headless boot profile** — skip `ViewServiceProvider` and view middleware when `config.app.headless` or `tyravel.json` mode is headless (runtime, not scaffold-only)
+
+#### P2 — If scope allows
+
+- [ ] **OpenAPI stub** — optional `tyravel make:openapi` or route annotation export for headless teams
 
 ### HTTP request hot path
 

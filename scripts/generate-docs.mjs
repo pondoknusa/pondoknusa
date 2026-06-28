@@ -665,6 +665,7 @@ export const guideSidebar = [
     items: [
       { text: 'Introduction', link: '/guide/introduction' },
       { text: 'Installation', link: '/guide/getting-started' },
+      { text: 'Headless API', link: '/guide/headless' },
       { text: 'Application structure', link: '/guide/application-structure' },
       { text: 'API stability', link: '/guide/api-stability' },
       { text: 'Upgrading to 1.0', link: '/guide/upgrading-to-1.0' },

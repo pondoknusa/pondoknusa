@@ -8,6 +8,7 @@ import {
 } from '@tyravel/core';
 import { Command } from '../command.js';
 import { runDoctorChecks } from '../doctor-checks.js';
+import { isHeadlessProject } from '../headless-project.js';
 import { requireProjectRoot } from '../project.js';
 import { importAppServiceProvider, importProjectRoutes } from '../project-bootstrap.js';
 import { bootViewApplication, enableCompiledCache } from '../view-bootstrap.js';
@@ -40,7 +41,10 @@ export class DeployCheckCommand extends Command {
       failed += 1;
     }
 
-    const viewCheck = await validateViewCompilation(root);
+    const headless = await isHeadlessProject(root);
+    const viewCheck = headless
+      ? { ok: true, message: 'Headless mode — view compilation skipped' }
+      : await validateViewCompilation(root);
     const viewIcon = viewCheck.ok ? '✓' : '✗';
     console.log(`${viewIcon} views: ${viewCheck.message}`);
     if (!viewCheck.ok) {

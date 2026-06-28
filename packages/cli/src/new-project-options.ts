@@ -16,6 +16,7 @@ export interface NewProjectOptions {
   mail: MailDriver;
   ai: boolean;
   template: ProjectTemplate;
+  headless: boolean;
 }
 
 const DATABASE_CHOICES: { value: DatabaseDriver; label: string }[] = [
@@ -46,7 +47,6 @@ export async function resolveNewProjectOptions(
   const hasMailFlag = optionString(options, 'mail') !== undefined;
   const hasAiFlag = options.ai !== undefined || options['no-ai'] === true;
   const hasTemplateFlag = optionString(options, 'template') !== undefined;
-
   let database: DatabaseDriver = 'sqlite';
   let redis = false;
   let auth = true;
@@ -54,10 +54,17 @@ export async function resolveNewProjectOptions(
   let mail: MailDriver = 'log';
   let ai = false;
   let template: ProjectTemplate = 'default';
+  let headless = false;
+
+  if (options.headless === true) {
+    headless = true;
+    template = 'headless';
+  }
 
   if (optionString(options, 'template')) {
     const { parseProjectTemplate } = await import('./stubs-templates.js');
     template = parseProjectTemplate(optionString(options, 'template'));
+    headless = template === 'headless';
   }
 
   if (hasDbFlag) {
@@ -102,7 +109,8 @@ export async function resolveNewProjectOptions(
         console.log('  default - JSON API starter');
         console.log('  api     - API-only routes');
         console.log('  ssr     - Server-rendered welcome page');
-        console.log('  saas    - Auth-ready SaaS starter');
+        console.log('  saas     - Auth-ready SaaS starter');
+        console.log('  headless - Backend-only API (no views or client assets)');
         const answer = (await rl.question('Template [default]: ')).trim();
         const { parseProjectTemplate } = await import('./stubs-templates.js');
         template = parseProjectTemplate(answer || 'default');
@@ -161,7 +169,16 @@ export async function resolveNewProjectOptions(
   }
 
   const { applyTemplateDefaults } = await import('./stubs-templates.js');
-  return applyTemplateDefaults(template, { database, redis, auth, queue, mail, ai, template });
+  return applyTemplateDefaults(template, {
+    database,
+    redis,
+    auth,
+    queue,
+    mail,
+    ai,
+    template,
+    headless: headless || template === 'headless',
+  });
 }
 
 function parseDatabaseDriver(value: string): DatabaseDriver {

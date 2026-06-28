@@ -5,6 +5,7 @@ import { dirname, join, resolve } from 'node:path';
 export interface TyravelConfig {
   name: string;
   entry: string;
+  mode?: 'headless' | 'full';
   serve: {
     port: number;
     hostname: string;

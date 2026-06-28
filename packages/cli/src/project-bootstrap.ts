@@ -26,6 +26,8 @@ export async function importProjectRoutes(
   const candidates = [
     join(root, 'src/routes/index.js'),
     join(root, 'src/routes/index.ts'),
+    join(root, 'src/routes/api.js'),
+    join(root, 'src/routes/api.ts'),
     join(root, 'src/routes/web.js'),
     join(root, 'src/routes/web.ts'),
   ];

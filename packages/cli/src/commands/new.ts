@@ -60,13 +60,23 @@ import {
   vectorConfig,
 } from '../stubs-ai.js';
 import { printFirstRunChecklist } from '../first-run-checklist.js';
+import {
+  headlessApiRoutes,
+  headlessAppConfig,
+  headlessFeatureTestStub,
+  headlessHttpConfig,
+  headlessMainEntry,
+  headlessPackageJson,
+  headlessProjectConfig,
+  headlessReadme,
+} from '../stubs-headless.js';
 import { optionString, parseOptions, positionalArgs, projectPath, toKebabCase, writeFile, pathExists } from '../utils.js';
 
 export class NewCommand extends Command {
   override readonly name = 'new';
   override readonly description = 'Create a new Tyravel application';
   override readonly usage =
-    'tyravel new <name> [--path=<directory>] [--template=default|api|ssr|saas] [--db=sqlite|mysql|postgres] [--redis|--no-redis] [--auth|--no-auth] [--queue=database|redis] [--mail=log|smtp|array] [--ai|--no-ai]';
+    'tyravel new <name> [--path=<directory>] [--headless] [--template=default|api|ssr|saas|headless] [--db=sqlite|mysql|postgres] [--redis|--no-redis] [--auth|--no-auth] [--queue=database|redis] [--mail=log|smtp|array] [--ai|--no-ai]';
 
   async handle(args: string[]): Promise<number> {
     const options = parseOptions(args);
@@ -95,15 +105,28 @@ export class NewCommand extends Command {
       return 1;
     }
 
-    await writeFile(projectPath(targetDir, 'package.json'), projectPackageJson(name, projectOptions));
+    const headless = projectOptions.headless;
+
+    await writeFile(
+      projectPath(targetDir, 'package.json'),
+      headless ? headlessPackageJson(name, projectOptions) : projectPackageJson(name, projectOptions),
+    );
     const envContents = envExample(name, projectOptions);
     await writeFile(projectPath(targetDir, '.env.example'), envContents);
     await writeFile(projectPath(targetDir, '.env'), envContents);
-    await writeFile(projectPath(targetDir, 'tyravel.json'), projectConfig(name));
-    await writeFile(projectPath(targetDir, 'config/app.ts'), appConfig(name));
+    await writeFile(
+      projectPath(targetDir, 'tyravel.json'),
+      headless ? headlessProjectConfig(name) : projectConfig(name),
+    );
+    await writeFile(
+      projectPath(targetDir, 'config/app.ts'),
+      headless ? headlessAppConfig(name) : appConfig(name),
+    );
     await writeFile(projectPath(targetDir, 'config/database.ts'), databaseConfig(projectOptions));
-    await writeFile(projectPath(targetDir, 'config/views.ts'), viewsConfig());
-    await writeFile(projectPath(targetDir, 'lang/en.json'), `${defaultLocaleFile()}\n`);
+    if (!headless) {
+      await writeFile(projectPath(targetDir, 'config/views.ts'), viewsConfig());
+      await writeFile(projectPath(targetDir, 'lang/en.json'), `${defaultLocaleFile()}\n`);
+    }
     await writeFile(projectPath(targetDir, 'config/queue.ts'), queueConfig(projectOptions));
     await writeFile(projectPath(targetDir, 'config/events.ts'), eventsConfig());
     await writeFile(
@@ -113,7 +136,10 @@ export class NewCommand extends Command {
     await writeFile(projectPath(targetDir, 'config/cache.ts'), cacheConfig(projectOptions));
     await writeFile(projectPath(targetDir, 'config/filesystems.ts'), filesystemsConfig());
     await writeFile(projectPath(targetDir, 'config/cors.ts'), corsConfig());
-    await writeFile(projectPath(targetDir, 'config/http.ts'), httpConfig());
+    await writeFile(
+      projectPath(targetDir, 'config/http.ts'),
+      headless ? headlessHttpConfig() : httpConfig(),
+    );
     await writeFile(projectPath(targetDir, 'config/log.ts'), logConfig());
     await writeFile(projectPath(targetDir, 'config/health.ts'), healthConfig());
     if (projectOptions.redis) {
@@ -124,10 +150,12 @@ export class NewCommand extends Command {
       projectPath(targetDir, 'config/notifications.ts'),
       notificationsConfig(projectOptions.database),
     );
-    await writeFile(
-      projectPath(targetDir, 'resources/views/layouts/app.tyr'),
-      layoutView(),
-    );
+    if (!headless) {
+      await writeFile(
+        projectPath(targetDir, 'resources/views/layouts/app.tyr'),
+        layoutView(),
+      );
+    }
     await writeFile(projectPath(targetDir, 'database/migrations/.gitkeep'), '');
     await writeFile(projectPath(targetDir, 'database/factories/.gitkeep'), '');
     await writeFile(
@@ -149,16 +177,25 @@ export class NewCommand extends Command {
     );
     await writeFile(
       projectPath(targetDir, 'src/main.ts'),
-      projectOptions.ai ? aiMainEntry(projectOptions) : mainEntry(projectOptions),
+      headless
+        ? headlessMainEntry(projectOptions)
+        : projectOptions.ai
+          ? aiMainEntry(projectOptions)
+          : mainEntry(projectOptions),
     );
     await writeFile(
       projectPath(targetDir, 'src/providers/app-service-provider.ts'),
       projectOptions.ai ? aiAppServiceProvider() : appServiceProvider(),
     );
-    await writeFile(
-      projectPath(targetDir, 'src/routes/web.ts'),
-      webRoutesForTemplate(projectOptions.template),
-    );
+    if (headless) {
+      await writeFile(projectPath(targetDir, 'src/routes/api.ts'), headlessApiRoutes());
+      await writeFile(projectPath(targetDir, 'README.md'), headlessReadme(name));
+    } else {
+      await writeFile(
+        projectPath(targetDir, 'src/routes/web.ts'),
+        webRoutesForTemplate(projectOptions.template),
+      );
+    }
     if (projectOptions.template === 'ssr' || projectOptions.template === 'saas') {
       await writeFile(
         projectPath(targetDir, 'resources/views/welcome.tyr'),
@@ -197,18 +234,20 @@ export class NewCommand extends Command {
         conversationMessagesMigration(String(ts + 1)),
       );
     }
-    await writeFile(
-      projectPath(targetDir, 'src/routes/channels.ts'),
-      broadcastChannels(),
-    );
-    await writeFile(
-      projectPath(targetDir, 'resources/client/echo.ts'),
-      echoBootstrap(projectOptions),
-    );
+    if (!headless) {
+      await writeFile(
+        projectPath(targetDir, 'src/routes/channels.ts'),
+        broadcastChannels(),
+      );
+      await writeFile(
+        projectPath(targetDir, 'resources/client/echo.ts'),
+        echoBootstrap(projectOptions),
+      );
+    }
     await writeFile(projectPath(targetDir, 'vitest.config.ts'), projectVitestConfig());
     await writeFile(
       projectPath(targetDir, 'tests/feature/example.test.ts'),
-      featureTestStub('ExampleTest'),
+      headless ? headlessFeatureTestStub('ExampleTest') : featureTestStub('ExampleTest'),
     );
     const entrypointPath = projectPath(targetDir, 'deploy/docker-entrypoint.sh');
     await writeFile(entrypointPath, dockerEntrypoint());
@@ -219,14 +258,19 @@ export class NewCommand extends Command {
     await writeFile(projectPath(targetDir, 'deploy/railway.toml'), railwayToml());
     await writeFile(projectPath(targetDir, 'deploy/README.md'), deployReadme());
     await writeFile(projectPath(targetDir, '.dockerignore'), dockerignore());
-    await writeFile(
-      projectPath(targetDir, '.github/workflows/view-types.yml'),
-      viewTypesWorkflow(),
-    );
+    if (!headless) {
+      await writeFile(
+        projectPath(targetDir, '.github/workflows/view-types.yml'),
+        viewTypesWorkflow(),
+      );
+    }
 
     console.log(`Tyravel application created successfully.`);
     console.log('');
     console.log(`  Template: ${projectOptions.template}`);
+    if (headless) {
+      console.log(`  Headless: yes (backend-only API)`);
+    }
     console.log(`  Database: ${projectOptions.database}`);
     console.log(`  Auth: ${projectOptions.auth ? 'yes' : 'no'}`);
     console.log(`  Queue: ${projectOptions.queue}`);

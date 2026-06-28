@@ -1,15 +1,15 @@
 import type { NewProjectOptions } from './new-project-options.js';
 
-export type ProjectTemplate = 'default' | 'api' | 'ssr' | 'saas';
+export type ProjectTemplate = 'default' | 'api' | 'ssr' | 'saas' | 'headless';
 
 export function parseProjectTemplate(value: string | undefined): ProjectTemplate {
   if (!value || value === 'default') {
     return 'default';
   }
-  if (value === 'api' || value === 'ssr' || value === 'saas') {
+  if (value === 'api' || value === 'ssr' || value === 'saas' || value === 'headless') {
     return value;
   }
-  throw new Error(`Unsupported template "${value}". Use default, api, ssr, or saas.`);
+  throw new Error(`Unsupported template "${value}". Use default, api, ssr, saas, or headless.`);
 }
 
 export function applyTemplateDefaults(
@@ -22,6 +22,10 @@ export function applyTemplateDefaults(
 
   if (template === 'saas') {
     return { ...options, auth: true, redis: options.redis || false };
+  }
+
+  if (template === 'headless') {
+    return { ...options, headless: true, ai: false, auth: options.auth };
   }
 
   return options;

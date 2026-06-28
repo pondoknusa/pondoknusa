@@ -21,7 +21,7 @@ tyravel help <command>
 | `dev` | Start the local development server with hot reload | `tyravel dev [--port=<port>] [--host=<hostname>] [--tls] [--no-queue] [--no-watch]` |
 | `doctor` | Run environment and project health checks | `tyravel doctor [--perf]` |
 | `migrate` | Run database migrations | `tyravel migrate` |
-| `new` | Create a new Tyravel application | `tyravel new <name> [--path=<directory>] [--template=default\|api\|ssr\|saas] [--db=sqlite\|mysql\|postgres] [--redis\|--no-redis] [--auth\|--no-auth] [--queue=database\|redis] [--mail=log\|smtp\|array] [--ai\|--no-ai]` |
+| `new` | Create a new Tyravel application | `tyravel new <name> [--path=<directory>] [--headless] [--template=default\|api\|ssr\|saas\|headless] [--db=sqlite\|mysql\|postgres] [--redis\|--no-redis] [--auth\|--no-auth] [--queue=database\|redis] [--mail=log\|smtp\|array] [--ai\|--no-ai]` |
 | `serve` | Start the development server | `tyravel serve [--port=<port>] [--host=<hostname>] [--tls]` |
 | `shell` | Start an interactive Tyravel shell (REPL) | — |
 | `start` | Start the production server | `tyravel start [--port=<port>] [--host=<hostname>]` |

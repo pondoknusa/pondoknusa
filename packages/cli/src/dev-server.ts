@@ -1,5 +1,6 @@
 import { join } from 'node:path';
 import type { ChildProcess } from 'node:child_process';
+import { isHeadlessProject } from './headless-project.js';
 import { loadProjectConfig } from './project.js';
 import { ensureLocalTlsCerts } from './local-tls.js';
 import {
@@ -22,6 +23,7 @@ export async function startDevServer({
   options,
 }: DevServerOptions): Promise<{ code: number; children: ChildProcess[] }> {
   const config = await loadProjectConfig(root);
+  const headless = config.mode === 'headless' || (await isHeadlessProject(root));
   const entry = join(root, config.entry);
   const runtime = detectTypeScriptRuntime();
 
@@ -43,9 +45,12 @@ export async function startDevServer({
     ...process.env,
     TYRAVEL_PORT: String(port),
     TYRAVEL_HOST: hostname,
-    TYRAVEL_VIEW_WATCH: '1',
     TYRAVEL_HOT_RELOAD: '1',
   };
+
+  if (!headless) {
+    serverEnv.TYRAVEL_VIEW_WATCH = '1';
+  }
 
   if (withTls) {
     try {
@@ -88,8 +93,13 @@ export async function startDevServer({
     console.log('');
   } else {
     console.log('Dev tips:');
-    console.log('  • Views, config, and routes hot-reload in this process');
-    console.log('  • Run `tyravel debug:install` then `tyravel dev` to tail debug entries');
+    if (headless) {
+      console.log('  • Config and routes hot-reload in this process');
+      console.log('  • Run `tyravel debug:install` then `tyravel dev` to tail API debug entries');
+    } else {
+      console.log('  • Views, config, and routes hot-reload in this process');
+      console.log('  • Run `tyravel debug:install` then `tyravel dev` to tail debug entries');
+    }
     console.log('  • Use `--no-queue` or `--no-watch` to disable background workers');
     console.log('');
   }

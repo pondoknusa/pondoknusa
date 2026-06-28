@@ -72,6 +72,43 @@ describe('NewCommand', () => {
     expect(readFileSync(join(projectDir, 'config/health.ts'), 'utf8')).toContain('/health/live');
   });
 
+  it('scaffolds a headless API application', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'tyravel-new-'));
+    const command = new NewCommand();
+
+    const code = await command.handle([
+      'headless-api',
+      `--path=${tempDir}`,
+      '--headless',
+      '--db=sqlite',
+      '--no-redis',
+      '--no-auth',
+    ]);
+    const projectDir = join(tempDir, 'headless-api');
+    const pkg = JSON.parse(readFileSync(join(projectDir, 'package.json'), 'utf8')) as {
+      dependencies: Record<string, string>;
+    };
+    const tyravelJson = JSON.parse(readFileSync(join(projectDir, 'tyravel.json'), 'utf8')) as {
+      mode?: string;
+    };
+
+    expect(code).toBe(0);
+    expect(tyravelJson.mode).toBe('headless');
+    expect(existsSync(join(projectDir, 'src/routes/api.ts'))).toBe(true);
+    expect(existsSync(join(projectDir, 'src/routes/web.ts'))).toBe(false);
+    expect(existsSync(join(projectDir, 'config/views.ts'))).toBe(false);
+    expect(existsSync(join(projectDir, 'resources/views/layouts/app.tyr'))).toBe(false);
+    expect(existsSync(join(projectDir, 'src/routes/channels.ts'))).toBe(false);
+    expect(existsSync(join(projectDir, 'resources/client/echo.ts'))).toBe(false);
+    expect(existsSync(join(projectDir, '.github/workflows/view-types.yml'))).toBe(false);
+    expect(pkg.dependencies['@tyravel/echo']).toBeUndefined();
+    expect(readFileSync(join(projectDir, 'config/app.ts'), 'utf8')).toContain('headless: true');
+    expect(readFileSync(join(projectDir, 'src/main.ts'), 'utf8')).toContain('./routes/api.js');
+    expect(readFileSync(join(projectDir, 'src/main.ts'), 'utf8')).not.toContain('ViewServiceProvider');
+    expect(readFileSync(join(projectDir, 'src/routes/api.ts'), 'utf8')).toContain("Route.prefix('api/v1')");
+    expect(readFileSync(join(projectDir, 'README.md'), 'utf8')).toContain('Headless Tyravel API');
+  });
+
   it('scaffolds mysql and redis driver packages when requested', async () => {
     tempDir = mkdtempSync(join(tmpdir(), 'tyravel-new-'));
     const command = new NewCommand();

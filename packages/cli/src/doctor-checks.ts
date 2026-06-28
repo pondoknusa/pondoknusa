@@ -8,6 +8,7 @@ import {
   setRouteApplication,
 } from '@tyravel/core';
 import { docsLink } from '@tyravel/support';
+import { isHeadlessProject } from './headless-project.js';
 
 export interface DoctorCheck {
   name: string;
@@ -17,6 +18,7 @@ export interface DoctorCheck {
 
 export async function runDoctorChecks(root: string): Promise<DoctorCheck[]> {
   const checks: DoctorCheck[] = [];
+  const headless = await isHeadlessProject(root);
 
   const nodeMajor = Number(process.versions.node.split('.')[0]);
   checks.push({
@@ -27,7 +29,11 @@ export async function runDoctorChecks(root: string): Promise<DoctorCheck[]> {
       : `Node.js ${process.versions.node} is below 26 — see ${docsLink('/guide/deployment')}`,
   });
 
-  for (const directory of ['storage', 'storage/framework', 'storage/framework/views', 'storage/logs']) {
+  const storageDirectories = headless
+    ? ['storage', 'storage/framework', 'storage/logs']
+    : ['storage', 'storage/framework', 'storage/framework/views', 'storage/logs'];
+
+  for (const directory of storageDirectories) {
     const target = join(root, directory);
     try {
       await access(target, constants.W_OK);
@@ -58,7 +64,15 @@ export async function runDoctorChecks(root: string): Promise<DoctorCheck[]> {
   const viewsConfig = config.views as { compiled?: boolean; compiledPath?: string } | undefined;
   const cacheDirectory = join(root, viewsConfig?.compiledPath ?? 'storage/framework/views');
 
-  if (environment === 'production' && viewsConfig?.compiled !== false) {
+  if (headless) {
+    checks.push({
+      name: 'mode',
+      ok: true,
+      message: `Headless API — see ${docsLink('/guide/headless')}`,
+    });
+  }
+
+  if (!headless && environment === 'production' && viewsConfig?.compiled !== false) {
     try {
       await access(cacheDirectory, constants.R_OK);
       checks.push({ name: 'view-cache', ok: true, message: `Compiled views present at ${cacheDirectory}` });
