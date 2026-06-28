@@ -593,7 +593,7 @@ First post-1.0 minor. Focus on measurable throughput, community extensibility, a
 
 #### P2 — If scope allows
 
-- [ ] **Hello-world route bench** — optional full-stack bench using `examples/hello-world` SSR route (not just JSON stub)
+- [ ] **Hello-world route bench** — moved to Tier 19 (full-stack SSR benchmark)
 
 ### Built-in OAuth providers
 
@@ -616,6 +616,208 @@ First post-1.0 minor. Focus on measurable throughput, community extensibility, a
 - [x] **Health probe split** — `/health/live` (liveness) and `/health/ready` (readiness) in `HealthServiceProvider`
 - [x] **Deploy docs & manifests** — `npx tyravel start|migrate|queue:work` across guides and `examples/hello-world/deploy/`
 
+## Tier 18 — Developer experience (v1.2.0)
+
+Make Tyravel feel as smooth on day one as Laravel does: fast local iteration, obvious errors, and tooling that stays out of the way until you need it. Builds on Tier 5 (magic DX), Tier 12 (debug bar), and Tier 17 (production commands).
+
+### Local development loop
+
+#### P0 — Must ship
+
+- [ ] **`tyravel dev` alias** — single entry for `serve` + `debug:watch` hints; document the canonical local workflow in the tutorial
+- [ ] **Config/route hot reload** — reload `config/*.ts` and route files on change during `tyravel serve` without full process restart (views already watch via `TYRAVEL_VIEW_WATCH`)
+- [ ] **Runtime transparency** — `tyravel serve` prints which runtime is active (Node strip-types vs Bun) and links to troubleshooting when Node is below 26
+
+#### P1 — Strong want
+
+- [ ] **Queue worker in dev** — `tyravel dev --queue` or `npm run dev:worker` script in scaffold; docs for mail/event testing without a second terminal guess
+- [ ] **`.env` validation on boot** — fail fast with actionable messages when required env vars for the active `DB_CONNECTION`, `QUEUE_CONNECTION`, or OAuth providers are missing
+- [ ] **First-run checklist** — post-`tyravel new` output: migrate, serve, test, optional `auth:install` — with copy-paste commands per scaffold flags
+
+#### P2 — If scope allows
+
+- [ ] **HTTPS local dev** — optional `tyravel serve --tls` with generated certs for OAuth redirect testing
+- [ ] **Concurrent dev processes** — `tyravel dev` spawns web + queue worker + `debug:watch` with one Ctrl+C shutdown
+
+### Experimental → stable
+
+#### P0 — Must ship
+
+- [ ] **Stable `tyravel shell`** — graduate `@tyravel/repl` and document supported REPL APIs; compatibility tests for facade imports and model autoload
+- [ ] **Stable programmatic `.tyr.ts` views** — lock island mount contract; document in views guide with a reference example
+
+#### P1 — Strong want
+
+- [ ] **Stable `Bus` conventions** — document auto-discovery naming and promote to stable in `STABILITY.md`, or extract an explicit `Bus.register()` API
+- [ ] **Shell ergonomics** — `.routes`, `.models`, and `await User.find(1)`-style helpers in REPL; history persists across sessions (already on disk — document and test)
+
+### Scaffolding & onboarding
+
+#### P0 — Must ship
+
+- [ ] **`npm create tyravel@latest`** — published initializer wrapping `tyravel new` with interactive prompts (db, redis, auth, ai)
+- [ ] **Stack templates** — `tyravel new --template=api|ssr|saas` presets for routes, config, and example features
+
+#### P1 — Strong want
+
+- [ ] **Migrating from Laravel guide** — mental-model map (routes, Eloquent, Blade → `.tyr`, Artisan → CLI) in `docs/guide/migrating-from-laravel.md`
+- [ ] **SaaS starter example** — forkable app under `examples/` with auth, admin, queue, and deploy manifests (complements hello-world + rag)
+- [ ] **VS Code / Cursor extension stub** — `.tyr` syntax highlighting, snippet pack, and link to `tyravel view:types` generated props
+
+#### P2 — If scope allows
+
+- [ ] **Interactive `tyravel new`** — TUI when no flags passed (database, redis, auth) instead of requiring full flag list
+
+### Diagnostics & errors
+
+#### P0 — Must ship
+
+- [ ] **`tyravel doctor`** — checks Node version, writable `storage/`, database connectivity, Redis when configured, compiled view cache in production, and OAuth redirect URI shape
+- [ ] **Actionable exceptions** — link common boot failures (`CompiledViewCacheMissError`, missing provider, bad `.env`) to docs URLs in the error message
+
+#### P1 — Strong want
+
+- [ ] **Pre-deploy command** — `tyravel deploy:check` runs doctor + `route:cache` dry-run + `view:cache` validation; CI-friendly exit codes
+- [ ] **Debug bar deep links** — request id in toolbar links to `/__debug?correlation=` JSON for the current entry
+- [ ] **N+1 source maps** — show file:line of the query origin in slow-query warnings when `APP_DEBUG=true`
+
+#### P2 — If scope allows
+
+- [ ] **Benchmark in doctor** — optional quick `BENCHMARK_QUICK=1` smoke when `--perf` flag passed
+
+### Views & typing DX
+
+#### P1 — Strong want
+
+- [ ] **`tyravel view:types` in CI** — scaffold GitHub Action snippet; fail PR when component props drift from `.tyr` signatures
+- [ ] **View catalog IDE export** — `tyravel view:catalog --ide=vscode` emits JSON for extension consumption
+- [ ] **Stricter dev defaults** — `view:lint` recommended in `precommit` stub; `--strict` documented for team adoption
+
+#### P2 — If scope allows
+
+- [ ] **`.tyr` language server** — basic LSP: go-to-component, prop completion from `ViewPropsMap`, `@include` path validation
+
+### Testing DX
+
+#### P1 — Strong want
+
+- [ ] **`tyravel test` wrapper** — delegates to vitest with project config; sets `APP_ENV=testing` consistently
+- [ ] **HTTP test recipes** — expand `@tyravel/testing` docs for OAuth, broadcasting, and partial reload assertions with copy-paste examples
+- [ ] **In-memory SQLite default** — testing guide recommends `:memory:` per worker; document parallel vitest workspace setup (extends Tier 15 P2 docs)
+
+#### P2 — If scope allows
+
+- [ ] **Feature test generator defaults** — `make:test --feature` scaffolds `actingAs`, CSRF, and database refresh hooks when auth is installed
+
+## Tier 19 — Speed & snappiness (v1.3.0)
+
+Make Tyravel feel **fast by default**: low cold-start latency, high request throughput, and instant feedback in dev. Builds on Tier 17 benchmarks, Tier 15 response/model caching, and Tier 16 route/view compile caches. Success is measurable — higher benchmark baselines, lower p95 in real apps, and fewer “why is boot slow?” surprises.
+
+### HTTP request hot path
+
+#### P0 — Must ship
+
+- [ ] **JSON response fast path** — bypass unnecessary middleware and body parsing on simple `Response.json()` API routes when no session/CSRF is required
+- [ ] **Route cache at boot** — production apps automatically load `storage/framework/routes.json` when present (no full route re-registration on every process start)
+- [ ] **Middleware resolution cache** — resolve named middleware stacks once per worker; avoid re-walking the registry on every request
+
+#### P1 — Strong want
+
+- [ ] **Keep-alive tuning** — document and default sensible `Connection` / idle timeout behavior on the Node HTTP adapter for reverse-proxy deployments
+- [ ] **Request object pooling** — reuse or slim `TyravelRequest` construction for high-throughput JSON endpoints (behind benchmark proof)
+- [ ] **Early 404 short-circuit** — unmatched routes exit before session/database providers when `APP_DEBUG=false`
+
+#### P2 — If scope allows
+
+- [ ] **HTTP/2 opt-in** — `serve({ http2: true })` for TLS-terminated local benchmarks and HTTP/2-aware load balancers
+- [ ] **`tyravel start --cluster`** — `node:cluster` worker fork mode with shared route/view caches and Redis session store
+
+### Boot & cold start
+
+#### P0 — Must ship
+
+- [ ] **Production boot profile** — skip debug bar, REPL hooks, and view file watcher registration when `NODE_ENV=production`
+- [ ] **Compiled view preload** — optional eager load of `view:cache` manifest into memory on boot (`config/views.ts` `preloadCompiled: true`)
+- [ ] **Boot time benchmark** — extend `scripts/benchmark.mjs` with `boot.cold` (time from `main.ts` import to first `serve()` listen)
+
+#### P1 — Strong want
+
+- [ ] **Config manifest cache** — `tyravel config:cache` serializes merged config for production boot (mirrors route cache workflow)
+- [ ] **Lazy provider registration** — defer `@tyravel/admin`, `@tyravel/debug`, and MCP providers until first use or explicit route hit
+- [ ] **Database pool warm-up** — fire-and-forget `SELECT 1` during boot when `DB_POOL_WARMUP=true` (default on in production scaffold)
+
+#### P2 — If scope allows
+
+- [ ] **Single-file production bundle** — optional `tyravel build` esbuild bundle for edge deploys (Fly Machines, Lambda-style) with documented trade-offs
+
+### Views & SSR throughput
+
+#### P0 — Must ship
+
+- [ ] **Runtime compiled cache (LRU)** — in-memory hit layer above on-disk compiled views; eliminates repeated disk I/O per request in production
+- [ ] **Hello-world route bench** — full-stack benchmark: SSR `welcome.tyr` through real `HttpKernel` (carried from Tier 17 P2)
+- [ ] **Render benchmark** — `view.render` throughput (not just `compile`) in `npm run benchmark`
+
+#### P1 — Strong want
+
+- [ ] **Skip empty hydration manifest** — omit hydration `<script>` payload when the rendered tree has no `@island` markers
+- [ ] **Streaming shell flush** — guarantee first HTML chunk (layout `<head>` + CSS links) within N ms of handler start for `Response.ssrStream()`
+- [ ] **Component render memoization** — opt-in `@@memo` or cache keyed by props hash for expensive pure components
+
+#### P2 — If scope allows
+
+- [ ] **Worker-thread view compile** — parallelize `view:cache` across CPU cores for large view catalogs
+
+### ORM & database speed
+
+#### P1 — Strong want
+
+- [ ] **Prepared statement cache** — per-connection statement cache for repeated `Model` queries (SQLite, Postgres, MySQL)
+- [ ] **`Model.all()` column pruning** — `Model.select(['id', 'title'])` avoids hydrating unused attributes; benchmark against wide tables
+- [ ] **SQLite WAL default** — enable WAL journal mode for file-backed SQLite in production scaffold (document concurrent read wins)
+- [ ] **Pool sizing guide** — Postgres/MySQL connection pool defaults and env vars (`DB_POOL_MAX`, `DB_POOL_IDLE_TIMEOUT`) with fly/railway examples
+
+#### P2 — If scope allows
+
+- [ ] **Read/query result cache** — opt-in `Model.remember()` on expensive aggregate queries (extends Tier 15 model attribute caching)
+- [ ] **Batch insert helper** — `Model.insertMany()` for seeders and ingest jobs without N round-trips
+
+### Caching & perceived speed
+
+#### P1 — Strong want
+
+- [ ] **Production cache defaults** — scaffold `config/cache.ts` documents `remember()` on hot read paths; HTTP cache middleware on safe public GET routes
+- [ ] **Partial reload cookbook** — HTMX/Turbo patterns with `Response.partial()` for sub-100ms UI updates without full page reload
+- [ ] **SSR asset preload** — `@vite` / layout stack emits `<link rel="modulepreload">` for critical client bundles
+
+#### P2 — If scope allows
+
+- [ ] **Edge response cache** — integration notes for Cloudflare/Fly replay cache keyed on `ETag` middleware (Tier 15 shipped ETag support)
+
+### Benchmarks & regression gates
+
+#### P0 — Must ship
+
+- [ ] **Expanded benchmark suite** — add `middleware.stack`, `session.auth`, and `view.render` scenarios to `scripts/benchmark.mjs`
+- [ ] **Benchmark regression comment** — CI job compares quick-mode JSON to previous `main` artifact; warns on >15% drop (non-blocking)
+
+#### P1 — Strong want
+
+- [ ] **Weekly full benchmark workflow** — scheduled `BENCHMARK_QUICK=0` run on `main`; longer retention for trend charts
+- [ ] **Public perf page** — `tyravel.dev/guide/benchmarks` section with latest CI numbers and historical graph (manual or generated)
+- [ ] **Bun vs Node comparison** — document relative throughput when running on Bun for dev and production
+
+#### P2 — If scope allows
+
+- [ ] **Opt-in perf budget in apps** — `tyravel test --perf` fails when app-specific benchmark thresholds regress (user-defined in `tyravel.json`)
+
+### Speed documentation
+
+#### P1 — Strong want
+
+- [ ] **Performance guide** — `docs/guide/performance.md`: boot checklist, cache warm-up, pool sizing, when to use Redis, anti-patterns (N+1, uncached views)
+- [ ] **Snappy defaults changelog** — each speed tier item notes the measurable before/after in release notes
+
 ## Tier X — Ongoing
 
 Items not tied to a version number. Land when useful; do not block releases.
@@ -623,6 +825,8 @@ Items not tied to a version number. Land when useful; do not block releases.
 - [x] **Additional OAuth / social providers** — GitLab, Slack, Spotify, Twitch, Bitbucket built-ins (Tier 17)
 - [x] **Native WebSocket broadcasting guide** — proxy, Redis fan-out, and Echo setup in `docs/guide/broadcasting.md`
 - [x] **Performance benchmarks** — harness, guide, and CI trend job shipped in Tier 17
+- [ ] **Developer experience (Tier 18)** — local dev loop, stable shell, `tyravel doctor`, scaffolding; target v1.2.0
+- [ ] **Speed & snappiness (Tier 19)** — HTTP hot path, boot time, view/ORM throughput, benchmark regression gates; target v1.3.0
 
 ## Shipped in v0.1.0
 
