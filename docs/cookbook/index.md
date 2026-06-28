@@ -9,6 +9,8 @@ Short, goal-oriented recipes for common Tyravel tasks. Each recipe assumes **0.1
 | [Realtime UI with Echo](/cookbook/realtime-echo) | Push server events to the browser over WebSockets |
 | [RAG Q&A endpoint](/cookbook/rag-q-and-a) | Ingest documents and answer questions with retrieval |
 | [Testing with fakes](/cookbook/testing-fakes) | Assert mail, notifications, and broadcasts in Vitest |
+| [Admin panel](/cookbook/admin-panel) | Optional CRUD UI with audit log |
+| [Multi-locale apps](/cookbook/multi-locale) | JSON locales, `lang:publish`, missing-key checks |
 
 ## Conventions
 

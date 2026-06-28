@@ -6,12 +6,16 @@ Broadcast domain events to the browser and prepare for production.
 
 Since **v0.13.0**, Tyravel ships a native WebSocket hub (`@tyravel/broadcasting-websocket`) — no Socket.io or Pusher.
 
+Follow the full [Broadcasting & realtime](/guide/broadcasting) guide for config, channel auth, Echo client setup, and nginx proxy notes.
+
+Quick checklist:
+
 1. Scaffold with Redis: `tyravel new my-app --redis`
 2. Set `BROADCAST_CONNECTION=websocket` in `.env`
 3. Register `WebSocketBroadcastServiceProvider` in `src/main.ts`
 4. Define channels in `routes/channels.ts` (private channel prefixes ship in **v0.16** scaffolds)
 
-Client-side, use `@tyravel/echo` with the native `WebSocket` connector.
+`examples/hello-world` does not include broadcasting yet — use a `--redis` scaffold or the [realtime Echo recipe](/cookbook/realtime-echo) for a minimal client.
 
 ## Production checklist
 

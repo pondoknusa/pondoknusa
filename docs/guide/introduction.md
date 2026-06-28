@@ -39,6 +39,9 @@ See the [package reference](/reference/generated/packages) for every `@tyravel/*
 | [Reference](/reference/) | Package exports, CLI commands, facades |
 | [Tutorials](/tutorials/) | Zero-to-deploy learning path |
 | [Cookbook](/cookbook/) | Focused recipes (realtime, RAG, testing) |
+| [Configuration reference](/guide/configuration-reference) | Every `config/*.ts` key from scaffolds |
+| [Broadcasting](/guide/broadcasting) | WebSocket hub, Echo client, production deploy |
+| [Ecosystem](/guide/ecosystem) | Publishing third-party `@tyravel/*` extensions |
 
 ## Upgrading
 

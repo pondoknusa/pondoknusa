@@ -9,6 +9,7 @@ export const guideSidebar = [
       { text: 'Application structure', link: '/guide/application-structure' },
       { text: 'API stability', link: '/guide/api-stability' },
       { text: 'Upgrading to 1.0', link: '/guide/upgrading-to-1.0' },
+      { text: 'Configuration reference', link: '/guide/configuration-reference' },
     ],
   },
   {
@@ -39,6 +40,7 @@ export const guideSidebar = [
       { text: 'Storage', link: '/guide/storage' },
       { text: 'Queues & jobs', link: '/guide/queues' },
       { text: 'Events', link: '/guide/events' },
+      { text: 'Broadcasting', link: '/guide/broadcasting' },
       { text: 'Views & templating', link: '/guide/views' },
       { text: 'Testing', link: '/guide/testing' },
     ],
@@ -49,6 +51,7 @@ export const guideSidebar = [
       { text: 'Service container', link: '/guide/container' },
       { text: 'Collections', link: '/guide/collection' },
       { text: 'Support utilities', link: '/guide/support' },
+      { text: 'Ecosystem', link: '/guide/ecosystem' },
     ],
   },
 ];
@@ -331,6 +334,8 @@ export const cookbookSidebar = [
       { text: 'Realtime UI with Echo', link: '/cookbook/realtime-echo' },
       { text: 'RAG Q&A endpoint', link: '/cookbook/rag-q-and-a' },
       { text: 'Testing with fakes', link: '/cookbook/testing-fakes' },
+      { text: 'Admin panel', link: '/cookbook/admin-panel' },
+      { text: 'Multi-locale apps', link: '/cookbook/multi-locale' },
     ],
   },
 ];

@@ -53,7 +53,7 @@ Stable APIs are safe to build production applications on. Patch releases preserv
 | **Routing** | Implicit `{model}` binding with `Route.bind()` customization; `route()` URL generation; `URL.signed()` / `URL.temporarySigned()`; route caching (`tyravel route:cache` / `route:clear`); `Route.group({ prefix, middleware, as })`; per-route `throttle()` presets |
 | **Validation** | `Validator`, `validateRequest`, pipe rules |
 | **Config** | `env`, `envBool`, `envInt`, `requiredEnv`, `loadConfig`, `ConfigRepository`, `s` config schemas |
-| **Views** | `.tyr` directives through Tier 6; typed component props (`ViewPropsMap`, `DefineViewProps`, `tyravel view:types`); strict `view:lint`; production compiled-cache enforcement; `View.renderFragment()` / `View.partial()`; `Response.partial()`; `tyravel view:catalog` |
+| **Views** | `.tyr` directives through Tier 6; typed component props (`ViewPropsMap`, `DefineViewProps`, `tyravel view:types`); strict `view:lint`; production compiled-cache enforcement; `View.renderFragment()` / `View.partial()`; `Response.partial()`; `View.catalog()` / `View.islandCatalog()`; `tyravel view:catalog` |
 | **SSR & hydration** | `View.renderStream()`, `View.streamSsr()`, `@stream` / `@endstream`, `@island` / `@endisland`, `View.getHydrationManifest()`, `data-tyr-island` markers, `Response.ssr()` / `Response.ssrStream()` / `buildSsrDocument()` / `streamSsrDocument()`, `@tyravel/ssr` (`registerIsland`, `hydrate`, `readManifestFromDocument`), `@tyravel/testing` `assertIsland` / `assertHydrationManifest` |
 | **Queue & events** | Job dispatch, workers, listeners, subscribers |
 | **Auth** | Session guard, API tokens, `Gate`, password reset, OAuth providers |
@@ -66,9 +66,9 @@ Experimental APIs are shipped and tested but may change in a minor release witho
 
 | Area | Experimental surface |
 |------|----------------------|
-| **Views (P7)** | Programmatic `.tyr.ts` views, `View.catalog()` runtime API |
+| **Views (P7)** | Programmatic `.tyr.ts` views (`.tyr.ts` templates and programmatic island mounts) |
 | **DX** | `tyravel shell` / `@tyravel/repl` facade loading behavior |
-| **Bus** | Auto-discovered command/provider conventions (paths and naming may evolve) |
+| **Bus** | Auto-discovered command/provider conventions (paths and naming may evolve) — `Bus` is not a facade |
 
 Experimental APIs may be promoted to **stable** in a minor release once documented and covered by compatibility tests.
 
@@ -107,9 +107,26 @@ Every published `@tyravel/*` package follows this policy for its documented expo
 
 If a patch release breaks documented stable behavior, please [open an issue](https://github.com/thesimonharms/tyravel/issues) with the package name, version, and API surface affected. We treat that as a bug and aim to fix forward in a patch release.
 
+## Long-term support (1.x)
+
+Starting with **1.0.0**, Tyravel follows strict [semver](https://semver.org/) for stable APIs.
+
+| Release type | Support |
+|--------------|---------|
+| **Latest `1.y.0` minor** | Full support — features, bug fixes, and security patches |
+| **Previous `1.y-1.x` minor** | Security patches only for **6 months** after the next minor ships |
+| **Older minors** | Upgrade required — no patches |
+
+**Node.js:** Each `1.y.0` minor targets Node versions that are Current or Active LTS at release time. Patch releases do not drop Node support without a minor bump.
+
+**npm packages:** All `@tyravel/*` packages version together. Install the same version across your dependency tree.
+
+**Pre-1.0 (`0.x`):** No LTS commitment. Upgrade across minors using [docs/guide/upgrading-to-1.0.md](docs/guide/upgrading-to-1.0.md).
+
 ## Related documents
 
 - [CHANGELOG.md](CHANGELOG.md) — version history
 - [ROADMAP.md](ROADMAP.md) — planned features and tier completion
+- [SECURITY.md](SECURITY.md) — vulnerability reporting
 - [docs/guide/api-stability.md](docs/guide/api-stability.md) — guide-oriented summary
 - [docs/guide/upgrading-to-1.0.md](docs/guide/upgrading-to-1.0.md) — migration guide for 0.x apps

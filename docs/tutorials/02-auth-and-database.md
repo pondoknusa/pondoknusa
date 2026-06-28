@@ -43,6 +43,10 @@ tyravel make:seeder UserSeeder
 tyravel db:seed
 ```
 
+### Verified in CI
+
+`examples/hello-world/tests/feature/reference.test.ts` registers a user, drains the queue, and asserts the welcome mailable was sent. Login/logout session flow is covered in the same file.
+
 ## Next
 
 [Queues & events](/tutorials/03-queues-and-events) — dispatch a welcome notification in the background.

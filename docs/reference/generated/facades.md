@@ -22,7 +22,7 @@ Documented for Tyravel **0.16.0**. See [API stability](/guide/api-stability) for
 | `Storage` | `@tyravel/core` | [/guide/storage](/guide/storage) |
 | `View` | `@tyravel/core` | [/guide/views](/guide/views) |
 | `Config` | `@tyravel/config` | [/guide/configuration](/guide/configuration) |
-| `Broadcast` | `@tyravel/core` | [/guide/events](/guide/events) |
+| `Broadcast` | `@tyravel/core` | [/guide/broadcasting](/guide/broadcasting) |
 
 ## Usage
 

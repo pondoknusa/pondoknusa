@@ -555,20 +555,24 @@ Tyravel **1.0.0** is the first semver-strict era (see [STABILITY.md](STABILITY.m
 ### Documentation (primary 1.0 deliverable)
 
 - [x] **In-repo documentation system** — VitePress guide + reference + tutorials + cookbook; `npm run docs:generate` for package/CLI manifests; GitHub Pages workflow (`.github/workflows/docs.yml`)
-- [ ] **Hosted documentation site** — public docs beyond in-repo VitePress; versioned for 1.0 (GitHub Pages / tyravel.dev)
+- [x] **Hosted documentation site (workflow)** — GitHub Pages deploy (`.github/workflows/docs.yml`); `docs/public/CNAME` for tyravel.dev
+- [ ] **Hosted documentation site (live)** — enable GitHub Pages in repo settings; verify tyravel.dev DNS
 - [x] **Package & CLI reference (generated)** — every `@tyravel/*` package with exports table; full `tyravel` command list from `@tyravel/cli`
-- [ ] **Complete package reference** — per-package config keys, facade method tables, and deeper API prose beyond generated exports
+- [x] **Configuration reference** — `docs/guide/configuration-reference.md` for scaffold config keys and env vars
+- [ ] **Complete package reference** — per-package facade method tables and deeper API prose beyond generated exports
 - [x] **Tutorial track (scaffold)** — zero-to-deploy outline: install → auth → queue → realtime/deploy (`docs/tutorials/`)
-- [ ] **Tutorial track (complete)** — flesh out steps with verified commands, example repo links, and deploy provider notes
-- [x] **Cookbook (scaffold)** — starter recipes for realtime Echo, RAG Q&A, and testing fakes (`docs/cookbook/`)
-- [ ] **Cookbook (complete)** — recipes for admin panel, multi-locale apps, and additional production patterns
-- [ ] **Ecosystem guide** — how to publish and maintain third-party `@tyravel/*` packages
+- [x] **Tutorial track (verified links)** — hello-world feature tests cited for steps 1–3; broadcasting guide for step 4
+- [ ] **Tutorial track (complete)** — deploy provider walkthroughs (Fly, Railway, Docker) with copy-paste manifests
+- [x] **Cookbook (core recipes)** — realtime Echo, RAG Q&A, testing fakes, admin panel, multi-locale (`docs/cookbook/`)
+- [ ] **Cookbook (complete)** — additional production patterns (observability, multi-tenant, etc.)
+- [x] **Ecosystem guide** — `docs/guide/ecosystem.md` for third-party package authors
+- [x] **Broadcasting guide** — `docs/guide/broadcasting.md` (deploy, Echo, channels)
 
 ### 1.0 gate
 
-- [ ] **No experimental APIs in core facades** — either stable or removed
-- [ ] **LTS support policy** — documented support window for 1.x
-- [ ] **Security disclosure process** — `SECURITY.md` with reporting instructions
+- [x] **No experimental APIs in core facades** — `View.catalog()` / `View.islandCatalog()` promoted to stable; programmatic `.tyr.ts`, `tyravel shell`, and `Bus` conventions remain experimental (non-facade)
+- [x] **LTS support policy** — documented in `STABILITY.md` (6-month security window on previous minor)
+- [x] **Security disclosure process** — `SECURITY.md` with reporting instructions
 
 ## Tier X — Ongoing
 

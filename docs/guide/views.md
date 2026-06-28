@@ -145,4 +145,4 @@ import { registerProgrammaticIsland } from '@tyravel/ssr';
 registerProgrammaticIsland('counter', counterIsland);
 ```
 
-`await View.catalog()` returns `{ components, islands }` so tooling can see which views declare each island id and whether a client or programmatic mount exists. For design-system export, prefer `tyravel view:catalog --json` (stable CLI).
+`await View.catalog()` returns `{ components, islands }` so tooling can see which views declare each island id and whether a client or programmatic mount exists. For design-system JSON export, use `tyravel view:catalog --json`.

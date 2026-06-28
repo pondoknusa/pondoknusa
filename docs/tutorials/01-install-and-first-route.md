@@ -50,6 +50,14 @@ tyravel serve
 
 Visit `http://127.0.0.1:3000` and `/health`.
 
+### Verified in CI
+
+The [`examples/hello-world`](https://github.com/thesimonharms/tyravel/tree/main/examples/hello-world) reference app exercises this step. Its feature test asserts the welcome page contains `Hello Tyravel`:
+
+```bash
+cd examples/hello-world && npm test
+```
+
 ## Named routes
 
 ```typescript

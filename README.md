@@ -861,7 +861,7 @@ npm run docs:dev      # regenerates reference + starts VitePress
 npm run docs:build    # production build (also runs in CI)
 ```
 
-Published to GitHub Pages via `.github/workflows/docs.yml` (configure Pages in repo settings).
+Published to [tyravel.dev](https://tyravel.dev) via GitHub Pages (`.github/workflows/docs.yml`). Security: [SECURITY.md](./SECURITY.md).
 
 ## Roadmap
 

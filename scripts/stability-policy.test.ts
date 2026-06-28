@@ -21,5 +21,9 @@ describe('API stability policy', () => {
     expect(policy).toContain('upgrading-to-1.0.md');
     expect(guide).toContain('/guide/upgrading-to-1.0');
     expect(readFileSync(join(ROOT, 'docs/guide/upgrading-to-1.0.md'), 'utf8')).toContain('Removed sync helpers');
+    expect(readFileSync(join(ROOT, 'SECURITY.md'), 'utf8')).toContain('Reporting a vulnerability');
+    expect(policy).toMatch(/Long-term support \(1\.x\)/);
+    expect(policy).toContain('View.catalog()');
+    expect(policy).not.toContain('View.catalog()` runtime API');
   });
 });

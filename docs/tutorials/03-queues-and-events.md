@@ -29,6 +29,8 @@ tyravel queue:work
 
 In tests, drain the queue explicitly — see [Testing](/guide/testing).
 
+`examples/hello-world` uses `UserRegistered` → queued `SendWelcomeEmail`; call `await t.drainQueue()` in tests before asserting mail.
+
 ## Next
 
 [Realtime & deploy](/tutorials/04-realtime-and-deploy) — broadcast events over the native WebSocket hub.

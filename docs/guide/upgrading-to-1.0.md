@@ -92,11 +92,11 @@ See the [0.9.0 changelog](https://github.com/thesimonharms/tyravel/blob/main/CHA
 
 These remain **experimental** and may still change in minors before or shortly after 1.0:
 
-- Programmatic `.tyr.ts` views and the runtime `View.catalog()` API
+- Programmatic `.tyr.ts` views and programmatic island mounts
 - `tyravel shell` / REPL facade loading
-- Bus auto-discovery conventions
+- `Bus` auto-discovery conventions (not a core facade)
 
-Prefer `tyravel view:catalog --json` over hand-rolling catalog discovery when building tooling.
+`View.catalog()` and `View.islandCatalog()` are **stable** as of **0.16.x** (async catalog discovery). For design-system export, `tyravel view:catalog --json` remains the recommended CLI path.
 
 ## Checklist
 

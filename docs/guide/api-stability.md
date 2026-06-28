@@ -47,15 +47,16 @@ Build applications against these without expecting silent breakage in patch rele
 - Routing: `route()` URL generation, signed URLs, route caching, `Route.group()`, per-route `throttle()`
 - Session/token auth, policies, queues, events, mail, notifications
 - Config loading, `env()` / `requiredEnv()`, and optional per-file `schema` validation
-- Core view features: layouts, components, stacks, form directives, compiled cache, typed props (`ViewPropsMap`, `tyravel view:types`), `view:lint --strict`, partial reload helpers (`View.partial()`, `Response.partial()`), `tyravel view:catalog`
+- Core view features: layouts, components, stacks, form directives, compiled cache, typed props (`ViewPropsMap`, `tyravel view:types`), `view:lint --strict`, partial reload helpers (`View.partial()`, `Response.partial()`), `View.catalog()` / `View.islandCatalog()`, `tyravel view:catalog`
 - SSR and progressive enhancement: `View.renderStream()`, `View.streamSsr()`, `@stream` / `@endstream`, `@island`, `View.getHydrationManifest()`, `Response.ssr()` / `Response.ssrStream()`, `@tyravel/ssr` hydration runtime
 
 ### Experimental (may change in minors)
 
 Useful but evolving — read release notes when upgrading minors:
 
-- Programmatic `.tyr.ts` views and the runtime `View.catalog()` API
+- Programmatic `.tyr.ts` views (programmatic island mounts)
 - `tyravel shell` / REPL behavior
+- `Bus` auto-discovery naming conventions (not a facade)
 - `@tyravel/crypto` algorithms, key formats, and envelope serialization
 - `@tyravel/auth-oauth` OAuth2 server grants, signed token layout, and repository APIs
 - Session encryption at rest and ML-DSA OAuth token signing integration flags
@@ -71,6 +72,14 @@ When we remove a **stable** API:
 3. Release notes describe the replacement.
 
 Upgrade across minors with the [changelog](https://github.com/thesimonharms/tyravel/blob/main/CHANGELOG.md) and [GitHub releases](https://github.com/thesimonharms/tyravel/releases) open.
+
+## Long-term support (1.x)
+
+After **1.0.0**, Tyravel publishes security patches for the latest `1.y` minor for at least **6 months** after the next minor ships. Patch releases preserve stable APIs. See [STABILITY.md](https://github.com/thesimonharms/tyravel/blob/main/STABILITY.md#long-term-support-1x) and [SECURITY.md](https://github.com/thesimonharms/tyravel/blob/main/SECURITY.md).
+
+## Security
+
+Report vulnerabilities privately per [SECURITY.md](https://github.com/thesimonharms/tyravel/blob/main/SECURITY.md) — do not file public issues for security flaws.
 
 ### v0.9.0 async-native (Tier 9)
 
