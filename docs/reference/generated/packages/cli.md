@@ -15,7 +15,7 @@ npm install @tyravel/cli
 
 | Field | Value |
 |-------|-------|
-| Version | `0.16.0` |
+| Version | `1.0.0` |
 | Source | [`packages/cli`](https://github.com/thesimonharms/tyravel/tree/main/packages/cli) |
 | Category | Developer experience |
 | Node.js | `>=26` |

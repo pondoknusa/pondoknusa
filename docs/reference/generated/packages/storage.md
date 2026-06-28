@@ -15,7 +15,7 @@ npm install @tyravel/storage
 
 | Field | Value |
 |-------|-------|
-| Version | `0.16.0` |
+| Version | `1.0.0` |
 | Source | [`packages/storage`](https://github.com/thesimonharms/tyravel/tree/main/packages/storage) |
 | Category | Platform services |
 | Node.js | `>=26` |

@@ -15,7 +15,7 @@ npm install @tyravel/auth-oauth
 
 | Field | Value |
 |-------|-------|
-| Version | `0.16.0` |
+| Version | `1.0.0` |
 | Source | [`packages/auth-oauth`](https://github.com/thesimonharms/tyravel/tree/main/packages/auth-oauth) |
 | Category | Platform services |
 | Node.js | `>=26` |

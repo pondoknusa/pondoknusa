@@ -15,7 +15,7 @@ npm install @tyravel/core
 
 | Field | Value |
 |-------|-------|
-| Version | `0.16.0` |
+| Version | `1.0.0` |
 | Source | [`packages/core`](https://github.com/thesimonharms/tyravel/tree/main/packages/core) |
 | Category | Kernel & HTTP |
 | Node.js | `>=26` |

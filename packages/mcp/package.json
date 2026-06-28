@@ -1,6 +1,6 @@
 {
   "name": "@tyravel/mcp",
-  "version": "0.16.0",
+  "version": "1.0.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,7 +15,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@tyravel/support": "0.16.0"
+    "@tyravel/support": "1.0.0"
   },
   "files": [
     "dist"

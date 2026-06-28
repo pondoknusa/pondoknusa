@@ -15,7 +15,7 @@ npm install @tyravel/admin
 
 | Field | Value |
 |-------|-------|
-| Version | `0.16.0` |
+| Version | `1.0.0` |
 | Source | [`packages/admin`](https://github.com/thesimonharms/tyravel/tree/main/packages/admin) |
 | Category | Platform services |
 | Node.js | `>=26` |

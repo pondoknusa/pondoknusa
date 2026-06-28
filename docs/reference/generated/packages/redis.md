@@ -15,7 +15,7 @@ npm install @tyravel/redis
 
 | Field | Value |
 |-------|-------|
-| Version | `0.16.0` |
+| Version | `1.0.0` |
 | Source | [`packages/redis`](https://github.com/thesimonharms/tyravel/tree/main/packages/redis) |
 | Category | Redis |
 | Node.js | `>=26` |

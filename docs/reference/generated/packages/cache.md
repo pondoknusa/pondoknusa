@@ -15,7 +15,7 @@ npm install @tyravel/cache
 
 | Field | Value |
 |-------|-------|
-| Version | `0.16.0` |
+| Version | `1.0.0` |
 | Source | [`packages/cache`](https://github.com/thesimonharms/tyravel/tree/main/packages/cache) |
 | Category | Platform services |
 | Node.js | `>=26` |

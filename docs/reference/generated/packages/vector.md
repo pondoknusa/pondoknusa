@@ -15,7 +15,7 @@ npm install @tyravel/vector
 
 | Field | Value |
 |-------|-------|
-| Version | `0.16.0` |
+| Version | `1.0.0` |
 | Source | [`packages/vector`](https://github.com/thesimonharms/tyravel/tree/main/packages/vector) |
 | Category | AI & agents |
 | Node.js | `>=26` |

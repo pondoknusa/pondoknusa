@@ -15,7 +15,7 @@ npm install @tyravel/support
 
 | Field | Value |
 |-------|-------|
-| Version | `0.16.0` |
+| Version | `1.0.0` |
 | Source | [`packages/support`](https://github.com/thesimonharms/tyravel/tree/main/packages/support) |
 | Category | Kernel & HTTP |
 | Node.js | `>=26` |

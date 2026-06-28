@@ -15,7 +15,7 @@ npm install @tyravel/cache-upstash
 
 | Field | Value |
 |-------|-------|
-| Version | `0.16.0` |
+| Version | `1.0.0` |
 | Source | [`packages/cache-upstash`](https://github.com/thesimonharms/tyravel/tree/main/packages/cache-upstash) |
 | Category | Cache drivers |
 | Node.js | `>=26` |

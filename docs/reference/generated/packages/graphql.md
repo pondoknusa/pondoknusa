@@ -15,7 +15,7 @@ npm install @tyravel/graphql
 
 | Field | Value |
 |-------|-------|
-| Version | `0.16.0` |
+| Version | `1.0.0` |
 | Source | [`packages/graphql`](https://github.com/thesimonharms/tyravel/tree/main/packages/graphql) |
 | Category | AI & agents |
 | Node.js | `>=26` |

@@ -15,7 +15,7 @@ npm install @tyravel/testing
 
 | Field | Value |
 |-------|-------|
-| Version | `0.16.0` |
+| Version | `1.0.0` |
 | Source | [`packages/testing`](https://github.com/thesimonharms/tyravel/tree/main/packages/testing) |
 | Category | Developer experience |
 | Node.js | `>=26` |

@@ -15,7 +15,7 @@ npm install @tyravel/database
 
 | Field | Value |
 |-------|-------|
-| Version | `0.16.0` |
+| Version | `1.0.0` |
 | Source | [`packages/database`](https://github.com/thesimonharms/tyravel/tree/main/packages/database) |
 | Category | Database |
 | Node.js | `>=26` |

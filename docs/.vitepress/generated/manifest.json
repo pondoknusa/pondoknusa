@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-06-28T03:21:06.985Z",
-  "version": "0.16.0",
+  "generatedAt": "2026-06-28T05:34:59.425Z",
+  "version": "1.0.0",
   "packages": [
     {
       "name": "@tyravel/admin",

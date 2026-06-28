@@ -15,7 +15,7 @@ npm install @tyravel/broadcasting
 
 | Field | Value |
 |-------|-------|
-| Version | `0.16.0` |
+| Version | `1.0.0` |
 | Source | [`packages/broadcasting`](https://github.com/thesimonharms/tyravel/tree/main/packages/broadcasting) |
 | Category | Platform services |
 | Node.js | `>=26` |

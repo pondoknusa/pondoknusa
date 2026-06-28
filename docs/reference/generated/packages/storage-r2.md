@@ -15,7 +15,7 @@ npm install @tyravel/storage-r2
 
 | Field | Value |
 |-------|-------|
-| Version | `0.16.0` |
+| Version | `1.0.0` |
 | Source | [`packages/storage-r2`](https://github.com/thesimonharms/tyravel/tree/main/packages/storage-r2) |
 | Category | Storage drivers |
 | Node.js | `>=26` |
