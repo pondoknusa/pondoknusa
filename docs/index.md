@@ -3,6 +3,9 @@ layout: home
 
 hero:
   name: Tyravel
+  image:
+    src: /logo.svg
+    alt: Tyravel
   text: Laravel ergonomics on Node.js
   tagline: Service container, routing, ORM, queues, auth, and an Artisan-like CLI — all on standard Web APIs.
   actions:

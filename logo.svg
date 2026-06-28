@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="Tyravel">
+  <defs>
+    <linearGradient id="tyravel-bg" x1="6" y1="4" x2="58" y2="60" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3730a3"/>
+      <stop offset="0.45" stop-color="#4f46e5"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="tyravel-fg" x1="14" y1="18" x2="50" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#ddd6fe"/>
+    </linearGradient>
+    <linearGradient id="tyravel-bolt" x1="34" y1="16" x2="56" y2="50" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#e0e7ff"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="14" fill="url(#tyravel-bg)"/>
+  <rect x="4" y="4" width="56" height="56" rx="14" stroke="#a5b4fc" stroke-opacity="0.35" stroke-width="1"/>
+  <path
+    fill="url(#tyravel-fg)"
+    d="M16 20h18v8h-5v24h-8V28h-5V20zm14 0h6v8h-6v-8z"
+  />
+  <path
+    fill="url(#tyravel-bolt)"
+    d="M40 18h14l-9.5 12H50L36 50l6.5-16H34l9.5-12H40V18z"
+  />
+</svg>

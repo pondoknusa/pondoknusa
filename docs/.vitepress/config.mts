@@ -15,7 +15,8 @@ export default defineConfig({
 
   head: [
     ['meta', { name: 'theme-color', content: '#4f46e5' }],
-    ['link', { rel: 'icon', href: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>' }],
+    ['link', { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }],
+    ['link', { rel: 'apple-touch-icon', href: '/logo.svg' }],
   ],
 
   sitemap: {
@@ -27,6 +28,8 @@ export default defineConfig({
   },
 
   themeConfig: {
+    logo: '/logo.svg',
+
     nav: [
       { text: 'Guide', link: '/guide/introduction', activeMatch: '/guide/' },
       { text: 'Reference', link: '/reference/', activeMatch: '/reference/' },

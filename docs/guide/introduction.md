@@ -1,5 +1,7 @@
 # Introduction
 
+![Tyravel logo](/logo.svg){width=80}
+
 Tyravel is a TypeScript-native web framework that brings Laravel-style ergonomics to Node.js 26+. It runs on standard Web APIs (`Request`, `Response`, `fetch`) and ships as a set of focused npm packages you can adopt incrementally.
 
 ## What you get

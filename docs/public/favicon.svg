@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" role="img" aria-label="Tyravel">
+  <defs>
+    <linearGradient id="bg" x1="3" y1="2" x2="29" y2="30" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4338ca"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="28" height="28" rx="7" fill="url(#bg)"/>
+  <path fill="#fff" d="M8 10h9v4H13v10h-3V14H8v-4zm7 0h3v4h-3v-4z"/>
+  <path fill="#67e8f9" d="M20 9h7l-5 6h5L18 25l3.5-8h-4.5l5-6h-1.5V9z"/>
+</svg>

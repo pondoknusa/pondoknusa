@@ -1,8 +1,16 @@
-# Tyravel
+<p align="center">
+  <a href="https://tyravel.dev"><img src="logo.svg" alt="Tyravel" width="96" height="96" /></a>
+</p>
 
-**v0.16.0** — TypeScript-native web framework with Laravel-style ergonomics (service container, routing, middleware, queues, auth, post-quantum crypto, and an Artisan-like CLI) on standard Web APIs.
+<h1 align="center">Tyravel</h1>
 
-Requires **Node.js ≥ 26** — native SQLite (`node:sqlite`), WebSocket server/client framing, and OpenSSL post-quantum crypto with no JavaScript fallbacks.
+<p align="center">
+  <strong>v0.16.0</strong> — TypeScript-native web framework with Laravel-style ergonomics (service container, routing, middleware, queues, auth, post-quantum crypto, and an Artisan-like CLI) on standard Web APIs.
+</p>
+
+<p align="center">
+  Requires <strong>Node.js ≥ 26</strong> — native SQLite (<code>node:sqlite</code>), WebSocket server/client framing, and OpenSSL post-quantum crypto with no JavaScript fallbacks.
+</p>
 
 ## Lean by default
 
