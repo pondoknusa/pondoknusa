@@ -556,7 +556,8 @@ Tyravel **1.0.0** is the first semver-strict era (see [STABILITY.md](STABILITY.m
 
 - [x] **In-repo documentation system** — VitePress guide + reference + tutorials + cookbook; `npm run docs:generate` for package/CLI manifests; GitHub Pages workflow (`.github/workflows/docs.yml`)
 - [x] **Hosted documentation site (workflow)** — GitHub Pages deploy (`.github/workflows/docs.yml`); `docs/public/CNAME` for tyravel.dev
-- [ ] **Hosted documentation site (live)** — enable GitHub Pages in repo settings; verify tyravel.dev DNS
+- [x] **Hosted documentation site (live)** — GitHub Pages enabled (`build_type: workflow`); Docs workflow deploys on push to `main`; interim URL https://thesimonharms.github.io/tyravel/
+- [ ] **Custom domain (tyravel.dev)** — point DNS at GitHub Pages, then set domain in repo Pages settings; `docs/public/CNAME` is already in the build artifact
 - [x] **Package & CLI reference (generated)** — every `@tyravel/*` package with exports table; full `tyravel` command list from `@tyravel/cli`
 - [x] **Configuration reference** — `docs/guide/configuration-reference.md` for scaffold config keys and env vars
 - [x] **Complete package reference** — facade method tables in generated reference (`docs/reference/generated/facades.md`); per-package exports remain auto-generated
