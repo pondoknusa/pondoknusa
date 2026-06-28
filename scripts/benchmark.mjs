@@ -35,7 +35,7 @@ export async function measureHttp({
   setRouteApplication(app);
   Route.get('/bench', () => Response.json({ ok: true }));
   const kernel = new HttpKernel(app);
-  const server = await serve(kernel, { port: 0, hostname: '127.0.0.1' });
+  const server = await serve(kernel, { port: 0, hostname: '127.0.0.1', quiet: true });
   const url = `http://${server.hostname}:${server.port}/bench`;
 
   const runOnce = async () => {

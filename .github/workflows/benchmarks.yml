@@ -28,7 +28,7 @@ jobs:
         run: npm run build
 
       - name: Run benchmarks (quick mode)
-        run: BENCHMARK_QUICK=1 npm run benchmark -- --json > benchmark-report.json
+        run: BENCHMARK_QUICK=1 node scripts/benchmark.mjs --json > benchmark-report.json
 
       - name: Print summary
         run: node -e "
