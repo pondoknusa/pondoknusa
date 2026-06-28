@@ -2,6 +2,12 @@
 
 All notable changes to Tyravel are documented in this file.
 
+## [1.0.1] - 2026-06-28
+
+### Fixed
+
+- **WebSocket hub test** — eliminate flaky CI failures in `@tyravel/broadcasting-websocket` by waiting for the server `connected` frame and retrying redis broadcasts until subscribed clients receive events
+
 ## [1.0.0] - 2026-06-28
 
 Tyravel **1.0.0** is the first semver-strict release. Feature work through Tiers 12–16 is complete; this release marks the **documentation and stability gate** described in [STABILITY.md](STABILITY.md) and [ROADMAP.md](ROADMAP.md).
@@ -297,3 +303,4 @@ First public release of the `@tyravel/*` monorepo.
 [0.10.0]: https://github.com/thesimonharms/tyravel/releases/tag/v0.10.0
 [0.9.1]: https://github.com/thesimonharms/tyravel/releases/tag/v0.9.1
 [1.0.0]: https://github.com/thesimonharms/tyravel/releases/tag/v1.0.0
+[1.0.1]: https://github.com/thesimonharms/tyravel/releases/tag/v1.0.1
