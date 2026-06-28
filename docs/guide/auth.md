@@ -107,6 +107,19 @@ tyravel make:social-driver acme
 
 Apple supports either a pre-generated `clientSecret` or dynamic JWT generation via `teamId`, `keyId`, and `privateKey` in the provider config.
 
+Self-hosted GitLab uses the same built-in driver with a custom `baseUrl`:
+
+```typescript
+gitlab: {
+  clientId: env('GITLAB_CLIENT_ID', ''),
+  clientSecret: env('GITLAB_CLIENT_SECRET', ''),
+  redirectUri: env('GITLAB_REDIRECT_URI', 'http://127.0.0.1:3000/auth/gitlab/callback'),
+  baseUrl: env('GITLAB_BASE_URL', 'https://gitlab.com'),
+},
+```
+
+Set `GITLAB_BASE_URL` to your instance root (for example `https://gitlab.example.com`). Omit it or leave the default for gitlab.com.
+
 Use a custom driver name in config when the provider key differs from the built-in driver id:
 
 ```typescript

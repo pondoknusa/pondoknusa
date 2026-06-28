@@ -3,11 +3,21 @@ import type { OAuthUserProfile } from '../../oauth-types.js';
 import type { OAuthAuthorizeContext, OAuthExchangeContext, SocialOAuthDriver } from '../types.js';
 import { appendPkceParams, exchangeAuthorizationCode } from '../http.js';
 
+const DEFAULT_GITLAB_BASE_URL = 'https://gitlab.com';
+
+function normalizeBaseUrl(baseUrl: string): string {
+  return baseUrl.replace(/\/+$/, '');
+}
+
 export class GitlabOAuthDriver implements SocialOAuthDriver {
   readonly name = 'gitlab';
   readonly usesPkce = true;
 
   constructor(private readonly config: OAuthProviderConfig) {}
+
+  private get baseUrl(): string {
+    return normalizeBaseUrl(this.config.baseUrl ?? DEFAULT_GITLAB_BASE_URL);
+  }
 
   authorizationUrl(state: string, context?: OAuthAuthorizeContext): string {
     const params = new URLSearchParams({
@@ -18,12 +28,12 @@ export class GitlabOAuthDriver implements SocialOAuthDriver {
       state,
     });
     appendPkceParams(params, context);
-    return `https://gitlab.com/oauth/authorize?${params}`;
+    return `${this.baseUrl}/oauth/authorize?${params}`;
   }
 
   async exchangeCode(code: string, context?: OAuthExchangeContext): Promise<OAuthUserProfile> {
     const accessToken = await exchangeAuthorizationCode({
-      tokenUrl: 'https://gitlab.com/oauth/token',
+      tokenUrl: `${this.baseUrl}/oauth/token`,
       clientId: this.config.clientId,
       clientSecret: this.config.clientSecret,
       code,
@@ -31,7 +41,7 @@ export class GitlabOAuthDriver implements SocialOAuthDriver {
       codeVerifier: context?.codeVerifier,
     });
 
-    const userRes = await fetch('https://gitlab.com/api/v4/user', {
+    const userRes = await fetch(`${this.baseUrl}/api/v4/user`, {
       headers: { authorization: `Bearer ${accessToken}` },
     });
 

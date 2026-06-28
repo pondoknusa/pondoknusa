@@ -43,6 +43,8 @@ export interface OAuthProviderConfig {
   redirectUri: string;
   scopes?: string[];
   driver?: string;
+  /** Self-hosted instance root, e.g. `https://gitlab.example.com` (GitLab driver). */
+  baseUrl?: string;
   teamId?: string;
   keyId?: string;
   privateKey?: string;

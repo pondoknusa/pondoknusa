@@ -600,7 +600,7 @@ First post-1.0 minor. Focus on measurable throughput, community extensibility, a
 #### P1 — Strong want
 
 - [x] **Additional social providers** — GitLab, Slack, Spotify, Twitch, and Bitbucket drivers in `@tyravel/auth`
-- [ ] **Self-hosted GitLab** — optional `baseUrl` config for non-gitlab.com instances
+- [x] **Self-hosted GitLab** — optional `baseUrl` config for non-gitlab.com instances
 
 ### v1.0 ops closeout
 

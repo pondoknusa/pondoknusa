@@ -37,6 +37,7 @@ MAIL_FROM_NAME=Tyravel
 # GITLAB_CLIENT_ID=
 # GITLAB_CLIENT_SECRET=
 # GITLAB_REDIRECT_URI=http://127.0.0.1:3000/auth/gitlab/callback
+# GITLAB_BASE_URL=https://gitlab.com
 # SLACK_CLIENT_ID=
 # SLACK_CLIENT_SECRET=
 # SLACK_REDIRECT_URI=http://127.0.0.1:3000/auth/slack/callback

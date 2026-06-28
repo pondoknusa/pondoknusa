@@ -751,6 +751,7 @@ export default {
         clientId: env('GITLAB_CLIENT_ID', ''),
         clientSecret: env('GITLAB_CLIENT_SECRET', ''),
         redirectUri: env('GITLAB_REDIRECT_URI', 'http://127.0.0.1:3000/auth/gitlab/callback'),
+        baseUrl: env('GITLAB_BASE_URL', 'https://gitlab.com'),
         scopes: ['read_user'],
       },
       slack: {

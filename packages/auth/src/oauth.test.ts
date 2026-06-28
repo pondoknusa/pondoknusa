@@ -100,6 +100,17 @@ describe('OAuth drivers', () => {
     expect(url.searchParams.get('code_challenge')).toBe(pkce.challenge);
   });
 
+  it('builds self-hosted GitLab authorize URL from baseUrl', () => {
+    const url = new URL(
+      new GitlabOAuthDriver({
+        ...config,
+        baseUrl: 'https://gitlab.example.com/',
+      }).authorizationUrl('state-self-hosted'),
+    );
+    expect(url.origin).toBe('https://gitlab.example.com');
+    expect(url.pathname).toBe('/oauth/authorize');
+  });
+
   it('builds Slack authorize URL', () => {
     const url = new URL(new SlackOAuthDriver(config).authorizationUrl('state-slack'));
     expect(url.hostname).toBe('slack.com');
