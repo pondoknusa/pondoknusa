@@ -68,6 +68,8 @@ export type { BroadcastFacade } from './broadcast.js';
 export type { NotificationsFacade } from './notifications.js';
 export { serve } from './server.js';
 export type { ServeOptions } from './server.js';
+export { startDevHotReload } from './dev-hot-reload.js';
+export type { DevHotReloadOptions } from './dev-hot-reload.js';
 export { ServiceProvider } from './service-provider.js';
 export { Bus } from './bus.js';
 export { Event, EventSubscriber, Listener, EventDispatcher, QueuedListener } from '@tyravel/events';

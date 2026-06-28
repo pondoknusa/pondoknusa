@@ -52,7 +52,7 @@ export function projectPackageJson(name: string, options: NewProjectOptions): st
       private: true,
       type: 'module',
       scripts: {
-        dev: 'tyravel serve',
+        dev: 'tyravel dev',
         start: 'tyravel start',
         worker: 'tyravel queue:work',
         test: 'vitest run',
@@ -127,6 +127,7 @@ export function mainEntry(options: NewProjectOptions): string {
     'setViewApplication',
     'ViewServiceProvider',
     'serve',
+    'startDevHotReload',
   ];
 
   const providerRegistrations = [
@@ -173,6 +174,8 @@ ${providerRegistrations.join('\n')}
 await app.boot();
 
 registerHttpMiddleware(app, app.make(ConfigRepository));
+
+startDevHotReload(app);
 
 const kernel = new HttpKernel(app);
 await serve(kernel);

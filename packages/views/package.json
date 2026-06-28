@@ -11,7 +11,8 @@
     }
   },
   "dependencies": {
-    "@tyravel/locale": "1.0.1"
+    "@tyravel/locale": "1.0.1",
+    "@tyravel/support": "1.0.1"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",

@@ -144,6 +144,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `setUrlApplication`
 - `setViewApplication`
 - `setViewRequest`
+- `startDevHotReload`
 
 ### Types
 
@@ -157,6 +158,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `CorsConfig`
 - `CreateTokenOptions`
 - `DbFacade`
+- `DevHotReloadOptions`
 - `EventConstructor`
 - `EventListenerRegistration`
 - `EventSubscriberConstructor`

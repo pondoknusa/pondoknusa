@@ -56,6 +56,13 @@ export class ConfigRepository {
     return this.resolve(key) !== undefined;
   }
 
+  replace(config: ConfigTree): void {
+    for (const key of Object.keys(this.config)) {
+      delete this.config[key];
+    }
+    Object.assign(this.config, config);
+  }
+
   private resolve(key: string): unknown {
     return key.split('.').reduce<unknown>((current, segment) => {
       if (current && typeof current === 'object' && segment in current) {

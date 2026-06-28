@@ -45,6 +45,8 @@ import { NewCommand } from './commands/new.js';
 import { QueueFailedCommand, QueueFailedTableCommand, QueueRetryCommand } from './commands/queue-failed.js';
 import { QueueTableCommand } from './commands/queue-table.js';
 import { QueueWorkCommand } from './commands/queue-work.js';
+import { DevCommand } from './commands/dev.js';
+import { DoctorCommand } from './commands/doctor.js';
 import { ServeCommand } from './commands/serve.js';
 import { StartCommand } from './commands/start.js';
 import { ShellCommand } from './commands/shell.js';
@@ -71,8 +73,10 @@ export function createKernel(): ConsoleKernel {
     new DebugWatchCommand(),
     new CryptoInstallCommand(),
     new CryptoGenerateKeysCommand(),
+    new DevCommand(),
     new ServeCommand(),
     new StartCommand(),
+    new DoctorCommand(),
     new ShellCommand(),
     new MigrateCommand(),
     new DbSeedCommand(),

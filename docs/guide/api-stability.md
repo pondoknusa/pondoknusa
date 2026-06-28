@@ -49,13 +49,14 @@ Build applications against these without expecting silent breakage in patch rele
 - Config loading, `env()` / `requiredEnv()`, and optional per-file `schema` validation
 - Core view features: layouts, components, stacks, form directives, compiled cache, typed props (`ViewPropsMap`, `tyravel view:types`), `view:lint --strict`, partial reload helpers (`View.partial()`, `Response.partial()`), `View.catalog()` / `View.islandCatalog()`, `tyravel view:catalog`
 - SSR and progressive enhancement: `View.renderStream()`, `View.streamSsr()`, `@stream` / `@endstream`, `@island`, `View.getHydrationManifest()`, `Response.ssr()` / `Response.ssrStream()`, `@tyravel/ssr` hydration runtime
+- Programmatic `.tyr.ts` views (`render()` + optional `mount()` island contract)
+- `tyravel shell` / `@tyravel/repl` (`startRepl`, facade loading, `.models` / `.facades` commands)
 
 ### Experimental (may change in minors)
 
 Useful but evolving — read release notes when upgrading minors:
 
-- Programmatic `.tyr.ts` views (programmatic island mounts)
-- `tyravel shell` / REPL behavior
+
 - `Bus` auto-discovery naming conventions (not a facade)
 - `@tyravel/crypto` algorithms, key formats, and envelope serialization
 - `@tyravel/auth-oauth` OAuth2 server grants, signed token layout, and repository APIs

@@ -60,7 +60,9 @@ Stable APIs are safe to build production applications on. Patch releases preserv
 | **SSR & hydration** | `View.renderStream()`, `View.streamSsr()`, `@stream` / `@endstream`, `@island` / `@endisland`, `View.getHydrationManifest()`, `data-tyr-island` markers, `Response.ssr()` / `Response.ssrStream()` / `buildSsrDocument()` / `streamSsrDocument()`, `@tyravel/ssr` (`registerIsland`, `hydrate`, `readManifestFromDocument`), `@tyravel/testing` `assertIsland` / `assertHydrationManifest` |
 | **Queue & events** | Job dispatch, workers, listeners, subscribers |
 | **Auth** | Session guard, API tokens, `Gate`, password reset, OAuth providers |
-| **CLI** | Commands listed in the root README (`tyravel new`, `serve`, `migrate`, `make:*`, `queue:*`, `view:*`, `route:cache`, `model:prune`, etc.) |
+| **CLI** | Commands listed in the root README (`tyravel new`, `dev`, `serve`, `start`, `doctor`, `migrate`, `make:*`, `queue:*`, `view:*`, `route:cache`, `model:prune`, etc.) |
+| **REPL** | `tyravel shell`, `@tyravel/repl` `startRepl()`, facade imports, `.models` / `.facades` commands, persistent history file |
+| **Programmatic views** | `.tyr.ts` templates exporting `render()` and optional `mount()`; programmatic island registration via `View.catalog()` metadata |
 | **Testing** | `@tyravel/testing` `TestCase`, HTTP client, `renderView`, assertion helpers |
 
 ### Experimental
@@ -69,8 +71,7 @@ Experimental APIs are shipped and tested but may change in a minor release witho
 
 | Area | Experimental surface |
 |------|----------------------|
-| **Views (P7)** | Programmatic `.tyr.ts` views (`.tyr.ts` templates and programmatic island mounts) |
-| **DX** | `tyravel shell` / `@tyravel/repl` facade loading behavior |
+
 | **Bus** | Auto-discovered command/provider conventions (paths and naming may evolve) — `Bus` is not a facade |
 
 Experimental APIs may be promoted to **stable** in a minor release once documented and covered by compatibility tests.

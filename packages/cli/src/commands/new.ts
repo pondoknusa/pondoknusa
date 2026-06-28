@@ -33,8 +33,8 @@ import {
   jobsTableMigration,
   failedJobsTableMigration,
   viewsConfig,
-  webRoutes,
 } from '../stubs.js';
+import { webRoutesForTemplate } from '../stubs-templates.js';
 import {
   deployReadme,
   dockerCompose,
@@ -65,7 +65,7 @@ export class NewCommand extends Command {
   override readonly name = 'new';
   override readonly description = 'Create a new Tyravel application';
   override readonly usage =
-    'tyravel new <name> [--path=<directory>] [--db=sqlite|mysql|postgres] [--redis|--no-redis] [--auth|--no-auth] [--queue=database|redis] [--mail=log|smtp|array] [--ai|--no-ai]';
+    'tyravel new <name> [--path=<directory>] [--template=default|api|ssr|saas] [--db=sqlite|mysql|postgres] [--redis|--no-redis] [--auth|--no-auth] [--queue=database|redis] [--mail=log|smtp|array] [--ai|--no-ai]';
 
   async handle(args: string[]): Promise<number> {
     const options = parseOptions(args);
@@ -154,7 +154,24 @@ export class NewCommand extends Command {
       projectPath(targetDir, 'src/providers/app-service-provider.ts'),
       projectOptions.ai ? aiAppServiceProvider() : appServiceProvider(),
     );
-    await writeFile(projectPath(targetDir, 'src/routes/web.ts'), webRoutes());
+    await writeFile(
+      projectPath(targetDir, 'src/routes/web.ts'),
+      webRoutesForTemplate(projectOptions.template),
+    );
+    if (projectOptions.template === 'ssr' || projectOptions.template === 'saas') {
+      await writeFile(
+        projectPath(targetDir, 'resources/views/welcome.tyr'),
+        `@extends('layouts.app')
+
+@section('content')
+  <h1>{{ $title }}</h1>
+  @if(isset($subtitle))
+    <p>{{ $subtitle }}</p>
+  @endif
+@endsection
+`,
+      );
+    }
     if (projectOptions.ai) {
       const ts = Date.now();
       await writeFile(projectPath(targetDir, 'config/vector.ts'), vectorConfig());
@@ -204,6 +221,7 @@ export class NewCommand extends Command {
 
     console.log(`Tyravel application created successfully.`);
     console.log('');
+    console.log(`  Template: ${projectOptions.template}`);
     console.log(`  Database: ${projectOptions.database}`);
     console.log(`  Auth: ${projectOptions.auth ? 'yes' : 'no'}`);
     console.log(`  Queue: ${projectOptions.queue}`);
@@ -214,7 +232,7 @@ export class NewCommand extends Command {
     console.log(`  cd ${name}`);
     console.log('  npm install');
     console.log('  npm test');
-    console.log('  tyravel serve     # development');
+    console.log('  tyravel dev       # development');
     console.log('  tyravel start     # production');
     if (projectOptions.auth) {
       console.log('');

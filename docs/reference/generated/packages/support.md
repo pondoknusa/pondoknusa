@@ -35,6 +35,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `Pipeline`
 - `Str`
 - `Stringable`
+- `TYRAVEL_DOCS_ORIGIN`
 - `app_path`
 - `base_path`
 - `camelCase`
@@ -43,6 +44,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `config_path`
 - `database_path`
 - `dd`
+- `docsLink`
 - `dump`
 - `head`
 - `kebabCase`

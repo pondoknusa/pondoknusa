@@ -327,6 +327,14 @@ export class Router implements Routable {
     return this;
   }
 
+  resetRoutes(): this {
+    this.routes = [];
+    this.namedRoutes.clear();
+    this.compiledCache = null;
+    this.scopeStack = [];
+    return this;
+  }
+
   setUrlDefaults(defaults: RouteParams): this {
     this.urlDefaults = { ...defaults };
     return this;

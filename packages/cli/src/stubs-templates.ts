@@ -1,0 +1,78 @@
+import type { NewProjectOptions } from './new-project-options.js';
+
+export type ProjectTemplate = 'default' | 'api' | 'ssr' | 'saas';
+
+export function parseProjectTemplate(value: string | undefined): ProjectTemplate {
+  if (!value || value === 'default') {
+    return 'default';
+  }
+  if (value === 'api' || value === 'ssr' || value === 'saas') {
+    return value;
+  }
+  throw new Error(`Unsupported template "${value}". Use default, api, ssr, or saas.`);
+}
+
+export function applyTemplateDefaults(
+  template: ProjectTemplate,
+  options: NewProjectOptions,
+): NewProjectOptions {
+  if (template === 'api') {
+    return { ...options, auth: false };
+  }
+
+  if (template === 'saas') {
+    return { ...options, auth: true, redis: options.redis || false };
+  }
+
+  return options;
+}
+
+export function webRoutesForTemplate(template: ProjectTemplate): string {
+  if (template === 'api') {
+    return `import { Route } from '@tyravel/core';
+import { Response } from '@tyravel/http';
+
+Route.prefix('api').group((routes) => {
+  routes.get('/health', () => Response.json({ ok: true }));
+  routes.get('/posts', () => Response.json({ data: [] }));
+  routes.post('/posts', () => Response.json({ data: { id: 1 } }, { status: 201 }));
+});
+`;
+  }
+
+  if (template === 'ssr') {
+    return `import { Route, View } from '@tyravel/core';
+import { Response } from '@tyravel/http';
+
+Route.get('/', async () =>
+  Response.html(await View.render('welcome', { title: 'Welcome to Tyravel' })),
+);
+`;
+  }
+
+  if (template === 'saas') {
+    return `import { Route, View } from '@tyravel/core';
+import { Response } from '@tyravel/http';
+
+Route.get('/', async () =>
+  Response.html(await View.render('welcome', {
+    title: 'SaaS starter',
+    subtitle: 'Run tyravel auth:install to scaffold login and OAuth routes.',
+  })),
+);
+
+Route.get('/dashboard', () => Response.json({ message: 'Protected area — add auth middleware here.' }));
+`;
+  }
+
+  return `import { Route } from '@tyravel/core';
+import { Response } from '@tyravel/http';
+
+Route.get('/', (request) =>
+  Response.json({
+    message: 'Welcome to Tyravel',
+    path: request.path,
+  }),
+);
+`;
+}

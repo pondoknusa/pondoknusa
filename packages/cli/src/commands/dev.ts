@@ -4,10 +4,10 @@ import { startDevServer } from '../dev-server.js';
 import { loadProjectConfig, requireProjectRoot } from '../project.js';
 import { parseOptions, pathExists, positionalArgs } from '../utils.js';
 
-export class ServeCommand extends Command {
-  override readonly name = 'serve';
-  override readonly description = 'Start the development server';
-  override readonly usage = 'tyravel serve [--port=<port>] [--host=<hostname>]';
+export class DevCommand extends Command {
+  override readonly name = 'dev';
+  override readonly description = 'Start the local development server with hot reload';
+  override readonly usage = 'tyravel dev [--port=<port>] [--host=<hostname>]';
 
   async handle(args: string[]): Promise<number> {
     const options = parseOptions(args);
@@ -22,7 +22,6 @@ export class ServeCommand extends Command {
       return 1;
     }
 
-    console.log('Prefer `tyravel dev` for the canonical local workflow.');
     const { code } = await startDevServer({ root, cliArgs: args, options });
     return code;
   }

@@ -131,7 +131,15 @@ return Response.ssrStream(View.renderStream('dashboard', context, handlers), {
 
 Scaffold a new island with `tyravel make:island counter`. That creates `resources/views/islands/counter.tyr`, `resources/client/islands/counter.ts`, and registers the client mount in your bundle entry.
 
-Use `tyravel make:island counter --programmatic` for a single `.tyr.ts` file that exports both `render()` and `mount()`:
+### Programmatic `.tyr.ts` views (stable)
+
+Programmatic views are **stable** as of Tyravel 1.2. The contract is:
+
+1. A `.tyr.ts` file exports `render(props)` returning HTML (or a `TemplateResult`).
+2. Optional `mount(element, props)` registers client behavior for the same island id.
+3. Register with `registerProgrammaticIsland(id, module)` on the client.
+
+Use `tyravel make:island counter --programmatic` to scaffold a reference implementation:
 
 ```typescript
 @island('counter', { count: 0 })

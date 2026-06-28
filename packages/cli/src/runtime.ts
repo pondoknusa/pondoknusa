@@ -1,9 +1,12 @@
 import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
 
+export const NODE_REQUIREMENT_URL = 'https://tyravel.dev/guide/deployment#before-you-deploy';
+
 export interface TypeScriptRuntime {
   name: string;
   command: string;
   entryArgs: (entry: string) => string[];
+  detail: string;
 }
 
 export function detectTypeScriptRuntime(): TypeScriptRuntime | undefined {
@@ -12,6 +15,7 @@ export function detectTypeScriptRuntime(): TypeScriptRuntime | undefined {
       name: 'Bun',
       command: process.execPath,
       entryArgs: (entry) => ['run', entry],
+      detail: `Bun ${process.versions.bun} (native TypeScript)`,
     };
   }
 
@@ -20,6 +24,7 @@ export function detectTypeScriptRuntime(): TypeScriptRuntime | undefined {
       name: 'Bun',
       command: 'bun',
       entryArgs: (entry) => ['run', entry],
+      detail: 'Bun (native TypeScript)',
     };
   }
 
@@ -29,10 +34,28 @@ export function detectTypeScriptRuntime(): TypeScriptRuntime | undefined {
       name: 'Node',
       command: process.execPath,
       entryArgs: (entry) => ['--experimental-strip-types', entry],
+      detail: `Node.js ${process.versions.node} (--experimental-strip-types)`,
     };
   }
 
   return undefined;
+}
+
+export function describeRuntimeIssue(): string {
+  const nodeMajor = Number(process.versions.node.split('.')[0]);
+  if (nodeMajor >= 26) {
+    return 'No supported TypeScript runtime found. Install Bun or use Node.js 26+.';
+  }
+
+  return [
+    `Node.js ${process.versions.node} is not supported for local development.`,
+    'Tyravel requires Node.js 26+ or Bun.',
+    `See ${NODE_REQUIREMENT_URL}`,
+  ].join('\n');
+}
+
+export function printRuntimeInfo(runtime: TypeScriptRuntime): void {
+  console.log(`Runtime: ${runtime.detail}`);
 }
 
 export function spawnTypeScriptEntry(options: {
@@ -42,7 +65,7 @@ export function spawnTypeScriptEntry(options: {
 }): ChildProcess {
   const runtime = detectTypeScriptRuntime();
   if (!runtime) {
-    throw new Error('No supported TypeScript runtime found. Install Bun or use Node.js 26+.');
+    throw new Error(describeRuntimeIssue());
   }
 
   return spawn(runtime.command, runtime.entryArgs(options.entry), {

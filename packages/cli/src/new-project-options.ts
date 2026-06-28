@@ -6,6 +6,8 @@ export type DatabaseDriver = 'sqlite' | 'mysql' | 'postgres';
 export type QueueDriver = 'database' | 'redis';
 export type MailDriver = 'log' | 'smtp' | 'array';
 
+import type { ProjectTemplate } from './stubs-templates.js';
+
 export interface NewProjectOptions {
   database: DatabaseDriver;
   redis: boolean;
@@ -13,6 +15,7 @@ export interface NewProjectOptions {
   queue: QueueDriver;
   mail: MailDriver;
   ai: boolean;
+  template: ProjectTemplate;
 }
 
 const DATABASE_CHOICES: { value: DatabaseDriver; label: string }[] = [
@@ -49,6 +52,12 @@ export async function resolveNewProjectOptions(
   let queue: QueueDriver = 'database';
   let mail: MailDriver = 'log';
   let ai = false;
+  let template: ProjectTemplate = 'default';
+
+  if (optionString(options, 'template')) {
+    const { parseProjectTemplate } = await import('./stubs-templates.js');
+    template = parseProjectTemplate(optionString(options, 'template'));
+  }
 
   if (hasDbFlag) {
     database = parseDatabaseDriver(dbFlag);
@@ -135,7 +144,8 @@ export async function resolveNewProjectOptions(
     }
   }
 
-  return { database, redis, auth, queue, mail, ai };
+  const { applyTemplateDefaults } = await import('./stubs-templates.js');
+  return applyTemplateDefaults(template, { database, redis, auth, queue, mail, ai, template });
 }
 
 function parseDatabaseDriver(value: string): DatabaseDriver {

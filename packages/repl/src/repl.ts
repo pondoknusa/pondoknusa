@@ -72,17 +72,25 @@ export async function startRepl(projectRoot: string): Promise<number> {
   }
 
   // ── Load models from app/models/ ──────────────────────────────────────
-  const modelsDir = join(projectRoot, 'app', 'models');
-  if (existsSync(modelsDir)) {
+  const modelDirectories = [
+    join(projectRoot, 'src', 'models'),
+    join(projectRoot, 'app', 'models'),
+  ];
+
+  for (const modelsDir of modelDirectories) {
+    if (!existsSync(modelsDir)) {
+      continue;
+    }
+
     const modelFiles = readdirSync(modelsDir).filter(
-      (f) => f.endsWith('.ts') && !f.endsWith('.test.ts'),
+      (file) => file.endsWith('.ts') && !file.endsWith('.test.ts'),
     );
+
     for (const file of modelFiles) {
       try {
         const modelPath = join(modelsDir, file);
         const mod = await import(modelPath);
         const modelName = file.replace(/\.ts$/, '');
-        // Export the default or first named export
         if (mod.default) {
           context[modelName] = mod.default;
         } else {

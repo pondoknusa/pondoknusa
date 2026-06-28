@@ -62,6 +62,7 @@ describe('NewCommand', () => {
       './routes/channels.js',
     );
     expect(readFileSync(join(projectDir, 'package.json'), 'utf8')).toContain('@tyravel/echo');
+    expect(readFileSync(join(projectDir, 'package.json'), 'utf8')).toContain('"dev": "tyravel dev"');
     expect(readFileSync(join(projectDir, 'package.json'), 'utf8')).toContain('"start": "tyravel start"');
     expect(readFileSync(join(projectDir, 'package.json'), 'utf8')).toContain('"@tyravel/cli"');
 

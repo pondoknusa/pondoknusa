@@ -23,6 +23,7 @@ npm install @tyravel/views
 ## Tyravel dependencies
 
 - [@tyravel/locale](/reference/generated/packages/locale)
+- [@tyravel/support](/reference/generated/packages/support)
 
 ## Public exports
 

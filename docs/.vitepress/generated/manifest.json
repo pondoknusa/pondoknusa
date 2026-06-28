@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-28T09:23:45.851Z",
+  "generatedAt": "2026-06-28T09:28:22.037Z",
   "version": "1.0.1",
   "packages": [
     {
@@ -288,6 +288,8 @@
     "debug:clear",
     "debug:install",
     "debug:watch",
+    "dev",
+    "doctor",
     "lang:missing",
     "lang:publish",
     "make:command",

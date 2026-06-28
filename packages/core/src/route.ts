@@ -25,7 +25,7 @@ export function setRouteApplication(app: Application): void {
 function router(): Router {
   if (!activeApp) {
     throw new Error(
-      'Route facade is not ready. Boot the application before defining routes.',
+      'Route facade is not ready. Boot the application and call setRouteApplication(app) before defining routes. See https://tyravel.dev/guide/application-structure.',
     );
   }
   return activeApp.router();

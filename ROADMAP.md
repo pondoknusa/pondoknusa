@@ -624,9 +624,9 @@ Make Tyravel feel as smooth on day one as Laravel does: fast local iteration, ob
 
 #### P0 — Must ship
 
-- [ ] **`tyravel dev` alias** — single entry for `serve` + `debug:watch` hints; document the canonical local workflow in the tutorial
-- [ ] **Config/route hot reload** — reload `config/*.ts` and route files on change during `tyravel serve` without full process restart (views already watch via `TYRAVEL_VIEW_WATCH`)
-- [ ] **Runtime transparency** — `tyravel serve` prints which runtime is active (Node strip-types vs Bun) and links to troubleshooting when Node is below 26
+- [x] **`tyravel dev` alias** — single entry for `serve` + `debug:watch` hints; document the canonical local workflow in the tutorial
+- [x] **Config/route hot reload** — reload `config/*.ts` and route files on change during `tyravel serve` without full process restart (views already watch via `TYRAVEL_VIEW_WATCH`)
+- [x] **Runtime transparency** — `tyravel serve` prints which runtime is active (Node strip-types vs Bun) and links to troubleshooting when Node is below 26
 
 #### P1 — Strong want
 
@@ -643,8 +643,8 @@ Make Tyravel feel as smooth on day one as Laravel does: fast local iteration, ob
 
 #### P0 — Must ship
 
-- [ ] **Stable `tyravel shell`** — graduate `@tyravel/repl` and document supported REPL APIs; compatibility tests for facade imports and model autoload
-- [ ] **Stable programmatic `.tyr.ts` views** — lock island mount contract; document in views guide with a reference example
+- [x] **Stable `tyravel shell`** — graduate `@tyravel/repl` and document supported REPL APIs; compatibility tests for facade imports and model autoload
+- [x] **Stable programmatic `.tyr.ts` views** — lock island mount contract; document in views guide with a reference example
 
 #### P1 — Strong want
 
@@ -655,8 +655,8 @@ Make Tyravel feel as smooth on day one as Laravel does: fast local iteration, ob
 
 #### P0 — Must ship
 
-- [ ] **`npm create tyravel@latest`** — published initializer wrapping `tyravel new` with interactive prompts (db, redis, auth, ai)
-- [ ] **Stack templates** — `tyravel new --template=api|ssr|saas` presets for routes, config, and example features
+- [x] **`npm create tyravel@latest`** — `create-tyravel` package wrapping `tyravel new` with interactive prompts (db, redis, auth, ai)
+- [x] **Stack templates** — `tyravel new --template=api|ssr|saas` presets for routes, config, and example features
 
 #### P1 — Strong want
 
@@ -672,8 +672,8 @@ Make Tyravel feel as smooth on day one as Laravel does: fast local iteration, ob
 
 #### P0 — Must ship
 
-- [ ] **`tyravel doctor`** — checks Node version, writable `storage/`, database connectivity, Redis when configured, compiled view cache in production, and OAuth redirect URI shape
-- [ ] **Actionable exceptions** — link common boot failures (`CompiledViewCacheMissError`, missing provider, bad `.env`) to docs URLs in the error message
+- [x] **`tyravel doctor`** — checks Node version, writable `storage/`, database connectivity, Redis when configured, compiled view cache in production, and OAuth redirect URI shape
+- [x] **Actionable exceptions** — link common boot failures (`CompiledViewCacheMissError`, missing provider, bad `.env`) to docs URLs in the error message
 
 #### P1 — Strong want
 
@@ -825,7 +825,7 @@ Items not tied to a version number. Land when useful; do not block releases.
 - [x] **Additional OAuth / social providers** — GitLab, Slack, Spotify, Twitch, Bitbucket built-ins (Tier 17)
 - [x] **Native WebSocket broadcasting guide** — proxy, Redis fan-out, and Echo setup in `docs/guide/broadcasting.md`
 - [x] **Performance benchmarks** — harness, guide, and CI trend job shipped in Tier 17
-- [ ] **Developer experience (Tier 18)** — local dev loop, stable shell, `tyravel doctor`, scaffolding; target v1.2.0
+- [x] **Developer experience (Tier 18 P0)** — `tyravel dev`, hot reload, `doctor`, `create-tyravel`, templates; P1+ remains for v1.2.0
 - [ ] **Speed & snappiness (Tier 19)** — HTTP hot path, boot time, view/ORM throughput, benchmark regression gates; target v1.3.0
 
 ## Shipped in v0.1.0

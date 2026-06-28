@@ -5,7 +5,7 @@ Create a Tyravel app, boot the HTTP kernel, and return your first HTML page.
 ## Create the project
 
 ```bash
-npx tyravel new blog
+npm create tyravel@latest blog
 cd blog
 npm install
 ```
@@ -45,8 +45,10 @@ tyravel make:view welcome
 ## Run the dev server
 
 ```bash
-tyravel serve
+tyravel dev
 ```
+
+`tyravel dev` starts the server with view, config, and route hot reload. Use `tyravel debug:watch` in a second terminal after `tyravel debug:install` to tail request timelines.
 
 Visit `http://127.0.0.1:3000` and `/health`.
 
