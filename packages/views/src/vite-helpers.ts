@@ -33,9 +33,28 @@ export function renderViteTags(
 
   const normalizedBase = base.replace(/\/$/, '');
   const tags: string[] = [];
+  const preloaded = new Set<string>();
 
   for (const cssFile of chunk.css ?? []) {
     tags.push(`<link rel="stylesheet" href="${normalizedBase}/${cssFile}">`);
+  }
+
+  for (const importPath of chunk.imports ?? []) {
+    const imported = manifest[importPath];
+    if (!imported || preloaded.has(imported.file)) {
+      continue;
+    }
+
+    preloaded.add(imported.file);
+    tags.push(
+      `<link rel="modulepreload" href="${normalizedBase}/${imported.file}">`,
+    );
+  }
+
+  if (!preloaded.has(chunk.file)) {
+    tags.push(
+      `<link rel="modulepreload" href="${normalizedBase}/${chunk.file}">`,
+    );
   }
 
   tags.push(`<script type="module" src="${normalizedBase}/${chunk.file}"></script>`);

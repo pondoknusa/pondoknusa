@@ -1,4 +1,5 @@
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Command } from '../command.js';
 import { loadProjectConfig, requireProjectRoot } from '../project.js';
 import { detectTypeScriptRuntime, spawnTypeScriptEntry } from '../runtime.js';
@@ -10,10 +11,15 @@ import {
   positionalArgs,
 } from '../utils.js';
 
+const CLUSTER_LAUNCHER = fileURLToPath(
+  new URL('../cluster-launcher.js', import.meta.url),
+);
+
 export class StartCommand extends Command {
   override readonly name = 'start';
   override readonly description = 'Start the production server';
-  override readonly usage = 'tyravel start [--port=<port>] [--host=<hostname>]';
+  override readonly usage =
+    'tyravel start [--port=<port>] [--host=<hostname>] [--cluster] [--workers=<n>]';
 
   async handle(args: string[]): Promise<number> {
     const options = parseOptions(args);
@@ -30,6 +36,8 @@ export class StartCommand extends Command {
 
     const port = optionNumber(options, 'port', config.serve.port);
     const hostname = optionString(options, 'host', config.serve.hostname) ?? config.serve.hostname;
+    const cluster = options.cluster === true;
+    const workers = options.workers ? Number(options.workers) : undefined;
     const runtime = detectTypeScriptRuntime();
 
     if (!runtime) {
@@ -40,13 +48,19 @@ export class StartCommand extends Command {
     console.log(`Starting Tyravel production server using ${runtime.name}...`);
 
     const child = spawnTypeScriptEntry({
-      entry,
+      entry: cluster ? CLUSTER_LAUNCHER : entry,
       cwd: root,
       env: {
         ...process.env,
         NODE_ENV: process.env.NODE_ENV ?? 'production',
         TYRAVEL_PORT: String(port),
         TYRAVEL_HOST: hostname,
+        ...(cluster
+          ? {
+              TYRAVEL_CLUSTER_ENTRY: entry,
+              ...(workers ? { TYRAVEL_WORKERS: String(workers) } : {}),
+            }
+          : {}),
       },
     });
 

@@ -176,6 +176,43 @@ export class QueryBuilder<T extends Row = Row> {
     return new LengthAwarePaginator(items, total, resolvedPerPage, resolvedPage);
   }
 
+  async insertMany(rows: Array<Partial<T>>): Promise<number> {
+    if (rows.length === 0) {
+      return 0;
+    }
+
+    const normalized = rows.map((row) =>
+      Object.fromEntries(
+        Object.entries(row).filter(([, value]) => value !== undefined),
+      ),
+    ) as Array<Partial<T>>;
+
+    const columnSet = new Set<string>();
+    for (const row of normalized) {
+      for (const column of Object.keys(row)) {
+        columnSet.add(column);
+      }
+    }
+
+    const columns = [...columnSet];
+    const wrappedColumns = columns.map((column) => this.grammar.wrapIdentifier(column));
+    const valueGroups: string[] = [];
+    const bindings: RowValue[] = [];
+
+    for (const row of normalized) {
+      const placeholders: string[] = [];
+      for (const column of columns) {
+        bindings.push((row[column] ?? null) as RowValue);
+        placeholders.push(this.grammar.parameter(bindings.length));
+      }
+      valueGroups.push(`(${placeholders.join(', ')})`);
+    }
+
+    const sql = `INSERT INTO ${this.grammar.wrapIdentifier(this.tableName)} (${wrappedColumns.join(', ')}) VALUES ${valueGroups.join(', ')}`;
+    const result = await this.connection.query(sql, bindings);
+    return result.changes;
+  }
+
   async insert(attributes: Partial<T>): Promise<number | bigint | undefined> {
     const entries = Object.entries(attributes).filter(([, value]) => value !== undefined);
     const columns = entries.map(([column]) => this.grammar.wrapIdentifier(column));

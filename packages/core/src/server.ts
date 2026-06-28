@@ -11,6 +11,11 @@ export interface ServeOptions {
     certPath: string;
     keyPath: string;
   };
+  /**
+   * Use HTTP/2 on the Node adapter (requires `tls`). Falls back to HTTP/1.1 when
+   * TLS is unavailable (Bun) or `http2` is false.
+   */
+  http2?: boolean;
 }
 
 interface BunServe {
@@ -33,6 +38,8 @@ export async function serve(
       ? { certPath: process.env.TYRAVEL_TLS_CERT, keyPath: process.env.TYRAVEL_TLS_KEY }
       : undefined
   );
+  const http2 = options.http2 === true
+    || (options.http2 !== false && process.env.TYRAVEL_HTTP2 === '1' && Boolean(tls));
   const scheme = tls ? 'https' : 'http';
   const bun = (globalThis as { Bun?: BunServe }).Bun;
 
@@ -78,9 +85,10 @@ export async function serve(
     };
   }
 
-  const server = await serveWithNode(kernel, hostname, port, { tls });
+  const server = await serveWithNode(kernel, hostname, port, { tls, http2: http2 && Boolean(tls) });
   if (!quiet) {
-    console.log(`Tyravel server running at ${scheme}://${server.hostname}:${server.port}`);
+    const protocol = http2 && tls ? 'https (HTTP/2)' : scheme;
+    console.log(`Tyravel server running at ${protocol}://${server.hostname}:${server.port}`);
   }
 
   const shutdown = async () => {

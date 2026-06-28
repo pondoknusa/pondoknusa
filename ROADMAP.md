@@ -750,8 +750,8 @@ First-class backend-only Tyravel: JSON APIs without views, SSR, Echo, or client 
 
 #### P2 — If scope allows
 
-- [ ] **HTTP/2 opt-in** — `serve({ http2: true })` for TLS-terminated local benchmarks and HTTP/2-aware load balancers
-- [ ] **`tyravel start --cluster`** — `node:cluster` worker fork mode with shared route/view caches and Redis session store
+- [x] **HTTP/2 opt-in** — `serve({ http2: true })` for TLS-terminated local benchmarks and HTTP/2-aware load balancers
+- [x] **`tyravel start --cluster`** — `node:cluster` worker fork mode with shared route/view caches and Redis session store
 
 ### Boot & cold start
 
@@ -769,7 +769,7 @@ First-class backend-only Tyravel: JSON APIs without views, SSR, Echo, or client 
 
 #### P2 — If scope allows
 
-- [ ] **Single-file production bundle** — optional `tyravel build` esbuild bundle for edge deploys (Fly Machines, Lambda-style) with documented trade-offs
+- [x] **Single-file production bundle** — optional `tyravel build` esbuild bundle for edge deploys (Fly Machines, Lambda-style) with documented trade-offs
 
 ### Views & SSR throughput
 
@@ -787,7 +787,7 @@ First-class backend-only Tyravel: JSON APIs without views, SSR, Echo, or client 
 
 #### P2 — If scope allows
 
-- [ ] **Worker-thread view compile** — parallelize `view:cache` across CPU cores for large view catalogs
+- [x] **Worker-thread view compile** — parallelize `view:cache` across CPU cores for large view catalogs
 
 ### ORM & database speed
 
@@ -800,8 +800,8 @@ First-class backend-only Tyravel: JSON APIs without views, SSR, Echo, or client 
 
 #### P2 — If scope allows
 
-- [ ] **Read/query result cache** — opt-in `Model.remember()` on expensive aggregate queries (extends Tier 15 model attribute caching)
-- [ ] **Batch insert helper** — `Model.insertMany()` for seeders and ingest jobs without N round-trips
+- [x] **Read/query result cache** — opt-in `Model.remember()` on expensive aggregate queries (extends Tier 15 model attribute caching)
+- [x] **Batch insert helper** — `Model.insertMany()` for seeders and ingest jobs without N round-trips
 
 ### Caching & perceived speed
 
@@ -809,11 +809,11 @@ First-class backend-only Tyravel: JSON APIs without views, SSR, Echo, or client 
 
 - [x] **Production cache defaults** — scaffold `config/cache.ts` documents `remember()` on hot read paths; HTTP cache middleware on safe public GET routes
 - [x] **Partial reload cookbook** — HTMX/Turbo patterns with `Response.partial()` for sub-100ms UI updates without full page reload
-- [ ] **SSR asset preload** — `@vite` / layout stack emits `<link rel="modulepreload">` for critical client bundles
+- [x] **SSR asset preload** — `@vite` / layout stack emits `<link rel="modulepreload">` for critical client bundles
 
 #### P2 — If scope allows
 
-- [ ] **Edge response cache** — integration notes for Cloudflare/Fly replay cache keyed on `ETag` middleware (Tier 15 shipped ETag support)
+- [x] **Edge response cache** — integration notes for Cloudflare/Fly replay cache keyed on `ETag` middleware (Tier 15 shipped ETag support)
 
 ### Benchmarks & regression gates
 
@@ -830,7 +830,7 @@ First-class backend-only Tyravel: JSON APIs without views, SSR, Echo, or client 
 
 #### P2 — If scope allows
 
-- [ ] **Opt-in perf budget in apps** — `tyravel test --perf` fails when app-specific benchmark thresholds regress (user-defined in `tyravel.json`)
+- [x] **Opt-in perf budget in apps** — `tyravel test --perf` fails when app-specific benchmark thresholds regress (user-defined in `tyravel.json`)
 
 ### Speed documentation
 

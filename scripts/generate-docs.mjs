@@ -755,6 +755,7 @@ export const cookbookSidebar = [
       { text: 'Production observability', link: '/cookbook/observability' },
       { text: 'Multi-tenant apps', link: '/cookbook/multi-tenant' },
       { text: 'Partial reload (HTMX/Turbo)', link: '/cookbook/partial-reload' },
+      { text: 'Edge response cache', link: '/cookbook/edge-cache' },
     ],
   },
 ];

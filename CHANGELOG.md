@@ -18,6 +18,17 @@ All notable changes to Tyravel are documented in this file.
 - **Cache scaffold** — `config/cache.ts` documents Redis and `Cache.remember()` for production read paths
 - **Benchmarks guide** — expanded scenario table, Bun vs Node notes, latest CI snapshot section
 
+### Added (Tier 19 P2)
+
+- **HTTP/2** — `serve({ http2: true })` with TLS on the Node adapter (`TYRAVEL_HTTP2=1`)
+- **Cluster mode** — `tyravel start --cluster [--workers=N]` via `node:cluster`
+- **Production bundle** — `tyravel build` esbuild single-file output for edge deploys
+- **Worker-thread view compile** — `tyravel view:cache` parallelizes across CPU cores by default
+- **ORM** — `Model.remember()` query cache and `Model.insertMany()` batch inserts
+- **SSR modulepreload** — `@vite` manifest tags emit `<link rel="modulepreload">` for imported chunks
+- **Perf budgets** — `tyravel test --perf` with `perf.budgets` in `tyravel.json`
+- **Edge cache cookbook** — Cloudflare/Fly/nginx notes with ETag middleware
+
 ### Performance notes (Tier 19)
 
 | Area | Before | After (typical) |

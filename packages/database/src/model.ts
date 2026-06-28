@@ -27,6 +27,10 @@ import {
   setModelAttributeCacheResolver,
   type AttributeCacheStore,
 } from './model-attribute-cache.js';
+import {
+  forgetQueryResult,
+  rememberQueryResult,
+} from './model-query-cache.js';
 import { setPreventLazyLoading } from './lazy-loading.js';
 import type { Relation } from './relations/relation.js';
 import { singularSnakeCase } from './utils.js';
@@ -46,6 +50,7 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
   private static resolver: (() => DatabaseConnection) | undefined;
   private static globalScopes: GlobalScope[] = [];
   private static attributeCachePrefix = 'model:attribute';
+  private static queryCachePrefix = 'model:query';
 
   protected attributes: Partial<T>;
   private relations: Record<string, unknown> = {};
@@ -144,6 +149,35 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
   ): Promise<LengthAwarePaginator<TModel>> {
     const model = this as unknown as ModelStatic;
     return model.query().paginateModels<TModel>(perPage, page);
+  }
+
+  static async remember<TValue>(
+    this: ModelStatic,
+    key: string,
+    ttlSeconds: number,
+    callback: () => TValue | Promise<TValue>,
+  ): Promise<TValue> {
+    return rememberQueryResult(this, key, ttlSeconds, callback, Model.queryCachePrefix);
+  }
+
+  static async forgetRemembered(key: string): Promise<void> {
+    const model = this as unknown as ModelStatic;
+    await forgetQueryResult(model, key, Model.queryCachePrefix);
+  }
+
+  static async insertMany(
+    rows: Array<Partial<ModelAttributes>>,
+  ): Promise<number> {
+    if (rows.length === 0) {
+      return 0;
+    }
+
+    const model = this as unknown as ModelStatic & typeof Model;
+    const payloads = rows.map((row) =>
+      serializeAttributesForStorage(row as Record<string, unknown>, model.casts),
+    );
+
+    return model.query().insertMany(payloads);
   }
 
   static async create<TModel extends Model>(

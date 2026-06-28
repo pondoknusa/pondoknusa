@@ -18,14 +18,15 @@ tyravel help <command>
 
 | Command | Description | Usage |
 |---------|-------------|-------|
+| `build` | Bundle the app entry into a single production file (esbuild) | `tyravel build [--outfile=<path>] [--minify]` |
 | `dev` | Start the local development server with hot reload | `tyravel dev [--port=<port>] [--host=<hostname>] [--tls] [--no-queue] [--no-watch]` |
 | `doctor` | Run environment and project health checks | `tyravel doctor [--perf]` |
 | `migrate` | Run database migrations | `tyravel migrate` |
 | `new` | Create a new Tyravel application | `tyravel new <name> [--path=<directory>] [--headless] [--template=default\|api\|ssr\|saas\|headless] [--db=sqlite\|mysql\|postgres] [--redis\|--no-redis] [--auth\|--no-auth] [--queue=database\|redis] [--mail=log\|smtp\|array] [--ai\|--no-ai]` |
 | `serve` | Start the development server | `tyravel serve [--port=<port>] [--host=<hostname>] [--tls]` |
 | `shell` | Start an interactive Tyravel shell (REPL) | — |
-| `start` | Start the production server | `tyravel start [--port=<port>] [--host=<hostname>]` |
-| `test` | Run the project test suite via Vitest | `tyravel test [-- <vitest args>]` |
+| `start` | Start the production server | `tyravel start [--port=<port>] [--host=<hostname>] [--cluster] [--workers=<n>]` |
+| `test` | Run the project test suite via Vitest | `tyravel test [--perf] [-- <vitest args>]` |
 | `version` | Show the Tyravel CLI version | — |
 
 ## Database
@@ -83,7 +84,7 @@ tyravel help <command>
 
 | Command | Description | Usage |
 |---------|-------------|-------|
-| `view:cache` | Compile all Tyr templates for production | `tyravel view:cache` |
+| `view:cache` | Compile all Tyr templates for production | `tyravel view:cache [--workers=<n>] [--serial]` |
 | `view:catalog` | Export component and island catalog metadata | `tyravel view:catalog [--json] [--ide=vscode]` |
 | `view:clear` | Clear compiled Tyr template cache | `tyravel view:clear` |
 | `view:lint` | Lint Tyr templates for common issues | `tyravel view:lint [--strict]` |

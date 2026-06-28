@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-28T16:19:15.246Z",
+  "generatedAt": "2026-06-28T16:26:23.159Z",
   "version": "1.0.1",
   "packages": [
     {
@@ -282,6 +282,7 @@
   "commands": [
     "admin:install",
     "auth:install",
+    "build",
     "config:cache",
     "config:clear",
     "crypto:generate-keys",

@@ -52,6 +52,7 @@ import { DeployCheckCommand } from './commands/deploy-check.js';
 import { DoctorCommand } from './commands/doctor.js';
 import { TestCommand } from './commands/test.js';
 import { ServeCommand } from './commands/serve.js';
+import { BuildCommand } from './commands/build.js';
 import { StartCommand } from './commands/start.js';
 import { ShellCommand } from './commands/shell.js';
 import { VectorEmbedCommand } from './commands/vector-embed.js';
@@ -80,6 +81,7 @@ export function createKernel(): ConsoleKernel {
     new DevCommand(),
     new ServeCommand(),
     new StartCommand(),
+    new BuildCommand(),
     new DoctorCommand(),
     new DeployCheckCommand(),
     new TestCommand(),

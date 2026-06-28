@@ -6,18 +6,23 @@ import { bootViewApplication, enableCompiledCache } from '../view-bootstrap.js';
 export class ViewCacheCommand extends Command {
   override readonly name = 'view:cache';
   override readonly description = 'Compile all Tyr templates for production';
-  override readonly usage = 'tyravel view:cache';
+  override readonly usage = 'tyravel view:cache [--workers=<n>] [--serial]';
 
   async handle(args: string[]): Promise<number> {
-    parseOptions(args);
+    const options = parseOptions(args);
     positionalArgs(args);
 
     const root = await requireProjectRoot();
     const { engine, viewConfig } = await bootViewApplication(root);
     enableCompiledCache(engine, root, viewConfig);
 
-    const count = await engine.warmCompiledCache();
-    console.log(`Compiled ${count} view(s) to ${viewConfig.compiledPath ?? 'storage/framework/views'}.`);
+    const workers = options.workers ? Number(options.workers) : undefined;
+    const parallel = options.serial !== true;
+    const count = await engine.warmCompiledCache({ workers, parallel });
+    const mode = parallel ? 'parallel worker pool' : 'serial';
+    console.log(
+      `Compiled ${count} view(s) (${mode}) to ${viewConfig.compiledPath ?? 'storage/framework/views'}.`,
+    );
 
     return 0;
   }

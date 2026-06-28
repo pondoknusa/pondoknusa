@@ -2,6 +2,12 @@ import { access, readFile } from 'node:fs/promises';
 import { constants } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 
+export interface PerfBudgetEntry {
+  min?: number;
+  max?: number;
+  unit?: string;
+}
+
 export interface TyravelConfig {
   name: string;
   entry: string;
@@ -9,6 +15,9 @@ export interface TyravelConfig {
   serve: {
     port: number;
     hostname: string;
+  };
+  perf?: {
+    budgets?: Record<string, PerfBudgetEntry>;
   };
 }
 

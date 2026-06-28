@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { Server as HttpServer } from 'node:http';
 import type { Server as HttpsServer } from 'node:https';
+import type { Http2SecureServer } from 'node:http2';
 import type { Socket } from 'node:net';
 import type { HttpKernel } from '../http-kernel.js';
 
@@ -9,6 +10,7 @@ export interface NodeServeOptions {
     certPath: string;
     keyPath: string;
   };
+  http2?: boolean;
 }
 
 export async function serveWithNode(
@@ -57,21 +59,36 @@ async function createNodeServer(
     }
   };
 
-  const server: HttpServer | HttpsServer = options.tls
-    ? (await import('node:https')).createServer(
-        {
-          cert: readFileSync(options.tls.certPath),
-          key: readFileSync(options.tls.keyPath),
-        },
-        requestListener,
-      )
+  const server: HttpServer | HttpsServer | Http2SecureServer = options.tls
+    ? options.http2
+      ? (await import('node:http2')).createSecureServer(
+          {
+            cert: readFileSync(options.tls.certPath),
+            key: readFileSync(options.tls.keyPath),
+            allowHTTP1: true,
+          },
+          requestListener as unknown as Parameters<
+            typeof import('node:http2').createSecureServer
+          >[1],
+        )
+      : (await import('node:https')).createServer(
+          {
+            cert: readFileSync(options.tls.certPath),
+            key: readFileSync(options.tls.keyPath),
+          },
+          requestListener,
+        )
     : (await import('node:http')).createServer(requestListener);
 
-  attachBroadcastWebSocketUpgrade(server);
+  if (!options.http2) {
+    attachBroadcastWebSocketUpgrade(server as HttpServer | HttpsServer);
+  }
 
   // Sensible defaults behind reverse proxies (Fly, Railway, nginx).
-  server.keepAliveTimeout = 5_000;
-  server.headersTimeout = 6_000;
+  if ('keepAliveTimeout' in server) {
+    server.keepAliveTimeout = 5_000;
+    server.headersTimeout = 6_000;
+  }
 
   server.on('connection', (socket) => {
     connections.add(socket);

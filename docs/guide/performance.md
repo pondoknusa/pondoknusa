@@ -118,6 +118,56 @@ For safe public GET routes, add HTTP cache middleware (`ETag` / `304`) from Tier
 - **Synchronous boot work** — defer admin, debug, and MCP providers (lazy registration) until first use.
 - **Full page reload for small UI updates** — use `View.partial()` / `Response.partial()` instead.
 
+## HTTP/2 and clustering
+
+**HTTP/2** (Node adapter, TLS required):
+
+```typescript
+await serve(kernel, {
+  port: 3000,
+  tls: { certPath: 'storage/certs/local.pem', keyPath: 'storage/certs/local-key.pem' },
+  http2: true,
+});
+```
+
+Or set `TYRAVEL_HTTP2=1` with `TYRAVEL_TLS_CERT` / `TYRAVEL_TLS_KEY`.
+
+**Multiple workers** — `tyravel start --cluster` forks `node:cluster` workers (default: CPU count). Use **Redis or database sessions** so requests are not pinned to a single process:
+
+```bash
+tyravel start --cluster --workers=4
+```
+
+## Single-file bundle
+
+For edge deploys (Fly Machines, Lambda-style), bundle the entry after caches are warm:
+
+```bash
+tyravel config:cache && tyravel route:cache && tyravel view:cache
+npm install -D esbuild
+tyravel build --outfile=bootstrap/app.mjs --minify
+node bootstrap/app.mjs
+```
+
+Trade-offs: faster cold start, but native addons and some dynamic imports may need esbuild plugins. See `bootstrap/README.txt` after build.
+
+## Perf budgets in CI
+
+Add thresholds to `tyravel.json`:
+
+```json
+{
+  "perf": {
+    "budgets": {
+      "http.json": { "min": 500, "unit": "req/s" },
+      "boot.cold": { "max": 400, "unit": "ms" }
+    }
+  }
+}
+```
+
+Run `tyravel test --perf` to fail when benchmarks regress (requires `scripts/benchmark.mjs` in the monorepo or linked checkout).
+
 ## Measuring
 
 ```bash

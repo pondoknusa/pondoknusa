@@ -1,19 +1,26 @@
 import { spawn } from 'node:child_process';
 import { join } from 'node:path';
 import { Command } from '../command.js';
-import { requireProjectRoot } from '../project.js';
+import { evaluatePerfBudgets } from '../perf-budget.js';
+import { loadBenchmarkRunner } from '../perf-runner.js';
+import { loadProjectConfig, requireProjectRoot } from '../project.js';
 import { parseOptions, positionalArgs } from '../utils.js';
 
 export class TestCommand extends Command {
   override readonly name = 'test';
   override readonly description = 'Run the project test suite via Vitest';
-  override readonly usage = 'tyravel test [-- <vitest args>]';
+  override readonly usage = 'tyravel test [--perf] [-- <vitest args>]';
 
   async handle(args: string[]): Promise<number> {
-    parseOptions(args);
+    const options = parseOptions(args);
     const positional = positionalArgs(args);
 
     const root = await requireProjectRoot();
+    const config = await loadProjectConfig(root);
+
+    if (options.perf === true) {
+      return this.runPerfBudget(root, config);
+    }
     const vitestBin = join(
       root,
       'node_modules',
@@ -40,5 +47,49 @@ export class TestCommand extends Command {
     });
 
     return code;
+  }
+
+  private async runPerfBudget(
+    root: string,
+    config: Awaited<ReturnType<typeof loadProjectConfig>>,
+  ): Promise<number> {
+    if (!config.perf?.budgets || Object.keys(config.perf.budgets).length === 0) {
+      console.error(
+        'No perf budgets configured. Add a "perf.budgets" section to tyravel.json.',
+      );
+      return 1;
+    }
+
+    let runBenchmarks: Awaited<ReturnType<typeof loadBenchmarkRunner>>['runBenchmarks'];
+    try {
+      ({ runBenchmarks } = await loadBenchmarkRunner(root));
+    } catch (error) {
+      console.error(error instanceof Error ? error.message : String(error));
+      return 1;
+    }
+
+    process.env.BENCHMARK_QUICK = '1';
+    const report = await runBenchmarks({
+      boot: { iterations: 2 },
+      http: { warmup: 5, requests: 20, concurrency: 5 },
+      middleware: { warmup: 5, requests: 20, concurrency: 5 },
+      orm: { warmup: 2, iterations: 10 },
+      views: { warmup: 2, iterations: 10 },
+    });
+
+    const violations = evaluatePerfBudgets(report, config);
+    if (violations.length === 0) {
+      console.log('Perf budgets passed.');
+      return 0;
+    }
+
+    console.error('Perf budget violations:');
+    for (const violation of violations) {
+      console.error(
+        `- ${violation.label} (${violation.name}): ${violation.value} ${violation.unit} — expected ${violation.expected}`,
+      );
+    }
+
+    return 1;
   }
 }

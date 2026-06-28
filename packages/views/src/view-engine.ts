@@ -9,6 +9,7 @@ import {
   writeCompiledCache,
 } from './compiled-cache.js';
 import { compile, type CompileOptions } from './compiler.js';
+import { compileViewsInWorkerPool, isWorkerCompileAvailable } from './parallel-compile.js';
 import { validateViewProps } from './component-props.js';
 import { shouldRequireCompiledCache } from './compiled-cache-policy.js';
 import { findFragmentBody, ViewFragmentNotFoundError } from './fragment-ops.js';
@@ -580,13 +581,42 @@ export class ViewEngine {
     return translate(key, this.translations, replacements);
   }
 
-  async warmCompiledCache(): Promise<number> {
+  async warmCompiledCache(options: { workers?: number; parallel?: boolean } = {}): Promise<number> {
     if (!this.compiledCacheDirectory) {
       throw new Error('Compiled view cache is disabled for this engine.');
     }
 
+    const names = await this.listViewNames();
+    const parallel = (options.parallel ?? process.env.TYRAVEL_VIEW_CACHE_WORKERS !== '0')
+      && isWorkerCompileAvailable();
+
+    if (parallel && names.length > 1) {
+      const registryVersion = this.registry.getCompileVersion();
+      const jobs = names.map((name) => {
+        const sourcePath = this.resolvePath(name);
+        return {
+          name,
+          sourcePath,
+          compileOptions: {
+            customDirectives: this.registry.getDirectiveNames(),
+            viewPath: sourcePath,
+          } satisfies CompileOptions,
+        };
+      });
+
+      const warmed = await compileViewsInWorkerPool(jobs, {
+        cacheDirectory: this.compiledCacheDirectory,
+        viewsRoot: this.viewsRoot,
+        registryVersion,
+        workers: options.workers,
+      });
+
+      this.cache.clear();
+      return warmed;
+    }
+
     let warmed = 0;
-    for (const name of await this.listViewNames()) {
+    for (const name of names) {
       await this.loadTemplate(name);
       warmed += 1;
     }
