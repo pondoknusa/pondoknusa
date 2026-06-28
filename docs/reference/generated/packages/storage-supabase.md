@@ -15,7 +15,7 @@ npm install @tyravel/storage-supabase
 
 | Field | Value |
 |-------|-------|
-| Version | `1.0.0` |
+| Version | `1.0.1` |
 | Source | [`packages/storage-supabase`](https://github.com/thesimonharms/tyravel/tree/main/packages/storage-supabase) |
 | Category | Storage drivers |
 | Node.js | `>=26` |

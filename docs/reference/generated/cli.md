@@ -5,7 +5,7 @@
 
 Auto-generated from `tyravel list` via `@tyravel/cli`.
 
-Monorepo version: **1.0.0**.
+Monorepo version: **1.0.1**.
 
 ## Usage
 

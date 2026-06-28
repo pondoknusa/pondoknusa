@@ -15,7 +15,7 @@ npm install @tyravel/rag
 
 | Field | Value |
 |-------|-------|
-| Version | `1.0.0` |
+| Version | `1.0.1` |
 | Source | [`packages/rag`](https://github.com/thesimonharms/tyravel/tree/main/packages/rag) |
 | Category | AI & agents |
 | Node.js | `>=26` |

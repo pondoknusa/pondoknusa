@@ -15,7 +15,7 @@ npm install @tyravel/collection
 
 | Field | Value |
 |-------|-------|
-| Version | `1.0.0` |
+| Version | `1.0.1` |
 | Source | [`packages/collection`](https://github.com/thesimonharms/tyravel/tree/main/packages/collection) |
 | Category | Kernel & HTTP |
 | Node.js | `>=26` |
