@@ -666,6 +666,7 @@ export const guideSidebar = [
       { text: 'Introduction', link: '/guide/introduction' },
       { text: 'Installation', link: '/guide/getting-started' },
       { text: 'Headless API', link: '/guide/headless' },
+      { text: 'Performance', link: '/guide/performance' },
       { text: 'Application structure', link: '/guide/application-structure' },
       { text: 'API stability', link: '/guide/api-stability' },
       { text: 'Upgrading to 1.0', link: '/guide/upgrading-to-1.0' },
@@ -753,6 +754,7 @@ export const cookbookSidebar = [
       { text: 'Multi-locale apps', link: '/cookbook/multi-locale' },
       { text: 'Production observability', link: '/cookbook/observability' },
       { text: 'Multi-tenant apps', link: '/cookbook/multi-tenant' },
+      { text: 'Partial reload (HTMX/Turbo)', link: '/cookbook/partial-reload' },
     ],
   },
 ];

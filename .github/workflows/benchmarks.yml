@@ -45,6 +45,9 @@ jobs:
       - name: Print summary
         run: node scripts/benchmark-summary.mjs benchmark-report.json
 
+      - name: Render docs snapshot
+        run: node scripts/benchmark-snapshot.mjs benchmark-report.json
+
       - name: Save benchmark baseline
         run: cp benchmark-report.json benchmark-baseline.json
 

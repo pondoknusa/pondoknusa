@@ -33,4 +33,15 @@ describe('SqliteConnection', () => {
 
     expect(result.rows).toEqual([{ value: 1 }]);
   });
+
+  it('enables WAL journal mode for file-backed databases by default', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'tyravel-sqlite-'));
+    const databasePath = join(tempDir, 'app.sqlite');
+
+    const connection = await SqliteConnection.connect(databasePath, tempDir);
+    const result = await connection.query('PRAGMA journal_mode');
+    await connection.close();
+
+    expect(result.rows[0]?.journal_mode).toBe('wal');
+  });
 });

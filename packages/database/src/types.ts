@@ -13,6 +13,8 @@ export interface WhereClause {
 export interface SqliteConnectionConfig {
   driver: 'sqlite';
   database: string;
+  /** SQLite journal mode for file-backed databases (`:memory:` ignores this). Default `wal`. */
+  journalMode?: 'wal' | 'delete' | 'truncate' | 'persist' | 'memory' | 'off';
 }
 
 export type ConnectionConfig =

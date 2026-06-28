@@ -81,11 +81,14 @@ export class DatabaseManager {
 
   private createConnection(config: ConnectionConfig): DatabaseConnection {
     switch (config.driver) {
-      case 'sqlite':
+      case 'sqlite': {
+        const sqliteConfig = config as SqliteConnectionConfig;
         return new SqliteConnection(
-          (config as SqliteConnectionConfig).database,
+          sqliteConfig.database,
           this.basePath,
+          sqliteConfig.journalMode ?? 'wal',
         );
+      }
       default: {
         const factory = DatabaseManager.drivers.get(config.driver);
         if (factory) {

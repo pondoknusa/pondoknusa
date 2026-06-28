@@ -13,6 +13,7 @@ Short, goal-oriented recipes for common Tyravel tasks. Each recipe assumes **1.0
 | [Multi-locale apps](/cookbook/multi-locale) | JSON locales, `lang:publish`, missing-key checks |
 | [Production observability](/cookbook/observability) | Health probes, structured logs, queue failure signals |
 | [Multi-tenant apps](/cookbook/multi-tenant) | Subdomain tenancy with global scopes and channel isolation |
+| [Partial reload (HTMX/Turbo)](/cookbook/partial-reload) | Sub-100ms UI updates without full page reload |
 
 ## Conventions
 

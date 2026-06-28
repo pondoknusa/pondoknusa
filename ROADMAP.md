@@ -782,7 +782,7 @@ First-class backend-only Tyravel: JSON APIs without views, SSR, Echo, or client 
 #### P1 — Strong want
 
 - [x] **Skip empty hydration manifest** — omit hydration `<script>` payload when the rendered tree has no `@island` markers
-- [ ] **Streaming shell flush** — guarantee first HTML chunk (layout `<head>` + CSS links) within N ms of handler start for `Response.ssrStream()`
+- [x] **Streaming shell flush** — guarantee first HTML chunk (layout `<head>` + CSS links) within N ms of handler start for `Response.ssrStream()`
 - [ ] **Component render memoization** — opt-in `@@memo` or cache keyed by props hash for expensive pure components
 
 #### P2 — If scope allows
@@ -795,8 +795,8 @@ First-class backend-only Tyravel: JSON APIs without views, SSR, Echo, or client 
 
 - [ ] **Prepared statement cache** — per-connection statement cache for repeated `Model` queries (SQLite, Postgres, MySQL)
 - [ ] **`Model.all()` column pruning** — `Model.select(['id', 'title'])` avoids hydrating unused attributes; benchmark against wide tables
-- [ ] **SQLite WAL default** — enable WAL journal mode for file-backed SQLite in production scaffold (document concurrent read wins)
-- [ ] **Pool sizing guide** — Postgres/MySQL connection pool defaults and env vars (`DB_POOL_MAX`, `DB_POOL_IDLE_TIMEOUT`) with fly/railway examples
+- [x] **SQLite WAL default** — enable WAL journal mode for file-backed SQLite in production scaffold (document concurrent read wins)
+- [x] **Pool sizing guide** — Postgres/MySQL connection pool defaults and env vars (`DB_POOL_MAX`, `DB_POOL_IDLE_TIMEOUT`) with fly/railway examples
 
 #### P2 — If scope allows
 
@@ -807,8 +807,8 @@ First-class backend-only Tyravel: JSON APIs without views, SSR, Echo, or client 
 
 #### P1 — Strong want
 
-- [ ] **Production cache defaults** — scaffold `config/cache.ts` documents `remember()` on hot read paths; HTTP cache middleware on safe public GET routes
-- [ ] **Partial reload cookbook** — HTMX/Turbo patterns with `Response.partial()` for sub-100ms UI updates without full page reload
+- [x] **Production cache defaults** — scaffold `config/cache.ts` documents `remember()` on hot read paths; HTTP cache middleware on safe public GET routes
+- [x] **Partial reload cookbook** — HTMX/Turbo patterns with `Response.partial()` for sub-100ms UI updates without full page reload
 - [ ] **SSR asset preload** — `@vite` / layout stack emits `<link rel="modulepreload">` for critical client bundles
 
 #### P2 — If scope allows
@@ -824,9 +824,9 @@ First-class backend-only Tyravel: JSON APIs without views, SSR, Echo, or client 
 
 #### P1 — Strong want
 
-- [ ] **Weekly full benchmark workflow** — scheduled `BENCHMARK_QUICK=0` run on `main`; longer retention for trend charts
-- [ ] **Public perf page** — `tyravel.dev/guide/benchmarks` section with latest CI numbers and historical graph (manual or generated)
-- [ ] **Bun vs Node comparison** — document relative throughput when running on Bun for dev and production
+- [x] **Weekly full benchmark workflow** — scheduled `BENCHMARK_QUICK=0` run on `main`; longer retention for trend charts
+- [x] **Public perf page** — `tyravel.dev/guide/benchmarks` section with latest CI numbers and historical graph (manual or generated)
+- [x] **Bun vs Node comparison** — document relative throughput when running on Bun for dev and production
 
 #### P2 — If scope allows
 
@@ -836,8 +836,8 @@ First-class backend-only Tyravel: JSON APIs without views, SSR, Echo, or client 
 
 #### P1 — Strong want
 
-- [ ] **Performance guide** — `docs/guide/performance.md`: boot checklist, cache warm-up, pool sizing, when to use Redis, anti-patterns (N+1, uncached views)
-- [ ] **Snappy defaults changelog** — each speed tier item notes the measurable before/after in release notes
+- [x] **Performance guide** — `docs/guide/performance.md`: boot checklist, cache warm-up, pool sizing, when to use Redis, anti-patterns (N+1, uncached views)
+- [x] **Snappy defaults changelog** — each speed tier item notes the measurable before/after in release notes
 
 ## Tier X — Ongoing
 
@@ -847,7 +847,7 @@ Items not tied to a version number. Land when useful; do not block releases.
 - [x] **Native WebSocket broadcasting guide** — proxy, Redis fan-out, and Echo setup in `docs/guide/broadcasting.md`
 - [x] **Performance benchmarks** — harness, guide, and CI trend job shipped in Tier 17
 - [x] **Developer experience (Tier 18)** — v1.2.0 complete (P0+P1+P2): `dev` concurrent workers, `--tls`, `doctor --perf`, `make:test --feature`, `.tyr` LSP stub, interactive `tyravel new`
-- [ ] **Speed & snappiness (Tier 19)** — HTTP hot path, boot time, view/ORM throughput, benchmark regression gates; target v1.3.0
+- [x] **Speed & snappiness (Tier 19)** — HTTP hot path, boot time, view/ORM throughput, benchmark regression gates; target v1.3.0
 
 ## Shipped in v0.1.0
 

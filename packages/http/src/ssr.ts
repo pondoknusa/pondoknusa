@@ -29,6 +29,12 @@ export interface SsrStreamOptions extends Omit<SsrDocumentOptions, 'hydrationMan
    * A function is resolved after the view stream completes (for `View.renderStream()`).
    */
   hydrationManifest?: HydrationManifestSource;
+  /**
+   * Yield the document shell (`<head>` + CSS links) before the first view chunk.
+   * Disable when streaming a full HTML document from the view.
+   * @default true
+   */
+  earlyShellFlush?: boolean;
 }
 
 const HYDRATION_SCRIPT_ID = 'tyr-hydration';
@@ -83,6 +89,13 @@ export async function* streamSsrDocument(
   source: AsyncIterable<string>,
   options: SsrStreamOptions = {},
 ): AsyncGenerator<string> {
+  const earlyShellFlush = options.earlyShellFlush !== false;
+
+  if (earlyShellFlush) {
+    yield* streamFragmentDocumentEarly(source, options);
+    return;
+  }
+
   const iterator = source[Symbol.asyncIterator]();
   const first = await iterator.next();
 
@@ -100,6 +113,37 @@ export async function* streamSsrDocument(
   }
 
   yield* streamFragmentDocument(iterator, first.value, options);
+}
+
+async function* streamFragmentDocumentEarly(
+  source: AsyncIterable<string>,
+  options: SsrStreamOptions,
+): AsyncGenerator<string> {
+  const headSnippet = options.head?.trim() ?? '';
+  const title = escapeHtml(options.title ?? 'Tyravel');
+  const lang = escapeHtml(options.lang ?? 'en');
+  const head = headSnippet ? `\n  ${headSnippet}` : '';
+
+  yield `<!DOCTYPE html>
+<html lang="${lang}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${title}</title>${head}
+</head>
+<body>
+`;
+
+  for await (const chunk of source) {
+    yield chunk;
+  }
+
+  const manifest = resolveHydrationManifest(options.hydrationManifest);
+  const injections = buildInjections({ head: options.head, hydrationManifest: manifest });
+  const hydration = injections.body ? `\n  ${injections.body}` : '';
+  yield `${hydration}
+</body>
+</html>`;
 }
 
 async function* streamFragmentDocument(

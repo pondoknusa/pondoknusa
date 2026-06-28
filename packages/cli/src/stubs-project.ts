@@ -253,6 +253,10 @@ export const schema = s.object({
     sqlite: s.object({
       driver: s.string({ enum: ['sqlite'] }),
       database: s.string({ required: true, minLength: 1 }),
+      journalMode: s.string({
+        enum: ['wal', 'delete', 'truncate', 'persist', 'memory', 'off'],
+        required: false,
+      }),
     }),
   }),
 });
@@ -264,6 +268,7 @@ export default {
     sqlite: {
       driver: 'sqlite',
       database: env('DB_DATABASE', 'database/database.sqlite'),
+      journalMode: 'wal',
     },
   },
 } as const;
@@ -315,6 +320,10 @@ export function cacheConfig(options: NewProjectOptions): string {
   return `import type { CacheConfig } from '@tyravel/cache';
 import { env } from '@tyravel/config';
 
+/**
+ * Production tip: set CACHE_STORE=redis when REDIS_URL is available.
+ * Wrap hot read paths with Cache.remember() — see docs/guide/performance.md.
+ */
 export default {
   default: env('CACHE_STORE', 'file'),
   prefix: 'tyravel',
@@ -361,6 +370,7 @@ APP_FALLBACK_LOCALE=en
 APP_FAKER_LOCALE=en
 
 ${dbLines}
+DB_POOL_WARMUP=true
 
 CACHE_STORE=${cacheDefault}
 QUEUE_CONNECTION=${options.queue}${redisLines}

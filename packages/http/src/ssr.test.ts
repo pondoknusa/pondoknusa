@@ -80,6 +80,29 @@ describe('streamSsrDocument', () => {
     expect(html.indexOf('<main>Core</main>')).toBeLessThan(html.indexOf('<aside>Sidebar</aside>'));
   });
 
+  it('flushes document shell before the first view chunk', async () => {
+    async function* slowView(): AsyncGenerator<string> {
+      await new Promise((resolve) => setTimeout(resolve, 40));
+      yield '<main>Slow</main>';
+    }
+
+    const chunks: string[] = [];
+    const times: number[] = [];
+    const start = Date.now();
+
+    for await (const chunk of streamSsrDocument(slowView(), {
+      head: '<link rel="stylesheet" href="/app.css">',
+    })) {
+      chunks.push(chunk);
+      times.push(Date.now() - start);
+    }
+
+    expect(chunks[0]).toContain('<!DOCTYPE html>');
+    expect(chunks[0]).toContain('/app.css');
+    expect(times[0]).toBeLessThan(25);
+    expect(chunks.join('')).toContain('<main>Slow</main>');
+  });
+
   it('injects hydration manifest into full html documents', async () => {
     async function* viewChunks(): AsyncGenerator<string> {
       yield '<html><head><title>App</title></head><body><main>Hi</main>';
@@ -88,6 +111,7 @@ describe('streamSsrDocument', () => {
 
     const html = [];
     for await (const chunk of streamSsrDocument(viewChunks(), {
+      earlyShellFlush: false,
       hydrationManifest: {
         islands: [{ id: 'counter', html: '<span>0</span>', props: {} }],
       },

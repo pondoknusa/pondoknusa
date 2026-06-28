@@ -313,9 +313,14 @@ export async function measureHttpSsr({
   const app = new Application(HELLO_WORLD_ROOT);
   setRouteApplication(app);
   setViewApplication(app);
-  app.register(ConfigServiceProvider);
-  app.register(ViewServiceProvider);
-  await app.boot();
+
+  const engine = new ViewEngine(HELLO_WORLD_ROOT, {
+    path: 'resources/views',
+    extension: '.tyr',
+    compiled: false,
+    validateProps: false,
+  });
+  app.instance('view', engine);
 
   Route.get('/', async () => Response.html(await View.render('welcome', WELCOME_CONTEXT)));
 

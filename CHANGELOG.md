@@ -2,6 +2,33 @@
 
 All notable changes to Tyravel are documented in this file.
 
+## [1.3.0] - Unreleased
+
+### Added
+
+- **Tier 19 — Speed & snappiness** — headless API scaffold (`tyravel new --headless`), JSON fast path, request object pooling, early 404 short-circuit, config/route cache warm-up, lazy provider registration, database pool warm-up, view LRU cache, streaming shell flush, empty hydration manifest skip
+- **Performance guide** — `docs/guide/performance.md` with production boot checklist, pool sizing, and anti-patterns
+- **Partial reload cookbook** — HTMX/Turbo patterns in `docs/cookbook/partial-reload.md`
+- **Weekly full benchmarks** — scheduled GitHub workflow with 365-day artifact retention; CI snapshot embedded in `docs/guide/benchmarks.md`
+
+### Changed
+
+- **SQLite WAL** — file-backed databases default to `journal_mode=wal` in scaffolds and `SqliteConnection`
+- **Streaming SSR** — `Response.ssrStream()` flushes document `<head>` before the first view chunk (`earlyShellFlush`, default on)
+- **Cache scaffold** — `config/cache.ts` documents Redis and `Cache.remember()` for production read paths
+- **Benchmarks guide** — expanded scenario table, Bun vs Node notes, latest CI snapshot section
+
+### Performance notes (Tier 19)
+
+| Area | Before | After (typical) |
+|------|--------|-----------------|
+| Stateless JSON routes | Full middleware stack | JSON fast path skips session/CSRF/view (~2× throughput in `http.json.fast` bench) |
+| High-throughput APIs | New `TyravelRequest` per dispatch | Request pooling reuses instances (production default) |
+| SSR streaming | Shell after first view chunk | Shell + CSS links flush immediately |
+| Pages without islands | Empty hydration `<script>` | Script omitted entirely |
+| SQLite file DB | Default journal mode | WAL enabled for concurrent reads |
+| Production boot | Cold config parse each boot | `config:cache` + pool warm-up + route cache |
+
 ## [1.0.1] - 2026-06-28
 
 ### Fixed

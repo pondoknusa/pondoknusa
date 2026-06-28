@@ -1,0 +1,46 @@
+name: Benchmarks (weekly full)
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: benchmarks-weekly
+  cancel-in-progress: false
+
+jobs:
+  benchmark-full:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 26
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Run full benchmarks
+        run: node scripts/benchmark.mjs --json > benchmark-report.json
+
+      - name: Render docs snapshot
+        run: node scripts/benchmark-snapshot.mjs benchmark-report.json
+
+      - name: Print summary
+        run: node scripts/benchmark-summary.mjs benchmark-report.json
+
+      - name: Upload full benchmark artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-full-${{ github.run_number }}
+          path: |
+            benchmark-report.json
+            docs/.vitepress/generated/benchmark-latest.md
+          retention-days: 365

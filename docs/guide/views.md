@@ -116,7 +116,7 @@ Route.get('/dashboard', () =>
 );
 ```
 
-`View.streamSsr()` pipes `View.renderStream()` through `Response.ssrStream()`, which wraps the HTML in a document shell and injects the hydration manifest after the view stream completes. The Node HTTP adapter flushes each chunk as it is produced.
+`View.streamSsr()` pipes `View.renderStream()` through `Response.ssrStream()`, which **flushes the document shell** (`<head>` + CSS links) before the first view chunk, then streams body content, and injects the hydration manifest after the view stream completes. The Node HTTP adapter flushes each chunk as it is produced.
 
 Lower-level control is still available when you need it:
 

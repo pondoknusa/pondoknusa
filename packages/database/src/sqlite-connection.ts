@@ -2,7 +2,7 @@ import { mkdir } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import type { DatabaseConnection, QueryResult } from './connection.js';
 import { SqliteGrammar, type SqlGrammar } from './grammar.js';
-import type { RowValue } from './types.js';
+import type { RowValue, SqliteConnectionConfig } from './types.js';
 
 interface SqliteStatement {
   all(...params: RowValue[]): unknown[];
@@ -25,7 +25,11 @@ export class SqliteConnection implements DatabaseConnection {
   private readonly ready: Promise<void>;
   private sqliteDb?: SqliteDatabase;
 
-  constructor(databasePath: string, basePath = process.cwd()) {
+  constructor(
+    databasePath: string,
+    basePath = process.cwd(),
+    private readonly journalMode: SqliteConnectionConfig['journalMode'] = 'wal',
+  ) {
     this.ready = this.initialize(databasePath, basePath);
   }
 
@@ -93,6 +97,10 @@ export class SqliteConnection implements DatabaseConnection {
 
     const sqlite = await loadSqliteModule();
     this.sqliteDb = new sqlite.DatabaseSync(resolvedPath);
+
+    if (resolvedPath !== ':memory:' && this.journalMode) {
+      this.sqliteDb.exec(`PRAGMA journal_mode = ${this.journalMode}`);
+    }
   }
 
   private async getDatabase(): Promise<SqliteDatabase> {
