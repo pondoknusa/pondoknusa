@@ -17,6 +17,7 @@ import {
   renderMethodField,
   switchMatches,
 } from './form-helpers.js';
+import { buildComponentMemoKey } from './component-memo-cache.js';
 import type { RenderOptions, TemplateOp, ViewContext } from './types.js';
 import { ViewAttributeBag } from './view-attributes.js';
 import { ViewErrorBag } from './view-errors.js';
@@ -379,6 +380,24 @@ export async function renderOps(
         const provider =
           engine.getRegistry().getComponent(resolvedName) ??
           engine.getRegistry().getComponent(op.name);
+        const hasDynamicSlots = Boolean(op.defaultSlot || op.namedSlots);
+        const memoEnabled = template.memo !== undefined && !hasDynamicSlots;
+        const memoCache = engine.getRegistry().getComponentMemoCache();
+
+        if (memoEnabled && !provider && !hasDynamicSlots) {
+          const earlyKey = buildComponentMemoKey(
+            resolvedName,
+            passedProps as Record<string, unknown>,
+          );
+          if (earlyKey) {
+            const cached = await memoCache.get(earlyKey);
+            if (cached !== null) {
+              helpers.append(cached);
+              break;
+            }
+          }
+        }
+
         const providerData = provider ? await provider.data(context) : {};
 
         const { props: mergedProps, attributes } = mergeComponentProps(
@@ -438,6 +457,19 @@ export async function renderOps(
           }
         }
 
+        const memoKey = memoEnabled
+          ? buildComponentMemoKey(resolvedName, mergedProps as Record<string, unknown>)
+          : undefined;
+        const memoTtl = typeof template.memo === 'number' ? template.memo : undefined;
+
+        if (memoKey) {
+          const cached = await memoCache.get(memoKey);
+          if (cached !== null) {
+            helpers.append(cached);
+            break;
+          }
+        }
+
         helpers.pushComponentProps(mergedProps);
         try {
           const html = await engine.render(
@@ -450,6 +482,10 @@ export async function renderOps(
             helpers.getStackOncePushed(),
           );
           helpers.append(html);
+
+          if (memoKey) {
+            await memoCache.put(memoKey, html, memoTtl);
+          }
         } finally {
           helpers.popComponentProps();
         }

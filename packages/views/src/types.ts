@@ -40,6 +40,8 @@ export interface CompiledTemplate {
   ops: TemplateOp[];
   props?: Record<string, unknown>;
   aware?: string[];
+  /** When set, rendered output is memoized by props hash (seconds = TTL, true = no expiry). */
+  memo?: boolean | number;
   defaultSlots?: Record<string, TemplateOp[]>;
 }
 

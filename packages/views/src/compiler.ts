@@ -183,6 +183,7 @@ const RAW_ECHO_RE = /\{!!\s*(.+?)\s*!!\}/g;
 
 const PROPS_LINE_RE = /^@props\s*\(/;
 const AWARE_LINE_RE = /^@aware\s*\(/;
+const MEMO_LINE_RE = /^@+memo(?:\s*\(\s*(\d+)?\s*\))?\s*$/;
 
 export function compile(source: string, options: CompileOptions = {}): CompiledTemplate {
   const layoutMatch = source.match(LAYOUT_RE);
@@ -199,9 +200,15 @@ export function compile(source: string, options: CompileOptions = {}): CompiledT
     body = aware.remaining;
   }
 
+  const memo = extractMemoDirective(body);
+  if (memo.value !== undefined) {
+    body = memo.remaining;
+  }
+
   const useSlotAwareCompile =
     props.value !== undefined ||
     aware.value !== undefined ||
+    memo.value !== undefined ||
     hasComponentSlotDefinitions(body);
 
   if (useSlotAwareCompile) {
@@ -211,6 +218,7 @@ export function compile(source: string, options: CompileOptions = {}): CompiledT
       ops: defaultSlot,
       props: props.value,
       aware: aware.value,
+      memo: memo.value,
       defaultSlots: Object.keys(namedSlots).length > 0 ? namedSlots : undefined,
     };
   }
@@ -220,6 +228,27 @@ export function compile(source: string, options: CompileOptions = {}): CompiledT
     ops: parseOps(body, options),
     props: props.value,
     aware: aware.value,
+    memo: memo.value,
+  };
+}
+
+function extractMemoDirective(source: string): { value?: boolean | number; remaining: string } {
+  const trimmedStart = source.trimStart();
+  const leadingWhitespace = source.slice(0, source.length - trimmedStart.length);
+  const firstLine = takeLine(trimmedStart, 0);
+  const directive = firstLine.trim();
+  const match = directive.match(MEMO_LINE_RE);
+
+  if (!match) {
+    return { remaining: source };
+  }
+
+  const ttl = match[1];
+  const remaining = leadingWhitespace + trimmedStart.slice(firstLine.length).trimStart();
+
+  return {
+    value: ttl ? Number(ttl) : true,
+    remaining,
   };
 }
 

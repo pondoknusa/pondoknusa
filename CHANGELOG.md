@@ -18,6 +18,12 @@ All notable changes to Tyravel are documented in this file.
 - **Cache scaffold** — `config/cache.ts` documents Redis and `Cache.remember()` for production read paths
 - **Benchmarks guide** — expanded scenario table, Bun vs Node notes, latest CI snapshot section
 
+### Added (Tier 19 P1 — ORM & views)
+
+- **Component `@memo`** — opt-in `@@memo` / `@memo(ttl)` on component templates caches HTML by props hash
+- **Prepared statement cache** — per-connection LRU on SQLite; named prepared queries on Postgres; mysql2 prepare cache in transactions
+- **`Model.select()`** — column-pruned queries with `orm.select.pruned` benchmark on wide tables
+
 ### Added (Tier 19 P2)
 
 - **HTTP/2** — `serve({ http2: true })` with TLS on the Node adapter (`TYRAVEL_HTTP2=1`)

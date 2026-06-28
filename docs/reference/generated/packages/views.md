@@ -37,6 +37,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `CompiledViewCacheMissError`
 - `ComponentCatalogEntry`
 - `ComponentCatalogExportEntry`
+- `ComponentMemoCacheStore`
 - `ComponentPropDefinition`
 - `CustomDirectiveHandler`
 - `DEFAULT_VIEW_CONFIG`
@@ -46,6 +47,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `FragmentCacheStore`
 - `HydrationIsland`
 - `HydrationManifest`
+- `InMemoryComponentMemoCache`
 - `InMemoryFragmentCache`
 - `IslandCatalogEntry`
 - `IslandMountContext`
@@ -79,6 +81,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `ViteManifest`
 - `ViteManifestEntry`
 - `buildComponentCatalog`
+- `buildComponentMemoKey`
 - `buildIslandCatalog`
 - `buildViewCatalog`
 - `cacheFileForView`

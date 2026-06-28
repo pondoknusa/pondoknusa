@@ -59,6 +59,13 @@ Route.get('/dashboard', () =>
 
 For Turbo/HTMX partial updates without full reloads, see the [partial reload cookbook](/cookbook/partial-reload).
 
+## ORM throughput
+
+- **`Model.select('id', 'title')`** — prune columns on wide tables instead of `Model.all()`; benchmark key `orm.select.pruned`
+- **Prepared statements** — SQLite caches `prepare()` per connection; Postgres uses named prepared SELECTs; MySQL caches in transactions
+- **`Model.remember()`** — cache expensive aggregate query results (see earlier section)
+- **`Model.insertMany()`** — batch inserts for seeders
+
 ## Database & pools
 
 ### SQLite (file-backed)

@@ -783,7 +783,7 @@ First-class backend-only Tyravel: JSON APIs without views, SSR, Echo, or client 
 
 - [x] **Skip empty hydration manifest** — omit hydration `<script>` payload when the rendered tree has no `@island` markers
 - [x] **Streaming shell flush** — guarantee first HTML chunk (layout `<head>` + CSS links) within N ms of handler start for `Response.ssrStream()`
-- [ ] **Component render memoization** — opt-in `@@memo` or cache keyed by props hash for expensive pure components
+- [x] **Component render memoization** — opt-in `@@memo` or cache keyed by props hash for expensive pure components
 
 #### P2 — If scope allows
 
@@ -793,8 +793,8 @@ First-class backend-only Tyravel: JSON APIs without views, SSR, Echo, or client 
 
 #### P1 — Strong want
 
-- [ ] **Prepared statement cache** — per-connection statement cache for repeated `Model` queries (SQLite, Postgres, MySQL)
-- [ ] **`Model.all()` column pruning** — `Model.select(['id', 'title'])` avoids hydrating unused attributes; benchmark against wide tables
+- [x] **Prepared statement cache** — per-connection statement cache for repeated `Model` queries (SQLite, Postgres, MySQL)
+- [x] **`Model.all()` column pruning** — `Model.select(['id', 'title'])` avoids hydrating unused attributes; benchmark against wide tables
 - [x] **SQLite WAL default** — enable WAL journal mode for file-backed SQLite in production scaffold (document concurrent read wins)
 - [x] **Pool sizing guide** — Postgres/MySQL connection pool defaults and env vars (`DB_POOL_MAX`, `DB_POOL_IDLE_TIMEOUT`) with fly/railway examples
 

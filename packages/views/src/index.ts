@@ -14,6 +14,11 @@ export {
   type FragmentCacheStore,
 } from './fragment-cache.js';
 export {
+  InMemoryComponentMemoCache,
+  buildComponentMemoKey,
+  type ComponentMemoCacheStore,
+} from './component-memo-cache.js';
+export {
   lintHasErrors,
   lintViewSource,
   resolveViewLintStrict,

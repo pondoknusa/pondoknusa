@@ -116,6 +116,14 @@ Route.get('/dashboard', () =>
 );
 ```
 
+Mark expensive pure components with `@memo` (or `@@memo`) at the top of the `.tyr` file. Tyravel caches rendered HTML keyed by props hash — skip when the parent passes dynamic slots.
+
+```html
+@@memo(300)
+@props({ label: '' })
+<span class="badge">{{ label }}</span>
+```
+
 `View.streamSsr()` pipes `View.renderStream()` through `Response.ssrStream()`, which **flushes the document shell** (`<head>` + CSS links) before the first view chunk, then streams body content, and injects the hydration manifest after the view stream completes. The Node HTTP adapter flushes each chunk as it is produced.
 
 Lower-level control is still available when you need it:

@@ -52,6 +52,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `MysqlGrammar`
 - `Pivot`
 - `PostgresGrammar`
+- `PreparedStatementCache`
 - `PrunableModelStatic`
 - `QueryBuilder`
 - `QueryProfiler`

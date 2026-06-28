@@ -2,6 +2,7 @@ import { mkdir } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import type { DatabaseConnection, QueryResult } from './connection.js';
 import { SqliteGrammar, type SqlGrammar } from './grammar.js';
+import { PreparedStatementCache } from './prepared-statement-cache.js';
 import type { RowValue, SqliteConnectionConfig } from './types.js';
 
 interface SqliteStatement {
@@ -24,6 +25,7 @@ export class SqliteConnection implements DatabaseConnection {
   readonly grammar: SqlGrammar = new SqliteGrammar();
   private readonly ready: Promise<void>;
   private sqliteDb?: SqliteDatabase;
+  private readonly statementCache = new PreparedStatementCache<SqliteStatement>();
 
   constructor(
     databasePath: string,
@@ -45,7 +47,7 @@ export class SqliteConnection implements DatabaseConnection {
 
   async query(sql: string, bindings: RowValue[] = []): Promise<QueryResult> {
     const database = await this.getDatabase();
-    const statement = database.prepare(sql);
+    const statement = this.statementCache.get(sql, () => database.prepare(sql));
     const trimmed = sql.trim().toLowerCase();
 
     if (trimmed.startsWith('select') || trimmed.startsWith('pragma')) {
@@ -82,6 +84,7 @@ export class SqliteConnection implements DatabaseConnection {
 
   async close(): Promise<void> {
     await this.ready;
+    this.statementCache.clear();
     this.sqliteDb?.close();
     this.sqliteDb = undefined;
   }

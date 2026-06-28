@@ -1,3 +1,5 @@
+import type { ComponentMemoCacheStore } from './component-memo-cache.js';
+import { InMemoryComponentMemoCache } from './component-memo-cache.js';
 import type { FragmentCacheStore } from './fragment-cache.js';
 import { InMemoryFragmentCache } from './fragment-cache.js';
 import {
@@ -69,6 +71,7 @@ export class ViewRegistry {
   private compileVersion = 0;
   private injector?: ViewInjector;
   private fragmentCache: FragmentCacheStore = new InMemoryFragmentCache();
+  private componentMemoCache: ComponentMemoCacheStore = new InMemoryComponentMemoCache();
   private readonly escapeContexts = new Map<string, EscapeHandler>(
     Object.entries(BUILTIN_ESCAPE_CONTEXTS),
   );
@@ -134,6 +137,15 @@ export class ViewRegistry {
 
   getFragmentCache(): FragmentCacheStore {
     return this.fragmentCache;
+  }
+
+  setComponentMemoCache(store: ComponentMemoCacheStore): this {
+    this.componentMemoCache = store;
+    return this;
+  }
+
+  getComponentMemoCache(): ComponentMemoCacheStore {
+    return this.componentMemoCache;
   }
 
   escape(context: string, handler: EscapeHandler): this {

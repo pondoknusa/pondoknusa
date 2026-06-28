@@ -34,6 +34,7 @@ export { Migration } from './migration.js';
 export { Migrator } from './migrator.js';
 export { Seeder } from './seeder.js';
 export { SeederRunner } from './seeder-runner.js';
+export { PreparedStatementCache } from './prepared-statement-cache.js';
 export { Model } from './model.js';
 export { HasUuids } from './concerns/has-uuids.js';
 export { HasUlids } from './concerns/has-ulids.js';

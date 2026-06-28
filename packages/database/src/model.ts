@@ -142,6 +142,11 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
     return model.query().getModels<TModel>();
   }
 
+  static select(...columns: string[]): ModelQueryBuilder {
+    const model = this as unknown as ModelStatic;
+    return model.query().select(...columns);
+  }
+
   static async paginate<TModel extends Model>(
     this: new (attributes?: Partial<ModelAttributes>) => TModel,
     perPage = 15,

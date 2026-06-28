@@ -67,11 +67,12 @@ export class MysqlConnection implements DatabaseConnection {
 
 class MysqlTransactionConnection implements DatabaseConnection {
   readonly grammar: SqlGrammar = new MysqlGrammar();
+  private readonly statementCache = new Map<string, mysql.PreparedStatementInfo>();
 
   constructor(private readonly connection: mysql.PoolConnection) {}
 
   async query(sql: string, bindings: RowValue[] = []): Promise<QueryResult> {
-    const [result] = await this.connection.query(sql, normalizeBindings(bindings));
+    const [result] = await this.runPrepared(sql, normalizeBindings(bindings));
 
     if (Array.isArray(result)) {
       return {
@@ -96,6 +97,29 @@ class MysqlTransactionConnection implements DatabaseConnection {
     callback: (connection: DatabaseConnection) => Promise<T>,
   ): Promise<T> {
     return callback(this);
+  }
+
+  private async runPrepared(
+    sql: string,
+    bindings: RowValue[],
+  ): Promise<[mysql.QueryResult, mysql.FieldPacket[]]> {
+    const trimmed = sql.trim().toLowerCase();
+
+    if (!trimmed.startsWith('select')) {
+      return this.connection.query(sql, bindings);
+    }
+
+    try {
+      let statement = this.statementCache.get(sql);
+      if (!statement) {
+        statement = await this.connection.prepare(sql);
+        this.statementCache.set(sql, statement);
+      }
+
+      return statement.execute(bindings);
+    } catch {
+      return this.connection.query(sql, bindings);
+    }
   }
 }
 

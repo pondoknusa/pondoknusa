@@ -255,6 +255,71 @@ export async function measureOrm({
   };
 }
 
+class WideBenchPost extends Model {
+  static table = 'bench_wide_posts';
+}
+
+export async function measureOrmPruned({
+  warmup = DEFAULTS.orm.warmup,
+  iterations = DEFAULTS.orm.iterations,
+} = {}) {
+  const connection = await SqliteConnection.connect(':memory:');
+  WideBenchPost.useConnection(connection);
+  await connection.exec(`
+    CREATE TABLE bench_wide_posts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      body TEXT NOT NULL,
+      excerpt TEXT NOT NULL,
+      slug TEXT NOT NULL,
+      meta_json TEXT NOT NULL,
+      author TEXT NOT NULL,
+      category TEXT NOT NULL,
+      tags TEXT NOT NULL
+    )
+  `);
+
+  for (let i = 0; i < 100; i++) {
+    await WideBenchPost.create({
+      title: `Post ${i}`,
+      body: `Body ${i} `.repeat(40),
+      excerpt: `Excerpt ${i}`,
+      slug: `post-${i}`,
+      meta_json: JSON.stringify({ featured: i % 2 === 0, views: i * 10 }),
+      author: `Author ${i % 5}`,
+      category: 'news',
+      tags: 'alpha,beta,gamma',
+    });
+  }
+
+  const runOnce = async () => {
+    const rows = await WideBenchPost.select('id', 'title').getModels();
+    if (rows.length !== 100) {
+      throw new Error(`ORM pruned benchmark expected 100 rows, got ${rows.length}`);
+    }
+  };
+
+  for (let i = 0; i < warmup; i++) {
+    await runOnce();
+  }
+
+  const start = performance.now();
+  for (let i = 0; i < iterations; i++) {
+    await runOnce();
+  }
+  const elapsedMs = performance.now() - start;
+  await connection.close();
+
+  return {
+    name: 'orm.select.pruned',
+    label: 'ORM select id+title (100 wide rows, SQLite memory)',
+    unit: 'ops/s',
+    samples: iterations,
+    elapsedMs,
+    value: Math.round((iterations / elapsedMs) * 1000),
+  };
+}
+
 const VIEW_SOURCE = readFileSync(
   join(ROOT, 'examples/hello-world/resources/views/welcome.tyr'),
   'utf8',
@@ -539,6 +604,7 @@ export async function runBenchmarks(options = {}) {
     await measureSessionAuth(options.middleware),
     await measureHttpSsr(options.http),
     await measureOrm(options.orm),
+    await measureOrmPruned(options.orm),
     measureViewCompile(options.views),
     await measureViewRender(options.views),
   ];

@@ -6,6 +6,7 @@ import {
   measureHttpSsr,
   measureMiddlewareStack,
   measureOrm,
+  measureOrmPruned,
   measureSessionAuth,
   measureViewCompile,
   measureViewRender,
@@ -22,6 +23,12 @@ describe('benchmarks', () => {
   it('measures ORM throughput', async () => {
     const result = await measureOrm({ warmup: 2, iterations: 10 });
     expect(result.name).toBe('orm.select');
+    expect(result.value).toBeGreaterThan(0);
+  });
+
+  it('measures pruned ORM throughput on wide rows', async () => {
+    const result = await measureOrmPruned({ warmup: 2, iterations: 10 });
+    expect(result.name).toBe('orm.select.pruned');
     expect(result.value).toBeGreaterThan(0);
   });
 
@@ -76,7 +83,7 @@ describe('benchmarks', () => {
       views: { warmup: 2, iterations: 5 },
     });
 
-    expect(report.results).toHaveLength(9);
+    expect(report.results).toHaveLength(10);
     for (const result of report.results) {
       expect(result.value).toBeGreaterThan(0);
     }
