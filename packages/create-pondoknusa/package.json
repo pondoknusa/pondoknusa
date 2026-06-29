@@ -3,9 +3,7 @@
   "version": "2.0.0",
   "description": "Create a new Pondoknusa application",
   "type": "module",
-  "bin": {
-    "create-pondoknusa": "./index.js"
-  },
+  "bin": "index.js",
   "files": [
     "index.js",
     "README.md"

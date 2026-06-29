@@ -123,8 +123,11 @@ jobs:
             echo "⏭  create-pondoknusa@$CREATE_VERSION already published — skipping"
           else
             echo "📦 Publishing create-pondoknusa@$CREATE_VERSION…"
-            npm publish --workspace=create-pondoknusa --access public
-            echo "✅ Published create-pondoknusa@$CREATE_VERSION"
+            if npm publish --workspace=create-pondoknusa --access public; then
+              echo "✅ Published create-pondoknusa@$CREATE_VERSION"
+            else
+              echo "⚠  create-pondoknusa publish failed (unscoped — add it to NPM_TOKEN package list or run ./scripts/publish-create-pondoknusa.sh)"
+            fi
           fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
