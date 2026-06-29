@@ -9,6 +9,15 @@ export interface LoadEnvOptions {
   override?: boolean;
 }
 
+/** Load `.env`, then optional `secrets.env` (secrets override `.env`). */
+export async function loadProjectEnv(basePath: string): Promise<void> {
+  await loadEnv(basePath);
+  await loadEnv(basePath, {
+    path: join(basePath, 'secrets.env'),
+    override: true,
+  });
+}
+
 export async function loadEnv(
   basePath: string,
   options: LoadEnvOptions = {},

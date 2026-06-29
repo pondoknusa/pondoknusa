@@ -1,6 +1,7 @@
 import { readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { loadProjectEnv } from './load-env.js';
 import type { ConfigTree } from './repository.js';
 import type { ConfigSchema } from './schema.js';
 import { validateConfig } from './validate-config.js';
@@ -30,6 +31,8 @@ export async function loadConfig(
 }
 
 export async function loadConfigWithSchemas(basePath: string): Promise<LoadedConfig> {
+  await loadProjectEnv(basePath);
+
   const configDir = join(basePath, 'config');
   const entries = await readdir(configDir, { withFileTypes: true });
   const config: ConfigTree = {};
