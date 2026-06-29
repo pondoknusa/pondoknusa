@@ -101,12 +101,18 @@ function migrationMessage(pkg) {
 
 function explainFailure(pkg, detail) {
   if (/EOTP|one-time password|passkey|webauthn/i.test(detail)) {
+    const hasToken = Boolean(process.env.NODE_AUTH_TOKEN);
     return [
-      `✗ ${pkg}: npm requires passkey sign-in for this action.`,
-      '  Scripts cannot use passkeys. Create a granular access token instead:',
+      `✗ ${pkg}: npm blocked this write action.`,
+      hasToken
+        ? '  Your NODE_AUTH_TOKEN authenticates (npm whoami works) but is missing'
+        : '  Passkeys cannot run in scripts. Create a granular access token at',
+      hasToken
+        ? '  "Bypass two-factor authentication" on the token — regenerate it at:'
+        : '    https://www.npmjs.com/settings/~/tokens',
       '    https://www.npmjs.com/settings/~/tokens',
-      '  Enable "Bypass two-factor authentication" and grant read-write on @tyravel/*',
-      '    NODE_AUTH_TOKEN=<token> node scripts/deprecate-tyravel.mjs',
+      '  Check "Bypass two-factor authentication", grant read-write on @tyravel/*,',
+      '  then: NODE_AUTH_TOKEN=<new-token> node scripts/deprecate-tyravel.mjs',
     ].join('\n');
   }
   if (/E404|404 Not Found.*PUT/i.test(detail)) {
