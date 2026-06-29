@@ -8,16 +8,27 @@
 
   <rect width="400" height="400" rx="80" fill="#0f0f1a"/>
 
-  <!-- Stem -->
-  <rect x="138" y="108" width="56" height="184" rx="14" fill="url(#g)"/>
+  <g fill="url(#g)">
+    <!-- Stem: flat right edge joins bowl -->
+    <path
+      d="M 198 104
+         V 296
+         H 150
+         Q 136 296 136 282
+         V 118
+         Q 136 104 150 104
+         H 198
+         Z"
+    />
 
-  <!-- Bowl (upper loop) -->
-  <path
-    fill="none"
-    stroke="url(#g)"
-    stroke-width="52"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    d="M 194 108 H 258 C 308 108 308 188 258 188 H 194"
-  />
+    <!-- Bowl: flat left edge joins stem -->
+    <path
+      d="M 198 104
+         H 262
+         C 304 104 304 198 262 198
+         H 198
+         V 104
+         Z"
+    />
+  </g>
 </svg>
