@@ -182,9 +182,8 @@ function resolveRedirectLocation(location: string, request?: { url: string | URL
   }
 
   const base =
-    request?.url !== undefined
-      ? String(request.url)
-      : (process.env.APP_URL ?? 'http://127.0.0.1:3000');
+    process.env.APP_URL
+    ?? (request?.url !== undefined ? String(request.url) : 'http://127.0.0.1:3000');
 
   return new URL(location, base).href;
 }
