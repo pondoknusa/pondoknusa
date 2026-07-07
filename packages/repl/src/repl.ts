@@ -1,6 +1,7 @@
 import { existsSync, readdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { start as startReplServer, type REPLServer } from 'node:repl';
 import { homedir } from 'node:os';
 import { listProjectRoutes } from './list-routes.js';
@@ -28,7 +29,7 @@ export async function startRepl(projectRoot: string): Promise<number> {
 
   try {
     // Try loading the app bootstrap
-    const bootstrap = await import(bootstrapPath);
+    const bootstrap = await import(pathToFileURL(bootstrapPath).href);
     if (bootstrap.default || bootstrap.app) {
       const app = bootstrap.default || bootstrap.app;
       context.app = app;
@@ -36,7 +37,7 @@ export async function startRepl(projectRoot: string): Promise<number> {
   } catch {
     // Fallback: try importing src/main.ts
     try {
-      const entry = await import(entryPath);
+      const entry = await import(pathToFileURL(entryPath).href);
       if (entry.app) context.app = entry.app;
       if (entry.default?.isBooted?.()) context.app = entry.default;
     } catch {
@@ -91,7 +92,7 @@ export async function startRepl(projectRoot: string): Promise<number> {
     for (const file of modelFiles) {
       try {
         const modelPath = join(modelsDir, file);
-        const mod = await import(modelPath);
+        const mod = await import(pathToFileURL(modelPath).href);
         const modelName = file.replace(/\.ts$/, '');
         if (mod.default) {
           context[modelName] = mod.default;

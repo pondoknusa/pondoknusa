@@ -10,7 +10,9 @@ describe('Server Graceful Shutdown', () => {
     const app = new Application();
     setRouteApplication(app);
 
+    let requestReceived = false;
     Route.get('/slow', async () => {
+      requestReceived = true;
       await new Promise((resolve) => setTimeout(resolve, 50));
       return Response.json({ done: true });
     });
@@ -22,8 +24,12 @@ describe('Server Graceful Shutdown', () => {
     const url = `http://${server.hostname}:${server.port}/slow`;
     const requestPromise = fetch(url);
 
-    // Give it a tiny delay to ensure connection is established and handler is running
-    await new Promise((resolve) => setTimeout(resolve, 10));
+    // Wait until the server has actually received the request before shutting down
+    const deadline = Date.now() + 2000;
+    while (!requestReceived && Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, 5));
+    }
+    expect(requestReceived).toBe(true);
 
     // Initiate graceful shutdown
     const closePromise = server.close();
@@ -38,5 +44,5 @@ describe('Server Graceful Shutdown', () => {
 
     // Subsequent requests should fail as the server is closed
     await expect(fetch(url)).rejects.toThrow();
-  });
+  }, 10000);
 });

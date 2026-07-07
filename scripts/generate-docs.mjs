@@ -12,7 +12,7 @@
 import { execSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
@@ -293,7 +293,7 @@ function categorizePackage(shortName) {
 
 async function readCliCommands() {
   ensureBuiltCli();
-  const { createKernel } = await import(join(ROOT, 'packages/cli/dist/kernel.js'));
+  const { createKernel } = await import(pathToFileURL(join(ROOT, 'packages/cli/dist/kernel.js')).href);
   const kernel = createKernel();
   return kernel.list().map((command) => command.definition());
 }

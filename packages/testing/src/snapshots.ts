@@ -1,5 +1,5 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
+import { dirname, isAbsolute, join } from 'node:path';
 
 export interface SnapshotOptions {
   directory?: string;
@@ -7,7 +7,7 @@ export interface SnapshotOptions {
 }
 
 function resolveSnapshotPath(name: string, directory = '__snapshots__'): string {
-  const base = directory.startsWith('/') ? directory : join(process.cwd(), directory);
+  const base = isAbsolute(directory) ? directory : join(process.cwd(), directory);
   return join(base, `${name}.snap`);
 }
 

@@ -44,10 +44,29 @@ export async function serve(
   const bun = (globalThis as { Bun?: BunServe }).Bun;
 
   if (bun) {
+    let inflight = 0;
+    let drainResolve: (() => void) | undefined;
+
     const server = bun.serve({
       hostname,
       port,
-      fetch: (request) => kernel.handle(request),
+      fetch: (request) => {
+        inflight++;
+        const result = kernel.handle(request);
+        if (result instanceof Promise) {
+          return result.finally(() => {
+            inflight--;
+            if (drainResolve && inflight === 0) {
+              drainResolve();
+            }
+          });
+        }
+        inflight--;
+        if (drainResolve && inflight === 0) {
+          drainResolve();
+        }
+        return result;
+      },
     });
 
     if (!quiet) {
@@ -79,6 +98,15 @@ export async function serve(
         if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'test') {
           process.off('SIGTERM', shutdown);
           process.off('SIGINT', shutdown);
+        }
+        if (inflight > 0) {
+          await Promise.race([
+            new Promise<void>((resolve) => {
+              drainResolve = resolve;
+            }),
+            new Promise<void>((resolve) => setTimeout(resolve, 5000)),
+          ]);
+          drainResolve = undefined;
         }
         server.stop();
       },

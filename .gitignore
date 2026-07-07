@@ -9,3 +9,4 @@ terminals/
 my-app/
 docs/.vitepress/dist/
 docs/.vitepress/cache/
+dev/

@@ -53,7 +53,7 @@ export async function buildIslandCatalog(
     const path = join(viewsRoot, `${relative.replace(/\./g, '/')}${programmaticExtension}`);
     const id = relative.split('.').pop() ?? relative;
     const entry = ensureIslandEntry(byId, id);
-    entry.programmaticPath = path;
+    entry.programmaticPath = normalizePath(path);
     entry.hasProgrammaticMount = hasProgrammaticMountExport(path);
   }
 
@@ -63,7 +63,7 @@ export async function buildIslandCatalog(
       const id = file.split('/').pop() ?? file;
       const path = join(clientRoot, `${file.replace(/\./g, '/')}.ts`);
       const entry = ensureIslandEntry(byId, id);
-      entry.clientPath = path;
+      entry.clientPath = normalizePath(path);
       entry.hasClientMount = hasRegisterIslandCall(path, id);
     }
   }
@@ -152,4 +152,8 @@ function hasProgrammaticMountExport(path: string): boolean {
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function normalizePath(path: string): string {
+  return path.replace(/\\/g, '/');
 }
