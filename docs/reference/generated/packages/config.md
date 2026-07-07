@@ -15,7 +15,7 @@ npm install @pondoknusa/config
 
 | Field | Value |
 |-------|-------|
-| Version | `2.0.0` |
+| Version | `2.0.3` |
 | Source | [`packages/config`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/config) |
 | Category | Kernel & HTTP |
 | Node.js | `>=26` |
@@ -42,6 +42,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `loadConfig`
 - `loadConfigWithSchemas`
 - `loadEnv`
+- `loadProjectEnv`
 - `mergeConfig`
 - `parseEnv`
 - `readConfigCacheManifest`

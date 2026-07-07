@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/validation",
-  "version": "2.0.1",
+  "version": "2.0.3",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,7 +15,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/http": "2.0.0"
+    "@pondoknusa/http": "2.0.3"
   },
   "files": [
     "dist"

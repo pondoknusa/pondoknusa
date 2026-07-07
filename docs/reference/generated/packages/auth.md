@@ -15,7 +15,7 @@ npm install @pondoknusa/auth
 
 | Field | Value |
 |-------|-------|
-| Version | `2.0.0` |
+| Version | `2.0.3` |
 | Source | [`packages/auth`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/auth) |
 | Category | Platform services |
 | Node.js | `>=26` |
@@ -77,6 +77,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `createStartSessionMiddleware`
 - `createTokenAbilityMiddleware`
 - `createVerifyCsrfTokenMiddleware`
+- `ensureSessionCsrfToken`
 - `parseExpiresIn`
 - `parseTokenAbilities`
 - `registerOAuthDriver`

@@ -15,7 +15,7 @@ npm install @pondoknusa/log
 
 | Field | Value |
 |-------|-------|
-| Version | `2.0.0` |
+| Version | `2.0.3` |
 | Source | [`packages/log`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/log) |
 | Category | Platform services |
 | Node.js | `>=26` |

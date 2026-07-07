@@ -15,7 +15,7 @@ npm install @pondoknusa/auth-oauth
 
 | Field | Value |
 |-------|-------|
-| Version | `2.0.0` |
+| Version | `2.0.3` |
 | Source | [`packages/auth-oauth`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/auth-oauth) |
 | Category | Platform services |
 | Node.js | `>=26` |

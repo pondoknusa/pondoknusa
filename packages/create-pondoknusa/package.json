@@ -1,6 +1,6 @@
 {
   "name": "create-pondoknusa",
-  "version": "2.0.0",
+  "version": "2.0.3",
   "description": "Create a new Pondoknusa application",
   "type": "module",
   "bin": "index.js",
@@ -9,7 +9,7 @@
     "README.md"
   ],
   "dependencies": {
-    "@pondoknusa/cli": "2.0.0"
+    "@pondoknusa/cli": "2.0.3"
   },
   "engines": {
     "node": ">=26"

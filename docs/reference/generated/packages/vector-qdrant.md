@@ -15,7 +15,7 @@ npm install @pondoknusa/vector-qdrant
 
 | Field | Value |
 |-------|-------|
-| Version | `2.0.0` |
+| Version | `2.0.3` |
 | Source | [`packages/vector-qdrant`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/vector-qdrant) |
 | Category | AI & agents |
 | Node.js | `>=26` |

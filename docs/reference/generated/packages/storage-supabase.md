@@ -15,7 +15,7 @@ npm install @pondoknusa/storage-supabase
 
 | Field | Value |
 |-------|-------|
-| Version | `2.0.0` |
+| Version | `2.0.3` |
 | Source | [`packages/storage-supabase`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/storage-supabase) |
 | Category | Storage drivers |
 | Node.js | `>=26` |
