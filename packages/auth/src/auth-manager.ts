@@ -126,7 +126,7 @@ export function createGuestMiddleware(auth: AuthManager, guardName?: string): Mi
     const authenticated = ok instanceof Promise ? await ok : ok;
     if (authenticated) {
       const accept = request.header('accept') ?? '';
-      if (accept.includes('text/html') || !accept.includes('application/json')) {
+      if (accept.includes('text/html')) {
         return Response.redirect('/dashboard', 302, request);
       }
       return Response.json({ message: 'Already authenticated.' }, { status: 409 });
