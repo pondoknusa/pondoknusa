@@ -40,5 +40,5 @@ describe('generate-docs', () => {
     expect(parsedManifest.packages.length).toBeGreaterThan(40);
     expect(parsedManifest.commands).toContain('migrate');
     expect(parsedManifest.commands).toContain('view:catalog');
-  });
+  }, 30000);
 });

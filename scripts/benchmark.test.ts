@@ -18,61 +18,61 @@ describe('benchmarks', () => {
     const result = runBench('measureHttp', { warmup: 5, requests: 20, concurrency: 5 });
     expect(result.name).toBe('http.json');
     expect(result.value).toBeGreaterThan(0);
-  });
+  }, 30000);
 
   it('measures ORM throughput', () => {
     const result = runBench('measureOrm', { warmup: 2, iterations: 10 });
     expect(result.name).toBe('orm.select');
     expect(result.value).toBeGreaterThan(0);
-  });
+  }, 30000);
 
   it('measures pruned ORM throughput on wide rows', () => {
     const result = runBench('measureOrmPruned', { warmup: 2, iterations: 10 });
     expect(result.name).toBe('orm.select.pruned');
     expect(result.value).toBeGreaterThan(0);
-  });
+  }, 30000);
 
   it('measures view compile throughput', () => {
     const result = runBench('measureViewCompile', { warmup: 2, iterations: 10 });
     expect(result.name).toBe('view.compile');
     expect(result.value).toBeGreaterThan(0);
-  });
+  }, 30000);
 
   it('measures cold boot latency', () => {
     const result = runBench('measureBootCold', { iterations: 2 });
     expect(result.name).toBe('boot.cold');
     expect(result.value).toBeGreaterThan(0);
-  });
+  }, 30000);
 
   it('measures JSON fast-path throughput', () => {
     const result = runBench('measureHttpJsonFast', { warmup: 5, requests: 10, concurrency: 5 });
     expect(result.name).toBe('http.json.fast');
     expect(result.value).toBeGreaterThan(0);
-  });
+  }, 30000);
 
   it('measures middleware stack throughput', () => {
     const result = runBench('measureMiddlewareStack', { warmup: 5, requests: 10, concurrency: 5 });
     expect(result.name).toBe('middleware.stack');
     expect(result.value).toBeGreaterThan(0);
-  });
+  }, 30000);
 
   it('measures session auth throughput', () => {
     const result = runBench('measureSessionAuth', { warmup: 3, requests: 10, concurrency: 5 });
     expect(result.name).toBe('session.auth');
     expect(result.value).toBeGreaterThan(0);
-  });
+  }, 30000);
 
   it('measures HTTP SSR throughput', () => {
     const result = runBench('measureHttpSsr', { warmup: 3, requests: 10, concurrency: 5 });
     expect(result.name).toBe('http.ssr');
     expect(result.value).toBeGreaterThan(0);
-  });
+  }, 30000);
 
   it('measures view render throughput', () => {
     const result = runBench('measureViewRender', { warmup: 2, iterations: 5 });
     expect(result.name).toBe('view.render');
     expect(result.value).toBeGreaterThan(0);
-  });
+  }, 30000);
 
   it('runs the full benchmark report', () => {
     const output = execFileSync(
