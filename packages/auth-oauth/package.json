@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/auth-oauth",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,13 +15,13 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/auth": "2.0.3",
-    "@pondoknusa/crypto": "2.0.3",
-    "@pondoknusa/config": "2.0.3",
-    "@pondoknusa/container": "2.0.3",
-    "@pondoknusa/core": "2.0.3",
-    "@pondoknusa/database": "2.0.3",
-    "@pondoknusa/http": "2.0.3"
+    "@pondoknusa/auth": "2.0.4",
+    "@pondoknusa/crypto": "2.0.4",
+    "@pondoknusa/config": "2.0.4",
+    "@pondoknusa/container": "2.0.4",
+    "@pondoknusa/core": "2.0.4",
+    "@pondoknusa/database": "2.0.4",
+    "@pondoknusa/http": "2.0.4"
   },
   "files": [
     "dist"

@@ -15,7 +15,7 @@ npm install @pondoknusa/crypto
 
 | Field | Value |
 |-------|-------|
-| Version | `2.0.3` |
+| Version | `2.0.4` |
 | Source | [`packages/crypto`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/crypto) |
 | Category | Platform services |
 | Node.js | `>=26` |

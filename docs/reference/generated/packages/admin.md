@@ -15,7 +15,7 @@ npm install @pondoknusa/admin
 
 | Field | Value |
 |-------|-------|
-| Version | `2.0.3` |
+| Version | `2.0.4` |
 | Source | [`packages/admin`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/admin) |
 | Category | Platform services |
 | Node.js | `>=26` |

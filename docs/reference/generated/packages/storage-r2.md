@@ -15,7 +15,7 @@ npm install @pondoknusa/storage-r2
 
 | Field | Value |
 |-------|-------|
-| Version | `2.0.3` |
+| Version | `2.0.4` |
 | Source | [`packages/storage-r2`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/storage-r2) |
 | Category | Storage drivers |
 | Node.js | `>=26` |
