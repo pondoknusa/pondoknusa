@@ -48,7 +48,16 @@ export class MigrateCommand extends Command {
     const manager = app.make(DatabaseManager);
     const migrator = new Migrator(manager.connection(), app.migrationPaths());
 
-    const ran = await migrator.run();
+    let ran: string[];
+    try {
+      ran = await migrator.run();
+    } catch (err) {
+      console.error('Migration failed:', err instanceof Error ? err.message : err);
+      if (err instanceof Error && err.stack) {
+        console.error(err.stack);
+      }
+      return 1;
+    }
 
     if (ran.length === 0) {
       console.log('Nothing to migrate.');
