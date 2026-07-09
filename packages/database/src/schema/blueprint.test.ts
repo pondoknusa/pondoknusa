@@ -55,6 +55,57 @@ describe('Blueprint', () => {
     );
   });
 
+  it('compiles default values for postgres', () => {
+    const blueprint = new Blueprint('users', new PostgresGrammar());
+    blueprint.id();
+    blueprint.string('role').default('user');
+    blueprint.boolean('active').default(true);
+    blueprint.integer('attempts').default(3);
+    blueprint.string('note').nullable().default('none');
+
+    const sql = blueprint.toCreateSql();
+    expect(sql).toContain('"role" VARCHAR(255) DEFAULT \'user\' NOT NULL');
+    expect(sql).toContain('"active" BOOLEAN DEFAULT TRUE NOT NULL');
+    expect(sql).toContain('"attempts" INTEGER DEFAULT 3 NOT NULL');
+    expect(sql).toContain('"note" VARCHAR(255) DEFAULT \'none\'');
+  });
+
+  it('compiles default values for mysql', () => {
+    const blueprint = new Blueprint('users', new MysqlGrammar());
+    blueprint.id();
+    blueprint.string('role').default('user');
+    blueprint.boolean('active').default(false);
+    blueprint.integer('attempts').default(3);
+
+    const sql = blueprint.toCreateSql();
+    expect(sql).toContain('`role` VARCHAR(255) DEFAULT \'user\' NOT NULL');
+    expect(sql).toContain('`active` TINYINT(1) DEFAULT 0 NOT NULL');
+    expect(sql).toContain('`attempts` INT DEFAULT 3 NOT NULL');
+  });
+
+  it('compiles default values for sqlite', () => {
+    const blueprint = new Blueprint('users', new SqliteGrammar());
+    blueprint.id();
+    blueprint.string('role').default('user');
+    blueprint.boolean('active').default(true);
+
+    const sql = blueprint.toCreateSql();
+    expect(sql).toContain('"role" TEXT DEFAULT \'user\' NOT NULL');
+    expect(sql).toContain('"active" INTEGER DEFAULT 1 NOT NULL');
+  });
+
+  it('escapes single quotes in string defaults', () => {
+    const blueprint = new Blueprint('users', new PostgresGrammar());
+    blueprint.string('name').default("O'Brien");
+
+    expect(blueprint.toCreateSql()).toContain("DEFAULT 'O''Brien'");
+  });
+
+  it('throws when default() is called without a column', () => {
+    const blueprint = new Blueprint('users', new PostgresGrammar());
+    expect(() => blueprint.default('x')).toThrow(/column definition/);
+  });
+
   it('uses dialect-specific drop table SQL', () => {
     expect(new Blueprint('users', new PostgresGrammar()).toDropSql()).toBe(
       'DROP TABLE IF EXISTS "users"',

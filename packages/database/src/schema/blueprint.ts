@@ -157,6 +157,43 @@ export class Blueprint {
     return this;
   }
 
+  default(value: string | number | boolean | null): this {
+    const last = this.statements.at(-1);
+    if (!last) {
+      throw new Error(
+        'default() must be called immediately after a column definition (e.g. string(), integer(), boolean()).',
+      );
+    }
+
+    const literal = this.formatDefaultLiteral(value);
+    const updated = last.includes(' NOT NULL')
+      ? last.replace(' NOT NULL', ` DEFAULT ${literal} NOT NULL`)
+      : `${last} DEFAULT ${literal}`;
+
+    this.statements[this.statements.length - 1] = updated;
+    return this;
+  }
+
+  private formatDefaultLiteral(value: string | number | boolean | null): string {
+    if (value === null) {
+      return 'NULL';
+    }
+
+    if (typeof value === 'boolean') {
+      if (this.grammar.driver === 'postgres') {
+        return value ? 'TRUE' : 'FALSE';
+      }
+      return value ? '1' : '0';
+    }
+
+    if (typeof value === 'number') {
+      return String(value);
+    }
+
+    const escaped = value.replaceAll("'", "''");
+    return `'${escaped}'`;
+  }
+
   unique(columns?: string | string[]): this {
     if (columns === undefined) {
       const last = this.statements.at(-1);
