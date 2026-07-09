@@ -19,7 +19,6 @@ import {
   type Routable,
   type RouteGroupOptions,
   type RouteScope,
-  type ScopedRouteRegistrar,
 } from './route-group.js';
 import { applyRouteGroupOptions, flattenMiddlewareInputs } from './route-group-options.js';
 import { throttleMiddlewareAlias } from './throttle.js';
@@ -91,34 +90,6 @@ export interface RouteListEntry {
   middleware: string[];
   action: string;
   domain?: string;
-}
-
-class RouteRegistrar implements ScopedRouteRegistrar {
-  constructor(
-    private readonly router: Router,
-    private readonly method: HttpMethod,
-    private readonly middleware: MiddlewareInput[] = [],
-  ) {}
-
-  get(pattern: string, handler: RouteHandler): Routable {
-    return this.router.add(this.method, pattern, handler, this.middleware);
-  }
-
-  post(pattern: string, handler: RouteHandler): Routable {
-    return this.router.add('POST', pattern, handler, this.middleware);
-  }
-
-  put(pattern: string, handler: RouteHandler): Routable {
-    return this.router.add('PUT', pattern, handler, this.middleware);
-  }
-
-  patch(pattern: string, handler: RouteHandler): Routable {
-    return this.router.add('PATCH', pattern, handler, this.middleware);
-  }
-
-  delete(pattern: string, handler: RouteHandler): Routable {
-    return this.router.add('DELETE', pattern, handler, this.middleware);
-  }
 }
 
 export class Router implements Routable {
@@ -223,8 +194,11 @@ export class Router implements Routable {
     return builder.group(maybeCallback!);
   }
 
-  middleware(...middleware: MiddlewareInput[]): ScopedRouteRegistrar {
-    return new RouteRegistrar(this, 'GET', flattenMiddlewareInputs(...middleware));
+  middleware(...middleware: MiddlewareInput[]): MiddlewareGroupable {
+    return new RouteGroupBuilder(this, {
+      prefix: '',
+      middleware: flattenMiddlewareInputs(...middleware),
+    });
   }
 
   runInScope(scope: RouteScope, callback: () => void): void {

@@ -10,7 +10,6 @@ import type {
   RouteHandler,
   Routable,
   Router,
-  ScopedRouteRegistrar,
 } from '@pondoknusa/http';
 import type { ControllerAction } from './controller.js';
 import type { Application } from './application.js';
@@ -48,7 +47,7 @@ export interface RouteFacade {
   put(pattern: string, handler: RouteTarget): Routable;
   patch(pattern: string, handler: RouteTarget): Routable;
   delete(pattern: string, handler: RouteTarget): Routable;
-  middleware(...middleware: MiddlewareInput[]): ScopedRouteRegistrar;
+  middleware(...middleware: MiddlewareInput[]): MiddlewareGroupable;
   use(...middleware: MiddlewareInput[]): Routable;
   name(name: string): Routable;
   throttle(preset: string): Routable;
@@ -84,7 +83,7 @@ export const Route: RouteFacade = {
     router().patch(pattern, toHandler(handler)),
   delete: (pattern: string, handler: RouteTarget): Routable =>
     router().delete(pattern, toHandler(handler)),
-  middleware: (...middleware: MiddlewareInput[]): ScopedRouteRegistrar =>
+  middleware: (...middleware: MiddlewareInput[]): MiddlewareGroupable =>
     router().middleware(...middleware),
   use: (...middleware: MiddlewareInput[]): Routable => router().use(...middleware),
   name: (name: string): Routable => router().name(name),
