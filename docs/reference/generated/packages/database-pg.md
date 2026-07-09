@@ -15,7 +15,7 @@ npm install @pondoknusa/database-pg
 
 | Field | Value |
 |-------|-------|
-| Version | `2.0.4` |
+| Version | `2.1.0` |
 | Source | [`packages/database-pg`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/database-pg) |
 | Category | Database |
 | Node.js | `>=26` |

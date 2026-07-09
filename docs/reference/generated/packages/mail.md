@@ -15,7 +15,7 @@ npm install @pondoknusa/mail
 
 | Field | Value |
 |-------|-------|
-| Version | `2.0.4` |
+| Version | `2.1.0` |
 | Source | [`packages/mail`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/mail) |
 | Category | Platform services |
 | Node.js | `>=26` |

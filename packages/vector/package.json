@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/vector",
-  "version": "2.0.4",
+  "version": "2.1.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,9 +15,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/cache": "2.0.4",
-    "@pondoknusa/database": "2.0.4",
-    "@pondoknusa/queue": "2.0.4"
+    "@pondoknusa/cache": "2.1.0",
+    "@pondoknusa/database": "2.1.0",
+    "@pondoknusa/queue": "2.1.0"
   },
   "files": [
     "dist"
