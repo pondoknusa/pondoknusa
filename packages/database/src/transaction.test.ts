@@ -66,7 +66,7 @@ describe('DatabaseManager.transaction', () => {
 
     await manager.transaction(async () => {
       const row = await Account.query().where('id', 1).first();
-      expect(row?.balance).toBe(100);
+      expect(row?.getAttribute('balance')).toBe(100);
       await Account.query().where('id', 1).update({ balance: 50 });
     });
 

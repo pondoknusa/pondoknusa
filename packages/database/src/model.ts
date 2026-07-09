@@ -58,6 +58,9 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
   private relations: Record<string, unknown> = {};
   private runtimeAppends: string[] = [];
 
+  // Allow Model instances to satisfy the Row type used by QueryBuilder.
+  [key: string]: unknown;
+
   constructor(attributes: Partial<T> = {}, takeOwnership = false) {
     this.attributes = takeOwnership ? attributes : { ...attributes };
   }

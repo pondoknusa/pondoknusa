@@ -175,9 +175,17 @@ export class ModelQueryBuilder extends QueryBuilder {
     return models;
   }
 
+  override async first<TModel extends Model = Model>(): Promise<TModel | null> {
+    return this.firstModel<TModel>();
+  }
+
   async firstModel<TModel extends Model>(): Promise<TModel | null> {
     const rows = await this.clone().limit(1).getModels<TModel>();
     return rows[0] ?? null;
+  }
+
+  async firstRaw(): Promise<Record<string, unknown> | null> {
+    return super.first();
   }
 
   async paginateModels<TModel extends Model>(
