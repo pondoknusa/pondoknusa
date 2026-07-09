@@ -132,12 +132,6 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Deprecate legacy @tyravel packages
-        if: startsWith(github.ref_name, 'v2.')
-        run: node scripts/deprecate-tyravel.mjs
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
