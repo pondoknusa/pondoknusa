@@ -15,7 +15,7 @@ npm install @pondoknusa/debug
 
 | Field | Value |
 |-------|-------|
-| Version | `2.1.0` |
+| Version | `2.2.0` |
 | Source | [`packages/debug`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/debug) |
 | Category | Platform services |
 | Node.js | `>=26` |

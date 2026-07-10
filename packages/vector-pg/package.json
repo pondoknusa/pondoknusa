@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/vector-pg",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,8 +15,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/database": "2.1.0",
-    "@pondoknusa/vector": "2.1.0"
+    "@pondoknusa/database": "2.2.0",
+    "@pondoknusa/vector": "2.2.0"
   },
   "files": [
     "dist"

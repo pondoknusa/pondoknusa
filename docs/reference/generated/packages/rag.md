@@ -15,7 +15,7 @@ npm install @pondoknusa/rag
 
 | Field | Value |
 |-------|-------|
-| Version | `2.1.0` |
+| Version | `2.2.0` |
 | Source | [`packages/rag`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/rag) |
 | Category | AI & agents |
 | Node.js | `>=26` |

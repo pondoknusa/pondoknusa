@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/cache-upstash",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,7 +15,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/cache": "2.1.0"
+    "@pondoknusa/cache": "2.2.0"
   },
   "files": [
     "dist"

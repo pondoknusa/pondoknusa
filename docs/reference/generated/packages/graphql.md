@@ -15,7 +15,7 @@ npm install @pondoknusa/graphql
 
 | Field | Value |
 |-------|-------|
-| Version | `2.1.0` |
+| Version | `2.2.0` |
 | Source | [`packages/graphql`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/graphql) |
 | Category | AI & agents |
 | Node.js | `>=26` |

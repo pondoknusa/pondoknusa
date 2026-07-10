@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/notifications",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,10 +15,10 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/broadcasting": "2.1.0",
-    "@pondoknusa/database": "2.1.0",
-    "@pondoknusa/mail": "2.1.0",
-    "@pondoknusa/queue": "2.1.0"
+    "@pondoknusa/broadcasting": "2.2.0",
+    "@pondoknusa/database": "2.2.0",
+    "@pondoknusa/mail": "2.2.0",
+    "@pondoknusa/queue": "2.2.0"
   },
   "files": [
     "dist"

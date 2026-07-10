@@ -15,7 +15,7 @@ npm install @pondoknusa/events
 
 | Field | Value |
 |-------|-------|
-| Version | `2.1.0` |
+| Version | `2.2.0` |
 | Source | [`packages/events`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/events) |
 | Category | Platform services |
 | Node.js | `>=26` |

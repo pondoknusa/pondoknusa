@@ -6,6 +6,10 @@ All notable changes to Pondoknusa are documented in this file.
 
 
 
+
+## [2.2.0] - 2026-07-10
+
+See [v2.2.0 release notes](https://github.com/pondoknusa/pondoknusa/releases/tag/v2.2.0).
 ## [2.1.0] - 2026-07-09
 
 See [v2.1.0 release notes](https://github.com/pondoknusa/pondoknusa/releases/tag/v2.1.0).
@@ -407,3 +411,4 @@ First public release of the `@pondoknusa/*` monorepo.
 [2.0.3]: https://github.com/pondoknusa/pondoknusa/releases/tag/v2.0.3
 [2.0.4]: https://github.com/pondoknusa/pondoknusa/releases/tag/v2.0.4
 [2.1.0]: https://github.com/pondoknusa/pondoknusa/releases/tag/v2.1.0
+[2.2.0]: https://github.com/pondoknusa/pondoknusa/releases/tag/v2.2.0

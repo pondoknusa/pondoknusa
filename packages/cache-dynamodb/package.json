@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/cache-dynamodb",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.840.0",
-    "@pondoknusa/cache": "2.1.0"
+    "@pondoknusa/cache": "2.2.0"
   },
   "files": [
     "dist"

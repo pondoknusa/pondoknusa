@@ -15,7 +15,7 @@ npm install @pondoknusa/container
 
 | Field | Value |
 |-------|-------|
-| Version | `2.1.0` |
+| Version | `2.2.0` |
 | Source | [`packages/container`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/container) |
 | Category | Kernel & HTTP |
 | Node.js | `>=26` |
