@@ -54,6 +54,13 @@ Current monorepo version: **2.1.0**.
 | [@pondoknusa/support](/reference/generated/packages/support) | String and utility helpers for Pondoknusa |
 | [@pondoknusa/validation](/reference/generated/packages/validation) | Request validation for Pondoknusa |
 
+## Other packages
+
+| Package | Description |
+|---------|-------------|
+| [@pondoknusa/telegram](/reference/generated/packages/telegram) | Telegram Bot API integration for Pondoknusa |
+| [@pondoknusa/telegram-2fa](/reference/generated/packages/telegram-2fa) | Two-factor auth via Telegram for Pondoknusa |
+
 ## Platform services
 
 | Package | Description |

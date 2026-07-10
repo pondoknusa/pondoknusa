@@ -209,6 +209,20 @@ export const referenceSidebar = [
     ]
   },
   {
+    "text": "Other packages",
+    "collapsed": true,
+    "items": [
+      {
+        "text": "telegram",
+        "link": "/reference/generated/packages/telegram"
+      },
+      {
+        "text": "telegram-2fa",
+        "link": "/reference/generated/packages/telegram-2fa"
+      }
+    ]
+  },
+  {
     "text": "Platform services",
     "collapsed": true,
     "items": [

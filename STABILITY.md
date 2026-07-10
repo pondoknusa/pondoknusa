@@ -72,6 +72,8 @@ Experimental APIs are shipped and tested but may change in a minor release witho
 
 | Area | Experimental surface |
 |------|----------------------|
+| **Telegram** | `@pondoknusa/telegram` — Bot API client, webhook handler, long polling, notification channel, service provider, facade |
+| **Telegram 2FA** | `@pondoknusa/telegram-2fa` — Two-factor authentication via Telegram bot, code generator, verification manager, middleware |
 
 Experimental APIs may be promoted to **stable** in a minor release once documented and covered by compatibility tests.
 

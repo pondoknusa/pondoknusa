@@ -1,0 +1,45 @@
+{
+  "name": "@pondoknusa/telegram-2fa",
+  "version": "2.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@pondoknusa/auth": "2.1.0",
+    "@pondoknusa/cache": "2.1.0",
+    "@pondoknusa/config": "2.1.0",
+    "@pondoknusa/core": "2.1.0",
+    "@pondoknusa/http": "2.1.0",
+    "@pondoknusa/support": "2.1.0",
+    "@pondoknusa/telegram": "2.1.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=26"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.1"
+  },
+  "description": "Two-factor auth via Telegram for Pondoknusa",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pondoknusa/pondoknusa.git",
+    "directory": "packages/telegram-2fa"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

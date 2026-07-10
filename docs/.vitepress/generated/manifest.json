@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-09T00:56:31.383Z",
+  "generatedAt": "2026-07-10T12:09:38.308Z",
   "version": "2.1.0",
   "packages": [
     {
@@ -235,6 +235,18 @@
       "slug": "support",
       "description": "String and utility helpers for Pondoknusa",
       "path": "reference/generated/packages/support"
+    },
+    {
+      "name": "@pondoknusa/telegram",
+      "slug": "telegram",
+      "description": "Telegram Bot API integration for Pondoknusa",
+      "path": "reference/generated/packages/telegram"
+    },
+    {
+      "name": "@pondoknusa/telegram-2fa",
+      "slug": "telegram-2fa",
+      "description": "Two-factor auth via Telegram for Pondoknusa",
+      "path": "reference/generated/packages/telegram-2fa"
     },
     {
       "name": "@pondoknusa/testing",

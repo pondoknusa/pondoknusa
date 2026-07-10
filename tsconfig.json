@@ -45,6 +45,8 @@
     { "path": "packages/notifications" },
     { "path": "packages/core" },
     { "path": "packages/testing" },
+    { "path": "packages/telegram" },
+    { "path": "packages/telegram-2fa" },
     { "path": "packages/repl" },
     { "path": "packages/cli" }
   ]
