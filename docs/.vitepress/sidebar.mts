@@ -213,6 +213,10 @@ export const referenceSidebar = [
     "collapsed": true,
     "items": [
       {
+        "text": "reusable-components",
+        "link": "/reference/generated/packages/reusable-components"
+      },
+      {
         "text": "telegram",
         "link": "/reference/generated/packages/telegram"
       },
@@ -237,6 +241,10 @@ export const referenceSidebar = [
       {
         "text": "auth-oauth",
         "link": "/reference/generated/packages/auth-oauth"
+      },
+      {
+        "text": "auth-passkey",
+        "link": "/reference/generated/packages/auth-passkey"
       },
       {
         "text": "broadcasting",

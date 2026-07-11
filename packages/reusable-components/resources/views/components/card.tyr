@@ -1,0 +1,14 @@
+@props(['title' => null])
+
+<article class="ui-card" {!! $attributes.toHtml() !!}>
+  @if (title)
+    <header class="ui-card__header">{{ title }}</header>
+  @endif
+  <div class="ui-card__body">{!! $slot !!}</div>
+  @if ($footer)
+    <footer class="ui-card__footer">{!! $footer !!}</footer>
+  @endif
+</article>
+
+@slot('footer')
+@endslot

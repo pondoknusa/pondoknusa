@@ -1,0 +1,3 @@
+@props(['for', 'label'])
+
+<label class="ui-label" for="{{ for }}" {!! $attributes.toHtml() !!}>{{ label }}</label>

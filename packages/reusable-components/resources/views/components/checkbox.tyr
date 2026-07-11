@@ -1,0 +1,8 @@
+@props(['name', 'label' => null, 'checked' => false, 'value' => '1'])
+
+<label class="ui-checkbox">
+  <input type="checkbox" name="{{ name }}" value="{{ value }}" @checked(checked) {!! $attributes.except(['class']).toHtml() !!} />
+  @if (label)
+    <span class="ui-checkbox__label">{{ label }}</span>
+  @endif
+</label>

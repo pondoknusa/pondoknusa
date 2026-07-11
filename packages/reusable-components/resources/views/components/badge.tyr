@@ -1,0 +1,18 @@
+@props(['label', 'tone' => 'neutral'])
+
+@switch(tone)
+  @case('success')
+    <span class="ui-badge ui-badge--success" {!! $attributes.toHtml() !!}>{{ label }}</span>
+    @break
+  @case('warning')
+    <span class="ui-badge ui-badge--warning" {!! $attributes.toHtml() !!}>{{ label }}</span>
+    @break
+  @case('danger')
+    <span class="ui-badge ui-badge--danger" {!! $attributes.toHtml() !!}>{{ label }}</span>
+    @break
+  @case('info')
+    <span class="ui-badge ui-badge--info" {!! $attributes.toHtml() !!}>{{ label }}</span>
+    @break
+  @default
+    <span class="ui-badge ui-badge--neutral" {!! $attributes.toHtml() !!}>{{ label }}</span>
+@endswitch

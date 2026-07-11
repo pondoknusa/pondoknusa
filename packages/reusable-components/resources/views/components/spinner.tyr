@@ -1,0 +1,12 @@
+@props(['size' => 'md', 'tone' => 'currentColor'])
+
+@switch(size)
+  @case('sm')
+    <span class="ui-spinner ui-spinner--sm" style="border-top-color: {{ tone }};" {!! $attributes.toHtml() !!}></span>
+    @break
+  @case('lg')
+    <span class="ui-spinner ui-spinner--lg" style="border-top-color: {{ tone }};" {!! $attributes.toHtml() !!}></span>
+    @break
+  @default
+    <span class="ui-spinner" style="border-top-color: {{ tone }};" {!! $attributes.toHtml() !!}></span>
+@endswitch

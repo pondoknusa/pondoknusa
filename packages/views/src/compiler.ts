@@ -332,7 +332,27 @@ function extractLeadingDirective<T>(
 }
 
 function hasComponentSlotDefinitions(body: string): boolean {
-  return /^@slot\(/m.test(body);
+  let cursor = 0;
+  let componentDepth = 0;
+
+  while (cursor < body.length) {
+    const line = takeLine(body, cursor);
+    const trimmed = line.trim();
+
+    if (COMPONENT_RE.test(trimmed)) {
+      componentDepth += 1;
+    } else if (ENDCOMPONENT_RE.test(trimmed)) {
+      if (componentDepth > 0) {
+        componentDepth -= 1;
+      }
+    } else if (componentDepth === 0 && SLOT_START_RE.test(trimmed)) {
+      return true;
+    }
+
+    cursor += line.length;
+  }
+
+  return false;
 }
 
 function parseOps(source: string, options: CompileOptions = {}): TemplateOp[] {

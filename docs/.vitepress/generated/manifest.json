@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-10T12:18:28.808Z",
+  "generatedAt": "2026-07-11T04:37:35.928Z",
   "version": "2.2.0",
   "packages": [
     {
@@ -19,6 +19,12 @@
       "slug": "auth-oauth",
       "description": "OAuth2 authorization server for Pondoknusa",
       "path": "reference/generated/packages/auth-oauth"
+    },
+    {
+      "name": "@pondoknusa/auth-passkey",
+      "slug": "auth-passkey",
+      "description": "WebAuthn / passkey authentication for Pondoknusa (experimental, zero external deps)",
+      "path": "reference/generated/packages/auth-passkey"
     },
     {
       "name": "@pondoknusa/broadcasting",
@@ -199,6 +205,12 @@
       "slug": "repl",
       "description": "Interactive Pondoknusa REPL (pondoknusa shell)",
       "path": "reference/generated/packages/repl"
+    },
+    {
+      "name": "@pondoknusa/reusable-components",
+      "slug": "reusable-components",
+      "description": "Reusable .tyr view components for Pondoknusa applications",
+      "path": "reference/generated/packages/reusable-components"
     },
     {
       "name": "@pondoknusa/ssr",

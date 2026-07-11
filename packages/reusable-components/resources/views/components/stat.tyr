@@ -1,0 +1,12 @@
+@props(['label', 'value'])
+
+<div class="ui-stat" {!! $attributes.toHtml() !!}>
+  <span class="ui-stat__label">{{ label }}</span>
+  <span class="ui-stat__value">{{ value }}</span>
+  @if ($trend)
+    <span class="ui-stat__trend">{!! $trend !!}</span>
+  @endif
+</div>
+
+@slot('trend')
+@endslot

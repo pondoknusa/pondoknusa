@@ -1,0 +1,7 @@
+@props(['label', 'variant' => 'primary', 'size' => 'md', 'type' => 'button', 'href' => null])
+
+@if (href)
+  <a class="ui-btn ui-btn--{{ variant }} ui-btn--{{ size }}" href="{{ href }}" {!! $attributes.toHtml() !!}>{{ label }}</a>
+@else
+  <button class="ui-btn ui-btn--{{ variant }} ui-btn--{{ size }}" type="{{ type }}" {!! $attributes.toHtml() !!}>{{ label }}</button>
+@endif

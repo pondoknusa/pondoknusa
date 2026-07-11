@@ -1,0 +1,14 @@
+@props(['title' => null])
+
+<section class="ui-panel" {!! $attributes.toHtml() !!}>
+  @if (title)
+    <header class="ui-panel__header">{{ title }}</header>
+  @endif
+  <div class="ui-panel__body">{!! $slot !!}</div>
+  @if ($footer)
+    <footer class="ui-panel__footer">{!! $footer !!}</footer>
+  @endif
+</section>
+
+@slot('footer')
+@endslot

@@ -1,0 +1,7 @@
+@props(['name', 'value' => '', 'placeholder' => null, 'options'])
+
+<select class="ui-select" id="{{ name }}" name="{{ name }}" data-placeholder="{{ placeholder }}" {!! $attributes.toHtml() !!}>
+  @foreach (options as option)
+    <option value="{{ option.value }}" @selected(String(option.value) === String(value))>{{ option.label }}</option>
+  @endforeach
+</select>

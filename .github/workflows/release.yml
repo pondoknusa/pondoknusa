@@ -56,6 +56,7 @@ jobs:
             @pondoknusa/redis
             @pondoknusa/redis-node
             @pondoknusa/views
+            @pondoknusa/reusable-components
             @pondoknusa/ssr
             @pondoknusa/echo
             @pondoknusa/queue
@@ -71,6 +72,7 @@ jobs:
             @pondoknusa/mcp
             @pondoknusa/crypto
             @pondoknusa/auth
+            @pondoknusa/auth-passkey
             @pondoknusa/cache
             @pondoknusa/cache-dynamodb
             @pondoknusa/cache-upstash
@@ -81,6 +83,8 @@ jobs:
             @pondoknusa/storage-supabase
             @pondoknusa/mail
             @pondoknusa/notifications
+            @pondoknusa/telegram
+            @pondoknusa/telegram-2fa
             @pondoknusa/admin
             @pondoknusa/debug
             @pondoknusa/testing

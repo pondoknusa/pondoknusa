@@ -1,0 +1,35 @@
+@props(['variant' => 'info', 'title' => null])
+
+@switch(variant)
+  @case('success')
+    <div class="ui-alert ui-alert--success" role="alert" {!! $attributes.toHtml() !!}>
+      @if (title)
+        <p class="ui-alert__title">{{ title }}</p>
+      @endif
+      <div class="ui-alert__body">{!! $slot !!}</div>
+    </div>
+    @break
+  @case('warning')
+    <div class="ui-alert ui-alert--warning" role="alert" {!! $attributes.toHtml() !!}>
+      @if (title)
+        <p class="ui-alert__title">{{ title }}</p>
+      @endif
+      <div class="ui-alert__body">{!! $slot !!}</div>
+    </div>
+    @break
+  @case('danger')
+    <div class="ui-alert ui-alert--danger" role="alert" {!! $attributes.toHtml() !!}>
+      @if (title)
+        <p class="ui-alert__title">{{ title }}</p>
+      @endif
+      <div class="ui-alert__body">{!! $slot !!}</div>
+    </div>
+    @break
+  @default
+    <div class="ui-alert ui-alert--info" role="alert" {!! $attributes.toHtml() !!}>
+      @if (title)
+        <p class="ui-alert__title">{{ title }}</p>
+      @endif
+      <div class="ui-alert__body">{!! $slot !!}</div>
+    </div>
+@endswitch

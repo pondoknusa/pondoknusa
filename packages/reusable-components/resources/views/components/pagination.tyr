@@ -1,0 +1,19 @@
+@props(['current' => 1, 'pages' => []])
+
+<nav class="ui-pagination" {!! $attributes.toHtml() !!}>
+  @if (current > 1)
+    <a class="ui-pagination__link" href="?page={{ current - 1 }}" rel="prev">Prev</a>
+  @endif
+
+  @foreach (pages as page)
+    @if (page === current)
+      <span class="ui-pagination__link ui-pagination__link--current">{{ page }}</span>
+    @else
+      <a class="ui-pagination__link" href="?page={{ page }}">{{ page }}</a>
+    @endif
+  @endforeach
+
+  @if (current < pages.length)
+    <a class="ui-pagination__link" href="?page={{ current + 1 }}" rel="next">Next</a>
+  @endif
+</nav>

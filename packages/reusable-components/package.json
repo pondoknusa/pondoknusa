@@ -1,0 +1,37 @@
+{
+  "name": "@pondoknusa/reusable-components",
+  "version": "2.2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@pondoknusa/views": "2.2.0"
+  },
+  "files": [
+    "dist",
+    "resources/views"
+  ],
+  "engines": {
+    "node": ">=26"
+  },
+  "description": "Reusable .tyr view components for Pondoknusa applications",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pondoknusa/pondoknusa.git",
+    "directory": "packages/reusable-components"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

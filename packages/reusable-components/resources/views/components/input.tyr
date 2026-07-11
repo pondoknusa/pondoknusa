@@ -1,0 +1,3 @@
+@props(['name', 'value' => '', 'type' => 'text', 'placeholder' => null])
+
+<input class="ui-input" id="{{ name }}" name="{{ name }}" type="{{ type }}" value="{{ value }}" placeholder="{{ placeholder }}" {!! $attributes.toHtml() !!} />

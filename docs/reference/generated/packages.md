@@ -58,6 +58,7 @@ Current monorepo version: **2.2.0**.
 
 | Package | Description |
 |---------|-------------|
+| [@pondoknusa/reusable-components](/reference/generated/packages/reusable-components) | Reusable .tyr view components for Pondoknusa applications |
 | [@pondoknusa/telegram](/reference/generated/packages/telegram) | Telegram Bot API integration for Pondoknusa |
 | [@pondoknusa/telegram-2fa](/reference/generated/packages/telegram-2fa) | Two-factor auth via Telegram for Pondoknusa |
 
@@ -68,6 +69,7 @@ Current monorepo version: **2.2.0**.
 | [@pondoknusa/admin](/reference/generated/packages/admin) | Optional CRUD admin panel for Pondoknusa |
 | [@pondoknusa/auth](/reference/generated/packages/auth) | Authentication and authorization for Pondoknusa |
 | [@pondoknusa/auth-oauth](/reference/generated/packages/auth-oauth) | OAuth2 authorization server for Pondoknusa |
+| [@pondoknusa/auth-passkey](/reference/generated/packages/auth-passkey) | WebAuthn / passkey authentication for Pondoknusa (experimental, zero external deps) |
 | [@pondoknusa/broadcasting](/reference/generated/packages/broadcasting) | Real-time event broadcasting for Pondoknusa |
 | [@pondoknusa/broadcasting-websocket](/reference/generated/packages/broadcasting-websocket) | Native WebSocket broadcast driver and hub for Pondoknusa |
 | [@pondoknusa/cache](/reference/generated/packages/cache) | Cache stores and repository for Pondoknusa |

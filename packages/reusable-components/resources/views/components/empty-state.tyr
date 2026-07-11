@@ -1,0 +1,18 @@
+@props(['title', 'description' => null])
+
+<div class="ui-empty-state" {!! $attributes.toHtml() !!}>
+  <div class="ui-empty-state__icon">{!! $icon !!}</div>
+  <h3 class="ui-empty-state__title">{{ title }}</h3>
+  @if (description)
+    <p class="ui-empty-state__description">{{ description }}</p>
+  @endif
+  @if ($actions)
+    <div class="ui-empty-state__actions">{!! $actions !!}</div>
+  @endif
+</div>
+
+@slot('icon')
+@endslot
+
+@slot('actions')
+@endslot

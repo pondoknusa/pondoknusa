@@ -1,0 +1,13 @@
+@props(['name', 'label' => null, 'hint' => null, 'error' => null])
+
+<div class="ui-field @if (error) ui-field--error @endif" {!! $attributes.toHtml() !!}>
+  @if (label)
+    <label class="ui-field__label" for="{{ name }}">{{ label }}</label>
+  @endif
+  <div class="ui-field__control">{!! $slot !!}</div>
+  @if (error)
+    <p class="ui-field__error">{{ error }}</p>
+  @elseif (hint)
+    <p class="ui-field__hint">{{ hint }}</p>
+  @endif
+</div>
