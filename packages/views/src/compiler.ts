@@ -852,7 +852,11 @@ function parseOps(source: string, options: CompileOptions = {}): TemplateOp[] {
 
     const componentMatch = trimmed.match(COMPONENT_RE);
     if (componentMatch) {
-      const closeAt = findPartnerEndComponent(source, cursor + line.length);
+      // Indent must be measured from the true line start. `cursor` may already
+      // sit on the `@` after leading whitespace was emitted as text.
+      const trueLineStart = source.lastIndexOf('\n', cursor - 1) + 1;
+      const openIndent = cursor - trueLineStart;
+      const closeAt = findComponentBlockEnd(source, trueLineStart + takeLine(source, trueLineStart).length, openIndent);
       if (closeAt !== -1) {
         const block = parseComponentBlock(
           source,
@@ -1474,29 +1478,62 @@ function parseComponentBlock(
   };
 }
 
-function findPartnerEndComponent(source: string, searchStart: number): number {
-  let depth = 1;
-  let cursor = searchStart;
+/**
+ * Find the `@endcomponent` that closes the `@component(...)` whose body starts
+ * at `searchStart`. `openIndent` is the indentation of that opening line.
+ *
+ * `@component('x', {…})` is ambiguous: self-closing when no matching
+ * `@endcomponent` follows, or a block opener when one does. A naive depth
+ * counter treats every nested `@component` as a block opener, so a self-closing
+ * child inflates depth and the parent's `@endcomponent` never reaches 0.
+ *
+ * Disambiguation uses the first nested `@component` line's indentation:
+ * - Same/shallower indent as the opener → sibling, so this opener is
+ *   self-closing (return -1). Covers `@component('a')\n@component('b')\n…\n@endcomponent`.
+ * - Deeper indent (or no nested `@component`) → this opener is a block; its
+ *   partner is the first `@endcomponent` at exactly `openIndent`. Nested
+ *   `@endcomponent` lines at deeper indents belong to children.
+ */
+export function findComponentBlockEnd(
+  source: string,
+  searchStart: number,
+  openIndent = 0,
+): number {
+  let firstNestedIndent = -1;
+  {
+    let cursor = searchStart;
+    while (cursor < source.length) {
+      const line = takeLine(source, cursor);
+      const trimmed = line.trim();
+      if (COMPONENT_RE.test(trimmed)) {
+        firstNestedIndent = lineIndent(line);
+        break;
+      }
+      cursor += line.length;
+    }
+  }
 
+  // Sibling at same/shallower indent → this component is self-closing.
+  if (firstNestedIndent !== -1 && firstNestedIndent <= openIndent) {
+    return -1;
+  }
+
+  // Block opener: partner is `@endcomponent` at exactly this indent.
+  let cursor = searchStart;
   while (cursor < source.length) {
     const line = takeLine(source, cursor);
     const trimmed = line.trim();
-
-    if (COMPONENT_RE.test(trimmed)) {
-      depth += 1;
+    if (ENDCOMPONENT_RE.test(trimmed) && lineIndent(line) === openIndent) {
+      return cursor;
     }
-
-    if (ENDCOMPONENT_RE.test(trimmed)) {
-      depth -= 1;
-      if (depth === 0) {
-        return cursor;
-      }
-    }
-
     cursor += line.length;
   }
 
   return -1;
+}
+
+function lineIndent(line: string): number {
+  return line.length - line.trimStart().length;
 }
 
 function parseSlotAwareBody(

@@ -58,4 +58,32 @@ describe('view lint severity', () => {
     process.env.CI = 'true';
     expect(resolveViewLintStrict()).toBe(true);
   });
+
+  it('does not report unclosed @component for nested self-closing components', async () => {
+    const issues = await lintViewSource(
+      `@component('components.card', { title: 'Post' })
+  @component('components.badge', { label: 'Hot' })
+  <p>Body content</p>
+@endcomponent
+`,
+      { strict: true },
+    );
+
+    expect(issues.filter((issue) => issue.rule === 'unclosed-directive')).toEqual([]);
+  });
+
+  it('does not report unclosed @component for three-level nesting', async () => {
+    const issues = await lintViewSource(
+      `@component('components.panel', { title: 'Outer' })
+  @component('components.card', { title: 'Inner' })
+    @component('components.badge', { label: 'Nested' })
+    <p>Content</p>
+  @endcomponent
+@endcomponent
+`,
+      { strict: true },
+    );
+
+    expect(issues.filter((issue) => issue.rule === 'unclosed-directive')).toEqual([]);
+  });
 });

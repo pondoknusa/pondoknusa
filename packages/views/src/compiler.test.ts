@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { compile } from './compiler.js';
+import { compile, findComponentBlockEnd } from './compiler.js';
 
 describe('compile', () => {
   it('folds simple path echoes into pathEcho ops at compile time', () => {
@@ -338,5 +338,150 @@ describe('compile', () => {
         (op) => op.type === 'echoClient' && op.entry === 'resources/client/custom-echo.ts',
       ),
     ).toBe(true);
+  });
+
+  it('nests a self-closing @component inside a @component block', () => {
+    const source = `@component('components.card', { title: 'Post' })
+  @component('components.badge', { label: 'Hot' })
+  <p>Body content</p>
+@endcomponent
+`;
+
+    const template = compile(source);
+    expect(template.ops).toHaveLength(1);
+
+    const card = template.ops[0];
+    expect(card?.type).toBe('component');
+    if (card?.type !== 'component') {
+      throw new Error('Expected card component');
+    }
+
+    expect(card.name).toBe('components.card');
+    expect(card.defaultSlot).toBeDefined();
+
+    const badge = card.defaultSlot?.find((op) => op.type === 'component');
+    expect(badge).toMatchObject({
+      type: 'component',
+      name: 'components.badge',
+      dataExpression: "{ label: 'Hot' }",
+    });
+    if (badge?.type === 'component') {
+      expect(badge.defaultSlot).toBeUndefined();
+    }
+  });
+
+  it('keeps a self-closing @component as a sibling of a following block', () => {
+    const source = `@component('components.button', { label: 'Save' })
+@component('components.panel', { title: 'Updates' })
+  <p>Body copy</p>
+@endcomponent
+`;
+
+    const template = compile(source);
+    expect(template.ops).toHaveLength(2);
+
+    const button = template.ops[0];
+    expect(button).toMatchObject({
+      type: 'component',
+      name: 'components.button',
+    });
+    if (button?.type === 'component') {
+      expect(button.defaultSlot).toBeUndefined();
+    }
+
+    const panel = template.ops[1];
+    expect(panel?.type).toBe('component');
+    if (panel?.type !== 'component') {
+      throw new Error('Expected panel component');
+    }
+    expect(panel.name).toBe('components.panel');
+    expect(panel.defaultSlot?.some((op) => op.type === 'text')).toBe(true);
+  });
+
+  it('handles three-level nesting with a self-closing innermost component', () => {
+    const source = `@component('components.panel', { title: 'Outer' })
+  @component('components.card', { title: 'Inner' })
+    @component('components.badge', { label: 'Nested' })
+    <p>Content</p>
+  @endcomponent
+@endcomponent
+`;
+
+    const template = compile(source);
+    expect(template.ops).toHaveLength(1);
+
+    const panel = template.ops[0];
+    if (panel?.type !== 'component') {
+      throw new Error('Expected panel component');
+    }
+
+    const card = panel.defaultSlot?.find((op) => op.type === 'component');
+    if (card?.type !== 'component') {
+      throw new Error('Expected nested card component');
+    }
+    expect(card.name).toBe('components.card');
+    expect(card.defaultSlot).toBeDefined();
+
+    const badge = card.defaultSlot?.find((op) => op.type === 'component');
+    if (badge?.type !== 'component') {
+      throw new Error('Expected nested badge component');
+    }
+    expect(badge.name).toBe('components.badge');
+    expect(badge.defaultSlot).toBeUndefined();
+  });
+});
+
+describe('findComponentBlockEnd', () => {
+  it('finds the partner @endcomponent for a simple block', () => {
+    const source = `@component('x', {})
+  body
+@endcomponent
+`;
+    const headerEnd = source.indexOf('\n') + 1;
+    const result = findComponentBlockEnd(source, headerEnd, 0);
+    expect(result).not.toBe(-1);
+    expect(source.slice(result).trimStart()).toMatch(/^@endcomponent/);
+  });
+
+  it('returns -1 for a self-closing component', () => {
+    const source = `@component('x', {})\n`;
+    const headerEnd = source.indexOf('\n') + 1;
+    expect(findComponentBlockEnd(source, headerEnd, 0)).toBe(-1);
+  });
+
+  it('finds the outer @endcomponent when a self-closing child is nested', () => {
+    const source = `@component('card', {})
+  @component('badge', {})
+  body
+@endcomponent
+`;
+    const headerEnd = source.indexOf('\n') + 1;
+    const result = findComponentBlockEnd(source, headerEnd, 0);
+    expect(result).not.toBe(-1);
+    expect(source.slice(result).trimStart()).toMatch(/^@endcomponent/);
+  });
+
+  it('returns -1 when a sibling block follows at the same indentation', () => {
+    const source = `@component('button', {})
+@component('panel', {})
+  body
+@endcomponent
+`;
+    const headerEnd = source.indexOf('\n') + 1;
+    expect(findComponentBlockEnd(source, headerEnd, 0)).toBe(-1);
+  });
+
+  it('finds the outer @endcomponent in three-level nesting', () => {
+    const source = `@component('panel', {})
+  @component('card', {})
+    @component('badge', {})
+    body
+  @endcomponent
+@endcomponent
+`;
+    const headerEnd = source.indexOf('\n') + 1;
+    const result = findComponentBlockEnd(source, headerEnd, 0);
+    expect(result).not.toBe(-1);
+    expect(source.slice(result).trimStart()).toMatch(/^@endcomponent/);
   });
 });

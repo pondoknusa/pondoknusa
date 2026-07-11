@@ -97,6 +97,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `escapeJs`
 - `escapeUrl`
 - `evaluateExpression`
+- `findComponentBlockEnd`
 - `findFragmentBody`
 - `flattenTranslations`
 - `formatCompileLocation`

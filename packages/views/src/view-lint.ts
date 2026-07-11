@@ -1,4 +1,4 @@
-import { BUILTIN_VIEW_DIRECTIVES } from './compiler.js';
+import { BUILTIN_VIEW_DIRECTIVES, findComponentBlockEnd } from './compiler.js';
 import { BUILTIN_ESCAPE_CONTEXTS } from './escape.js';
 import { lineColumnAt } from './view-compile-error.js';
 
@@ -136,11 +136,12 @@ function lintUnclosedDirectives(
 
     for (const pair of DIRECTIVE_PAIRS) {
       if (pair.open.test(trimmed)) {
-        if (
-          pair.label === '@component' &&
-          /^@component\(\s*['"][^'"]+['"]\s*(?:,\s*.+)?\)\s*$/.test(trimmed)
-        ) {
-          continue;
+        if (pair.label === '@component') {
+          // Only push block openers; self-closing @component(...) has no partner.
+          const indent = line.length - line.trimStart().length;
+          if (findComponentBlockEnd(source, cursor + line.length, indent) === -1) {
+            continue;
+          }
         }
         stack.push({ label: pair.label, index: lineStart });
       }
