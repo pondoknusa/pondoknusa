@@ -15,7 +15,7 @@ npm install @pondoknusa/notifications
 
 | Field | Value |
 |-------|-------|
-| Version | `2.2.0` |
+| Version | `2.3.0` |
 | Source | [`packages/notifications`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/notifications) |
 | Category | Platform services |
 | Node.js | `>=26` |

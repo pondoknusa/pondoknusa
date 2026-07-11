@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/queue",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,10 +15,10 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/cache": "2.2.0",
-    "@pondoknusa/container": "2.2.0",
-    "@pondoknusa/database": "2.2.0",
-    "@pondoknusa/redis": "2.2.0"
+    "@pondoknusa/cache": "2.3.0",
+    "@pondoknusa/container": "2.3.0",
+    "@pondoknusa/database": "2.3.0",
+    "@pondoknusa/redis": "2.3.0"
   },
   "files": [
     "dist"

@@ -15,7 +15,7 @@ npm install @pondoknusa/cache-dynamodb
 
 | Field | Value |
 |-------|-------|
-| Version | `2.2.0` |
+| Version | `2.3.0` |
 | Source | [`packages/cache-dynamodb`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/cache-dynamodb) |
 | Category | Cache drivers |
 | Node.js | `>=26` |
