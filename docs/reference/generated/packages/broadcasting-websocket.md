@@ -15,7 +15,7 @@ npm install @pondoknusa/broadcasting-websocket
 
 | Field | Value |
 |-------|-------|
-| Version | `2.3.0` |
+| Version | `2.3.1` |
 | Source | [`packages/broadcasting-websocket`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/broadcasting-websocket) |
 | Category | Platform services |
 | Node.js | `>=26` |

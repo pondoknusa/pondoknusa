@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/collection",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "Fluent, typed collection pipeline for Pondoknusa",
   "license": "MIT",
   "type": "module",

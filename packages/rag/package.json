@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/rag",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,9 +15,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/database": "2.3.0",
-    "@pondoknusa/http": "2.3.0",
-    "@pondoknusa/vector": "2.3.0"
+    "@pondoknusa/database": "2.3.1",
+    "@pondoknusa/http": "2.3.1",
+    "@pondoknusa/vector": "2.3.1"
   },
   "files": [
     "dist"

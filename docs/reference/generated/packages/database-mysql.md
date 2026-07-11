@@ -15,7 +15,7 @@ npm install @pondoknusa/database-mysql
 
 | Field | Value |
 |-------|-------|
-| Version | `2.3.0` |
+| Version | `2.3.1` |
 | Source | [`packages/database-mysql`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/database-mysql) |
 | Category | Database |
 | Node.js | `>=26` |

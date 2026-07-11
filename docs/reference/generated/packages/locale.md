@@ -15,7 +15,7 @@ npm install @pondoknusa/locale
 
 | Field | Value |
 |-------|-------|
-| Version | `2.3.0` |
+| Version | `2.3.1` |
 | Source | [`packages/locale`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/locale) |
 | Category | Views & client |
 | Node.js | `>=26` |

@@ -15,7 +15,7 @@ npm install @pondoknusa/vector-pinecone
 
 | Field | Value |
 |-------|-------|
-| Version | `2.3.0` |
+| Version | `2.3.1` |
 | Source | [`packages/vector-pinecone`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/vector-pinecone) |
 | Category | AI & agents |
 | Node.js | `>=26` |

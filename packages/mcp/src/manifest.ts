@@ -53,7 +53,7 @@ export function buildCapabilityManifest(
 ): CapabilityManifest {
   return {
     name: overrides.name ?? 'pondoknusa',
-    version: overrides.version ?? '2.3.0',
+    version: overrides.version ?? '2.3.1',
     packages: overrides.packages ?? [...STABLE_PACKAGES],
     facades: overrides.facades ?? [...FACADES],
     commands: overrides.commands ?? [...CLI_COMMANDS],

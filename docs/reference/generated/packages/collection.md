@@ -15,7 +15,7 @@ npm install @pondoknusa/collection
 
 | Field | Value |
 |-------|-------|
-| Version | `2.3.0` |
+| Version | `2.3.1` |
 | Source | [`packages/collection`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/collection) |
 | Category | Kernel & HTTP |
 | Node.js | `>=26` |

@@ -15,7 +15,7 @@ npm install @pondoknusa/config
 
 | Field | Value |
 |-------|-------|
-| Version | `2.3.0` |
+| Version | `2.3.1` |
 | Source | [`packages/config`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/config) |
 | Category | Kernel & HTTP |
 | Node.js | `>=26` |
