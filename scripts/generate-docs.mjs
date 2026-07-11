@@ -44,6 +44,7 @@ const PACKAGE_CATEGORIES = [
       [
         'auth',
         'auth-oauth',
+        'auth-passkey',
         'crypto',
         'queue',
         'events',

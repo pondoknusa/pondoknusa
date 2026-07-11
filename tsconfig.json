@@ -34,6 +34,7 @@
     { "path": "packages/mcp" },
     { "path": "packages/auth" },
     { "path": "packages/auth-oauth" },
+    { "path": "packages/auth-passkey" },
     { "path": "packages/crypto" },
     { "path": "packages/storage" },
     { "path": "packages/storage-aws-s3" },

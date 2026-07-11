@@ -60,6 +60,8 @@ Useful but evolving — read release notes when upgrading minors:
 - `Bus` auto-discovery naming conventions (not a facade)
 - `@pondoknusa/crypto` algorithms, key formats, and envelope serialization
 - `@pondoknusa/auth-oauth` OAuth2 server grants, signed token layout, and repository APIs
+- `@pondoknusa/auth-passkey` WebAuthn / passkey registration and authentication APIs
+- `@pondoknusa/telegram` and `@pondoknusa/telegram-2fa` Bot API and Telegram 2FA
 - Session encryption at rest and ML-DSA OAuth token signing integration flags
 
 Experimental features can graduate to stable once documented and covered by compatibility tests.

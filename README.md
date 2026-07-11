@@ -60,6 +60,7 @@ Published `@pondoknusa/*` packages follow the semver and deprecation rules in [S
 | `@pondoknusa/notifications` | Multi-channel notifications (mail, database), `Notifications` facade |
 | `@pondoknusa/auth` | Session and token guards, social OAuth, CSRF, policies, password reset |
 | `@pondoknusa/auth-oauth` | OAuth2 authorization server (authorization code, client credentials, refresh) |
+| `@pondoknusa/auth-passkey` | WebAuthn / passkeys (experimental; zero external deps; browser + server) |
 | `@pondoknusa/crypto` | Post-quantum KEM/signatures, session encryption, signed OAuth tokens |
 | `@pondoknusa/broadcasting` | Real-time event broadcasting, channel auth, and Echo client config |
 | `@pondoknusa/storage` | File storage with local, S3, R2, and Supabase adapters |

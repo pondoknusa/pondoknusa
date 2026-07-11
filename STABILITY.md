@@ -72,6 +72,7 @@ Experimental APIs are shipped and tested but may change in a minor release witho
 
 | Area | Experimental surface |
 |------|----------------------|
+| **Passkeys** | `@pondoknusa/auth-passkey` — WebAuthn / passkey registration and authentication (ES256), browser helpers (`/browser`), service provider, facade; zero external dependencies |
 | **Telegram** | `@pondoknusa/telegram` — Bot API client, webhook handler, long polling, notification channel, service provider, facade |
 | **Telegram 2FA** | `@pondoknusa/telegram-2fa` — Two-factor authentication via Telegram bot, code generator, verification manager, middleware |
 
