@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/broadcasting",
-  "version": "2.3.1",
+  "version": "3.0.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,9 +15,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/container": "2.3.1",
-    "@pondoknusa/events": "2.3.1",
-    "@pondoknusa/queue": "2.3.1"
+    "@pondoknusa/container": "3.0.0",
+    "@pondoknusa/events": "3.0.0",
+    "@pondoknusa/queue": "3.0.0"
   },
   "files": [
     "dist"

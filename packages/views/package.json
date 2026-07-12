@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/views",
-  "version": "2.3.1",
+  "version": "3.0.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -11,8 +11,8 @@
     }
   },
   "dependencies": {
-    "@pondoknusa/locale": "2.3.1",
-    "@pondoknusa/support": "2.3.1"
+    "@pondoknusa/locale": "3.0.0",
+    "@pondoknusa/support": "3.0.0"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",

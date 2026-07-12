@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/mcp",
-  "version": "2.3.1",
+  "version": "3.0.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,7 +15,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/support": "2.3.1"
+    "@pondoknusa/support": "3.0.0"
   },
   "files": [
     "dist"

@@ -15,7 +15,7 @@ npm install @pondoknusa/auth
 
 | Field | Value |
 |-------|-------|
-| Version | `2.3.1` |
+| Version | `3.0.0` |
 | Source | [`packages/auth`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/auth) |
 | Category | Platform services |
 | Node.js | `>=26` |
@@ -61,6 +61,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `ResolvedAccessToken`
 - `Session`
 - `SessionGuard`
+- `SessionIntegrity`
 - `SessionManager`
 - `SlackOAuthDriver`
 - `SpotifyOAuthDriver`
@@ -69,7 +70,9 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `TwitchOAuthDriver`
 - `VerifyCsrfTokenException`
 - `XOAuthDriver`
+- `bindOAuthState`
 - `clearOAuthDriversForTesting`
+- `consumeOAuthState`
 - `createAuthMiddleware`
 - `createAuthorizeMiddleware`
 - `createGuestMiddleware`
@@ -81,6 +84,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `parseExpiresIn`
 - `parseTokenAbilities`
 - `registerOAuthDriver`
+- `resolveSessionIntegrityKey`
 - `tokenCan`
 - `tokenCanAny`
 

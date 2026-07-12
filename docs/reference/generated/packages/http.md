@@ -15,7 +15,7 @@ npm install @pondoknusa/http
 
 | Field | Value |
 |-------|-------|
-| Version | `2.3.1` |
+| Version | `3.0.0` |
 | Source | [`packages/http`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/http) |
 | Category | Kernel & HTTP |
 | Node.js | `>=26` |
@@ -89,6 +89,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `normalizeMiddlewareInput`
 - `normalizeRouteParams`
 - `qualifiesForJsonFastPath`
+- `qualifiesForJsonFastPathResolved`
 - `registerThrottlePresets`
 - `resetThrottleStore`
 - `resolveClientIp`

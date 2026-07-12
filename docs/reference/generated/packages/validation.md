@@ -15,7 +15,7 @@ npm install @pondoknusa/validation
 
 | Field | Value |
 |-------|-------|
-| Version | `2.3.1` |
+| Version | `3.0.0` |
 | Source | [`packages/validation`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/validation) |
 | Category | Kernel & HTTP |
 | Node.js | `>=26` |
