@@ -23,6 +23,7 @@ npm install @pondoknusa/validation
 ## Pondoknusa dependencies
 
 - [@pondoknusa/http](/reference/generated/packages/http)
+- [@pondoknusa/support](/reference/generated/packages/support)
 
 ## Public exports
 

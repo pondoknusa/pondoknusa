@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs';
 import { access, readFile, stat } from 'node:fs/promises';
-import { join } from 'node:path';
+import { join, resolve, sep } from 'node:path';
 import {
   cacheFileForView,
   clearCompiledCacheDir,
@@ -15,6 +15,7 @@ import { shouldRequireCompiledCache } from './compiled-cache-policy.js';
 import { findFragmentBody, ViewFragmentNotFoundError } from './fragment-ops.js';
 import { CompiledViewCacheMissError } from './view-cache-error.js';
 import { ViewCompileError } from './view-compile-error.js';
+import { LruCache } from './lru-cache.js';
 import { mergeEvaluationContext } from './evaluate.js';
 import {
   flattenTranslations,
@@ -55,7 +56,6 @@ import { ViewHelpers } from './view-helpers.js';
 import { renderEchoBootstrap } from './echo-helpers.js';
 import type { EchoClientConfig } from './echo-types.js';
 import { readViteManifest, renderViteTags, type ViteManifest } from './vite-helpers.js';
-import { LruCache } from './lru-cache.js';
 
 interface CacheEntry {
   mtimeMs: number;
@@ -78,7 +78,7 @@ export class ViewEngine {
   private readonly manifestPath: string;
   private readonly viteBase: string;
   private localeCode: string;
-  private readonly resolvedNameCache = new Map<string, string>();
+  private readonly resolvedNameCache = new LruCache<string, string>(2048);
   private translations: Record<string, string> = {};
   private viteManifest?: ViteManifest;
   private echoClientConfig: EchoClientConfig | null = null;
@@ -793,9 +793,23 @@ export class ViewEngine {
 
   private resolvePath(name: string): string {
     const parsed = parseViewName(name);
+    if (
+      parsed.view.includes('..') ||
+      parsed.view.startsWith('/') ||
+      parsed.view.includes('\\')
+    ) {
+      throw new ViewCompileError(`Invalid view name [${name}]`);
+    }
+
     const relative = parsed.view.replace(/\./g, '/');
-    const root = this.resolveNamespaceRoot(parsed.namespace);
-    return join(root, `${relative}${this.extension}`);
+    const root = resolve(this.resolveNamespaceRoot(parsed.namespace));
+    const fullPath = resolve(root, `${relative}${this.extension}`);
+
+    if (fullPath !== root && !fullPath.startsWith(`${root}${sep}`)) {
+      throw new ViewCompileError(`View path escapes root [${name}]`);
+    }
+
+    return fullPath;
   }
 
   private resolveNamespaceRoot(namespace?: string): string {

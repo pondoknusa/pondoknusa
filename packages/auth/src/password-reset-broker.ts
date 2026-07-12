@@ -13,6 +13,10 @@ interface ResetRow {
   [key: string]: unknown;
 }
 
+const resetIssueTracker = new Map<string, number[]>();
+const RESET_ISSUE_LIMIT = 5;
+const RESET_ISSUE_WINDOW_MS = 60 * 60 * 1000;
+
 export class PasswordResetBroker {
   private readonly hasher = new Hasher();
 
@@ -23,6 +27,10 @@ export class PasswordResetBroker {
   ) {}
 
   async sendResetLink(email: string): Promise<string> {
+    if (!this.canIssueReset(email)) {
+      return this.issueDummyToken();
+    }
+
     const user = await this.provider.retrieveByCredentials({ email });
     if (!user) {
       return this.issueDummyToken();
@@ -42,6 +50,7 @@ export class PasswordResetBroker {
       created_at: now,
     });
 
+    this.recordResetIssue(email);
     return plainToken;
   }
 
@@ -73,6 +82,21 @@ export class PasswordResetBroker {
     await new QueryBuilder(this.connection, this.config.table)
       .where('email', input.email)
       .delete();
+  }
+
+  private canIssueReset(email: string): boolean {
+    const now = Date.now();
+    const history = (resetIssueTracker.get(email) ?? []).filter(
+      (issuedAt) => now - issuedAt < RESET_ISSUE_WINDOW_MS,
+    );
+    resetIssueTracker.set(email, history);
+    return history.length < RESET_ISSUE_LIMIT;
+  }
+
+  private recordResetIssue(email: string): void {
+    const history = resetIssueTracker.get(email) ?? [];
+    history.push(Date.now());
+    resetIssueTracker.set(email, history);
   }
 
   private tokenValid(row: ResetRow, plain: string): boolean {

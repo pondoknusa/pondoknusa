@@ -18,7 +18,10 @@ export class SqliteGrammar implements SqlGrammar {
       return cached;
     }
 
-    const wrapped = `"${identifier.replaceAll('"', '""')}"`;
+    const wrapped = identifier
+      .split('.')
+      .map((segment) => `"${segment.replaceAll('"', '""')}"`)
+      .join('.');
     this.identifierCache.set(identifier, wrapped);
     return wrapped;
   }
@@ -39,7 +42,10 @@ export class PostgresGrammar implements SqlGrammar {
       return cached;
     }
 
-    const wrapped = `"${identifier.replaceAll('"', '""')}"`;
+    const wrapped = identifier
+      .split('.')
+      .map((segment) => `"${segment.replaceAll('"', '""')}"`)
+      .join('.');
     this.identifierCache.set(identifier, wrapped);
     return wrapped;
   }
@@ -60,7 +66,10 @@ export class MysqlGrammar implements SqlGrammar {
       return cached;
     }
 
-    const wrapped = `\`${identifier.replaceAll('`', '``')}\``;
+    const wrapped = identifier
+      .split('.')
+      .map((segment) => `\`${segment.replaceAll('`', '``')}\``)
+      .join('.');
     this.identifierCache.set(identifier, wrapped);
     return wrapped;
   }

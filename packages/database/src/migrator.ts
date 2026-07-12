@@ -10,6 +10,8 @@ interface MigrationFile {
   directory: string;
 }
 
+const MIGRATION_FILENAME = /^\d+_[\w-]+\.(ts|js)$/;
+
 export class Migrator {
   private readonly migrationDirectories: string[];
 
@@ -83,7 +85,7 @@ export class Migrator {
     for (const directory of this.migrationDirectories) {
       try {
         for (const name of await readdir(directory)) {
-          if (!name.endsWith('.ts') && !name.endsWith('.js')) {
+          if (!MIGRATION_FILENAME.test(name)) {
             continue;
           }
           if (seen.has(name)) {

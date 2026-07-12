@@ -164,6 +164,9 @@ async function createNodeServer(
   };
 }
 
+const DEFAULT_MAX_BODY_BYTES = 10 * 1024 * 1024;
+const REMOTE_ADDRESS_HEADER = 'x-pondoknusa-remote-address';
+
 async function toFetchRequest(incoming: IncomingMessage, scheme: string): Promise<Request> {
   const host = incoming.headers.host ?? 'localhost';
   const url = new URL(incoming.url ?? '/', `${scheme}://${host}`);
@@ -184,6 +187,11 @@ async function toFetchRequest(incoming: IncomingMessage, scheme: string): Promis
     headers.set(key, value);
   }
 
+  const remoteAddress = incoming.socket.remoteAddress;
+  if (remoteAddress) {
+    headers.set(REMOTE_ADDRESS_HEADER, remoteAddress);
+  }
+
   if (method === 'GET' || method === 'HEAD') {
     return new Request(url, { method, headers });
   }
@@ -198,13 +206,34 @@ async function toFetchRequest(incoming: IncomingMessage, scheme: string): Promis
 }
 
 async function readIncomingBody(incoming: IncomingMessage): Promise<Uint8Array> {
+  const maxBytes = resolveMaxBodyBytes(incoming);
+  const contentLength = Number(incoming.headers['content-length'] ?? 0);
+  if (Number.isFinite(contentLength) && contentLength > maxBytes) {
+    throw new Error('Request body too large');
+  }
+
   const chunks: Buffer[] = [];
+  let total = 0;
 
   for await (const chunk of incoming) {
-    chunks.push(Buffer.from(chunk));
+    const buffer = Buffer.from(chunk);
+    total += buffer.length;
+    if (total > maxBytes) {
+      incoming.destroy();
+      throw new Error('Request body too large');
+    }
+    chunks.push(buffer);
   }
 
   return Buffer.concat(chunks);
+}
+
+function resolveMaxBodyBytes(incoming: IncomingMessage): number {
+  const configured = Number(process.env.PONDOKNUSA_MAX_BODY_BYTES);
+  if (Number.isFinite(configured) && configured > 0) {
+    return configured;
+  }
+  return DEFAULT_MAX_BODY_BYTES;
 }
 
 async function writeFetchResponse(

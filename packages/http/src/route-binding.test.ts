@@ -54,12 +54,12 @@ describe('route model binding', () => {
 describe('signed urls', () => {
   it('signs and verifies route urls', () => {
     const signed = signRouteUrl('http://localhost/invites/accept', {
-      secret: 'test-secret',
+      secret: 'test-secret-key-1234',
       expiresAt: 4_102_444_800,
     });
 
     const parsed = new URL(`http://localhost${signed}`);
-    expect(verifySignedRouteUrl(parsed.pathname, parsed.searchParams, 'test-secret')).toBe(true);
+    expect(verifySignedRouteUrl(parsed.pathname, parsed.searchParams, 'test-secret-key-1234')).toBe(true);
   });
 });
 

@@ -1,3 +1,4 @@
+import { redactSensitiveString } from '@pondoknusa/support';
 import type { PondoknusaRequest } from '@pondoknusa/http';
 
 const REDACTED_HEADERS = new Set(['authorization', 'cookie', 'set-cookie', 'x-csrf-token']);
@@ -21,7 +22,8 @@ export async function captureRequestSnapshot(
   if (!['GET', 'HEAD'].includes(request.method)) {
     try {
       const rawBody = await request.raw.clone().text();
-      body = rawBody.length > 4096 ? `${rawBody.slice(0, 4096)}…` : rawBody;
+      const redacted = redactSensitiveString(rawBody);
+      body = redacted.length > 4096 ? `${redacted.slice(0, 4096)}…` : redacted;
     } catch {
       body = undefined;
     }

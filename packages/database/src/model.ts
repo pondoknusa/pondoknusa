@@ -17,6 +17,10 @@ import {
 } from './model-casts.js';
 import { fireModelEvent } from './model-events.js';
 import {
+  filterMassAssignableAttributes,
+  stripHiddenAttributes,
+} from './model-mass-assignment.js';
+import {
   readAccessorValue,
   serializeAppendedValue,
 } from './model-serialization.js';
@@ -46,6 +50,9 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
   static keyType: 'int' | 'string' = 'int';
   static appends: string[] = [];
   static casts: ModelCastMap = {};
+  static fillable: string[] = [];
+  static guarded: string[] = ['id'];
+  static hidden: string[] = [];
   static softDeletes = false;
   static deletedAt = 'deleted_at';
   static morphName?: string;
@@ -197,12 +204,16 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
     this: new (attributes?: Partial<ModelAttributes>) => TModel,
     attributes: Partial<ModelAttributes>,
   ): Promise<TModel> {
-    const instance = new this(attributes);
+    const model = this as unknown as ModelStatic & typeof Model;
+    const filtered = filterMassAssignableAttributes(
+      model,
+      attributes as Record<string, unknown>,
+    ) as Partial<ModelAttributes>;
+    const instance = new this(filtered);
     if (!(await fireModelEvent(instance, 'creating'))) {
       return instance;
     }
 
-    const model = this as unknown as ModelStatic & typeof Model;
     const payload = serializeAttributesForStorage(
       instance.attributes as Record<string, unknown>,
       model.casts,
@@ -416,7 +427,8 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
   }
 
   toJSON(): Record<string, unknown> {
-    const result: Record<string, unknown> = { ...this.attributes };
+    const model = this.constructor as unknown as ModelStatic;
+    const result = stripHiddenAttributes(model, { ...this.attributes });
 
     for (const name of this.getAppends()) {
       if (this.relationLoaded(name)) {
@@ -468,8 +480,13 @@ export class Model<T extends ModelAttributes = ModelAttributes> {
   }
 
   async update(attributes: Partial<ModelAttributes>): Promise<this> {
+    const model = this.constructor as unknown as ModelStatic;
+    const filtered = filterMassAssignableAttributes(
+      model,
+      attributes as Record<string, unknown>,
+    ) as Partial<ModelAttributes>;
     const rollback = new Map<string, unknown>();
-    for (const [key, value] of Object.entries(attributes)) {
+    for (const [key, value] of Object.entries(filtered)) {
       rollback.set(key, this.attributes[key as keyof T]);
       this.setAttribute(key as keyof T, value as T[keyof T]);
     }

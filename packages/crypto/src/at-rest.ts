@@ -5,6 +5,9 @@ import { concatBytes, fromBase64, toBase64, toUtf8Bytes } from './encoding.js';
 const AT_REST_PREFIX = 'pqc1:';
 
 export function deriveAtRestKey(source: string, length = 32): Uint8Array {
+  if (!source || source.length < 16) {
+    throw new Error('At-rest key source must be at least 16 characters.');
+  }
   return new Uint8Array(scryptSync(source, 'pondoknusa-at-rest', length));
 }
 
@@ -74,7 +77,7 @@ export function resolveSessionCipherKey(key?: string, fallback?: string): Uint8A
     return decoded;
   }
 
-  if (fallback && fallback.length > 0) {
+  if (fallback && fallback.length >= 16) {
     return deriveAtRestKey(fallback);
   }
 

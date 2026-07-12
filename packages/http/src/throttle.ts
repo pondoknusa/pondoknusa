@@ -14,9 +14,13 @@ interface ThrottleEntry {
 }
 
 const store = new Map<string, ThrottleEntry>();
+const MAX_STORE_SIZE = 10_000;
+let lastSweepAt = 0;
+const SWEEP_INTERVAL_MS = 60_000;
 
 export function createThrottleMiddleware(options: ThrottleOptions): Middleware {
   return async (request, next) => {
+    sweepExpiredEntries();
     const key = options.key?.(request) ?? `${request.ip()}:${request.method}:${request.path}`;
     const now = Date.now();
     const entry = store.get(key);
@@ -26,6 +30,7 @@ export function createThrottleMiddleware(options: ThrottleOptions): Middleware {
         count: 1,
         resetAt: now + options.windowMs,
       });
+      evictIfNeeded();
       return next();
     }
 
@@ -48,8 +53,34 @@ export function createThrottleMiddleware(options: ThrottleOptions): Middleware {
   };
 }
 
+function sweepExpiredEntries(): void {
+  const now = Date.now();
+  if (now - lastSweepAt < SWEEP_INTERVAL_MS) {
+    return;
+  }
+
+  lastSweepAt = now;
+  for (const [key, entry] of store) {
+    if (entry.resetAt <= now) {
+      store.delete(key);
+    }
+  }
+}
+
+function evictIfNeeded(): void {
+  if (store.size <= MAX_STORE_SIZE) {
+    return;
+  }
+
+  const oldest = store.keys().next().value;
+  if (oldest !== undefined) {
+    store.delete(oldest);
+  }
+}
+
 export function resetThrottleStore(): void {
   store.clear();
+  lastSweepAt = 0;
 }
 
 export interface ThrottlePresetMap {

@@ -1,3 +1,4 @@
+import { redactSensitive } from '@pondoknusa/support';
 import type { LogContext } from './types.js';
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
@@ -21,7 +22,7 @@ export function formatLogEntry(
   };
 
   if (context && Object.keys(context).length > 0) {
-    entry.context = context;
+    entry.context = redactSensitive(context) as LogContext;
   }
 
   return JSON.stringify(entry);

@@ -1,6 +1,7 @@
 import type { PayloadCipher } from '@pondoknusa/crypto';
 import type { RedisManager } from '@pondoknusa/redis';
 import type { SessionStore } from './session.js';
+import type { SessionIntegrity } from './session-integrity.js';
 
 export class RedisSessionStore implements SessionStore {
   constructor(
@@ -8,6 +9,7 @@ export class RedisSessionStore implements SessionStore {
     private readonly connectionName: string,
     private readonly prefix = 'pondoknusa:session',
     private readonly cipher?: PayloadCipher,
+    private readonly integrity?: SessionIntegrity,
   ) {}
 
   async read(id: string): Promise<Record<string, unknown>> {
@@ -19,6 +21,9 @@ export class RedisSessionStore implements SessionStore {
 
     try {
       const decoded = this.cipher ? this.cipher.decrypt(value) : value;
+      if (this.integrity) {
+        return this.integrity.open(decoded) ?? {};
+      }
       return JSON.parse(decoded) as Record<string, unknown>;
     } catch {
       return {};
@@ -31,7 +36,10 @@ export class RedisSessionStore implements SessionStore {
     lifetimeMinutes: number,
   ): Promise<void> {
     const client = await this.redis.connection(this.connectionName);
-    const serialized = JSON.stringify(data);
+    let serialized = JSON.stringify(data);
+    if (this.integrity) {
+      serialized = this.integrity.seal(data);
+    }
     const payload = this.cipher ? this.cipher.encrypt(serialized) : serialized;
     await client.set(this.key(id), payload, {
       EX: lifetimeMinutes * 60,

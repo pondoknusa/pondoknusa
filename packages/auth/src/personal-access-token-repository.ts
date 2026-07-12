@@ -183,11 +183,11 @@ export class PersonalAccessTokenRepository {
     try {
       const parsed = JSON.parse(rawWhitelist) as unknown;
       if (!Array.isArray(parsed)) {
-        return true;
+        return false;
       }
       whitelist = parsed.filter((entry): entry is string => typeof entry === 'string');
     } catch {
-      return true;
+      return false;
     }
 
     if (whitelist.length === 0) {

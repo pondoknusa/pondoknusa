@@ -20,6 +20,10 @@ npm install @pondoknusa/log
 | Category | Platform services |
 | Node.js | `>=26` |
 
+## Pondoknusa dependencies
+
+- [@pondoknusa/support](/reference/generated/packages/support)
+
 ## Public exports
 
 From the package entry point (`dist/index.d.ts`). Deep imports are not supported.

@@ -93,6 +93,7 @@ export class DebugServiceProvider {
       registerDebugRoutes(router, this.store, {
         path: config.path,
         correlationStore: this.correlationStore,
+        requireAuth: true,
       });
     }
   }
@@ -102,6 +103,10 @@ export class DebugServiceProvider {
   }
 
   private isEnabled(config: DebugConfig): boolean {
+    if (process.env.NODE_ENV === 'production') {
+      return false;
+    }
+
     if (config.enabled === false) {
       return false;
     }

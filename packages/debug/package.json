@@ -19,7 +19,8 @@
     "@pondoknusa/database": "2.3.1",
     "@pondoknusa/http": "2.3.1",
     "@pondoknusa/log": "2.3.1",
-    "@pondoknusa/queue": "2.3.1"
+    "@pondoknusa/queue": "2.3.1",
+    "@pondoknusa/support": "2.3.1"
   },
   "files": [
     "dist"

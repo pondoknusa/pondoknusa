@@ -119,6 +119,8 @@ type DecodedFrame = {
   remaining: Buffer;
 };
 
+const MAX_WS_PAYLOAD_BYTES = 1024 * 1024;
+
 function decodeClientTextFrame(buffer: Buffer): DecodedFrame | null {
   if (buffer.length < 2) {
     return null;
@@ -147,6 +149,10 @@ function decodeClientTextFrame(buffer: Buffer): DecodedFrame | null {
     }
     payloadLength = Number(lengthBig);
     offset = 10;
+  }
+
+  if (payloadLength > MAX_WS_PAYLOAD_BYTES) {
+    throw new Error('WebSocket frame too large.');
   }
 
   const maskLength = masked ? 4 : 0;

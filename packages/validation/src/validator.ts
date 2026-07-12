@@ -1,3 +1,4 @@
+import { safeSpread } from '@pondoknusa/support';
 import { cachedFormData, type PondoknusaRequest } from '@pondoknusa/http';
 import { parseRuleSet, type ValidationRules } from './rules.js';
 
@@ -20,7 +21,7 @@ export class Validator<T extends Record<string, unknown>> {
 
   validate(): T {
     const errors: ValidationErrors = {};
-    const validated = { ...this.data } as T;
+    const validated = safeSpread<T>(this.data);
 
     for (const field of Object.keys(this.rules) as Array<keyof T>) {
       const ruleSet = this.rules[field];

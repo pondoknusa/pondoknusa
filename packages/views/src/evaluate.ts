@@ -1,9 +1,11 @@
+import { isDangerousKey } from '@pondoknusa/support';
+import { LruCache } from './lru-cache.js';
 import type { ViewExpressionBindings } from './view-registry.js';
 import type { ViewContext } from './types.js';
 
 const EXPRESSION_CACHE_MAX = 2048;
 const expressionCache = new Map<string, (...args: unknown[]) => unknown>();
-const foreachParseCache = new Map<string, ReturnType<typeof parseForeachExpressionUncached>>();
+const foreachParseCache = new LruCache<string, ReturnType<typeof parseForeachExpressionUncached>>(2048);
 export const SIMPLE_PATH = /^[\w]+(?:\.[\w]+)*$/;
 
 export function readContextPath(context: ViewContext, path: string): unknown {
@@ -11,6 +13,9 @@ export function readContextPath(context: ViewContext, path: string): unknown {
   let current: unknown = context;
 
   for (const part of parts) {
+    if (isDangerousKey(part)) {
+      return undefined;
+    }
     if (current == null || typeof current !== 'object') {
       return undefined;
     }

@@ -14,6 +14,9 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
+  "dependencies": {
+    "@pondoknusa/support": "2.3.1"
+  },
   "files": [
     "dist"
   ],

@@ -4,6 +4,7 @@ import type { RedisManager } from '@pondoknusa/redis';
 import { DatabaseSessionStore, MemorySessionStore } from './session-store.js';
 import { RedisSessionStore } from './redis-session-store.js';
 import type { SessionStore } from './session.js';
+import { SessionIntegrity } from './session-integrity.js';
 import type { AuthSessionConfig } from './types.js';
 
 export class SessionManager {
@@ -14,6 +15,7 @@ export class SessionManager {
     private readonly database?: DatabaseManager,
     private readonly redis?: RedisManager,
     private readonly cipher?: PayloadCipher,
+    private readonly integrityKey?: string,
   ) {}
 
   driver(): SessionStore {
@@ -21,10 +23,13 @@ export class SessionManager {
       return this.store;
     }
 
+    const integrity = this.integrityKey
+      ? new SessionIntegrity(this.integrityKey)
+      : undefined;
     const driver = this.config.driver ?? 'database';
     switch (driver) {
       case 'array':
-        this.store = new MemorySessionStore();
+        this.store = new MemorySessionStore(integrity, this.config.lifetimeMinutes);
         break;
       case 'database': {
         if (!this.database) {
@@ -35,6 +40,8 @@ export class SessionManager {
           connection,
           this.config.table ?? 'sessions',
           this.cipher,
+          integrity,
+          this.config.lifetimeMinutes,
         );
         break;
       }
@@ -47,6 +54,7 @@ export class SessionManager {
           this.config.redisConnection ?? 'default',
           this.config.prefix ?? 'pondoknusa:session',
           this.cipher,
+          integrity,
         );
         break;
       }

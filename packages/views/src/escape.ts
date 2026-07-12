@@ -36,7 +36,11 @@ export function escapeJs(value: unknown): string {
     return '';
   }
 
-  return JSON.stringify(value).replace(/</g, '\\u003c');
+  return JSON.stringify(value)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/`/g, '\\u0060')
+    .replace(/\$/g, '\\u0024');
 }
 
 export function escapeCss(value: unknown): string {

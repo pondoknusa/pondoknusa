@@ -61,6 +61,26 @@ interface OAuthAccountRow {
   [key: string]: unknown;
 }
 
+export function bindOAuthState(
+  session: import('./session.js').Session,
+  provider: string,
+  state: string,
+): void {
+  session.put('_oauth_state', { provider, state });
+}
+
+export function consumeOAuthState(
+  session: import('./session.js').Session,
+  provider: string,
+  state: string,
+): void {
+  const record = session.get<{ provider?: string; state?: string }>('_oauth_state');
+  if (!record || record.provider !== provider || record.state !== state) {
+    throw new Error('Invalid OAuth state.');
+  }
+  session.forget('_oauth_state');
+}
+
 export class OAuthManager {
   private readonly drivers = new Map<string, SocialOAuthDriver>();
   private readonly hasher = new Hasher();
@@ -105,7 +125,12 @@ export class OAuthManager {
     provider: string,
     code: string,
     exchange: OAuthExchangeContext = {},
+    options?: { state?: string; session?: import('./session.js').Session },
   ): Promise<OAuthUserProfile> {
+    if (options?.state && options.session) {
+      consumeOAuthState(options.session, provider, options.state);
+    }
+
     const driver = this.drivers.get(provider);
     if (!driver) {
       throw new Error(`OAuth provider not configured: ${provider}`);

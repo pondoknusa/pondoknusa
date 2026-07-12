@@ -27,6 +27,8 @@ export {
   registerOAuthDriver,
   clearOAuthDriversForTesting,
   createPkcePair,
+  bindOAuthState,
+  consumeOAuthState,
 } from './oauth.js';
 export type {
   OAuthUserProfile,
@@ -49,6 +51,7 @@ export type { VerifyCsrfTokenOptions } from './verify-csrf-token.js';
 export { tokenCan, tokenCanAny, parseTokenAbilities } from './token-abilities.js';
 export { RedisSessionStore } from './redis-session-store.js';
 export { SessionManager } from './session-manager.js';
+export { SessionIntegrity, resolveSessionIntegrityKey } from './session-integrity.js';
 export { PasswordResetBroker } from './password-reset-broker.js';
 export {
   PersonalAccessTokenRepository,

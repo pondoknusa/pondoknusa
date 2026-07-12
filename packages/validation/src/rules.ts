@@ -69,6 +69,9 @@ export function integer(): ValidationRule {
       if (value === undefined || value === null || value === '') {
         return undefined;
       }
+      if (typeof value === 'boolean' || Array.isArray(value)) {
+        return validationMessage('validation.integer', { attribute: field });
+      }
       const parsed = Number(value);
       if (!Number.isInteger(parsed)) {
         return validationMessage('validation.integer', { attribute: field });
@@ -107,6 +110,12 @@ export function min(minimum: number): ValidationRule {
         }
         return undefined;
       }
+      if (typeof value === 'boolean' || Array.isArray(value)) {
+        return validationMessage('validation.min.numeric', {
+          attribute: field,
+          min: minimum,
+        });
+      }
       const parsed = Number(value);
       if (!Number.isFinite(parsed) || parsed < minimum) {
         return validationMessage('validation.min.numeric', {
@@ -133,6 +142,12 @@ export function max(maximum: number): ValidationRule {
           });
         }
         return undefined;
+      }
+      if (typeof value === 'boolean' || Array.isArray(value)) {
+        return validationMessage('validation.max.numeric', {
+          attribute: field,
+          max: maximum,
+        });
       }
       const parsed = Number(value);
       if (!Number.isFinite(parsed) || parsed > maximum) {

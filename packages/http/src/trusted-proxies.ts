@@ -26,7 +26,14 @@ export function resolveClientIp(
     }
   }
 
-  return remoteAddress ?? request.header('x-real-ip') ?? '127.0.0.1';
+  if (request.hasTrustedProxies()) {
+    const realIp = request.header('x-real-ip');
+    if (realIp) {
+      return realIp;
+    }
+  }
+
+  return remoteAddress ?? 'unknown';
 }
 
 export function resolveSecure(request: PondoknusaRequest): boolean {

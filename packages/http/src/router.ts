@@ -25,7 +25,7 @@ import { throttleMiddlewareAlias } from './throttle.js';
 import {
   collectMiddlewareLabels,
   filterFastPathMiddleware,
-  qualifiesForJsonFastPathLabels,
+  qualifiesForJsonFastPathResolved,
 } from './json-fast-path.js';
 import {
   MiddlewareRegistry,
@@ -443,6 +443,11 @@ export class Router implements Routable {
       ? this.requestPool.acquire(request, resolved, route.definition.name)
       : new PondoknusaRequest(request, resolved, route.definition.name);
 
+    const remoteAddress = request.headers.get('x-pondoknusa-remote-address') ?? undefined;
+    if (remoteAddress) {
+      pondoknusaRequest.remoteAddress = remoteAddress;
+    }
+
     try {
       return await route.pipelineRunner.run(pondoknusaRequest);
     } finally {
@@ -508,7 +513,7 @@ export class Router implements Routable {
     }
 
     const labels = route.middlewareLabels ?? [];
-    if (!qualifiesForJsonFastPathLabels(route.method, labels)) {
+    if (!qualifiesForJsonFastPathResolved(route.method, labels, route.middleware)) {
       return route.middleware;
     }
 

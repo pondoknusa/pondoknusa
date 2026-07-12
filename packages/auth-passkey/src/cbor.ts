@@ -20,9 +20,11 @@ export class CborDecodeError extends Error {
   }
 }
 
-export function decodeCbor(data: Uint8Array): CborValue {
-  const reader = new CborReader(data);
-  const value = reader.read();
+const MAX_CBOR_DEPTH = 64;
+
+export function decodeCbor(data: Uint8Array, maxDepth = MAX_CBOR_DEPTH): CborValue {
+  const reader = new CborReader(data, maxDepth);
+  const value = reader.read(0);
   return value;
 }
 
@@ -43,9 +45,16 @@ export function cborMapGet(map: Map<CborValue, CborValue>, key: CborValue): Cbor
 class CborReader {
   private offset = 0;
 
-  constructor(private readonly data: Uint8Array) {}
+  constructor(
+    private readonly data: Uint8Array,
+    private readonly maxDepth: number,
+  ) {}
 
-  read(): CborValue {
+  read(depth: number): CborValue {
+    if (depth > this.maxDepth) {
+      throw new CborDecodeError('CBOR depth limit exceeded');
+    }
+
     if (this.offset >= this.data.length) {
       throw new CborDecodeError('Unexpected end of CBOR data');
     }
@@ -75,7 +84,7 @@ class CborReader {
         const length = this.readLength(additional);
         const arr: CborValue[] = [];
         for (let i = 0; i < length; i++) {
-          arr.push(this.read());
+          arr.push(this.read(depth + 1));
         }
         return arr;
       }
@@ -83,8 +92,8 @@ class CborReader {
         const length = this.readLength(additional);
         const map = new Map<CborValue, CborValue>();
         for (let i = 0; i < length; i++) {
-          const key = this.read();
-          const value = this.read();
+          const key = this.read(depth + 1);
+          const value = this.read(depth + 1);
           map.set(key, value);
         }
         return map;

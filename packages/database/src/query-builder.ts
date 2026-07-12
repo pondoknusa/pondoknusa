@@ -3,6 +3,9 @@ import type { SqlGrammar } from './grammar.js';
 import { LengthAwarePaginator } from './paginator.js';
 import type { Row, RowValue, WhereClause, WhereOperator } from './types.js';
 
+const ALLOWED_WHERE_OPERATORS = new Set<string>(['=', '!=', '<', '>', '<=', '>=', 'like', 'in']);
+const ALLOWED_ORDER_DIRECTIONS = new Set<string>(['asc', 'desc']);
+
 export class QueryBuilder<T extends Row = Row> {
   protected columns: string[] = ['*'];
   protected wheres: WhereClause[] = [];
@@ -61,7 +64,7 @@ export class QueryBuilder<T extends Row = Row> {
     this.wheres.push({
       type: 'basic',
       column,
-      operator: operatorOrValue as WhereOperator,
+      operator: assertWhereOperator(operatorOrValue),
       value,
       boolean,
     });
@@ -101,7 +104,11 @@ export class QueryBuilder<T extends Row = Row> {
   }
 
   orderBy(column: string, direction: 'asc' | 'desc' = 'asc'): this {
-    this.orders.push({ column, direction });
+    const normalized = direction.toLowerCase();
+    if (!ALLOWED_ORDER_DIRECTIONS.has(normalized)) {
+      throw new Error(`Invalid ORDER BY direction: ${direction}`);
+    }
+    this.orders.push({ column, direction: normalized as 'asc' | 'desc' });
     return this;
   }
 
@@ -346,6 +353,7 @@ export class QueryBuilder<T extends Row = Row> {
 }
 
 const inPlaceholderCache = new Map<string, string>();
+const IN_PLACEHOLDER_CACHE_MAX = 1024;
 
 function inPlaceholderList(
   driver: string,
@@ -362,6 +370,20 @@ function inPlaceholderList(
   const placeholders = Array.from({ length: count }, (_, index) =>
     parameter(startIndex + index),
   ).join(', ');
+  if (inPlaceholderCache.size >= IN_PLACEHOLDER_CACHE_MAX) {
+    const oldest = inPlaceholderCache.keys().next().value;
+    if (oldest !== undefined) {
+      inPlaceholderCache.delete(oldest);
+    }
+  }
   inPlaceholderCache.set(cacheKey, placeholders);
   return placeholders;
+}
+
+function assertWhereOperator(operator: WhereOperator | RowValue): WhereOperator {
+  const normalized = String(operator).toLowerCase();
+  if (!ALLOWED_WHERE_OPERATORS.has(normalized)) {
+    throw new Error(`Invalid WHERE operator: ${String(operator)}`);
+  }
+  return normalized as WhereOperator;
 }

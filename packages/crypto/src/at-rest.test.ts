@@ -4,7 +4,7 @@ import { toUtf8Bytes } from './encoding.js';
 
 describe('at-rest encryption', () => {
   it('round-trips symmetric payloads', () => {
-    const key = deriveAtRestKey('app-secret');
+    const key = deriveAtRestKey('app-secret-key-1234');
     const plaintext = toUtf8Bytes('{"user":1}');
     const encrypted = encryptAtRest(plaintext, key);
     const decrypted = decryptAtRest(encrypted, key);
@@ -12,7 +12,7 @@ describe('at-rest encryption', () => {
   });
 
   it('encrypts session payload strings with a prefix marker', () => {
-    const cipher = new PayloadCipher(deriveAtRestKey('session-key'));
+    const cipher = new PayloadCipher(deriveAtRestKey('session-key-123456'));
     const encrypted = cipher.encrypt('{"theme":"dark"}');
     expect(cipher.isEncrypted(encrypted)).toBe(true);
     expect(cipher.decrypt(encrypted)).toBe('{"theme":"dark"}');

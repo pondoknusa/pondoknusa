@@ -8,6 +8,7 @@ import {
 } from '@pondoknusa/http';
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
+const MAX_PATH_LENGTH = 4096;
 
 export class VerifyCsrfTokenException extends HttpException {
   constructor(message = 'CSRF token mismatch.') {
@@ -24,13 +25,14 @@ export function createVerifyCsrfTokenMiddleware(
   options: VerifyCsrfTokenOptions = {},
 ): Middleware {
   const except = options.except ?? [];
+  const compiledPatterns = except.map((pattern) => compilePathPattern(pattern));
 
   return withMiddlewareMeta(async (request, next) => {
     if (SAFE_METHODS.has(request.method)) {
       return next();
     }
 
-    if (isExcepted(request.path, except)) {
+    if (isExcepted(request.path, compiledPatterns)) {
       return next();
     }
 
@@ -72,13 +74,16 @@ function tokensMatch(expected: string, submitted: string): boolean {
   return timingSafeEqual(a, b);
 }
 
-function isExcepted(path: string, patterns: string[]): boolean {
-  return patterns.some((pattern) => matchPattern(path, pattern));
+function isExcepted(path: string, patterns: RegExp[]): boolean {
+  if (path.length > MAX_PATH_LENGTH) {
+    return false;
+  }
+
+  return patterns.some((pattern) => pattern.test(path));
 }
 
-function matchPattern(path: string, pattern: string): boolean {
-  const regex = new RegExp(
-    `^${pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*')}$`,
-  );
-  return regex.test(path);
+function compilePathPattern(pattern: string): RegExp {
+  const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
+  const regexSource = escaped.replace(/\*\*/g, '.*').replace(/\*/g, '[^/]*');
+  return new RegExp(`^${regexSource}$`);
 }

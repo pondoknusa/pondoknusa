@@ -5,7 +5,7 @@
  * cross-platform authenticators with `none` attestation.
  */
 
-import { createHash, verify as cryptoVerify } from 'node:crypto';
+import { createHash, timingSafeEqual, verify as cryptoVerify } from 'node:crypto';
 import { fromBase64Url, randomBase64Url, stringToBase64Url, toBase64Url } from './base64url.js';
 import { parseAttestationObject, parseAuthenticatorData } from './authenticator-data.js';
 import { COSE_ALG_ES256, coseBytesToKeyObject } from './cose.js';
@@ -130,19 +130,22 @@ export class PasskeyManager {
     if (expectedUserId === undefined) {
       throw new PasskeyError('Registration challenge is missing user binding', 'user_mismatch');
     }
+    if (
+      options?.expectedUserId !== undefined &&
+      challengeRecord.userId !== undefined &&
+      String(options.expectedUserId) !== String(challengeRecord.userId)
+    ) {
+      throw new PasskeyError('Registration user does not match challenge binding', 'user_mismatch');
+    }
 
     const attestationBytes = fromBase64Url(response.response.attestationObject);
     const { fmt, authData } = parseAttestationObject(attestationBytes);
 
-    if (fmt !== 'none' && fmt !== 'packed') {
-      // packed without signature chain still yields usable authData + public key
-      // for self-attestation; we only require a parseable public key below.
-      if (fmt !== 'packed') {
-        throw new PasskeyError(
-          `Unsupported attestation format "${fmt}"; only "none" (and basic packed) are supported`,
-          'attestation_unsupported',
-        );
-      }
+    if (fmt !== 'none') {
+      throw new PasskeyError(
+        `Unsupported attestation format "${fmt}"; only "none" is supported`,
+        'attestation_unsupported',
+      );
     }
 
     const authenticatorData = parseAuthenticatorData(authData);
@@ -347,7 +350,7 @@ export class PasskeyManager {
 
   private assertRpIdHash(rpIdHash: Uint8Array): void {
     const expected = createHash('sha256').update(this.config.rpId).digest();
-    if (!timingSafeEqual(rpIdHash, expected)) {
+    if (!bytesEqual(rpIdHash, expected)) {
       throw new PasskeyError('authenticatorData rpIdHash mismatch', 'rp_id_mismatch');
     }
   }
@@ -388,11 +391,11 @@ function parseClientDataJSON(base64url: string): ClientDataJSON {
   };
 }
 
-function timingSafeEqual(a: Uint8Array, b: Uint8Array | Buffer): boolean {
-  if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) {
-    diff |= a[i]! ^ b[i]!;
+function bytesEqual(a: Uint8Array, b: Uint8Array | Buffer): boolean {
+  const left = Buffer.from(a);
+  const right = Buffer.from(b);
+  if (left.length !== right.length) {
+    return false;
   }
-  return diff === 0;
+  return timingSafeEqual(left, right);
 }

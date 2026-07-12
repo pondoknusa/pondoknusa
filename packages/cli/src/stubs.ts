@@ -1,5 +1,14 @@
 export { projectPackageJson } from './stubs-project.js';
 
+const IDENTIFIER_PATTERN = /^[A-Za-z][A-Za-z0-9_]*$/;
+
+function assertValidIdentifier(name: string, label = 'name'): string {
+  if (!IDENTIFIER_PATTERN.test(name)) {
+    throw new Error(`Invalid ${label}: ${name}`);
+  }
+  return name;
+}
+
 export function projectConfig(name: string): string {
   return JSON.stringify(
     {
@@ -18,6 +27,7 @@ export function projectConfig(name: string): string {
 export { mainEntry } from './stubs-project.js';
 
 export function middleware(name: string): string {
+  assertValidIdentifier(name);
   return `import type { Middleware } from '@pondoknusa/http';
 import type { PondoknusaRequest } from '@pondoknusa/http';
 
@@ -28,6 +38,7 @@ export const ${name}Middleware: Middleware = async (request, next) => {
 }
 
 export function consoleCommand(name: string, signature: string): string {
+  assertValidIdentifier(name);
   return `export class ${name}Command {
   readonly name = '${signature}';
   readonly description = 'TODO: describe this command';

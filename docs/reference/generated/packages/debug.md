@@ -27,6 +27,7 @@ npm install @pondoknusa/debug
 - [@pondoknusa/http](/reference/generated/packages/http)
 - [@pondoknusa/log](/reference/generated/packages/log)
 - [@pondoknusa/queue](/reference/generated/packages/queue)
+- [@pondoknusa/support](/reference/generated/packages/support)
 
 ## Public exports
 

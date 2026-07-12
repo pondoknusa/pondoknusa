@@ -15,6 +15,12 @@ const DEFAULT_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HE
 const DEFAULT_HEADERS = ['Content-Type', 'Authorization'];
 
 export function createCorsMiddleware(options: CorsOptions): Middleware {
+  if (options.origins === '*' && options.credentials === true) {
+    throw new Error(
+      'CORS misconfiguration: origins "*" cannot be combined with credentials: true.',
+    );
+  }
+
   const methods = (options.methods ?? DEFAULT_METHODS).join(', ');
   const headers = (options.headers ?? DEFAULT_HEADERS).join(', ');
 
@@ -33,6 +39,10 @@ export function createCorsMiddleware(options: CorsOptions): Middleware {
     }
 
     const response = await next();
+    if (response.status < 200 || response.status >= 300) {
+      return response;
+    }
+
     return applyCorsHeaders(
       response,
       allowOrigin,
@@ -55,7 +65,33 @@ function resolveAllowOrigin(
     return null;
   }
 
-  return origins.includes(requestOrigin) ? requestOrigin : null;
+  const normalizedRequest = normalizeOrigin(requestOrigin);
+  if (!normalizedRequest) {
+    return null;
+  }
+
+  for (const allowed of origins) {
+    const normalizedAllowed = normalizeOrigin(allowed);
+    if (normalizedAllowed && normalizedAllowed === normalizedRequest) {
+      return requestOrigin;
+    }
+  }
+
+  return null;
+}
+
+function normalizeOrigin(origin: string): string | null {
+  try {
+    const url = new URL(origin);
+    const port = url.port || defaultPort(url.protocol);
+    return `${url.protocol}//${url.hostname}:${port}`;
+  } catch {
+    return null;
+  }
+}
+
+function defaultPort(protocol: string): string {
+  return protocol === 'https:' ? '443' : '80';
 }
 
 function applyCorsHeaders(

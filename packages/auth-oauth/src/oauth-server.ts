@@ -47,6 +47,10 @@ export class OAuthServer {
     const requestedScopes = this.parseScopes(input.scope);
     const scopes = this.intersectScopes(requestedScopes, allowedScopes);
 
+    if (!client.secret && !input.codeChallenge) {
+      throw invalidRequest('Public OAuth clients must use PKCE.');
+    }
+
     return {
       client,
       scopes,
@@ -141,6 +145,10 @@ export class OAuthServer {
 
     if (!request.code || !request.redirectUri) {
       throw invalidRequest('code and redirect_uri are required.');
+    }
+
+    if (!client.secret && !request.codeVerifier) {
+      throw invalidRequest('Public OAuth clients must provide a code_verifier.');
     }
 
     const consumed = await this.repos.codes.consume({
@@ -257,7 +265,7 @@ export class OAuthServer {
 
   private parseScopes(raw?: string): string[] {
     if (!raw?.trim()) {
-      return ['*'];
+      return [];
     }
 
     return raw.split(/\s+/).filter(Boolean);

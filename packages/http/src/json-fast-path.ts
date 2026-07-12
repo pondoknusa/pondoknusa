@@ -1,9 +1,10 @@
 import type { MiddlewareInput } from './middleware-registry.js';
-import { getMiddlewareMeta } from './middleware-meta.js';
+import { getMiddlewareMeta, type MiddlewareTag } from './middleware-meta.js';
 import type { HttpMethod, Middleware } from './types.js';
 
 const SAFE_METHODS = new Set<HttpMethod>(['GET', 'HEAD', 'OPTIONS', 'DELETE']);
-const SKIP_TAGS = new Set(['session', 'csrf', 'locale', 'view']);
+const SKIP_TAGS = new Set<MiddlewareTag>(['session', 'csrf', 'locale', 'view']);
+const DISQUALIFYING_TAGS = new Set<MiddlewareTag>(['session', 'csrf', 'locale', 'view']);
 
 export function collectMiddlewareLabels(middlewareInputs: MiddlewareInput[]): string[] {
   const labels: string[] = [];
@@ -54,6 +55,25 @@ export function qualifiesForJsonFastPathLabels(
   }
 
   return !labels.some((label) => label.startsWith('auth'));
+}
+
+export function qualifiesForJsonFastPathResolved(
+  method: HttpMethod,
+  labels: string[],
+  middleware: Middleware[],
+): boolean {
+  if (!qualifiesForJsonFastPathLabels(method, labels)) {
+    return false;
+  }
+
+  if (SAFE_METHODS.has(method)) {
+    return true;
+  }
+
+  return !middleware.some((entry) => {
+    const tag = getMiddlewareMeta(entry)?.tag;
+    return tag !== undefined && DISQUALIFYING_TAGS.has(tag);
+  });
 }
 
 export function filterFastPathMiddleware(middleware: Middleware[]): Middleware[] {

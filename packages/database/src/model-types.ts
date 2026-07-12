@@ -5,6 +5,9 @@ import type { RowValue } from './types.js';
 export type ModelAttributes = Record<string, unknown>;
 
 export interface ModelStatic {
+  fillable?: string[];
+  guarded?: string[];
+  hidden?: string[];
   new (attributes?: ModelAttributes): unknown;
   name: string;
   table: string;

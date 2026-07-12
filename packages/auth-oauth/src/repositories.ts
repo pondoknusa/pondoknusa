@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from 'node:crypto';
+import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { createSignedTokenServiceFromConfig, type SignedTokenService } from '@pondoknusa/crypto';
 import type { DatabaseConnection } from '@pondoknusa/database';
 import { QueryBuilder } from '@pondoknusa/database';
@@ -186,7 +186,9 @@ export class OAuthAuthorizationCodeRepository {
       }
 
       const challenge = createHash('sha256').update(input.codeVerifier).digest('base64url');
-      if (challenge !== row.code_challenge) {
+      const expected = Buffer.from(row.code_challenge, 'utf8');
+      const actual = Buffer.from(challenge, 'utf8');
+      if (expected.length !== actual.length || !timingSafeEqual(expected, actual)) {
         return null;
       }
     }

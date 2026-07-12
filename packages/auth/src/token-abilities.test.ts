@@ -13,14 +13,14 @@ describe('token abilities helpers', () => {
   it('requires exact ability matches', () => {
     expect(tokenCan('posts:write', ['posts:read'])).toBe(false);
     expect(tokenCanAny('posts:write', ['posts:write'])).toBe(true);
-    expect(tokenCanAny(['posts:read', 'posts:write'], ['posts:read', 'posts:write'])).toBe(
-      true,
-    );
+    expect(tokenCanAny(['posts:read', 'posts:write'], ['posts:write'])).toBe(true);
+    expect(tokenCanAny(['posts:read', 'posts:write'], ['posts:read'])).toBe(true);
   });
 
   it('parses stored abilities JSON', () => {
     expect(parseTokenAbilities('["posts:read"]')).toEqual(['posts:read']);
-    expect(parseTokenAbilities('invalid')).toEqual(['*']);
+    expect(parseTokenAbilities('invalid')).toEqual([]);
+    expect(parseTokenAbilities(null)).toEqual([]);
   });
 });
 

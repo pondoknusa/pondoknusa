@@ -274,6 +274,10 @@ export class ExceptionHandler {
   // ── Helpers ────────────────────────────────────────────────
 
   private isDebug(): boolean {
+    if (process.env.NODE_ENV === 'production') {
+      return false;
+    }
+
     try {
       const config = this.app.make<ConfigRepository>('config');
       return config.get<boolean>('app.debug', false);

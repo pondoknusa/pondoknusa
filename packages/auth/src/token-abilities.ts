@@ -12,21 +12,21 @@ export function tokenCanAny(required: string | string[], abilities: string[] | u
   }
 
   const needed = Array.isArray(required) ? required : [required];
-  return needed.every((ability) => tokenCan(ability, abilities));
+  return needed.some((ability) => tokenCan(ability, abilities));
 }
 
 export function parseTokenAbilities(raw: string | null | undefined): string[] {
   if (!raw) {
-    return ['*'];
+    return [];
   }
 
   try {
     const parsed = JSON.parse(raw) as unknown;
     if (!Array.isArray(parsed) || parsed.some((item) => typeof item !== 'string')) {
-      return ['*'];
+      return [];
     }
     return parsed;
   } catch {
-    return ['*'];
+    return [];
   }
 }

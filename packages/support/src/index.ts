@@ -43,3 +43,14 @@ export { Pipeline } from './pipeline.js';
 export { Stringable } from './stringable.js';
 export { Macroable } from './macroable.js';
 export { docsLink, PONDOKNUSA_DOCS_ORIGIN } from './docs-links.js';
+
+export {
+  isDangerousKey,
+  isSensitiveKey,
+  parseJsonSafe,
+  redactSensitive,
+  redactSensitiveString,
+  safeGet,
+  safeObject,
+  safeSpread,
+} from './safe-parse.js';

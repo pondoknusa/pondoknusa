@@ -103,13 +103,21 @@ export class SessionGuard implements Guard {
   }
 
   async login(user: Authenticatable): Promise<void> {
-    this.currentUser = user;
     if (!this.session) {
       throw new Error('Session not started');
     }
 
+    const oldId = this.session.id;
+    const sessionData = { ...this.session.all() };
+    await this.store.destroy(oldId);
+
+    const newId = randomBytes(32).toString('base64url');
+    this.session = new Session(newId, sessionData);
     this.session.put(sessionKey(this.name), user.getAuthIdentifier());
+    this.currentUser = user;
+
     if (this.request) {
+      this.request.session = this.session;
       this.request.user = user;
     }
   }
@@ -155,10 +163,13 @@ function withCookie(
 ): WebResponse {
   const headers = new Headers(response.headers);
   const sameSite = sessionConfig.sameSite ?? 'Lax';
-  const secure = sessionConfig.secure ? '; Secure' : '';
+  const secure =
+    sessionConfig.secure === true ||
+    (sessionConfig.secure !== false && process.env.NODE_ENV === 'production');
+  const secureFlag = secure ? '; Secure' : '';
   headers.append(
     'set-cookie',
-    `${name}=${encodeURIComponent(value)}; Path=/; HttpOnly; SameSite=${sameSite}; Max-Age=${maxAge}${secure}`,
+    `${name}=${encodeURIComponent(value)}; Path=/; HttpOnly; SameSite=${sameSite}; Max-Age=${maxAge}${secureFlag}`,
   );
 
   return new globalThis.Response(response.body, {

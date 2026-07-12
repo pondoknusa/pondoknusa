@@ -19,6 +19,7 @@ import {
   createVerifyCsrfTokenMiddleware,
   EloquentUserProvider,
   SessionManager,
+  resolveSessionIntegrityKey,
   type AuthConfig,
   type EloquentUserProviderConfig,
   type GuardConfig,
@@ -34,11 +35,14 @@ export class AuthServiceProvider extends ServiceProvider {
     const database = this.app.make<DatabaseManager>('db');
 
     const sessionCipher = this.resolveSessionCipher();
+    const appConfig = config.get<{ key?: string }>('app');
+    const integrityKey = resolveSessionIntegrityKey(appConfig.key);
     const sessionManager = new SessionManager(
       authConfig.session,
       database,
       this.resolveRedisManager(),
       sessionCipher,
+      integrityKey,
     );
 
     const providers = new Map<string, EloquentUserProvider>();
@@ -131,12 +135,10 @@ export class AuthServiceProvider extends ServiceProvider {
 
     this.app.use(createFormBodyCacheMiddleware());
     this.app.use(createStartSessionMiddleware(auth));
-    this.app.use(
-      createVerifyCsrfTokenMiddleware({
-        except: ['/api/*', '/broadcasting/auth', '/webhooks/*'],
-      }),
-    );
-    this.app.middleware('csrf', createVerifyCsrfTokenMiddleware());
+    this.app.middleware('csrf', createVerifyCsrfTokenMiddleware({
+      except: ['/api/*', '/broadcasting/auth', '/webhooks/*'],
+    }));
+    this.app.use('csrf');
     this.app.middleware('auth', createAuthMiddleware(auth));
     this.app.middleware('auth:api', createAuthMiddleware(auth, 'api'));
     this.app.middleware('guest', createGuestMiddleware(auth));

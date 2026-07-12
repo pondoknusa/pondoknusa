@@ -164,10 +164,16 @@ export class PondoknusaRequest {
   }
 
   input<T = string>(key: string): Promise<T | undefined> {
+    if (isDangerousKey(key)) {
+      return Promise.resolve(undefined);
+    }
+
     const contentType = this.headers.get('content-type') ?? '';
 
     if (contentType.includes('application/json')) {
-      return this.json<Record<string, T>>().then((body) => body[key]);
+      return this.json<Record<string, T>>().then((body) =>
+        Object.hasOwn(body, key) ? body[key] : undefined,
+      );
     }
 
     if (
@@ -207,4 +213,8 @@ export class PondoknusaRequest {
   secure(): boolean {
     return resolveSecure(this);
   }
+}
+
+function isDangerousKey(key: string): boolean {
+  return key === '__proto__' || key === 'constructor' || key === 'prototype';
 }

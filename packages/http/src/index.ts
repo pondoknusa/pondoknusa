@@ -84,6 +84,7 @@ export type { MiddlewareInput } from './middleware-registry.js';
 export {
   filterFastPathMiddleware,
   qualifiesForJsonFastPath,
+  qualifiesForJsonFastPathResolved,
 } from './json-fast-path.js';
 export {
   getMiddlewareMeta,

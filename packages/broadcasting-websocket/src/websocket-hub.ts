@@ -26,8 +26,16 @@ export class WebSocketHub {
   private readonly clients = new Map<string, ClientState>();
   private readonly presenceMembers = new Map<string, Map<string, PresenceMember>>();
   private redisHandler?: (message: RedisBroadcastMessage) => void;
+  private readonly maxConnections: number;
+  private readonly maxSubscriptionsPerClient: number;
 
-  constructor(private readonly path: string = PONDOKNUSA_WS_PATH) {}
+  constructor(
+    private readonly path: string = PONDOKNUSA_WS_PATH,
+    options: { maxConnections?: number; maxSubscriptionsPerClient?: number } = {},
+  ) {
+    this.maxConnections = options.maxConnections ?? 1000;
+    this.maxSubscriptionsPerClient = options.maxSubscriptionsPerClient ?? 100;
+  }
 
   attach(server: Server): void {
     server.on('upgrade', (request, socket, head) => {
@@ -65,6 +73,12 @@ export class WebSocketHub {
 
     const key = request.headers['sec-websocket-key'];
     if (!key || Array.isArray(key)) {
+      socket.destroy();
+      return;
+    }
+
+    if (this.clients.size >= this.maxConnections) {
+      socket.write('HTTP/1.1 503 Service Unavailable\r\nConnection: close\r\n\r\n');
       socket.destroy();
       return;
     }
@@ -134,6 +148,14 @@ export class WebSocketHub {
         }));
         return;
       }
+    }
+
+    if (client.channels.size >= this.maxSubscriptionsPerClient) {
+      client.connection.send(serializeWsServerMessage({
+        type: 'error',
+        message: 'Subscription limit reached.',
+      }));
+      return;
     }
 
     client.channels.add(channelName);
