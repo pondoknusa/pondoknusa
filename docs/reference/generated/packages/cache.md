@@ -15,7 +15,7 @@ npm install @pondoknusa/cache
 
 | Field | Value |
 |-------|-------|
-| Version | `3.0.0` |
+| Version | `3.1.0` |
 | Source | [`packages/cache`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/cache) |
 | Category | Platform services |
 | Node.js | `>=26` |

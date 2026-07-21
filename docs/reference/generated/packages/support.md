@@ -15,7 +15,7 @@ npm install @pondoknusa/support
 
 | Field | Value |
 |-------|-------|
-| Version | `3.0.0` |
+| Version | `3.1.0` |
 | Source | [`packages/support`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/support) |
 | Category | Kernel & HTTP |
 | Node.js | `>=26` |

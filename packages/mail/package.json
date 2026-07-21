@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/mail",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,8 +15,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/queue": "3.0.0",
-    "@pondoknusa/views": "3.0.0"
+    "@pondoknusa/queue": "3.1.0",
+    "@pondoknusa/views": "3.1.0"
   },
   "files": [
     "dist"

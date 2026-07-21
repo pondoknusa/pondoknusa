@@ -15,7 +15,7 @@ npm install @pondoknusa/cache-memcached
 
 | Field | Value |
 |-------|-------|
-| Version | `3.0.0` |
+| Version | `3.1.0` |
 | Source | [`packages/cache-memcached`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/cache-memcached) |
 | Category | Cache drivers |
 | Node.js | `>=26` |

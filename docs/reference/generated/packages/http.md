@@ -15,7 +15,7 @@ npm install @pondoknusa/http
 
 | Field | Value |
 |-------|-------|
-| Version | `3.0.0` |
+| Version | `3.1.0` |
 | Source | [`packages/http`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/http) |
 | Category | Kernel & HTTP |
 | Node.js | `>=26` |
