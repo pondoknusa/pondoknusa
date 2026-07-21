@@ -88,14 +88,15 @@ Static SPA on Cloudflare Pages; Pondoknusa headless API on Fly/Railway. Common f
 
 ## Cloudflare summary
 
-Cloudflare is **modular** — enable only the pieces you need (proxy, CDN, R2, Pages, tunnel, WAF). Pondoknusa still runs on Node; pick modules in [Cloudflare deployment](/guide/deployment/cloudflare) or `deploy/cloudflare.md` in your project.
+Cloudflare is **modular** — enable only the pieces you need (proxy, CDN, R2, D1, Pages, tunnel, WAF). Pondoknusa still runs on Node; pick modules in [Cloudflare deployment](/guide/deployment/cloudflare) or `deploy/cloudflare.md` in your project.
 
 | Works today | Not yet |
 |-------------|---------|
 | DNS proxy, WAF, TLS (Module 1) | Full app on Workers |
 | CDN + ETag cache (Module 2) | `pondoknusa queue:work` on edge |
-| R2 storage (Module 3) | D1 as Pondoknusa database |
-| Pages static, Tunnel previews | SSR compile on Workers |
+| R2 storage (Module 3) | SSR compile on Workers |
+| Pages static, Tunnel previews | |
+| D1 via `@pondoknusa/database-d1` (Module 7) | |
 
 ## Pondoknusa Cloud (planned)
 

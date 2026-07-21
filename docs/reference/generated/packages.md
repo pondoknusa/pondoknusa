@@ -32,6 +32,7 @@ Current monorepo version: **3.0.0**.
 | Package | Description |
 |---------|-------------|
 | [@pondoknusa/database](/reference/generated/packages/database) | Database ORM, query builder, and migrations for Pondoknusa |
+| [@pondoknusa/database-d1](/reference/generated/packages/database-d1) | Cloudflare D1 database driver for Pondoknusa |
 | [@pondoknusa/database-mysql](/reference/generated/packages/database-mysql) | MySQL database driver for Pondoknusa |
 | [@pondoknusa/database-pg](/reference/generated/packages/database-pg) | PostgreSQL database driver for Pondoknusa |
 

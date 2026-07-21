@@ -18,6 +18,14 @@ export default {
 } as const;
 ```
 
+Optional drivers (register the matching service provider **before** `DatabaseServiceProvider`):
+
+| Driver | Package | Notes |
+|--------|---------|-------|
+| `postgres` | `@pondoknusa/database-pg` | `pg` client |
+| `mysql` | `@pondoknusa/database-mysql` | `mysql2` client |
+| `d1` | `@pondoknusa/database-d1` | Cloudflare D1 via REST (Node) or Workers `binding` |
+
 ## Models
 
 ```typescript

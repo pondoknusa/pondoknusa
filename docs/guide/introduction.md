@@ -49,6 +49,8 @@ See the [package reference](/reference/generated/packages) for every `@pondoknus
 
 ## Upgrading
 
-Pondoknusa **2.0.0** renamed the project from Tyravel (`@tyravel/*` → `@pondoknusa/*`). See [Upgrading to 2.0](/guide/upgrading-to-2.0) for the rename checklist.
+Pondoknusa **3.0.0** hardens security across auth, HTTP, database, and debug tooling. See [Upgrading to 3.0](/guide/upgrading-to-3.0) for breaking changes and the migration checklist.
+
+**2.0.0** renamed the project from Tyravel (`@tyravel/*` → `@pondoknusa/*`). See [Upgrading to 2.0](/guide/upgrading-to-2.0) for the rename checklist.
 
 **1.0.x** and **2.x** follow strict semver for stable APIs. Read [API stability](/guide/api-stability) before upgrading across minor versions. Apps still on **0.11–0.16** should follow [Upgrading to 1.0](/guide/upgrading-to-1.0) first.

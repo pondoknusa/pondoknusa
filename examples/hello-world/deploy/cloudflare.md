@@ -14,6 +14,7 @@ Full docs: [pondoknusa.dev/guide/deployment/cloudflare](https://pondoknusa.dev/g
 | Host Vite/client build output | [Pages (static)](#module-4-pages-static-assets) | API/SSR elsewhere |
 | Share staging without opening ports | [Tunnel](#module-5-tunnel-previews) | Yes (local or remote) |
 | Bot protection, rate limits | [WAF + security](#module-6-waf--security) | Yes (usually with Module 1) |
+| D1 as the app database | [D1 database](#module-7-d1-database) | Yes (REST from Node) |
 
 **Origin** — deploy Pondoknusa with the manifests in this folder (`fly.toml`, `railway.toml`, `docker-compose.yml`) before enabling proxy or CDN modules.
 
@@ -210,12 +211,63 @@ Pair with Pondoknusa auth throttling and `APP_DEBUG=false` on the origin.
 
 ---
 
+## Module 7: D1 database
+
+**When:** Use Cloudflare D1 as the Pondoknusa database from the Node origin (REST), or inject a Workers `binding` in a custom adapter.
+
+**Prerequisites:** Node origin for REST mode. Full Pondoknusa on Workers is not supported yet.
+
+```bash
+npm install @pondoknusa/database-d1
+```
+
+```typescript
+// src/main.ts — register before DatabaseServiceProvider
+import { D1DatabaseServiceProvider } from '@pondoknusa/database-d1';
+
+app.register(D1DatabaseServiceProvider);
+app.register(DatabaseServiceProvider);
+```
+
+```typescript
+// config/database.ts
+import type { D1ConnectionConfig } from '@pondoknusa/database-d1';
+
+d1: {
+  driver: 'd1',
+  accountId: env('CLOUDFLARE_ACCOUNT_ID'),
+  databaseId: env('D1_DATABASE_ID'),
+  apiToken: env('CLOUDFLARE_API_TOKEN'),
+} satisfies D1ConnectionConfig
+```
+
+```bash
+DB_CONNECTION=d1
+CLOUDFLARE_ACCOUNT_ID=...
+D1_DATABASE_ID=...
+CLOUDFLARE_API_TOKEN=...  # D1:Edit
+```
+
+Workers binding (when you inject `env.DB`):
+
+```typescript
+d1: {
+  driver: 'd1',
+  binding: env.DB,
+} satisfies D1ConnectionConfig
+```
+
+D1 uses the SQLite dialect. Interactive transactions may be unavailable — prefer short single-statement writes when unsure.
+
+**This module alone:** Database only — no Cloudflare proxy required.
+
+---
+
 ## Not supported on Cloudflare (1.x)
 
 | Product | Status |
 |---------|--------|
 | **Workers** (full Pondoknusa) | Roadmap — needs HTTP kernel + boot adapter |
-| **D1** | Use Postgres/MySQL on origin |
 | **Cloudflare Queues** | Use `pondoknusa queue:work` on origin |
 
 Headless JSON on Workers + Hyperdrive is planned; track [ROADMAP](https://github.com/pondoknusa/pondoknusa/blob/main/ROADMAP.md).
@@ -234,6 +286,7 @@ Headless JSON on Workers + Hyperdrive is planned; track [ROADMAP](https://github
 | 4 | CORS errors | API allows Pages origin; correct `VITE_API_URL` |
 | 5 | Tunnel 502 | Origin on `127.0.0.1:3000`; `PONDOKNUSA_HOST=0.0.0.0` |
 | 6 | WS drops | Bypass Rocket Loader; confirm origin upgrade |
+| 7 | D1 401 / auth | API token needs D1:Edit; check account + database IDs |
 
 ---
 
@@ -242,3 +295,4 @@ Headless JSON on Workers + Hyperdrive is planned; track [ROADMAP](https://github
 - [deploy/README.md](./README.md) — Docker, Fly, Railway
 - [Deployment guide](https://pondoknusa.dev/guide/deployment)
 - [Storage (R2)](https://pondoknusa.dev/guide/storage)
+- [Database (D1)](https://pondoknusa.dev/guide/database)

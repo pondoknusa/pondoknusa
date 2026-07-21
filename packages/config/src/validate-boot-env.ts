@@ -72,6 +72,22 @@ function collectConnectionFailures(config: ConfigTree): ConfigValidationFailure[
         }
       } else if (driver === 'sqlite' && !isNonEmpty(connection.database)) {
         failures.push(fail('database', `connections.${dbDefault}.database`, 'DB_DATABASE is required'));
+      } else if (driver === 'd1') {
+        const hasBinding = connection.binding != null;
+        const hasHttp =
+          isNonEmpty(connection.accountId) &&
+          isNonEmpty(connection.databaseId) &&
+          isNonEmpty(connection.apiToken);
+
+        if (!hasBinding && !hasHttp) {
+          failures.push(
+            fail(
+              'database',
+              `connections.${dbDefault}`,
+              'D1 requires either `binding` or CLOUDFLARE_ACCOUNT_ID, D1_DATABASE_ID, and CLOUDFLARE_API_TOKEN',
+            ),
+          );
+        }
       }
     }
   }

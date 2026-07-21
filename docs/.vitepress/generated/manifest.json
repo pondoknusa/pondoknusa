@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-12T16:14:09.025Z",
+  "generatedAt": "2026-07-21T13:25:52.865Z",
   "version": "3.0.0",
   "packages": [
     {
@@ -103,6 +103,12 @@
       "slug": "database",
       "description": "Database ORM, query builder, and migrations for Pondoknusa",
       "path": "reference/generated/packages/database"
+    },
+    {
+      "name": "@pondoknusa/database-d1",
+      "slug": "database-d1",
+      "description": "Cloudflare D1 database driver for Pondoknusa",
+      "path": "reference/generated/packages/database-d1"
     },
     {
       "name": "@pondoknusa/database-mysql",

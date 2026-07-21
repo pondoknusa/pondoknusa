@@ -50,3 +50,7 @@ npm create pondoknusa@latest my-app
 ## Still on 0.x?
 
 If you are upgrading from **0.11–0.16** to 1.0 first, complete [Upgrading to 1.0](/guide/upgrading-to-1.0) before applying the 2.0 rename.
+
+## Upgrading to 3.0
+
+On **2.x**? **3.0.0** introduces security-focused breaking changes (model mass assignment, token abilities, sessions, OAuth/PKCE, passkeys, debug lockdown). See [Upgrading to 3.0](/guide/upgrading-to-3.0).

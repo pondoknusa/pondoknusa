@@ -53,6 +53,7 @@ jobs:
             @pondoknusa/database
             @pondoknusa/database-mysql
             @pondoknusa/database-pg
+            @pondoknusa/database-d1
             @pondoknusa/redis
             @pondoknusa/redis-node
             @pondoknusa/views

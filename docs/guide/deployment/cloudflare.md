@@ -14,6 +14,7 @@ New apps ship a copy-paste guide at `deploy/cloudflare.md` with the same module 
 | Host Vite/client build | [Module 4: Pages](#module-4-pages-static-assets) | API/SSR on separate host |
 | Staging without public ports | [Module 5: Tunnel](#module-5-tunnel-previews) | Yes (local or remote) |
 | WAF, rate limits, bots | [Module 6: WAF + security](#module-6-waf--security) | Yes (usually with Module 1) |
+| D1 as the app database | [Module 7: D1](#module-7-d1-database) | Yes (REST from Node); binding for Workers wrappers |
 
 Deploy the Node origin first — [Fly.io](/guide/deployment/fly), [Railway](/guide/deployment/railway), or [Docker](/guide/deployment/docker).
 
@@ -37,8 +38,8 @@ Deploy the Node origin first — [Fly.io](/guide/deployment/fly), [Railway](/gui
 | Pages | Vite/client `dist/` | 4 |
 | Tunnel | Preview/staging | 5 |
 | WAF / DDoS / TLS | In front of origin | 1, 6 |
+| **D1** | `@pondoknusa/database-d1` | 7 |
 | **Workers** (full Pondoknusa) | — | Not supported (roadmap) |
-| **D1** | — | Not supported |
 | **Queues** (CF) | — | Use `pondoknusa queue:work` on origin |
 
 ---
@@ -165,6 +166,60 @@ Pair with Pondoknusa auth throttling and `APP_DEBUG=false`.
 
 ---
 
+## Module 7: D1 database
+
+**When:** Use Cloudflare D1 as the Pondoknusa database from a Node origin (or inject a Workers binding in a custom adapter).
+
+**Prerequisites:** Node origin for REST mode. Full Pondoknusa on Workers is still unsupported — the `binding` config is for wrappers / a future Workers adapter.
+
+```bash
+npm install @pondoknusa/database-d1
+```
+
+Register `D1DatabaseServiceProvider` **before** `DatabaseServiceProvider`:
+
+```typescript
+import { D1DatabaseServiceProvider } from '@pondoknusa/database-d1';
+
+app.register(D1DatabaseServiceProvider);
+app.register(DatabaseServiceProvider);
+```
+
+Remote (Node) config:
+
+```typescript
+import type { D1ConnectionConfig } from '@pondoknusa/database-d1';
+
+d1: {
+  driver: 'd1',
+  accountId: env('CLOUDFLARE_ACCOUNT_ID'),
+  databaseId: env('D1_DATABASE_ID'),
+  apiToken: env('CLOUDFLARE_API_TOKEN'),
+} satisfies D1ConnectionConfig
+```
+
+```bash
+DB_CONNECTION=d1
+CLOUDFLARE_ACCOUNT_ID=...
+D1_DATABASE_ID=...
+CLOUDFLARE_API_TOKEN=...  # D1:Edit
+```
+
+Workers binding (when you inject `env.DB`):
+
+```typescript
+d1: {
+  driver: 'd1',
+  binding: env.DB,
+} satisfies D1ConnectionConfig
+```
+
+D1 uses the SQLite dialect (`SqliteGrammar`). Interactive `BEGIN`/`COMMIT` may not be available on all D1 backends — prefer short single-statement writes when unsure.
+
+**Standalone:** Database only — no Cloudflare proxy required.
+
+---
+
 ## Not supported on Workers (yet)
 
 | Pondoknusa requirement | Workers limitation |
@@ -191,6 +246,7 @@ Planned: headless JSON on Workers + Hyperdrive, then precompiled SSR. See [Pondo
 | 4 | CORS errors | API allows Pages origin |
 | 5 | Tunnel 502 | `PONDOKNUSA_HOST=0.0.0.0` on origin |
 | 6 | WS drops | Bypass Rocket Loader |
+| 7 | D1 401 / auth | API token needs D1:Edit; check account + database IDs |
 
 ---
 
@@ -200,4 +256,5 @@ Planned: headless JSON on Workers + Hyperdrive, then precompiled SSR. See [Pondo
 - [Platform matrix](/guide/deployment/platforms)
 - [Edge response cache](/cookbook/edge-cache)
 - [Storage](/guide/storage)
+- [Database](/guide/database)
 - [Headless API](/guide/headless)

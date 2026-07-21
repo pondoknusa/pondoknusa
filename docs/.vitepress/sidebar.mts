@@ -10,6 +10,7 @@ export const guideSidebar = [
       { text: 'Performance', link: '/guide/performance' },
       { text: 'Application structure', link: '/guide/application-structure' },
       { text: 'API stability', link: '/guide/api-stability' },
+      { text: 'Upgrading to 3.0', link: '/guide/upgrading-to-3.0' },
       { text: 'Upgrading to 2.0', link: '/guide/upgrading-to-2.0' },
       { text: 'Upgrading to 1.0', link: '/guide/upgrading-to-1.0' },
       { text: 'Configuration reference', link: '/guide/configuration-reference' },
@@ -149,6 +150,10 @@ export const referenceSidebar = [
       {
         "text": "database",
         "link": "/reference/generated/packages/database"
+      },
+      {
+        "text": "database-d1",
+        "link": "/reference/generated/packages/database-d1"
       },
       {
         "text": "database-mysql",

@@ -13,6 +13,7 @@
     { "path": "packages/database" },
     { "path": "packages/database-mysql" },
     { "path": "packages/database-pg" },
+    { "path": "packages/database-d1" },
     { "path": "packages/validation" },
     { "path": "packages/views" },
     { "path": "packages/reusable-components" },

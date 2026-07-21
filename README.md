@@ -5,7 +5,7 @@
 <h1 align="center">Pondoknusa</h1>
 
 <p align="center">
-  <strong>v2.0.0</strong> — TypeScript-native full-stack web framework (service container, routing, middleware, queues, auth, post-quantum crypto, and a first-class CLI) on standard Web APIs.
+  <strong>v3.0.0</strong> — TypeScript-native full-stack web framework (service container, routing, middleware, queues, auth, post-quantum crypto, and a first-class CLI) on standard Web APIs.
 </p>
 
 <p align="center">
@@ -26,6 +26,7 @@ A vanilla `pondoknusa new` app is almost entirely `@pondoknusa/*` packages. The 
 |--------------|-------------------------|---------------------|
 | PostgreSQL | `@pondoknusa/database-pg` | `pg` |
 | MySQL | `@pondoknusa/database-mysql` | `mysql2` |
+| Cloudflare D1 | `@pondoknusa/database-d1` | — (REST or Workers binding) |
 | Redis (cache, queue, broadcast) | `@pondoknusa/redis-node` | `redis` |
 | S3 / R2 storage | `@pondoknusa/storage-aws-s3` | `@aws-sdk/client-s3`, `@aws-sdk/s3-request-presigner` |
 
@@ -33,7 +34,7 @@ That is the full set of external production dependencies across the Pondoknusa m
 
 ## API stability
 
-Published `@pondoknusa/*` packages follow the semver and deprecation rules in [STABILITY.md](STABILITY.md). Patch releases preserve documented stable APIs; experimental features (programmatic `.tyr.ts` views, REPL, etc.) may change in minors. See [Upgrading to 2.0](docs/guide/upgrading-to-2.0.md) when moving from Tyravel, or [Upgrading to 1.0](docs/guide/upgrading-to-1.0.md) when moving from 0.x.
+Published `@pondoknusa/*` packages follow the semver and deprecation rules in [STABILITY.md](STABILITY.md). Patch releases preserve documented stable APIs; experimental features (programmatic `.tyr.ts` views, REPL, etc.) may change in minors. See [Upgrading to 3.0](docs/guide/upgrading-to-3.0.md) for the security hardening release, [Upgrading to 2.0](docs/guide/upgrading-to-2.0.md) when moving from Tyravel, or [Upgrading to 1.0](docs/guide/upgrading-to-1.0.md) when moving from 0.x.
 
 ## Packages
 
@@ -930,7 +931,7 @@ Published to [pondoknusa.dev](https://pondoknusa.dev) via GitHub Pages (`.github
 
 See [ROADMAP.md](./ROADMAP.md) for release tiers.
 
-### Shipped highlights (through v2.0.0)
+### Shipped highlights (through v3.0.0)
 
 - [x] Service container, HTTP router, kernel, `Route` facade, CLI scaffolding
 - [x] Eloquent-style ORM, views, queue/events, cache, mail, notifications, broadcasting, storage
@@ -943,6 +944,7 @@ See [ROADMAP.md](./ROADMAP.md) for release tiers.
 - [x] Core surface polish (v0.16): route model binding, signed URLs, typed view props, `view:catalog`, prunable models — sync API sweep complete ahead of 1.0
 - [x] Documentation site & semver strict (v1.0): hosted docs at [pondoknusa.dev](https://pondoknusa.dev), facade reference, deploy walkthroughs, cookbook complete
 - [x] Optional drivers only when you need them — five third-party production deps across the whole monorepo
+- [x] Security hardening (v3.0): model mass assignment, session integrity, OAuth/PKCE and passkey tightening, production debug lockdown, request body limits — see [Upgrading to 3.0](docs/guide/upgrading-to-3.0.md)
 
 ## License
 

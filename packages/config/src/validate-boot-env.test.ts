@@ -48,4 +48,53 @@ describe('validateBootEnv', () => {
       }),
     ).toThrow(ConfigValidationError);
   });
+
+  it('requires D1 binding or remote credentials', () => {
+    const failures = collectBootEnvFailures({
+      database: {
+        default: 'd1',
+        connections: {
+          d1: { driver: 'd1' },
+        },
+      },
+    });
+
+    expect(failures.some((failure) => failure.message.includes('D1 requires'))).toBe(
+      true,
+    );
+  });
+
+  it('accepts D1 remote credentials', () => {
+    const failures = collectBootEnvFailures({
+      database: {
+        default: 'd1',
+        connections: {
+          d1: {
+            driver: 'd1',
+            accountId: 'acct',
+            databaseId: 'db-id',
+            apiToken: 'token',
+          },
+        },
+      },
+    });
+
+    expect(failures).toHaveLength(0);
+  });
+
+  it('accepts a D1 Workers binding', () => {
+    const failures = collectBootEnvFailures({
+      database: {
+        default: 'd1',
+        connections: {
+          d1: {
+            driver: 'd1',
+            binding: {},
+          },
+        },
+      },
+    });
+
+    expect(failures).toHaveLength(0);
+  });
 });

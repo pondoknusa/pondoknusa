@@ -99,9 +99,15 @@ See [Upgrading to 1.0](/guide/upgrading-to-1.0) for the full removal table and c
 
 **0.16.0** promotes models, routes, and views APIs listed above to stable and completes the pre-1.0 deprecation sweep. Read the [0.16.0 changelog](https://github.com/pondoknusa/pondoknusa/blob/main/CHANGELOG.md#0160---2026-06-27) for feature details.
 
+### v3.0.0 security hardening
+
+**3.0.0** tightens defaults that were permissive in **2.x**: model mass assignment (`fillable` / `guarded` / `hidden`), token ability parsing, session integrity and regeneration, OAuth state and PKCE for public clients, passkey attestation, debug tooling in production, and HTTP body limits.
+
+See [Upgrading to 3.0](/guide/upgrading-to-3.0) for the full breaking-change table and checklist.
+
 ## Optional drivers
 
-Packages such as `@pondoknusa/database-mysql`, `@pondoknusa/database-pg`, `@pondoknusa/redis-node`, and `@pondoknusa/storage-aws-s3` version with the monorepo but install only when needed. Their public surface is the driver config types and provider registration — not the full framework API.
+Packages such as `@pondoknusa/database-mysql`, `@pondoknusa/database-pg`, `@pondoknusa/database-d1`, `@pondoknusa/redis-node`, and `@pondoknusa/storage-aws-s3` version with the monorepo but install only when needed. Their public surface is the driver config types and provider registration — not the full framework API.
 
 ## Something broke?
 
