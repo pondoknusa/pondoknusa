@@ -1,6 +1,6 @@
 import type { NewProjectOptions } from './new-project-options.js';
 
-const CORE_VERSION = '^1.0.1';
+const CORE_VERSION = '^3.1.0';
 
 export function headlessProjectConfig(name: string): string {
   return JSON.stringify(
@@ -108,6 +108,7 @@ export function headlessPackageJson(name: string, options: NewProjectOptions): s
     dependencies['@pondoknusa/database-pg'] = CORE_VERSION;
   }
   if (options.redis) {
+    dependencies['@pondoknusa/redis'] = CORE_VERSION;
     dependencies['@pondoknusa/redis-node'] = CORE_VERSION;
   }
 

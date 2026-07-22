@@ -11,8 +11,10 @@
     }
   },
   "dependencies": {
-    "@pondoknusa/redis": "3.1.0",
     "redis": "^4.7.1"
+  },
+  "peerDependencies": {
+    "@pondoknusa/redis": "3.1.0"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -25,6 +27,7 @@
     "node": ">=26"
   },
   "devDependencies": {
+    "@pondoknusa/redis": "3.1.0",
     "@types/node": "^26.0.1"
   },
   "description": "node-redis client driver for Pondoknusa",

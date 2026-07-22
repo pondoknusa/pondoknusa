@@ -25,9 +25,9 @@ Scaffold sources live in `packages/cli/src/stubs*.ts`. Optional configs are adde
 |-----|---------|-------|
 | `default` | `DB_CONNECTION` | `sqlite`, `mysql`, `postgres`, or `d1` |
 | `connections.sqlite.database` | `DB_DATABASE` | Path to SQLite file |
-| `connections.mysql.*` | `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_DATABASE` | Requires `@pondoknusa/database-mysql` |
-| `connections.postgres.*` | same pattern | Requires `@pondoknusa/database-pg` |
-| `connections.d1.*` | `CLOUDFLARE_ACCOUNT_ID`, `D1_DATABASE_ID`, `CLOUDFLARE_API_TOKEN` | Requires `@pondoknusa/database-d1` (or inject a Workers `binding`) |
+| `connections.mysql.*` | `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_DATABASE` | Requires `@pondoknusa/database-mysql` + peer `@pondoknusa/database` |
+| `connections.postgres.*` | same pattern | Requires `@pondoknusa/database-pg` + peer `@pondoknusa/database` |
+| `connections.d1.*` | `CLOUDFLARE_ACCOUNT_ID`, `D1_DATABASE_ID`, `CLOUDFLARE_API_TOKEN` | Requires `@pondoknusa/database-d1` + peer `@pondoknusa/database` (or inject a Workers `binding`) |
 
 ### `config/queue.ts`
 

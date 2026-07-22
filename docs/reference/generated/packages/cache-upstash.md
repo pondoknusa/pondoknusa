@@ -8,8 +8,10 @@ Upstash Redis REST cache driver for Pondoknusa
 ## Install
 
 ```bash
-npm install @pondoknusa/cache-upstash
+npm install @pondoknusa/cache-upstash @pondoknusa/cache
 ```
+
+Peer dependencies must be installed in the app (they are not auto-installed on older npm). Drivers that call `extend()` share one instance of the host package.
 
 ## Metadata
 
@@ -20,7 +22,7 @@ npm install @pondoknusa/cache-upstash
 | Category | Cache drivers |
 | Node.js | `>=26` |
 
-## Pondoknusa dependencies
+## Peer dependencies
 
 - [@pondoknusa/cache](/reference/generated/packages/cache)
 

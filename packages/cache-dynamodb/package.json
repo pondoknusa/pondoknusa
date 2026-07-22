@@ -15,7 +15,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.840.0",
+    "@aws-sdk/client-dynamodb": "^3.840.0"
+  },
+  "peerDependencies": {
     "@pondoknusa/cache": "3.1.0"
   },
   "files": [
@@ -25,6 +27,7 @@
     "node": ">=26"
   },
   "devDependencies": {
+    "@pondoknusa/cache": "3.1.0",
     "@types/node": "^26.0.1"
   },
   "description": "DynamoDB cache driver for Pondoknusa",

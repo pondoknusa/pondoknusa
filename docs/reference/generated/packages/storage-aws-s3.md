@@ -8,8 +8,10 @@ AWS S3 storage driver for Pondoknusa
 ## Install
 
 ```bash
-npm install @pondoknusa/storage-aws-s3
+npm install @pondoknusa/storage-aws-s3 @pondoknusa/storage
 ```
+
+Peer dependencies must be installed in the app (they are not auto-installed on older npm). Drivers that call `extend()` share one instance of the host package.
 
 ## Metadata
 
@@ -20,7 +22,7 @@ npm install @pondoknusa/storage-aws-s3
 | Category | Storage drivers |
 | Node.js | `>=26` |
 
-## Pondoknusa dependencies
+## Peer dependencies
 
 - [@pondoknusa/storage](/reference/generated/packages/storage)
 

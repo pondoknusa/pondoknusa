@@ -150,6 +150,14 @@ stubsProject = stubsProject.replace(
 );
 writeFileSync(stubsProjectPath, stubsProject);
 
+const stubsHeadlessPath = join(ROOT, 'packages/cli/src/stubs-headless.ts');
+let stubsHeadless = readFileSync(stubsHeadlessPath, 'utf8');
+stubsHeadless = stubsHeadless.replace(
+  /const CORE_VERSION = '\^[\d.]+';/,
+  `const CORE_VERSION = '^${newVersion}';`,
+);
+writeFileSync(stubsHeadlessPath, stubsHeadless);
+
 const manifestPath = join(ROOT, 'packages/mcp/src/manifest.ts');
 let manifest = readFileSync(manifestPath, 'utf8');
 manifest = manifest.replace(
@@ -158,7 +166,7 @@ manifest = manifest.replace(
 );
 writeFileSync(manifestPath, manifest);
 
-console.log(`  Bumped ${bumped} package.json files + stubs.ts + stubs-project.ts + manifest.ts`);
+console.log(`  Bumped ${bumped} package.json files + stubs.ts + stubs-project.ts + stubs-headless.ts + manifest.ts`);
 
 log('Syncing package-lock.json');
 run('npm install', { stdio: 'inherit' });

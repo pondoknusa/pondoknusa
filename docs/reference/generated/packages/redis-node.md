@@ -8,8 +8,10 @@ node-redis client driver for Pondoknusa
 ## Install
 
 ```bash
-npm install @pondoknusa/redis-node
+npm install @pondoknusa/redis-node @pondoknusa/redis
 ```
+
+Peer dependencies must be installed in the app (they are not auto-installed on older npm). Drivers that call `extend()` share one instance of the host package.
 
 ## Metadata
 
@@ -20,7 +22,7 @@ npm install @pondoknusa/redis-node
 | Category | Redis |
 | Node.js | `>=26` |
 
-## Pondoknusa dependencies
+## Peer dependencies
 
 - [@pondoknusa/redis](/reference/generated/packages/redis)
 

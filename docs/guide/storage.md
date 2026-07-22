@@ -74,7 +74,7 @@ await disk.put('2025/sunset.jpg', buffer);
 R2 is S3-compatible object storage with no egress fees to Cloudflare Workers (useful for future edge work). Pondoknusa ships `@pondoknusa/storage-r2`:
 
 ```bash
-npm install @pondoknusa/storage-r2
+npm install @pondoknusa/storage-r2 @pondoknusa/storage
 ```
 
 ```typescript
@@ -111,7 +111,7 @@ See [@pondoknusa/storage-r2](/reference/generated/packages/storage-r2) for confi
 First-party driver for S3-compatible R2 buckets. Uploads run from your Node origin; no Workers required.
 
 ```bash
-npm install @pondoknusa/storage-r2
+npm install @pondoknusa/storage-r2 @pondoknusa/storage
 ```
 
 ```typescript

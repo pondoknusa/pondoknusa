@@ -33,6 +33,7 @@ export function projectPackageJson(name: string, options: NewProjectOptions): st
     dependencies['@pondoknusa/database-pg'] = CORE_VERSION;
   }
   if (options.redis) {
+    dependencies['@pondoknusa/redis'] = CORE_VERSION;
     dependencies['@pondoknusa/redis-node'] = CORE_VERSION;
     dependencies['@pondoknusa/broadcasting-websocket'] = CORE_VERSION;
   }

@@ -11,8 +11,10 @@
     }
   },
   "dependencies": {
-    "@pondoknusa/database": "3.1.0",
     "mysql2": "^3.14.1"
+  },
+  "peerDependencies": {
+    "@pondoknusa/database": "3.1.0"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -25,6 +27,7 @@
     "node": ">=26"
   },
   "devDependencies": {
+    "@pondoknusa/database": "3.1.0",
     "@types/node": "^26.0.1"
   },
   "description": "MySQL database driver for Pondoknusa",

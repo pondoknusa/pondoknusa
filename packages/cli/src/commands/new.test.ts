@@ -128,6 +128,7 @@ describe('NewCommand', () => {
 
     expect(code).toBe(0);
     expect(pkg.dependencies['@pondoknusa/database-mysql']).toBeDefined();
+    expect(pkg.dependencies['@pondoknusa/redis']).toBeDefined();
     expect(pkg.dependencies['@pondoknusa/redis-node']).toBeDefined();
     expect(existsSync(join(projectDir, 'config/redis.ts'))).toBe(true);
     expect(readFileSync(join(projectDir, 'src/main.ts'), 'utf8')).toContain(

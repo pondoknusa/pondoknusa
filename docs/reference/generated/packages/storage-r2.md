@@ -8,8 +8,10 @@ Cloudflare R2 storage driver for Pondoknusa
 ## Install
 
 ```bash
-npm install @pondoknusa/storage-r2
+npm install @pondoknusa/storage-r2 @pondoknusa/storage
 ```
+
+Peer dependencies must be installed in the app (they are not auto-installed on older npm). Drivers that call `extend()` share one instance of the host package.
 
 ## Metadata
 
@@ -20,9 +22,12 @@ npm install @pondoknusa/storage-r2
 | Category | Storage drivers |
 | Node.js | `>=26` |
 
-## Pondoknusa dependencies
+## Peer dependencies
 
 - [@pondoknusa/storage](/reference/generated/packages/storage)
+
+## Pondoknusa dependencies
+
 - [@pondoknusa/storage-aws-s3](/reference/generated/packages/storage-aws-s3)
 
 ## Public exports

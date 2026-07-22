@@ -223,6 +223,9 @@ function readPackages() {
 
     const shortName = pkg.name.replace('@pondoknusa/', '');
     const dtsPath = join(packagesDir, dir, 'dist/index.d.ts');
+    const peerDependencies = Object.keys(pkg.peerDependencies ?? {})
+      .filter((dep) => dep.startsWith('@pondoknusa/'))
+      .sort();
     entries.push({
       name: pkg.name,
       shortName,
@@ -234,6 +237,7 @@ function readPackages() {
       dependencies: Object.keys(pkg.dependencies ?? {})
         .filter((dep) => dep.startsWith('@pondoknusa/'))
         .sort(),
+      peerDependencies,
       exports: existsSync(dtsPath) ? parseTypeScriptExports(readFileSync(dtsPath, 'utf8')) : { values: [], types: [] },
     });
   }
@@ -344,6 +348,7 @@ function writePackagePages(packages) {
 
   for (const pkg of packages) {
     const category = categorizePackage(pkg.shortName);
+    const installPackages = [pkg.name, ...pkg.peerDependencies];
     const lines = [
       generatedBanner(),
       `# ${pkg.name}`,
@@ -353,9 +358,19 @@ function writePackagePages(packages) {
       '## Install',
       '',
       '```bash',
-      `npm install ${pkg.name}`,
+      `npm install ${installPackages.join(' ')}`,
       '```',
       '',
+    ];
+
+    if (pkg.peerDependencies.length > 0) {
+      lines.push(
+        'Peer dependencies must be installed in the app (they are not auto-installed on older npm). Drivers that call `extend()` share one instance of the host package.',
+        '',
+      );
+    }
+
+    lines.push(
       '## Metadata',
       '',
       '| Field | Value |',
@@ -363,13 +378,22 @@ function writePackagePages(packages) {
       `| Version | \`${pkg.version}\` |`,
       `| Source | [\`${pkg.directory}\`](https://github.com/pondoknusa/pondoknusa/tree/main/${pkg.directory}) |`,
       `| Category | ${category.title} |`,
-    ];
+    );
 
     if (pkg.engines) {
       lines.push(`| Node.js | \`${pkg.engines}\` |`);
     }
 
     lines.push('');
+
+    if (pkg.peerDependencies.length > 0) {
+      lines.push('## Peer dependencies', '');
+      for (const dependency of pkg.peerDependencies) {
+        const slug = dependency.replace('@pondoknusa/', '');
+        lines.push(`- [${dependency}](/reference/generated/packages/${slug})`);
+      }
+      lines.push('');
+    }
 
     if (pkg.dependencies.length > 0) {
       lines.push('## Pondoknusa dependencies', '');

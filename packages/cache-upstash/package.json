@@ -14,7 +14,7 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@pondoknusa/cache": "3.1.0"
   },
   "files": [
@@ -24,6 +24,7 @@
     "node": ">=26"
   },
   "devDependencies": {
+    "@pondoknusa/cache": "3.1.0",
     "@types/node": "^26.0.1"
   },
   "description": "Upstash Redis REST cache driver for Pondoknusa",

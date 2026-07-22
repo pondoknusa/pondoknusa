@@ -22,13 +22,13 @@
 
 A vanilla `pondoknusa new` app is almost entirely `@pondoknusa/*` packages. The default scaffold uses **SQLite** (no extra driver), **database queues**, and **log mail** — no Redis, no cloud SDKs, no realtime client libraries.
 
-| What you add | Optional driver package | Third-party npm dep |
-|--------------|-------------------------|---------------------|
-| PostgreSQL | `@pondoknusa/database-pg` | `pg` |
-| MySQL | `@pondoknusa/database-mysql` | `mysql2` |
-| Cloudflare D1 | `@pondoknusa/database-d1` | — (REST or Workers binding) |
-| Redis (cache, queue, broadcast) | `@pondoknusa/redis-node` | `redis` |
-| S3 / R2 storage | `@pondoknusa/storage-aws-s3` | `@aws-sdk/client-s3`, `@aws-sdk/s3-request-presigner` |
+| What you add | Optional driver package | Peer (install with driver) | Third-party npm dep |
+|--------------|-------------------------|----------------------------|---------------------|
+| PostgreSQL | `@pondoknusa/database-pg` | `@pondoknusa/database` | `pg` |
+| MySQL | `@pondoknusa/database-mysql` | `@pondoknusa/database` | `mysql2` |
+| Cloudflare D1 | `@pondoknusa/database-d1` | `@pondoknusa/database` | — (REST or Workers binding) |
+| Redis (cache, queue, broadcast) | `@pondoknusa/redis-node` | `@pondoknusa/redis` | `redis` |
+| S3 / R2 storage | `@pondoknusa/storage-aws-s3` / `@pondoknusa/storage-r2` | `@pondoknusa/storage` | `@aws-sdk/client-s3`, `@aws-sdk/s3-request-presigner` |
 
 That is the full set of external production dependencies across the Pondoknusa monorepo. Real-time broadcasting uses a **native WebSocket** hub (`@pondoknusa/broadcasting-websocket`) and browser `WebSocket` via `@pondoknusa/echo` — no `socket.io-client`, no `pusher-js`, no separate socket server to run.
 

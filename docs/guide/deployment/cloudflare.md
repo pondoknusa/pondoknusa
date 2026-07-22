@@ -101,7 +101,7 @@ In Cloudflare: enable **Origin Cache Control**, add **Cache Rules** for public `
 **Prerequisites:** Node origin. Works **without** Module 1.
 
 ```bash
-npm install @pondoknusa/storage-r2
+npm install @pondoknusa/storage-r2 @pondoknusa/storage
 ```
 
 Register `R2StorageServiceProvider` and configure `config/storage.ts`. Full config: [Storage guide](/guide/storage).
@@ -173,9 +173,10 @@ Pair with Pondoknusa auth throttling and `APP_DEBUG=false`.
 **Prerequisites:** Node origin for REST mode. Full Pondoknusa on Workers is still unsupported — the `binding` config is for wrappers / a future Workers adapter.
 
 ```bash
-npm install @pondoknusa/database-d1
+npm install @pondoknusa/database-d1 @pondoknusa/database
 ```
 
+`@pondoknusa/database` is a peer dependency — install it alongside the driver so `DatabaseManager.extend('d1')` shares one registry with core.
 Register `D1DatabaseServiceProvider` **before** `DatabaseServiceProvider`:
 
 ```typescript

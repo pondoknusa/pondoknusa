@@ -8,8 +8,10 @@ MySQL database driver for Pondoknusa
 ## Install
 
 ```bash
-npm install @pondoknusa/database-mysql
+npm install @pondoknusa/database-mysql @pondoknusa/database
 ```
+
+Peer dependencies must be installed in the app (they are not auto-installed on older npm). Drivers that call `extend()` share one instance of the host package.
 
 ## Metadata
 
@@ -20,7 +22,7 @@ npm install @pondoknusa/database-mysql
 | Category | Database |
 | Node.js | `>=26` |
 
-## Pondoknusa dependencies
+## Peer dependencies
 
 - [@pondoknusa/database](/reference/generated/packages/database)
 

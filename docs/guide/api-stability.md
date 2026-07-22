@@ -109,6 +109,8 @@ See [Upgrading to 3.0](/guide/upgrading-to-3.0) for the full breaking-change tab
 
 Packages such as `@pondoknusa/database-mysql`, `@pondoknusa/database-pg`, `@pondoknusa/database-d1`, `@pondoknusa/redis-node`, and `@pondoknusa/storage-aws-s3` version with the monorepo but install only when needed. Their public surface is the driver config types and provider registration — not the full framework API.
 
+Optional drivers declare the shared host package (`@pondoknusa/database`, `@pondoknusa/storage`, `@pondoknusa/cache`, `@pondoknusa/redis`) as a **peerDependency** so `extend()` / client factories mutate the same singleton the app and `@pondoknusa/core` use. Install both the driver and its peer in the app.
+
 ## Something broke?
 
 If a **patch** release breaks documented stable behavior, [file an issue](https://github.com/pondoknusa/pondoknusa/issues) with the package, version, and API involved. We treat that as a regression.

@@ -12,7 +12,9 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.840.0",
-    "@aws-sdk/s3-request-presigner": "^3.840.0",
+    "@aws-sdk/s3-request-presigner": "^3.840.0"
+  },
+  "peerDependencies": {
     "@pondoknusa/storage": "3.1.0"
   },
   "scripts": {
@@ -26,6 +28,7 @@
     "node": ">=26"
   },
   "devDependencies": {
+    "@pondoknusa/storage": "3.1.0",
     "@types/node": "^26.0.1"
   },
   "description": "AWS S3 storage driver for Pondoknusa",

@@ -105,7 +105,7 @@ More examples: [edge cache cookbook](https://pondoknusa.dev/cookbook/edge-cache)
 **Prerequisites:** Node origin (uploads use the S3-compatible API from Pondoknusa). Works **without** Module 1.
 
 ```bash
-npm install @pondoknusa/storage-r2
+npm install @pondoknusa/storage-r2 @pondoknusa/storage
 ```
 
 ```typescript
@@ -218,8 +218,10 @@ Pair with Pondoknusa auth throttling and `APP_DEBUG=false` on the origin.
 **Prerequisites:** Node origin for REST mode. Full Pondoknusa on Workers is not supported yet.
 
 ```bash
-npm install @pondoknusa/database-d1
+npm install @pondoknusa/database-d1 @pondoknusa/database
 ```
+
+`@pondoknusa/database` is a peer dependency — install it alongside the driver so `DatabaseManager.extend('d1')` shares one registry with core.
 
 ```typescript
 // src/main.ts — register before DatabaseServiceProvider

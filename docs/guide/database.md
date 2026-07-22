@@ -18,13 +18,13 @@ export default {
 } as const;
 ```
 
-Optional drivers (register the matching service provider **before** `DatabaseServiceProvider`):
+Optional drivers (register the matching service provider **before** `DatabaseServiceProvider`). Install the driver **and** `@pondoknusa/database` — drivers declare the ORM as a peer so `DatabaseManager.extend()` shares one registry with core:
 
-| Driver | Package | Notes |
-|--------|---------|-------|
-| `postgres` | `@pondoknusa/database-pg` | `pg` client |
-| `mysql` | `@pondoknusa/database-mysql` | `mysql2` client |
-| `d1` | `@pondoknusa/database-d1` | Cloudflare D1 via REST (Node) or Workers `binding` |
+| Driver | Package | Install |
+|--------|---------|---------|
+| `postgres` | `@pondoknusa/database-pg` | `npm install @pondoknusa/database-pg @pondoknusa/database` |
+| `mysql` | `@pondoknusa/database-mysql` | `npm install @pondoknusa/database-mysql @pondoknusa/database` |
+| `d1` | `@pondoknusa/database-d1` | `npm install @pondoknusa/database-d1 @pondoknusa/database` |
 
 ## Models
 
