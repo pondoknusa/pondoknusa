@@ -42,6 +42,22 @@ For JSON-only backends, use `pondoknusa new --headless`. Headless scaffolds skip
 - **Request pooling** — reuses `PondoknusaRequest` instances under load. Enable with `requestPooling: true` in `config/http.ts` (default off in debug, on in production scaffolds).
 - **Keep-alive** — Node adapter sets `keepAliveTimeout` / `headersTimeout` for reverse-proxy deployments.
 
+## HTTP compression
+
+Brotli/gzip for text responses (HTML pages, JSON APIs, CSS) — typically a 70–80% transfer reduction, which browsers reward with faster first paint on real networks:
+
+```typescript
+import { createCompressionMiddleware } from '@pondoknusa/http';
+
+app.use(createCompressionMiddleware());
+```
+
+- Negotiates `br` vs `gzip` from `Accept-Encoding` (Brotli preferred; quality 4 is tuned for per-request speed).
+- Skips bodies under 1 KB, SSE, `cache-control: no-transform`, already-encoded responses, and non-text content types. Tune with `{ threshold, brotliQuality, filter }`.
+- Adds `Vary: accept-encoding` and weakens strong ETags on compressed variants.
+- **Streaming SSR stays raw** — `Response.ssrStream()` / `Response.streamHtml()` pass through untouched so the early `<head>` flush is never buffered. Compress streams at the CDN/reverse-proxy layer instead.
+- If you already run nginx/Cloudflare with compression enabled, the middleware is a no-op — responses arrive pre-encoded (`content-encoding` is respected).
+
 ## Views & SSR
 
 - **`view:cache`** — compile all `.tyr` templates to disk; production rejects cache misses when `compiled: true`.

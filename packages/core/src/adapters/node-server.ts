@@ -3,6 +3,7 @@ import type { Server as HttpServer } from 'node:http';
 import type { Server as HttpsServer } from 'node:https';
 import type { Http2SecureServer } from 'node:http2';
 import type { Socket } from 'node:net';
+import { attachRequestPathname, getFactoryBufferBody, getFactoryStringBody } from '@pondoknusa/http';
 import type { HttpKernel } from '../http-kernel.js';
 
 export interface NodeServeOptions {
@@ -168,9 +169,8 @@ const DEFAULT_MAX_BODY_BYTES = 10 * 1024 * 1024;
 const REMOTE_ADDRESS_HEADER = 'x-pondoknusa-remote-address';
 
 async function toFetchRequest(incoming: IncomingMessage, scheme: string): Promise<Request> {
-  const host = incoming.headers.host ?? 'localhost';
-  const url = new URL(incoming.url ?? '/', `${scheme}://${host}`);
   const method = incoming.method ?? 'GET';
+  const { url, pathname } = resolveRequestUrl(incoming, scheme);
   const headers = new Headers();
 
   for (const key in incoming.headers) {
@@ -192,17 +192,40 @@ async function toFetchRequest(incoming: IncomingMessage, scheme: string): Promis
     headers.set(REMOTE_ADDRESS_HEADER, remoteAddress);
   }
 
+  let request: Request;
   if (method === 'GET' || method === 'HEAD') {
-    return new Request(url, { method, headers });
+    request = new Request(url, { method, headers });
+  } else {
+    const init: RequestInit = { method, headers };
+    const body = await readIncomingBody(incoming);
+    if (body.length > 0) {
+      init.body = Buffer.from(body);
+    }
+    request = new Request(url, init);
   }
 
-  const init: RequestInit = { method, headers };
-  const body = await readIncomingBody(incoming);
-  if (body.length > 0) {
-    init.body = Buffer.from(body);
+  return attachRequestPathname(request, pathname);
+}
+
+function resolveRequestUrl(
+  incoming: IncomingMessage,
+  scheme: string,
+): { url: string; pathname: string } {
+  const host = incoming.headers.host ?? 'localhost';
+  const target = incoming.url ?? '/';
+
+  // Origin-form (the common case) needs no URL parser: the pathname is the
+  // request target up to the query string.
+  if (target.startsWith('/')) {
+    const queryIndex = target.indexOf('?');
+    return {
+      url: `${scheme}://${host}${target}`,
+      pathname: queryIndex === -1 ? target : target.slice(0, queryIndex),
+    };
   }
 
-  return new Request(url, init);
+  const parsed = new URL(target, `${scheme}://${host}`);
+  return { url: parsed.href, pathname: parsed.pathname };
 }
 
 async function readIncomingBody(incoming: IncomingMessage): Promise<Uint8Array> {
@@ -246,6 +269,37 @@ async function writeFetchResponse(
     outgoing.setHeader(key, value);
   });
 
+  // Fast path: factory-created responses carry their body string — skip the
+  // ReadableStream read entirely and emit a Content-Length header so the
+  // server avoids chunked transfer encoding.
+  const knownBody = getFactoryStringBody(response);
+  if (knownBody !== undefined) {
+    if (knownBody.length === 0) {
+      outgoing.end();
+      return;
+    }
+    if (!response.headers.has('content-length')) {
+      outgoing.setHeader('content-length', Buffer.byteLength(knownBody));
+    }
+    outgoing.end(knownBody);
+    return;
+  }
+
+  // Binary fast path (e.g. compressed bodies) — must run before the JSON
+  // text() branch, which would corrupt binary data with UTF-8 decoding.
+  const knownBuffer = getFactoryBufferBody(response);
+  if (knownBuffer !== undefined) {
+    if (knownBuffer.byteLength === 0) {
+      outgoing.end();
+      return;
+    }
+    if (!response.headers.has('content-length')) {
+      outgoing.setHeader('content-length', knownBuffer.byteLength);
+    }
+    outgoing.end(knownBuffer);
+    return;
+  }
+
   if (!response.body) {
     outgoing.end();
     return;
@@ -254,7 +308,14 @@ async function writeFetchResponse(
   const contentType = response.headers.get('content-type') ?? '';
   if (contentType.includes('application/json')) {
     const body = await response.text();
-    outgoing.end(body.length > 0 ? body : undefined);
+    if (body.length === 0) {
+      outgoing.end();
+      return;
+    }
+    if (!response.headers.has('content-length')) {
+      outgoing.setHeader('content-length', Buffer.byteLength(body));
+    }
+    outgoing.end(body);
     return;
   }
 

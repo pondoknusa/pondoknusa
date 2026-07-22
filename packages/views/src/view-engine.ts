@@ -79,6 +79,12 @@ export class ViewEngine {
   private readonly viteBase: string;
   private localeCode: string;
   private readonly resolvedNameCache = new LruCache<string, string>(2048);
+  /**
+   * Caches the on-disk view kind per resolved name so steady-state renders
+   * avoid filesystem `access()` probes. Cleared by `invalidateTemplate`,
+   * which the dev watcher calls on every view file change.
+   */
+  private readonly viewKindCache = new Map<string, 'programmatic' | 'compiled' | 'hybrid'>();
   private translations: Record<string, string> = {};
   private viteManifest?: ViteManifest;
   private echoClientConfig: EchoClientConfig | null = null;
@@ -526,31 +532,36 @@ export class ViewEngine {
   }
 
   private async isProgrammatic(name: string): Promise<boolean> {
-    try {
-      await access(this.programmaticPathFor(this.resolvePath(name)));
-      return true;
-    } catch {
-      return false;
-    }
+    return (await this.resolveViewKind(name)) !== 'compiled';
   }
 
   private async isProgrammaticOnly(name: string): Promise<boolean> {
-    try {
-      const tyrPath = this.resolvePath(name);
-      const [hasProgrammatic, hasTyr] = await Promise.all([
-        access(this.programmaticPathFor(tyrPath)).then(
-          () => true,
-          () => false,
-        ),
-        access(tyrPath).then(
-          () => true,
-          () => false,
-        ),
-      ]);
-      return hasProgrammatic && !hasTyr;
-    } catch {
-      return false;
+    return (await this.resolveViewKind(name)) === 'programmatic';
+  }
+
+  private async resolveViewKind(
+    name: string,
+  ): Promise<'programmatic' | 'compiled' | 'hybrid'> {
+    const cached = this.viewKindCache.get(name);
+    if (cached) {
+      return cached;
     }
+
+    const tyrPath = this.resolvePath(name);
+    const [hasProgrammatic, hasTyr] = await Promise.all([
+      access(this.programmaticPathFor(tyrPath)).then(
+        () => true,
+        () => false,
+      ),
+      access(tyrPath).then(
+        () => true,
+        () => false,
+      ),
+    ]);
+
+    const kind = hasProgrammatic ? (hasTyr ? 'hybrid' : 'programmatic') : 'compiled';
+    this.viewKindCache.set(name, kind);
+    return kind;
   }
 
   private programmaticPathFor(tyrPath: string): string {
@@ -670,6 +681,7 @@ export class ViewEngine {
     const path = this.resolvePath(name);
     this.cache.delete(path);
     this.resolvedNameCache.delete(name);
+    this.viewKindCache.delete(name);
   }
 
   async recompileTemplate(name: string): Promise<CompiledTemplate> {

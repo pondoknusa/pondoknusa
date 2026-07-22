@@ -28,6 +28,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 
 - `ClientRequest`
 - `ClientResponse`
+- `CompressionOptions`
 - `HYDRATION_SCRIPT_ID`
 - `Http`
 - `HttpException`
@@ -63,10 +64,12 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `TurboStreamAction`
 - `applyPartialReloadHeaders`
 - `applyRouteGroupOptions`
+- `attachRequestPathname`
 - `buildSsrDocument`
 - `buildTurboStream`
 - `cachedFormData`
 - `coalesceHydrationManifest`
+- `createCompressionMiddleware`
 - `createCorsMiddleware`
 - `createFormBodyCacheMiddleware`
 - `createHttpCacheMiddleware`
@@ -78,6 +81,8 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `encodeSseEvents`
 - `filterFastPathMiddleware`
 - `formatSseEvent`
+- `getFactoryBufferBody`
+- `getFactoryStringBody`
 - `getMiddlewareMeta`
 - `isHtmxRequest`
 - `isJsonResource`
@@ -90,6 +95,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `normalizeRouteParams`
 - `qualifiesForJsonFastPath`
 - `qualifiesForJsonFastPathResolved`
+- `readRequestPathname`
 - `registerThrottlePresets`
 - `resetThrottleStore`
 - `resolveClientIp`
@@ -100,6 +106,8 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `streamSsrDocument`
 - `temporarySignedRouteParams`
 - `throttleMiddlewareAlias`
+- `trackBufferBody`
+- `trackStringBody`
 - `verifySignedRouteUrl`
 - `withMiddlewareMeta`
 

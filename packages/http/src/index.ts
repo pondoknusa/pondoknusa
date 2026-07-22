@@ -15,7 +15,16 @@ export {
   PondoknusaRequest,
 } from './request.js';
 export type { SessionContract } from './session-contract.js';
-export { Response, ResponseFactory } from './response.js';
+export {
+  Response,
+  ResponseFactory,
+  getFactoryBufferBody,
+  getFactoryStringBody,
+  trackBufferBody,
+  trackStringBody,
+} from './response.js';
+export { attachRequestPathname, readRequestPathname } from './request-url.js';
+export { createCompressionMiddleware, type CompressionOptions } from './compression.js';
 export {
   applyPartialReloadHeaders,
   buildTurboStream,

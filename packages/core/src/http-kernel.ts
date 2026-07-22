@@ -1,3 +1,4 @@
+import { readRequestPathname } from '@pondoknusa/http';
 import { ExceptionHandler } from './exception-handler.js';
 import type { Application } from './application.js';
 
@@ -10,8 +11,10 @@ export class HttpKernel {
 
   async handle(request: Request): Promise<Response> {
     try {
-      const pathname = new URL(request.url).pathname;
-      await this.app.bootLazyProvidersForRequest(pathname);
+      const pathname = readRequestPathname(request) ?? new URL(request.url).pathname;
+      if (this.app.hasLazyProviders()) {
+        await this.app.bootLazyProvidersForRequest(pathname);
+      }
       return await this.app.router().dispatch(request, pathname);
     } catch (error) {
       return this.handler.render(error, request);

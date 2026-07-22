@@ -85,6 +85,10 @@ export class Application extends Container {
     return this.bootedLazyProviders.has(provider);
   }
 
+  hasLazyProviders(): boolean {
+    return this.lazyProviders.length > 0;
+  }
+
   async bootLazyProvider(provider: ProviderConstructor): Promise<void> {
     if (this.bootedLazyProviders.has(provider)) {
       return;

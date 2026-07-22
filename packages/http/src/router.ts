@@ -1,5 +1,6 @@
 import { PondoknusaRequest } from './request.js';
 import { PondoknusaRequestPool } from './request-pool.js';
+import { readRequestPathname } from './request-url.js';
 import { Response } from './response.js';
 import {
   MethodNotAllowedException,
@@ -405,7 +406,9 @@ export class Router implements Routable {
 
   async dispatch(request: Request, pathname?: string): Promise<Response> {
     const table = this.compile();
-    const normalizedPath = normalizePathname(pathname ?? new URL(request.url).pathname);
+    const normalizedPath = normalizePathname(
+      pathname ?? readRequestPathname(request) ?? new URL(request.url).pathname,
+    );
     const method = request.method.toUpperCase() as HttpMethod;
 
     const staticHit = table.staticByMethod.get(method)?.get(normalizedPath);

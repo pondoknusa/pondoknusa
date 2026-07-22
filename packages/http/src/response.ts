@@ -17,6 +17,33 @@ const JSON_RESPONSE_HEADERS = new Headers({
   'content-type': 'application/json; charset=utf-8',
 });
 
+/**
+ * Body strings of factory-created responses, keyed by the Response instance.
+ * Servers can skip the ReadableStream round-trip when the body is known.
+ */
+const stringBodies = new WeakMap<Response, string>();
+
+/** Binary variant of {@link stringBodies} (e.g. compressed bodies). */
+const bufferBodies = new WeakMap<Response, Uint8Array>();
+
+export function getFactoryStringBody(response: Response): string | undefined {
+  return stringBodies.get(response);
+}
+
+export function getFactoryBufferBody(response: Response): Uint8Array | undefined {
+  return bufferBodies.get(response);
+}
+
+export function trackStringBody(response: Response, body: string): Response {
+  stringBodies.set(response, body);
+  return response;
+}
+
+export function trackBufferBody(response: Response, body: Uint8Array): Response {
+  bufferBodies.set(response, body);
+  return response;
+}
+
 export type {
   HydrationManifestPayload,
   PartialReloadOptions,
@@ -30,7 +57,7 @@ export class ResponseFactory {
     const body = JSON.stringify(data);
 
     if (init.status === undefined && init.statusText === undefined && init.headers === undefined) {
-      return new WebResponse(body, { headers: JSON_RESPONSE_HEADERS });
+      return trackStringBody(new WebResponse(body, { headers: JSON_RESPONSE_HEADERS }), body);
     }
 
     const headers = new Headers(init.headers);
@@ -38,11 +65,14 @@ export class ResponseFactory {
       headers.set('content-type', 'application/json; charset=utf-8');
     }
 
-    return new WebResponse(body, {
-      status: init.status,
-      statusText: init.statusText,
-      headers,
-    });
+    return trackStringBody(
+      new WebResponse(body, {
+        status: init.status,
+        statusText: init.statusText,
+        headers,
+      }),
+      body,
+    );
   }
 
   html(body: string, init: ResponseInit = {}): Response {
@@ -51,10 +81,13 @@ export class ResponseFactory {
       headers.set('content-type', 'text/html; charset=utf-8');
     }
 
-    return new WebResponse(body, {
-      ...init,
-      headers,
-    });
+    return trackStringBody(
+      new WebResponse(body, {
+        ...init,
+        headers,
+      }),
+      body,
+    );
   }
 
   partial(
@@ -74,10 +107,13 @@ export class ResponseFactory {
 
     applyPartialReloadHeaders(headers, options);
 
-    return new WebResponse(body, {
-      ...init,
-      headers,
-    });
+    return trackStringBody(
+      new WebResponse(body, {
+        ...init,
+        headers,
+      }),
+      body,
+    );
   }
 
   ssr(body: string, options: SsrDocumentOptions = {}, init: ResponseInit = {}): Response {
@@ -140,17 +176,23 @@ export class ResponseFactory {
       headers.set('content-type', 'text/plain; charset=utf-8');
     }
 
-    return new WebResponse(body, {
-      ...init,
-      headers,
-    });
+    return trackStringBody(
+      new WebResponse(body, {
+        ...init,
+        headers,
+      }),
+      body,
+    );
   }
 
   make(body: string, init: ResponseInit = {}): Response {
-    return new WebResponse(body, {
-      ...init,
-      headers: new Headers(init.headers),
-    });
+    return trackStringBody(
+      new WebResponse(body, {
+        ...init,
+        headers: new Headers(init.headers),
+      }),
+      body,
+    );
   }
 
   xml(body: string, init: ResponseInit = {}): Response {
@@ -159,10 +201,13 @@ export class ResponseFactory {
       headers.set('content-type', 'application/xml; charset=utf-8');
     }
 
-    return new WebResponse(body, {
-      ...init,
-      headers,
-    });
+    return trackStringBody(
+      new WebResponse(body, {
+        ...init,
+        headers,
+      }),
+      body,
+    );
   }
 
   redirect(location: string, status = 302, request?: { url: string | URL }): Response {
