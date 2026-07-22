@@ -17,7 +17,7 @@ Peer dependencies must be installed in the app (they are not auto-installed on o
 
 | Field | Value |
 |-------|-------|
-| Version | `3.1.1` |
+| Version | `3.2.0` |
 | Source | [`packages/database-pg`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/database-pg) |
 | Category | Database |
 | Node.js | `>=26` |

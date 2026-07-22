@@ -15,7 +15,7 @@ npm install @pondoknusa/ssr
 
 | Field | Value |
 |-------|-------|
-| Version | `3.1.1` |
+| Version | `3.2.0` |
 | Source | [`packages/ssr`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/ssr) |
 | Category | Views & client |
 | Node.js | `>=26` |

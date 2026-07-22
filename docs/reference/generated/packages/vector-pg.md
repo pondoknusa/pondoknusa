@@ -15,7 +15,7 @@ npm install @pondoknusa/vector-pg
 
 | Field | Value |
 |-------|-------|
-| Version | `3.1.1` |
+| Version | `3.2.0` |
 | Source | [`packages/vector-pg`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/vector-pg) |
 | Category | AI & agents |
 | Node.js | `>=26` |

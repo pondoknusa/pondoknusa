@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/vector-pinecone",
-  "version": "3.1.1",
+  "version": "3.2.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,8 +15,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/database": "3.1.1",
-    "@pondoknusa/vector": "3.1.1"
+    "@pondoknusa/database": "3.2.0",
+    "@pondoknusa/vector": "3.2.0"
   },
   "files": [
     "dist"
