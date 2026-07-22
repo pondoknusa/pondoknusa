@@ -15,7 +15,7 @@ npm install @pondoknusa/cli
 
 | Field | Value |
 |-------|-------|
-| Version | `3.1.0` |
+| Version | `3.1.1` |
 | Source | [`packages/cli`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/cli) |
 | Category | Developer experience |
 | Node.js | `>=26` |

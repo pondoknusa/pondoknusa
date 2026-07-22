@@ -15,7 +15,7 @@ npm install @pondoknusa/database
 
 | Field | Value |
 |-------|-------|
-| Version | `3.1.0` |
+| Version | `3.1.1` |
 | Source | [`packages/database`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/database) |
 | Category | Database |
 | Node.js | `>=26` |

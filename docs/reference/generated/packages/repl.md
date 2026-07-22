@@ -15,7 +15,7 @@ npm install @pondoknusa/repl
 
 | Field | Value |
 |-------|-------|
-| Version | `3.1.0` |
+| Version | `3.1.1` |
 | Source | [`packages/repl`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/repl) |
 | Category | Platform services |
 | Node.js | `>=26` |

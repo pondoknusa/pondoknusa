@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/repl",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "Interactive Pondoknusa REPL (pondoknusa shell)",
   "license": "MIT",
   "type": "module",
@@ -31,9 +31,9 @@
     "node": ">=26"
   },
   "dependencies": {
-    "@pondoknusa/config": "3.1.0",
-    "@pondoknusa/core": "3.1.0",
-    "@pondoknusa/support": "3.1.0"
+    "@pondoknusa/config": "3.1.1",
+    "@pondoknusa/core": "3.1.1",
+    "@pondoknusa/support": "3.1.1"
   },
   "devDependencies": {
     "typescript": "^5.7.0"

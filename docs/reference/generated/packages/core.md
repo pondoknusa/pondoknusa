@@ -15,7 +15,7 @@ npm install @pondoknusa/core
 
 | Field | Value |
 |-------|-------|
-| Version | `3.1.0` |
+| Version | `3.1.1` |
 | Source | [`packages/core`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/core) |
 | Category | Kernel & HTTP |
 | Node.js | `>=26` |
