@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/redis-node",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,7 +14,7 @@
     "redis": "^4.7.1"
   },
   "peerDependencies": {
-    "@pondoknusa/redis": "3.2.0"
+    "@pondoknusa/redis": "3.2.1"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -27,7 +27,7 @@
     "node": ">=26"
   },
   "devDependencies": {
-    "@pondoknusa/redis": "3.2.0",
+    "@pondoknusa/redis": "3.2.1",
     "@types/node": "^26.0.1"
   },
   "description": "node-redis client driver for Pondoknusa",

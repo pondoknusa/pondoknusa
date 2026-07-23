@@ -8,21 +8,26 @@ RAG ingestion and retrieval helpers for Pondoknusa
 ## Install
 
 ```bash
-npm install @pondoknusa/rag
+npm install @pondoknusa/rag @pondoknusa/database
 ```
+
+Peer dependencies must be installed in the app (they are not auto-installed on older npm). Drivers that call `extend()` share one instance of the host package.
 
 ## Metadata
 
 | Field | Value |
 |-------|-------|
-| Version | `3.2.0` |
+| Version | `3.2.1` |
 | Source | [`packages/rag`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/rag) |
 | Category | AI & agents |
 | Node.js | `>=26` |
 
-## Pondoknusa dependencies
+## Peer dependencies
 
 - [@pondoknusa/database](/reference/generated/packages/database)
+
+## Pondoknusa dependencies
+
 - [@pondoknusa/http](/reference/generated/packages/http)
 - [@pondoknusa/vector](/reference/generated/packages/vector)
 

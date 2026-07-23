@@ -8,17 +8,23 @@ OAuth2 authorization server for Pondoknusa
 ## Install
 
 ```bash
-npm install @pondoknusa/auth-oauth
+npm install @pondoknusa/auth-oauth @pondoknusa/database
 ```
+
+Peer dependencies must be installed in the app (they are not auto-installed on older npm). Drivers that call `extend()` share one instance of the host package.
 
 ## Metadata
 
 | Field | Value |
 |-------|-------|
-| Version | `3.2.0` |
+| Version | `3.2.1` |
 | Source | [`packages/auth-oauth`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/auth-oauth) |
 | Category | Platform services |
 | Node.js | `>=26` |
+
+## Peer dependencies
+
+- [@pondoknusa/database](/reference/generated/packages/database)
 
 ## Pondoknusa dependencies
 
@@ -27,7 +33,6 @@ npm install @pondoknusa/auth-oauth
 - [@pondoknusa/container](/reference/generated/packages/container)
 - [@pondoknusa/core](/reference/generated/packages/core)
 - [@pondoknusa/crypto](/reference/generated/packages/crypto)
-- [@pondoknusa/database](/reference/generated/packages/database)
 - [@pondoknusa/http](/reference/generated/packages/http)
 
 ## Public exports

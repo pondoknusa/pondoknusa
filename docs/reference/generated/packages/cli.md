@@ -8,17 +8,23 @@ The Pondoknusa command-line interface
 ## Install
 
 ```bash
-npm install @pondoknusa/cli
+npm install @pondoknusa/cli @pondoknusa/database
 ```
+
+Peer dependencies must be installed in the app (they are not auto-installed on older npm). Drivers that call `extend()` share one instance of the host package.
 
 ## Metadata
 
 | Field | Value |
 |-------|-------|
-| Version | `3.2.0` |
+| Version | `3.2.1` |
 | Source | [`packages/cli`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/cli) |
 | Category | Developer experience |
 | Node.js | `>=26` |
+
+## Peer dependencies
+
+- [@pondoknusa/database](/reference/generated/packages/database)
 
 ## Pondoknusa dependencies
 
@@ -26,7 +32,6 @@ npm install @pondoknusa/cli
 - [@pondoknusa/config](/reference/generated/packages/config)
 - [@pondoknusa/core](/reference/generated/packages/core)
 - [@pondoknusa/crypto](/reference/generated/packages/crypto)
-- [@pondoknusa/database](/reference/generated/packages/database)
 - [@pondoknusa/debug](/reference/generated/packages/debug)
 - [@pondoknusa/locale](/reference/generated/packages/locale)
 - [@pondoknusa/mcp](/reference/generated/packages/mcp)

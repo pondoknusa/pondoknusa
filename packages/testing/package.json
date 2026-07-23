@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/testing",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -19,17 +19,17 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/auth": "3.2.0",
-    "@pondoknusa/broadcasting": "3.2.0",
-    "@pondoknusa/container": "3.2.0",
-    "@pondoknusa/core": "3.2.0",
-    "@pondoknusa/http": "3.2.0",
-    "@pondoknusa/mail": "3.2.0",
-    "@pondoknusa/notifications": "3.2.0",
-    "@pondoknusa/views": "3.2.0"
+    "@pondoknusa/auth": "3.2.1",
+    "@pondoknusa/broadcasting": "3.2.1",
+    "@pondoknusa/container": "3.2.1",
+    "@pondoknusa/core": "3.2.1",
+    "@pondoknusa/http": "3.2.1",
+    "@pondoknusa/mail": "3.2.1",
+    "@pondoknusa/notifications": "3.2.1",
+    "@pondoknusa/views": "3.2.1"
   },
   "peerDependencies": {
-    "@pondoknusa/database": "^3.2.0",
+    "@pondoknusa/database": "^3.2.1",
     "vitest": ">=2.0.0"
   },
   "files": [
@@ -39,7 +39,7 @@
     "node": ">=26"
   },
   "devDependencies": {
-    "@pondoknusa/database": "3.2.0",
+    "@pondoknusa/database": "3.2.1",
     "@types/node": "^26.0.1",
     "vitest": "^3.2.4"
   },

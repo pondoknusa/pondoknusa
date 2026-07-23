@@ -8,24 +8,29 @@ Optional CRUD admin panel for Pondoknusa
 ## Install
 
 ```bash
-npm install @pondoknusa/admin
+npm install @pondoknusa/admin @pondoknusa/database
 ```
+
+Peer dependencies must be installed in the app (they are not auto-installed on older npm). Drivers that call `extend()` share one instance of the host package.
 
 ## Metadata
 
 | Field | Value |
 |-------|-------|
-| Version | `3.2.0` |
+| Version | `3.2.1` |
 | Source | [`packages/admin`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/admin) |
 | Category | Platform services |
 | Node.js | `>=26` |
+
+## Peer dependencies
+
+- [@pondoknusa/database](/reference/generated/packages/database)
 
 ## Pondoknusa dependencies
 
 - [@pondoknusa/auth](/reference/generated/packages/auth)
 - [@pondoknusa/config](/reference/generated/packages/config)
 - [@pondoknusa/container](/reference/generated/packages/container)
-- [@pondoknusa/database](/reference/generated/packages/database)
 - [@pondoknusa/http](/reference/generated/packages/http)
 - [@pondoknusa/views](/reference/generated/packages/views)
 

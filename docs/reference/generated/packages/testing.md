@@ -8,17 +8,23 @@ Testing utilities for Pondoknusa applications
 ## Install
 
 ```bash
-npm install @pondoknusa/testing
+npm install @pondoknusa/testing @pondoknusa/database
 ```
+
+Peer dependencies must be installed in the app (they are not auto-installed on older npm). Drivers that call `extend()` share one instance of the host package.
 
 ## Metadata
 
 | Field | Value |
 |-------|-------|
-| Version | `3.2.0` |
+| Version | `3.2.1` |
 | Source | [`packages/testing`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/testing) |
 | Category | Developer experience |
 | Node.js | `>=26` |
+
+## Peer dependencies
+
+- [@pondoknusa/database](/reference/generated/packages/database)
 
 ## Pondoknusa dependencies
 
@@ -26,7 +32,6 @@ npm install @pondoknusa/testing
 - [@pondoknusa/broadcasting](/reference/generated/packages/broadcasting)
 - [@pondoknusa/container](/reference/generated/packages/container)
 - [@pondoknusa/core](/reference/generated/packages/core)
-- [@pondoknusa/database](/reference/generated/packages/database)
 - [@pondoknusa/http](/reference/generated/packages/http)
 - [@pondoknusa/mail](/reference/generated/packages/mail)
 - [@pondoknusa/notifications](/reference/generated/packages/notifications)

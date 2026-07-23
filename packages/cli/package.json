@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/cli",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "The Pondoknusa command-line interface",
   "type": "module",
   "bin": {
@@ -19,25 +19,25 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/crypto": "3.2.0",
-    "@pondoknusa/support": "3.2.0",
-    "@pondoknusa/auth-oauth": "3.2.0",
-    "@pondoknusa/config": "3.2.0",
-    "@pondoknusa/locale": "3.2.0",
-    "@pondoknusa/core": "3.2.0",
-    "@pondoknusa/mcp": "3.2.0",
-    "@pondoknusa/notifications": "3.2.0",
-    "@pondoknusa/vector": "3.2.0",
-    "@pondoknusa/debug": "3.2.0",
-    "@pondoknusa/queue": "3.2.0",
-    "@pondoknusa/views": "3.2.0",
-    "@pondoknusa/repl": "3.2.0"
+    "@pondoknusa/crypto": "3.2.1",
+    "@pondoknusa/support": "3.2.1",
+    "@pondoknusa/auth-oauth": "3.2.1",
+    "@pondoknusa/config": "3.2.1",
+    "@pondoknusa/locale": "3.2.1",
+    "@pondoknusa/core": "3.2.1",
+    "@pondoknusa/mcp": "3.2.1",
+    "@pondoknusa/notifications": "3.2.1",
+    "@pondoknusa/vector": "3.2.1",
+    "@pondoknusa/debug": "3.2.1",
+    "@pondoknusa/queue": "3.2.1",
+    "@pondoknusa/views": "3.2.1",
+    "@pondoknusa/repl": "3.2.1"
   },
   "peerDependencies": {
-    "@pondoknusa/database": "^3.2.0"
+    "@pondoknusa/database": "^3.2.1"
   },
   "devDependencies": {
-    "@pondoknusa/database": "3.2.0"
+    "@pondoknusa/database": "3.2.1"
   },
   "files": [
     "dist"

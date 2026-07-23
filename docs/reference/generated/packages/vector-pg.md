@@ -8,21 +8,26 @@ pgvector driver for Pondoknusa vector search
 ## Install
 
 ```bash
-npm install @pondoknusa/vector-pg
+npm install @pondoknusa/vector-pg @pondoknusa/database
 ```
+
+Peer dependencies must be installed in the app (they are not auto-installed on older npm). Drivers that call `extend()` share one instance of the host package.
 
 ## Metadata
 
 | Field | Value |
 |-------|-------|
-| Version | `3.2.0` |
+| Version | `3.2.1` |
 | Source | [`packages/vector-pg`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/vector-pg) |
 | Category | AI & agents |
 | Node.js | `>=26` |
 
-## Pondoknusa dependencies
+## Peer dependencies
 
 - [@pondoknusa/database](/reference/generated/packages/database)
+
+## Pondoknusa dependencies
+
 - [@pondoknusa/vector](/reference/generated/packages/vector)
 
 ## Public exports

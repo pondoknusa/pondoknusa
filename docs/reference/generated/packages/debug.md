@@ -8,22 +8,27 @@ Request timeline and debug bar for Pondoknusa
 ## Install
 
 ```bash
-npm install @pondoknusa/debug
+npm install @pondoknusa/debug @pondoknusa/database
 ```
+
+Peer dependencies must be installed in the app (they are not auto-installed on older npm). Drivers that call `extend()` share one instance of the host package.
 
 ## Metadata
 
 | Field | Value |
 |-------|-------|
-| Version | `3.2.0` |
+| Version | `3.2.1` |
 | Source | [`packages/debug`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/debug) |
 | Category | Platform services |
 | Node.js | `>=26` |
 
+## Peer dependencies
+
+- [@pondoknusa/database](/reference/generated/packages/database)
+
 ## Pondoknusa dependencies
 
 - [@pondoknusa/config](/reference/generated/packages/config)
-- [@pondoknusa/database](/reference/generated/packages/database)
 - [@pondoknusa/http](/reference/generated/packages/http)
 - [@pondoknusa/log](/reference/generated/packages/log)
 - [@pondoknusa/queue](/reference/generated/packages/queue)

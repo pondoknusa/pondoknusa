@@ -8,23 +8,28 @@ Queue and background jobs for Pondoknusa
 ## Install
 
 ```bash
-npm install @pondoknusa/queue
+npm install @pondoknusa/queue @pondoknusa/database
 ```
+
+Peer dependencies must be installed in the app (they are not auto-installed on older npm). Drivers that call `extend()` share one instance of the host package.
 
 ## Metadata
 
 | Field | Value |
 |-------|-------|
-| Version | `3.2.0` |
+| Version | `3.2.1` |
 | Source | [`packages/queue`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/queue) |
 | Category | Platform services |
 | Node.js | `>=26` |
+
+## Peer dependencies
+
+- [@pondoknusa/database](/reference/generated/packages/database)
 
 ## Pondoknusa dependencies
 
 - [@pondoknusa/cache](/reference/generated/packages/cache)
 - [@pondoknusa/container](/reference/generated/packages/container)
-- [@pondoknusa/database](/reference/generated/packages/database)
 - [@pondoknusa/redis](/reference/generated/packages/redis)
 
 ## Public exports

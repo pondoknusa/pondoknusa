@@ -8,22 +8,27 @@ Embedding storage and vector similarity search for Pondoknusa
 ## Install
 
 ```bash
-npm install @pondoknusa/vector
+npm install @pondoknusa/vector @pondoknusa/database
 ```
+
+Peer dependencies must be installed in the app (they are not auto-installed on older npm). Drivers that call `extend()` share one instance of the host package.
 
 ## Metadata
 
 | Field | Value |
 |-------|-------|
-| Version | `3.2.0` |
+| Version | `3.2.1` |
 | Source | [`packages/vector`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/vector) |
 | Category | AI & agents |
 | Node.js | `>=26` |
 
+## Peer dependencies
+
+- [@pondoknusa/database](/reference/generated/packages/database)
+
 ## Pondoknusa dependencies
 
 - [@pondoknusa/cache](/reference/generated/packages/cache)
-- [@pondoknusa/database](/reference/generated/packages/database)
 - [@pondoknusa/queue](/reference/generated/packages/queue)
 
 ## Public exports

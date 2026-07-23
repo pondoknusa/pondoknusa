@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/cache-dynamodb",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -18,7 +18,7 @@
     "@aws-sdk/client-dynamodb": "^3.840.0"
   },
   "peerDependencies": {
-    "@pondoknusa/cache": "3.2.0"
+    "@pondoknusa/cache": "3.2.1"
   },
   "files": [
     "dist"
@@ -27,7 +27,7 @@
     "node": ">=26"
   },
   "devDependencies": {
-    "@pondoknusa/cache": "3.2.0",
+    "@pondoknusa/cache": "3.2.1",
     "@types/node": "^26.0.1"
   },
   "description": "DynamoDB cache driver for Pondoknusa",

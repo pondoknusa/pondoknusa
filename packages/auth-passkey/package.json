@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/auth-passkey",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -19,8 +19,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/config": "3.2.0",
-    "@pondoknusa/core": "3.2.0"
+    "@pondoknusa/config": "3.2.1",
+    "@pondoknusa/core": "3.2.1"
   },
   "files": [
     "dist"

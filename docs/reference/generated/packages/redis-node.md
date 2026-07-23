@@ -17,7 +17,7 @@ Peer dependencies must be installed in the app (they are not auto-installed on o
 
 | Field | Value |
 |-------|-------|
-| Version | `3.2.0` |
+| Version | `3.2.1` |
 | Source | [`packages/redis-node`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/redis-node) |
 | Category | Redis |
 | Node.js | `>=26` |

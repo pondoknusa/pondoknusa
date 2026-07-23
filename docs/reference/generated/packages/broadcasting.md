@@ -15,7 +15,7 @@ npm install @pondoknusa/broadcasting
 
 | Field | Value |
 |-------|-------|
-| Version | `3.2.0` |
+| Version | `3.2.1` |
 | Source | [`packages/broadcasting`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/broadcasting) |
 | Category | Platform services |
 | Node.js | `>=26` |

@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/core",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,30 +15,30 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/auth": "3.2.0",
-    "@pondoknusa/broadcasting": "3.2.0",
-    "@pondoknusa/cache": "3.2.0",
-    "@pondoknusa/config": "3.2.0",
-    "@pondoknusa/crypto": "3.2.0",
-    "@pondoknusa/events": "3.2.0",
-    "@pondoknusa/container": "3.2.0",
-    "@pondoknusa/http": "3.2.0",
-    "@pondoknusa/locale": "3.2.0",
-    "@pondoknusa/log": "3.2.0",
-    "@pondoknusa/mail": "3.2.0",
-    "@pondoknusa/notifications": "3.2.0",
-    "@pondoknusa/queue": "3.2.0",
-    "@pondoknusa/redis": "3.2.0",
-    "@pondoknusa/validation": "3.2.0",
-    "@pondoknusa/views": "3.2.0"
+    "@pondoknusa/auth": "3.2.1",
+    "@pondoknusa/broadcasting": "3.2.1",
+    "@pondoknusa/cache": "3.2.1",
+    "@pondoknusa/config": "3.2.1",
+    "@pondoknusa/crypto": "3.2.1",
+    "@pondoknusa/events": "3.2.1",
+    "@pondoknusa/container": "3.2.1",
+    "@pondoknusa/http": "3.2.1",
+    "@pondoknusa/locale": "3.2.1",
+    "@pondoknusa/log": "3.2.1",
+    "@pondoknusa/mail": "3.2.1",
+    "@pondoknusa/notifications": "3.2.1",
+    "@pondoknusa/queue": "3.2.1",
+    "@pondoknusa/redis": "3.2.1",
+    "@pondoknusa/validation": "3.2.1",
+    "@pondoknusa/views": "3.2.1"
   },
   "peerDependencies": {
-    "@pondoknusa/database": "^3.2.0",
-    "@pondoknusa/storage": "^3.2.0"
+    "@pondoknusa/database": "^3.2.1",
+    "@pondoknusa/storage": "^3.2.1"
   },
   "devDependencies": {
-    "@pondoknusa/database": "3.2.0",
-    "@pondoknusa/storage": "3.2.0"
+    "@pondoknusa/database": "3.2.1",
+    "@pondoknusa/storage": "3.2.1"
   },
   "files": [
     "dist"

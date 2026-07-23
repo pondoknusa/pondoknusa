@@ -8,17 +8,24 @@ Pondoknusa application kernel, providers, and facades
 ## Install
 
 ```bash
-npm install @pondoknusa/core
+npm install @pondoknusa/core @pondoknusa/database @pondoknusa/storage
 ```
+
+Peer dependencies must be installed in the app (they are not auto-installed on older npm). Drivers that call `extend()` share one instance of the host package.
 
 ## Metadata
 
 | Field | Value |
 |-------|-------|
-| Version | `3.2.0` |
+| Version | `3.2.1` |
 | Source | [`packages/core`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/core) |
 | Category | Kernel & HTTP |
 | Node.js | `>=26` |
+
+## Peer dependencies
+
+- [@pondoknusa/database](/reference/generated/packages/database)
+- [@pondoknusa/storage](/reference/generated/packages/storage)
 
 ## Pondoknusa dependencies
 
@@ -28,7 +35,6 @@ npm install @pondoknusa/core
 - [@pondoknusa/config](/reference/generated/packages/config)
 - [@pondoknusa/container](/reference/generated/packages/container)
 - [@pondoknusa/crypto](/reference/generated/packages/crypto)
-- [@pondoknusa/database](/reference/generated/packages/database)
 - [@pondoknusa/events](/reference/generated/packages/events)
 - [@pondoknusa/http](/reference/generated/packages/http)
 - [@pondoknusa/locale](/reference/generated/packages/locale)
@@ -37,7 +43,6 @@ npm install @pondoknusa/core
 - [@pondoknusa/notifications](/reference/generated/packages/notifications)
 - [@pondoknusa/queue](/reference/generated/packages/queue)
 - [@pondoknusa/redis](/reference/generated/packages/redis)
-- [@pondoknusa/storage](/reference/generated/packages/storage)
 - [@pondoknusa/validation](/reference/generated/packages/validation)
 - [@pondoknusa/views](/reference/generated/packages/views)
 
