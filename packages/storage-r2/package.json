@@ -14,7 +14,7 @@
     "@pondoknusa/storage-aws-s3": "3.2.0"
   },
   "peerDependencies": {
-    "@pondoknusa/storage": "3.2.0"
+    "@pondoknusa/storage": "^3.2.0"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",

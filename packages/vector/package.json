@@ -16,8 +16,10 @@
   },
   "dependencies": {
     "@pondoknusa/cache": "3.2.0",
-    "@pondoknusa/database": "3.2.0",
     "@pondoknusa/queue": "3.2.0"
+  },
+  "peerDependencies": {
+    "@pondoknusa/database": "^3.2.0"
   },
   "files": [
     "dist"
@@ -26,6 +28,7 @@
     "node": ">=26"
   },
   "devDependencies": {
+    "@pondoknusa/database": "3.2.0",
     "@types/node": "^26.0.1"
   },
   "description": "Embedding storage and vector similarity search for Pondoknusa",

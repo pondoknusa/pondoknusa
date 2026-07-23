@@ -11,7 +11,7 @@
     }
   },
   "peerDependencies": {
-    "@pondoknusa/database": "3.2.0"
+    "@pondoknusa/database": "^3.2.0"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",

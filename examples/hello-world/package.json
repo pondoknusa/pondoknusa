@@ -16,6 +16,7 @@
     "@pondoknusa/crypto": "3.2.0",
     "@pondoknusa/database": "3.2.0",
     "@pondoknusa/database-pg": "3.2.0",
+    "@pondoknusa/storage": "3.2.0",
     "@pondoknusa/events": "3.2.0",
     "@pondoknusa/http": "3.2.0",
     "@pondoknusa/log": "3.2.0",

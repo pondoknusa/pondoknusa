@@ -18,9 +18,14 @@
     "@pondoknusa/auth": "3.2.0",
     "@pondoknusa/config": "3.2.0",
     "@pondoknusa/container": "3.2.0",
-    "@pondoknusa/database": "3.2.0",
     "@pondoknusa/http": "3.2.0",
     "@pondoknusa/views": "3.2.0"
+  },
+  "peerDependencies": {
+    "@pondoknusa/database": "^3.2.0"
+  },
+  "devDependencies": {
+    "@pondoknusa/database": "3.2.0"
   },
   "files": [
     "dist",

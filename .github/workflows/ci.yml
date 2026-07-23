@@ -29,11 +29,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Singleton peer policy
+        run: npm run check:singleton-peers
+
       - name: Typecheck
         run: npm run typecheck
 
       - name: Build
         run: npm run build
+
+      - name: Singleton peer fixture install
+        run: npm run check:singleton-peers:fixture
 
       - name: Test
         run: npm test

@@ -12,6 +12,8 @@
   "scripts": {
     "build": "tsc -b && npm run build --workspace=@pondoknusa/cli",
     "check:node": "node scripts/check-node.mjs",
+    "check:singleton-peers": "node scripts/check-singleton-peers.mjs",
+    "check:singleton-peers:fixture": "node scripts/check-singleton-peers.mjs --fixture",
     "pretest": "npm run check:node",
     "test": "vitest run",
     "test:watch": "vitest",

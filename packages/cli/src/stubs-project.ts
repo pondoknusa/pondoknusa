@@ -9,6 +9,7 @@ export function projectPackageJson(name: string, options: NewProjectOptions): st
     '@pondoknusa/config': CORE_VERSION,
     '@pondoknusa/core': CORE_VERSION,
     '@pondoknusa/database': CORE_VERSION,
+    '@pondoknusa/storage': CORE_VERSION,
     '@pondoknusa/events': CORE_VERSION,
     '@pondoknusa/http': CORE_VERSION,
     '@pondoknusa/log': CORE_VERSION,

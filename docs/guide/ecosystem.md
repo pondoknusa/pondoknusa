@@ -28,6 +28,7 @@ Drivers should expose:
 - Target the **latest `1.x`** minor when depending on `@pondoknusa/*`
 - Pin the same version for all `@pondoknusa/*` deps in your package (e.g. `^1.2.0` everywhere)
 - Use **peerDependencies** for `@pondoknusa/core` (and other facades you call) so apps supply one copy
+- Singleton hosts mutated via `extend()` (`@pondoknusa/database`, `@pondoknusa/storage`, and similarly `@pondoknusa/cache` / `@pondoknusa/redis`) must stay **peers** of every package that imports them — never hard dependencies
 - Follow [STABILITY.md](https://github.com/pondoknusa/pondoknusa/blob/main/STABILITY.md) — depend only on **stable** exports from package entry points
 
 ## Service provider template
