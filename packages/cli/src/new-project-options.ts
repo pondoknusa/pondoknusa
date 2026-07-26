@@ -2,7 +2,7 @@ import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import { optionString } from './utils.js';
 
-export type DatabaseDriver = 'sqlite' | 'mysql' | 'postgres';
+export type DatabaseDriver = 'sqlite' | 'mysql' | 'postgres' | 'oracle' | 'mssql';
 export type QueueDriver = 'database' | 'redis';
 export type MailDriver = 'log' | 'smtp' | 'array';
 
@@ -23,6 +23,8 @@ const DATABASE_CHOICES: { value: DatabaseDriver; label: string }[] = [
   { value: 'sqlite', label: 'SQLite (no extra dependencies)' },
   { value: 'mysql', label: 'MySQL (+ @pondoknusa/database-mysql)' },
   { value: 'postgres', label: 'PostgreSQL (+ @pondoknusa/database-pg)' },
+  { value: 'oracle', label: 'Oracle (+ @pondoknusa/database-oracle)' },
+  { value: 'mssql', label: 'SQL Server (+ @pondoknusa/database-mssql)' },
 ];
 
 const QUEUE_CHOICES: { value: QueueDriver; label: string }[] = [
@@ -182,10 +184,18 @@ export async function resolveNewProjectOptions(
 }
 
 function parseDatabaseDriver(value: string): DatabaseDriver {
-  if (value === 'sqlite' || value === 'mysql' || value === 'postgres') {
+  if (
+    value === 'sqlite' ||
+    value === 'mysql' ||
+    value === 'postgres' ||
+    value === 'oracle' ||
+    value === 'mssql'
+  ) {
     return value;
   }
-  throw new Error(`Unsupported database driver "${value}". Use sqlite, mysql, or postgres.`);
+  throw new Error(
+    `Unsupported database driver "${value}". Use sqlite, mysql, postgres, oracle, or mssql.`,
+  );
 }
 
 function parseQueueDriver(value: string): QueueDriver {

@@ -274,6 +274,9 @@ export class QueryBuilder<T extends Row = Row> {
 
     let sql = `SELECT ${columns.join(', ')} FROM ${this.grammar.wrapIdentifier(this.tableName)}${where.sql}`;
 
+    const hasLimitOffset =
+      this.limitCount !== undefined || this.offsetCount !== undefined;
+
     if (this.orders.length > 0) {
       const orderings = this.orders
         .map(
@@ -282,17 +285,34 @@ export class QueryBuilder<T extends Row = Row> {
         )
         .join(', ');
       sql += ` ORDER BY ${orderings}`;
+    } else if (hasLimitOffset && this.grammar.driver === 'mssql') {
+      sql += ' ORDER BY (SELECT NULL)';
     }
 
-    if (this.limitCount !== undefined) {
-      sql += ` LIMIT ${this.grammar.parameter(bindings.length + 1)}`;
-      bindings.push(this.limitCount);
+    let limitParam: string | undefined;
+    let offsetParam: string | undefined;
+
+    if (this.grammar.driver === 'oracle' || this.grammar.driver === 'mssql') {
+      if (hasLimitOffset) {
+        offsetParam = this.grammar.parameter(bindings.length + 1);
+        bindings.push(this.offsetCount ?? 0);
+        if (this.limitCount !== undefined) {
+          limitParam = this.grammar.parameter(bindings.length + 1);
+          bindings.push(this.limitCount);
+        }
+      }
+    } else {
+      if (this.limitCount !== undefined) {
+        limitParam = this.grammar.parameter(bindings.length + 1);
+        bindings.push(this.limitCount);
+      }
+      if (this.offsetCount !== undefined) {
+        offsetParam = this.grammar.parameter(bindings.length + 1);
+        bindings.push(this.offsetCount);
+      }
     }
 
-    if (this.offsetCount !== undefined) {
-      sql += ` OFFSET ${this.grammar.parameter(bindings.length + 1)}`;
-      bindings.push(this.offsetCount);
-    }
+    sql += this.grammar.compileLimitOffset(limitParam, offsetParam);
 
     return { sql, bindings };
   }

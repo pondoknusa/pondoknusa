@@ -33,6 +33,12 @@ export function projectPackageJson(name: string, options: NewProjectOptions): st
   if (options.database === 'postgres') {
     dependencies['@pondoknusa/database-pg'] = CORE_VERSION;
   }
+  if (options.database === 'oracle') {
+    dependencies['@pondoknusa/database-oracle'] = CORE_VERSION;
+  }
+  if (options.database === 'mssql') {
+    dependencies['@pondoknusa/database-mssql'] = CORE_VERSION;
+  }
   if (options.redis) {
     dependencies['@pondoknusa/redis'] = CORE_VERSION;
     dependencies['@pondoknusa/redis-node'] = CORE_VERSION;
@@ -88,6 +94,16 @@ export function mainEntry(options: NewProjectOptions): string {
       "import { PgDatabaseServiceProvider } from '@pondoknusa/database-pg';",
     );
     driverProviders.push('app.register(PgDatabaseServiceProvider);');
+  } else if (options.database === 'oracle') {
+    driverImports.push(
+      "import { OracleDatabaseServiceProvider } from '@pondoknusa/database-oracle';",
+    );
+    driverProviders.push('app.register(OracleDatabaseServiceProvider);');
+  } else if (options.database === 'mssql') {
+    driverImports.push(
+      "import { MssqlDatabaseServiceProvider } from '@pondoknusa/database-mssql';",
+    );
+    driverProviders.push('app.register(MssqlDatabaseServiceProvider);');
   }
 
   if (options.redis) {
@@ -247,6 +263,72 @@ export default {
 `;
   }
 
+  if (options.database === 'oracle') {
+    return `import type { OracleConnectionConfig } from '@pondoknusa/database-oracle';
+import { env, envBool, envInt, s } from '@pondoknusa/config';
+
+export const schema = s.object({
+  default: s.string({ required: true, minLength: 1 }),
+  connections: s.object({
+    oracle: s.object({
+      driver: s.string({ enum: ['oracle'] }),
+      host: s.string({ required: true, minLength: 1 }),
+      database: s.string({ required: true, minLength: 1 }),
+    }),
+  }),
+});
+
+export default {
+  default: env('DB_CONNECTION', 'oracle'),
+  poolWarmup: envBool('DB_POOL_WARMUP', env('NODE_ENV', 'development') === 'production'),
+  connections: {
+    oracle: {
+      driver: 'oracle',
+      host: env('DB_HOST', '127.0.0.1'),
+      port: envInt('DB_PORT', 1521),
+      database: env('DB_DATABASE', 'FREEPDB1'),
+      username: env('DB_USERNAME', 'system'),
+      password: env('DB_PASSWORD', ''),
+    } satisfies OracleConnectionConfig,
+  },
+} as const;
+`;
+  }
+
+  if (options.database === 'mssql') {
+    return `import type { MssqlConnectionConfig } from '@pondoknusa/database-mssql';
+import { env, envBool, envInt, s } from '@pondoknusa/config';
+
+export const schema = s.object({
+  default: s.string({ required: true, minLength: 1 }),
+  connections: s.object({
+    mssql: s.object({
+      driver: s.string({ enum: ['mssql'] }),
+      host: s.string({ required: true, minLength: 1 }),
+      database: s.string({ required: true, minLength: 1 }),
+    }),
+  }),
+});
+
+export default {
+  default: env('DB_CONNECTION', 'mssql'),
+  poolWarmup: envBool('DB_POOL_WARMUP', env('NODE_ENV', 'development') === 'production'),
+  connections: {
+    mssql: {
+      driver: 'mssql',
+      host: env('DB_HOST', '127.0.0.1'),
+      port: envInt('DB_PORT', 1433),
+      database: env('DB_DATABASE', 'pondoknusa'),
+      username: env('DB_USERNAME', 'sa'),
+      password: env('DB_PASSWORD', ''),
+      encrypt: envBool('DB_ENCRYPT', true),
+      trustServerCertificate: envBool('DB_TRUST_SERVER_CERTIFICATE', false),
+    } satisfies MssqlConnectionConfig,
+  },
+} as const;
+`;
+  }
+
   return `import { env, envBool, s } from '@pondoknusa/config';
 
 export const schema = s.object({
@@ -347,9 +429,25 @@ export function envExample(name: string, options: NewProjectOptions): string {
 DB_DATABASE=database/database.sqlite`
       : `DB_CONNECTION=${options.database}
 DB_HOST=127.0.0.1
-DB_PORT=${options.database === 'postgres' ? '5432' : '3306'}
-DB_DATABASE=pondoknusa
-DB_USERNAME=${options.database === 'postgres' ? 'postgres' : 'root'}
+DB_PORT=${
+          options.database === 'postgres'
+            ? '5432'
+            : options.database === 'oracle'
+              ? '1521'
+              : options.database === 'mssql'
+                ? '1433'
+                : '3306'
+        }
+DB_DATABASE=${options.database === 'oracle' ? 'FREEPDB1' : 'pondoknusa'}
+DB_USERNAME=${
+          options.database === 'postgres'
+            ? 'postgres'
+            : options.database === 'oracle'
+              ? 'system'
+              : options.database === 'mssql'
+                ? 'sa'
+                : 'root'
+        }
 DB_PASSWORD=`;
 
   const redisLines = options.redis

@@ -27,7 +27,9 @@ export {
   setFactoryLocale,
 } from './factory-helpers.js';
 export {
+  MssqlGrammar,
   MysqlGrammar,
+  OracleGrammar,
   PostgresGrammar,
   SqliteGrammar,
 } from './grammar.js';

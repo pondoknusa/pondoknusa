@@ -23,10 +23,12 @@ Scaffold sources live in `packages/cli/src/stubs*.ts`. Optional configs are adde
 
 | Key | Env var | Notes |
 |-----|---------|-------|
-| `default` | `DB_CONNECTION` | `sqlite`, `mysql`, `postgres`, or `d1` |
+| `default` | `DB_CONNECTION` | `sqlite`, `mysql`, `postgres`, `oracle`, `mssql`, or `d1` |
 | `connections.sqlite.database` | `DB_DATABASE` | Path to SQLite file |
 | `connections.mysql.*` | `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_DATABASE` | Requires `@pondoknusa/database-mysql` + peer `@pondoknusa/database` |
 | `connections.postgres.*` | same pattern | Requires `@pondoknusa/database-pg` + peer `@pondoknusa/database` |
+| `connections.oracle.*` | same pattern (`DB_DATABASE` = service name; default port `1521`) | Requires `@pondoknusa/database-oracle` + peer `@pondoknusa/database` |
+| `connections.mssql.*` | same pattern + `DB_ENCRYPT`, `DB_TRUST_SERVER_CERTIFICATE` (default port `1433`) | Requires `@pondoknusa/database-mssql` + peer `@pondoknusa/database` |
 | `connections.d1.*` | `CLOUDFLARE_ACCOUNT_ID`, `D1_DATABASE_ID`, `CLOUDFLARE_API_TOKEN` | Requires `@pondoknusa/database-d1` + peer `@pondoknusa/database` (or inject a Workers `binding`) |
 
 ### `config/queue.ts`

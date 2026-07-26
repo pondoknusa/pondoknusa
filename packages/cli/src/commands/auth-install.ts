@@ -102,7 +102,12 @@ async function resolveHeadlessAuthOptions(root: string): Promise<NewProjectOptio
 
   const defaultDb = config.database?.default ?? 'sqlite';
   const database =
-    defaultDb === 'mysql' || defaultDb === 'postgres' ? defaultDb : 'sqlite';
+    defaultDb === 'mysql' ||
+    defaultDb === 'postgres' ||
+    defaultDb === 'oracle' ||
+    defaultDb === 'mssql'
+      ? defaultDb
+      : 'sqlite';
 
   return {
     database,

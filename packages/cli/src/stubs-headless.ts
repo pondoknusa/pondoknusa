@@ -108,6 +108,12 @@ export function headlessPackageJson(name: string, options: NewProjectOptions): s
   if (options.database === 'postgres') {
     dependencies['@pondoknusa/database-pg'] = CORE_VERSION;
   }
+  if (options.database === 'oracle') {
+    dependencies['@pondoknusa/database-oracle'] = CORE_VERSION;
+  }
+  if (options.database === 'mssql') {
+    dependencies['@pondoknusa/database-mssql'] = CORE_VERSION;
+  }
   if (options.redis) {
     dependencies['@pondoknusa/redis'] = CORE_VERSION;
     dependencies['@pondoknusa/redis-node'] = CORE_VERSION;
@@ -152,6 +158,16 @@ export function headlessMainEntry(options: NewProjectOptions): string {
       "import { PgDatabaseServiceProvider } from '@pondoknusa/database-pg';",
     );
     driverProviders.push('app.register(PgDatabaseServiceProvider);');
+  } else if (options.database === 'oracle') {
+    driverImports.push(
+      "import { OracleDatabaseServiceProvider } from '@pondoknusa/database-oracle';",
+    );
+    driverProviders.push('app.register(OracleDatabaseServiceProvider);');
+  } else if (options.database === 'mssql') {
+    driverImports.push(
+      "import { MssqlDatabaseServiceProvider } from '@pondoknusa/database-mssql';",
+    );
+    driverProviders.push('app.register(MssqlDatabaseServiceProvider);');
   }
 
   if (options.redis) {
@@ -322,6 +338,16 @@ export function headlessMainEntryWithAuth(options: NewProjectOptions): string {
       "import { PgDatabaseServiceProvider } from '@pondoknusa/database-pg';",
     );
     driverProviders.push('app.register(PgDatabaseServiceProvider);');
+  } else if (options.database === 'oracle') {
+    driverImports.push(
+      "import { OracleDatabaseServiceProvider } from '@pondoknusa/database-oracle';",
+    );
+    driverProviders.push('app.register(OracleDatabaseServiceProvider);');
+  } else if (options.database === 'mssql') {
+    driverImports.push(
+      "import { MssqlDatabaseServiceProvider } from '@pondoknusa/database-mssql';",
+    );
+    driverProviders.push('app.register(MssqlDatabaseServiceProvider);');
   }
 
   if (options.redis) {

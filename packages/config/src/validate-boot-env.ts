@@ -63,7 +63,7 @@ function collectConnectionFailures(config: ConfigTree): ConfigValidationFailure[
       );
     } else {
       const driver = connection.driver;
-      if (driver === 'mysql' || driver === 'postgres') {
+      if (driver === 'mysql' || driver === 'postgres' || driver === 'oracle' || driver === 'mssql') {
         if (!isNonEmpty(connection.database)) {
           failures.push(fail('database', `connections.${dbDefault}.database`, 'DB_DATABASE is required'));
         }

@@ -111,7 +111,7 @@ Managed git-push deploy with Postgres, Redis, R2, and CDN — similar to Laravel
 | `APP_URL` | Public HTTPS URL |
 | `PONDOKNUSA_HOST` | `0.0.0.0` |
 | `PONDOKNUSA_PORT` | Platform `PORT` |
-| `DB_CONNECTION` | `postgres` or `mysql` |
+| `DB_CONNECTION` | `postgres`, `mysql`, `oracle`, or `mssql` |
 | `DB_POOL_WARMUP` | `true` |
 | `CACHE_STORE` | `redis` when Redis is available |
 | `QUEUE_CONNECTION` | `database` or `redis` |

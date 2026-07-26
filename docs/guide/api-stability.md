@@ -107,7 +107,7 @@ See [Upgrading to 3.0](/guide/upgrading-to-3.0) for the full breaking-change tab
 
 ## Optional drivers
 
-Packages such as `@pondoknusa/database-mysql`, `@pondoknusa/database-pg`, `@pondoknusa/database-d1`, `@pondoknusa/redis-node`, and `@pondoknusa/storage-aws-s3` version with the monorepo but install only when needed. Their public surface is the driver config types and provider registration — not the full framework API.
+Packages such as `@pondoknusa/database-mysql`, `@pondoknusa/database-pg`, `@pondoknusa/database-oracle`, `@pondoknusa/database-mssql`, `@pondoknusa/database-d1`, `@pondoknusa/redis-node`, and `@pondoknusa/storage-aws-s3` version with the monorepo but install only when needed. Their public surface is the driver config types and provider registration — not the full framework API.
 
 Optional drivers declare the shared host package (`@pondoknusa/database`, `@pondoknusa/storage`, `@pondoknusa/cache`, `@pondoknusa/redis`) as a **peerDependency** so `extend()` / client factories mutate the same singleton the app and `@pondoknusa/core` use. Framework packages that import those managers (`@pondoknusa/core`, `@pondoknusa/auth`, and similar) also declare them as peers — never hard dependencies — so npm cannot nest a second copy under `core/node_modules`. Install the host package in the app alongside the driver (for example `@pondoknusa/database` + `@pondoknusa/database-d1`). Peer ranges use `^3.2.0` so patch bumps stay hoisted.
 

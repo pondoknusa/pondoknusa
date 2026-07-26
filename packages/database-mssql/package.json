@@ -1,0 +1,44 @@
+{
+  "name": "@pondoknusa/database-mssql",
+  "version": "3.2.1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "mssql": "^11.0.1"
+  },
+  "peerDependencies": {
+    "@pondoknusa/database": "^3.2.1"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=26"
+  },
+  "devDependencies": {
+    "@pondoknusa/database": "3.2.1",
+    "@types/mssql": "^9.1.7",
+    "@types/node": "^26.0.1"
+  },
+  "description": "Microsoft SQL Server database driver for Pondoknusa",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pondoknusa/pondoknusa.git",
+    "directory": "packages/database-mssql"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

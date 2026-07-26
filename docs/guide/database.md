@@ -24,7 +24,11 @@ Optional drivers (register the matching service provider **before** `DatabaseSer
 |--------|---------|---------|
 | `postgres` | `@pondoknusa/database-pg` | `npm install @pondoknusa/database-pg @pondoknusa/database` |
 | `mysql` | `@pondoknusa/database-mysql` | `npm install @pondoknusa/database-mysql @pondoknusa/database` |
+| `oracle` | `@pondoknusa/database-oracle` | `npm install @pondoknusa/database-oracle @pondoknusa/database` |
+| `mssql` | `@pondoknusa/database-mssql` | `npm install @pondoknusa/database-mssql @pondoknusa/database` |
 | `d1` | `@pondoknusa/database-d1` | `npm install @pondoknusa/database-d1 @pondoknusa/database` |
+
+Oracle uses thin mode by default (no Instant Client required for typical setups). `DB_DATABASE` is the Oracle service name. SQL Server accepts optional `encrypt` / `trustServerCertificate` (env: `DB_ENCRYPT`, `DB_TRUST_SERVER_CERTIFICATE`).
 
 ## Models
 

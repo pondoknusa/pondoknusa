@@ -321,6 +321,18 @@ export function aiMainEntry(options: NewProjectOptions): string {
     bootstrapLines.splice(1, 0, "import { registerVectorSearchForConnection } from '@pondoknusa/vector-pg';");
     bootstrapLines.push('');
     bootstrapLines.push("// Register pgvector after the database boots in AppServiceProvider if needed.");
+  } else if (options.database === 'oracle') {
+    driverImports.push("import { OracleDatabaseServiceProvider } from '@pondoknusa/database-oracle';");
+    driverProviders.push('app.register(OracleDatabaseServiceProvider);');
+    bootstrapLines.splice(1, 0, "import { registerLocalVectorSearchDriver } from '@pondoknusa/vector';");
+    bootstrapLines.push('');
+    bootstrapLines.push("registerLocalVectorSearchDriver('sqlite');");
+  } else if (options.database === 'mssql') {
+    driverImports.push("import { MssqlDatabaseServiceProvider } from '@pondoknusa/database-mssql';");
+    driverProviders.push('app.register(MssqlDatabaseServiceProvider);');
+    bootstrapLines.splice(1, 0, "import { registerLocalVectorSearchDriver } from '@pondoknusa/vector';");
+    bootstrapLines.push('');
+    bootstrapLines.push("registerLocalVectorSearchDriver('sqlite');");
   } else {
     bootstrapLines.splice(1, 0, "import { registerLocalVectorSearchDriver } from '@pondoknusa/vector';");
     bootstrapLines.push('');

@@ -117,6 +117,18 @@
       "path": "reference/generated/packages/database-mysql"
     },
     {
+      "name": "@pondoknusa/database-mssql",
+      "slug": "database-mssql",
+      "description": "Microsoft SQL Server database driver for Pondoknusa",
+      "path": "reference/generated/packages/database-mssql"
+    },
+    {
+      "name": "@pondoknusa/database-oracle",
+      "slug": "database-oracle",
+      "description": "Oracle database driver for Pondoknusa",
+      "path": "reference/generated/packages/database-oracle"
+    },
+    {
       "name": "@pondoknusa/database-pg",
       "slug": "database-pg",
       "description": "PostgreSQL database driver for Pondoknusa",

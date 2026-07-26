@@ -148,4 +148,51 @@ describe('NewCommand', () => {
       'WebSocketBroadcastServiceProvider',
     );
   });
+
+  it('scaffolds oracle and mssql driver packages when requested', async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'pondoknusa-new-'));
+    const command = new NewCommand();
+
+    const oracleCode = await command.handle([
+      'oracle-app',
+      `--path=${tempDir}`,
+      '--db=oracle',
+      '--no-redis',
+      '--no-auth',
+    ]);
+    const oracleDir = join(tempDir, 'oracle-app');
+    const oraclePkg = JSON.parse(readFileSync(join(oracleDir, 'package.json'), 'utf8')) as {
+      dependencies: Record<string, string>;
+    };
+
+    expect(oracleCode).toBe(0);
+    expect(oraclePkg.dependencies['@pondoknusa/database-oracle']).toBeDefined();
+    expect(readFileSync(join(oracleDir, 'src/main.ts'), 'utf8')).toContain(
+      'OracleDatabaseServiceProvider',
+    );
+    expect(readFileSync(join(oracleDir, 'config/database.ts'), 'utf8')).toContain(
+      "driver: 'oracle'",
+    );
+
+    const mssqlCode = await command.handle([
+      'mssql-app',
+      `--path=${tempDir}`,
+      '--db=mssql',
+      '--no-redis',
+      '--no-auth',
+    ]);
+    const mssqlDir = join(tempDir, 'mssql-app');
+    const mssqlPkg = JSON.parse(readFileSync(join(mssqlDir, 'package.json'), 'utf8')) as {
+      dependencies: Record<string, string>;
+    };
+
+    expect(mssqlCode).toBe(0);
+    expect(mssqlPkg.dependencies['@pondoknusa/database-mssql']).toBeDefined();
+    expect(readFileSync(join(mssqlDir, 'src/main.ts'), 'utf8')).toContain(
+      'MssqlDatabaseServiceProvider',
+    );
+    expect(readFileSync(join(mssqlDir, 'config/database.ts'), 'utf8')).toContain(
+      "driver: 'mssql'",
+    );
+  });
 });

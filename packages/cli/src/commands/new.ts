@@ -77,7 +77,7 @@ export class NewCommand extends Command {
   override readonly name = 'new';
   override readonly description = 'Create a new Pondoknusa application';
   override readonly usage =
-    'pondoknusa new <name> [--path=<directory>] [--headless] [--template=default|api|ssr|saas|headless] [--db=sqlite|mysql|postgres] [--redis|--no-redis] [--auth|--no-auth] [--queue=database|redis] [--mail=log|smtp|array] [--ai|--no-ai]';
+    'pondoknusa new <name> [--path=<directory>] [--headless] [--template=default|api|ssr|saas|headless] [--db=sqlite|mysql|postgres|oracle|mssql] [--redis|--no-redis] [--auth|--no-auth] [--queue=database|redis] [--mail=log|smtp|array] [--ai|--no-ai]';
 
   async handle(args: string[]): Promise<number> {
     const options = parseOptions(args);
