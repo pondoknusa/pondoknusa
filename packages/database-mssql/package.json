@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/database-mssql",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,7 +14,7 @@
     "mssql": "^11.0.1"
   },
   "peerDependencies": {
-    "@pondoknusa/database": "^3.2.1"
+    "@pondoknusa/database": "^3.3.0"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -27,7 +27,7 @@
     "node": ">=26"
   },
   "devDependencies": {
-    "@pondoknusa/database": "3.2.1",
+    "@pondoknusa/database": "3.3.0",
     "@types/mssql": "^9.1.7",
     "@types/node": "^26.0.1"
   },

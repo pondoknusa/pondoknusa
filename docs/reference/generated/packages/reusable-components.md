@@ -15,7 +15,7 @@ npm install @pondoknusa/reusable-components
 
 | Field | Value |
 |-------|-------|
-| Version | `3.2.1` |
+| Version | `3.3.0` |
 | Source | [`packages/reusable-components`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/reusable-components) |
 | Category | Other packages |
 | Node.js | `>=26` |

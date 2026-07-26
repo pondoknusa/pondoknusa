@@ -17,7 +17,7 @@ Peer dependencies must be installed in the app (they are not auto-installed on o
 
 | Field | Value |
 |-------|-------|
-| Version | `3.2.1` |
+| Version | `3.3.0` |
 | Source | [`packages/database-mssql`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/database-mssql) |
 | Category | Database |
 | Node.js | `>=26` |
@@ -32,8 +32,8 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 
 ### Values
 
-- `MssqlDatabaseServiceProvider`
 - `MssqlConnection`
+- `MssqlDatabaseServiceProvider`
 - `registerMssqlDatabaseDriver`
 
 ### Types

@@ -156,12 +156,12 @@ export const referenceSidebar = [
         "link": "/reference/generated/packages/database-d1"
       },
       {
-        "text": "database-mysql",
-        "link": "/reference/generated/packages/database-mysql"
-      },
-      {
         "text": "database-mssql",
         "link": "/reference/generated/packages/database-mssql"
+      },
+      {
+        "text": "database-mysql",
+        "link": "/reference/generated/packages/database-mysql"
       },
       {
         "text": "database-oracle",

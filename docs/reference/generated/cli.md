@@ -5,7 +5,7 @@
 
 Auto-generated from `pondoknusa list` via `@pondoknusa/cli`.
 
-Monorepo version: **3.2.1**.
+Monorepo version: **3.3.0**.
 
 ## Usage
 
@@ -22,7 +22,7 @@ pondoknusa help <command>
 | `dev` | Start the local development server with hot reload | `pondoknusa dev [--port=<port>] [--host=<hostname>] [--tls] [--no-queue] [--no-watch]` |
 | `doctor` | Run environment and project health checks | `pondoknusa doctor [--perf]` |
 | `migrate` | Run database migrations | `pondoknusa migrate` |
-| `new` | Create a new Pondoknusa application | `pondoknusa new <name> [--path=<directory>] [--headless] [--template=default\|api\|ssr\|saas\|headless] [--db=sqlite\|mysql\|postgres] [--redis\|--no-redis] [--auth\|--no-auth] [--queue=database\|redis] [--mail=log\|smtp\|array] [--ai\|--no-ai]` |
+| `new` | Create a new Pondoknusa application | `pondoknusa new <name> [--path=<directory>] [--headless] [--template=default\|api\|ssr\|saas\|headless] [--db=sqlite\|mysql\|postgres\|oracle\|mssql] [--redis\|--no-redis] [--auth\|--no-auth] [--queue=database\|redis] [--mail=log\|smtp\|array] [--ai\|--no-ai]` |
 | `serve` | Start the development server | `pondoknusa serve [--port=<port>] [--host=<hostname>] [--tls]` |
 | `shell` | Start an interactive Pondoknusa shell (REPL) | — |
 | `start` | Start the production server | `pondoknusa start [--port=<port>] [--host=<hostname>] [--cluster] [--workers=<n>]` |

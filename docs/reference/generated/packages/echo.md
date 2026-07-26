@@ -15,7 +15,7 @@ npm install @pondoknusa/echo
 
 | Field | Value |
 |-------|-------|
-| Version | `3.2.1` |
+| Version | `3.3.0` |
 | Source | [`packages/echo`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/echo) |
 | Category | Views & client |
 | Node.js | `>=26` |
