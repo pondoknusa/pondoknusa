@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/lint",
-  "version": "3.4.0",
+  "version": "3.4.1",
   "description": "Static and request-level linter for Pondoknusa applications (routes, auth, CSRF)",
   "type": "module",
   "bin": {

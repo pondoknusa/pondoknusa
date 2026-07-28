@@ -15,6 +15,12 @@ describe('csrf except matching', () => {
     expect(isNestedApiPath('/api/v1/login')).toBe(true);
     expect(isNestedApiPath('/api/posts')).toBe(false);
   });
+
+  it('supports ** depth globs without the single-* rewrite bug', () => {
+    expect(pathMatchesCsrfExcept('/api/v1/login', ['/api/**'])).toBe(true);
+    expect(pathMatchesCsrfExcept('/api/v1/cli/browser-auth', ['/api/**'])).toBe(true);
+    expect(pathMatchesCsrfExcept('/login', ['/api/**'])).toBe(false);
+  });
 });
 
 describe('lintApplication', () => {

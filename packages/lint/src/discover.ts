@@ -218,8 +218,21 @@ export async function discoverProject(project: ProjectInfo): Promise<ProjectDisc
 
   const combined = [entrySource ?? '', ...providerSources.values()].join('\n');
 
+  const httpDir = join(project.root, 'src', 'http');
+  const httpSources: string[] = [];
+  if (await pathExists(httpDir)) {
+    for (const file of await listSourceFiles(httpDir)) {
+      const source = await readSource(file);
+      if (source !== undefined) {
+        httpSources.push(source);
+      }
+    }
+  }
+
   let csrfExceptPatterns: string[] = [...DEFAULT_CSRF_EXCEPT];
-  const customExcept = extractCsrfExceptPatterns(combined);
+  const customExcept = extractCsrfExceptPatterns(
+    [combined, ...httpSources].join('\n'),
+  );
   if (customExcept) {
     csrfExceptPatterns = customExcept;
   }
