@@ -90,6 +90,7 @@ jobs:
             @pondoknusa/debug
             @pondoknusa/testing
             @pondoknusa/core
+            @pondoknusa/lint
             @pondoknusa/auth-oauth
             @pondoknusa/repl
             @pondoknusa/cli
