@@ -1,0 +1,4 @@
+<form method="POST" action="/contact">
+  <input name="email" type="email" />
+  <button type="submit">Send</button>
+</form>

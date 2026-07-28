@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "references": [
+    { "path": "../auth" },
+    { "path": "../config" },
+    { "path": "../core" },
+    { "path": "../http" },
+    { "path": "../database" }
+  ],
+  "include": ["src"],
+  "exclude": ["src/**/*.test.ts", "src/__fixtures__"]
+}

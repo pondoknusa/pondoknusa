@@ -19,6 +19,7 @@
     { "path": "../notifications" },
     { "path": "../queue" },
     { "path": "../views" },
+    { "path": "../lint" },
     { "path": "../repl" }
   ],
   "include": ["src"]

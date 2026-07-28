@@ -1,0 +1,4 @@
+{
+  "name": "lint-fixture-csrf",
+  "entry": "src/main.ts"
+}

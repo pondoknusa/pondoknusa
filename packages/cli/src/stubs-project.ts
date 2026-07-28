@@ -64,7 +64,9 @@ export function projectPackageJson(name: string, options: NewProjectOptions): st
         start: 'pondoknusa start',
         'dev:worker': 'pondoknusa queue:work',
         test: 'pondoknusa test',
-        precommit: 'pondoknusa view:lint',
+        precommit: 'pondoknusa view:lint && pondoknusa app:lint',
+        'app:lint': 'pondoknusa app:lint',
+        'app:lint:static': 'pondoknusa app:lint --static-only',
       },
       dependencies: {
         ...dependencies,

@@ -1,0 +1,4 @@
+{
+  "name": "lint-fixture-problems",
+  "entry": "src/main.ts"
+}

@@ -49,6 +49,7 @@
     { "path": "packages/mail" },
     { "path": "packages/notifications" },
     { "path": "packages/core" },
+    { "path": "packages/lint" },
     { "path": "packages/testing" },
     { "path": "packages/telegram" },
     { "path": "packages/telegram-2fa" },

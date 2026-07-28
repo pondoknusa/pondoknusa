@@ -1,0 +1,4 @@
+{
+  "name": "lint-fixture-good",
+  "entry": "src/main.ts"
+}
