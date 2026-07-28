@@ -15,7 +15,7 @@ npm install @pondoknusa/storage
 
 | Field | Value |
 |-------|-------|
-| Version | `3.3.0` |
+| Version | `3.4.0` |
 | Source | [`packages/storage`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/storage) |
 | Category | Platform services |
 | Node.js | `>=26` |

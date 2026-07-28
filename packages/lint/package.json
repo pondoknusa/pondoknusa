@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/lint",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "description": "Static and request-level linter for Pondoknusa applications (routes, auth, CSRF)",
   "type": "module",
   "bin": {
@@ -22,13 +22,13 @@
     "dist"
   ],
   "dependencies": {
-    "@pondoknusa/auth": "3.3.0",
-    "@pondoknusa/config": "3.3.0",
-    "@pondoknusa/core": "3.3.0",
-    "@pondoknusa/http": "3.3.0"
+    "@pondoknusa/auth": "3.4.0",
+    "@pondoknusa/config": "3.4.0",
+    "@pondoknusa/core": "3.4.0",
+    "@pondoknusa/http": "3.4.0"
   },
   "peerDependencies": {
-    "@pondoknusa/database": "^3.3.0"
+    "@pondoknusa/database": "^3.4.0"
   },
   "peerDependenciesMeta": {
     "@pondoknusa/database": {
@@ -36,7 +36,7 @@
     }
   },
   "devDependencies": {
-    "@pondoknusa/database": "3.3.0"
+    "@pondoknusa/database": "3.4.0"
   },
   "engines": {
     "node": ">=26"

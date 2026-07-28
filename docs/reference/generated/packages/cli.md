@@ -17,7 +17,7 @@ Peer dependencies must be installed in the app (they are not auto-installed on o
 
 | Field | Value |
 |-------|-------|
-| Version | `3.3.0` |
+| Version | `3.4.0` |
 | Source | [`packages/cli`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/cli) |
 | Category | Developer experience |
 | Node.js | `>=26` |
@@ -33,6 +33,7 @@ Peer dependencies must be installed in the app (they are not auto-installed on o
 - [@pondoknusa/core](/reference/generated/packages/core)
 - [@pondoknusa/crypto](/reference/generated/packages/crypto)
 - [@pondoknusa/debug](/reference/generated/packages/debug)
+- [@pondoknusa/lint](/reference/generated/packages/lint)
 - [@pondoknusa/locale](/reference/generated/packages/locale)
 - [@pondoknusa/mcp](/reference/generated/packages/mcp)
 - [@pondoknusa/notifications](/reference/generated/packages/notifications)

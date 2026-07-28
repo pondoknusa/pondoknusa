@@ -226,6 +226,10 @@ export const referenceSidebar = [
     "collapsed": true,
     "items": [
       {
+        "text": "lint",
+        "link": "/reference/generated/packages/lint"
+      },
+      {
         "text": "reusable-components",
         "link": "/reference/generated/packages/reusable-components"
       },

@@ -5,7 +5,7 @@
 
 Auto-generated from `packages/*/package.json` and compiled TypeScript declarations.
 
-Current monorepo version: **3.3.0**.
+Current monorepo version: **3.4.0**.
 
 ## AI & agents
 
@@ -61,6 +61,7 @@ Current monorepo version: **3.3.0**.
 
 | Package | Description |
 |---------|-------------|
+| [@pondoknusa/lint](/reference/generated/packages/lint) | Static and request-level linter for Pondoknusa applications (routes, auth, CSRF) |
 | [@pondoknusa/reusable-components](/reference/generated/packages/reusable-components) | Reusable .tyr view components for Pondoknusa applications |
 | [@pondoknusa/telegram](/reference/generated/packages/telegram) | Telegram Bot API integration for Pondoknusa |
 | [@pondoknusa/telegram-2fa](/reference/generated/packages/telegram-2fa) | Two-factor auth via Telegram for Pondoknusa |

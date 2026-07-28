@@ -5,7 +5,7 @@
 
 Auto-generated from `pondoknusa list` via `@pondoknusa/cli`.
 
-Monorepo version: **3.3.0**.
+Monorepo version: **3.4.0**.
 
 ## Usage
 
@@ -170,6 +170,12 @@ pondoknusa help <command>
 | Command | Description | Usage |
 |---------|-------------|-------|
 | `session:prune` | Prune expired database sessions | `pondoknusa session:prune` |
+
+## app
+
+| Command | Description | Usage |
+|---------|-------------|-------|
+| `app:lint` | Lint routes, auth, and CSRF (static + in-process request probes) | `pondoknusa app:lint [--strict] [--static-only]` |
 
 ## config
 
