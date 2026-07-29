@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/auth",
-  "version": "3.4.0",
+  "version": "4.0.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,13 +15,13 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/crypto": "3.4.0",
-    "@pondoknusa/container": "3.4.0",
-    "@pondoknusa/http": "3.4.0",
-    "@pondoknusa/redis": "3.4.0"
+    "@pondoknusa/crypto": "4.0.0",
+    "@pondoknusa/container": "4.0.0",
+    "@pondoknusa/http": "4.0.0",
+    "@pondoknusa/redis": "4.0.0"
   },
   "peerDependencies": {
-    "@pondoknusa/database": "^3.4.0"
+    "@pondoknusa/database": "^4.0.0"
   },
   "files": [
     "dist"
@@ -30,7 +30,7 @@
     "node": ">=26"
   },
   "devDependencies": {
-    "@pondoknusa/database": "3.4.0",
+    "@pondoknusa/database": "4.0.0",
     "@types/node": "^26.0.1"
   },
   "description": "Authentication and authorization for Pondoknusa",

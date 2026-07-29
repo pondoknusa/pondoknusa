@@ -5,7 +5,7 @@
 
 Auto-generated from `packages/*/package.json` and compiled TypeScript declarations.
 
-Current monorepo version: **3.4.0**.
+Current monorepo version: **4.0.0**.
 
 ## AI & agents
 

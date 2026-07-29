@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/log",
-  "version": "3.4.0",
+  "version": "4.0.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,7 +15,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/support": "3.4.0"
+    "@pondoknusa/support": "4.0.0"
   },
   "files": [
     "dist"

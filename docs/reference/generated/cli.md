@@ -5,7 +5,7 @@
 
 Auto-generated from `pondoknusa list` via `@pondoknusa/cli`.
 
-Monorepo version: **3.4.0**.
+Monorepo version: **4.0.0**.
 
 ## Usage
 

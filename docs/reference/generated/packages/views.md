@@ -15,7 +15,7 @@ npm install @pondoknusa/views
 
 | Field | Value |
 |-------|-------|
-| Version | `3.4.0` |
+| Version | `4.0.0` |
 | Source | [`packages/views`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/views) |
 | Category | Views & client |
 | Node.js | `>=26` |

@@ -17,7 +17,7 @@ Peer dependencies must be installed in the app (they are not auto-installed on o
 
 | Field | Value |
 |-------|-------|
-| Version | `3.4.0` |
+| Version | `4.0.0` |
 | Source | [`packages/storage-r2`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/storage-r2) |
 | Category | Storage drivers |
 | Node.js | `>=26` |

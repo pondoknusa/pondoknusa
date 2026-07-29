@@ -9,25 +9,25 @@
     "test": "pondoknusa test"
   },
   "dependencies": {
-    "@pondoknusa/auth": "3.4.0",
-    "@pondoknusa/cache": "3.4.0",
-    "@pondoknusa/cli": "3.4.0",
-    "@pondoknusa/collection": "3.4.0",
-    "@pondoknusa/config": "3.4.0",
-    "@pondoknusa/core": "3.4.0",
-    "@pondoknusa/database": "3.4.0",
-    "@pondoknusa/storage": "3.4.0",
-    "@pondoknusa/events": "3.4.0",
-    "@pondoknusa/http": "3.4.0",
-    "@pondoknusa/log": "3.4.0",
-    "@pondoknusa/mail": "3.4.0",
-    "@pondoknusa/notifications": "3.4.0",
-    "@pondoknusa/queue": "3.4.0",
-    "@pondoknusa/support": "3.4.0",
-    "@pondoknusa/validation": "3.4.0"
+    "@pondoknusa/auth": "4.0.0",
+    "@pondoknusa/cache": "4.0.0",
+    "@pondoknusa/cli": "4.0.0",
+    "@pondoknusa/collection": "4.0.0",
+    "@pondoknusa/config": "4.0.0",
+    "@pondoknusa/core": "4.0.0",
+    "@pondoknusa/database": "4.0.0",
+    "@pondoknusa/storage": "4.0.0",
+    "@pondoknusa/events": "4.0.0",
+    "@pondoknusa/http": "4.0.0",
+    "@pondoknusa/log": "4.0.0",
+    "@pondoknusa/mail": "4.0.0",
+    "@pondoknusa/notifications": "4.0.0",
+    "@pondoknusa/queue": "4.0.0",
+    "@pondoknusa/support": "4.0.0",
+    "@pondoknusa/validation": "4.0.0"
   },
   "devDependencies": {
-    "@pondoknusa/testing": "3.4.0",
+    "@pondoknusa/testing": "4.0.0",
     "vitest": "^3.2.4"
   }
 }

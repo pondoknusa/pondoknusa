@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/support",
-  "version": "3.4.0",
+  "version": "4.0.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -31,6 +31,6 @@
     "node": ">=26"
   },
   "dependencies": {
-    "@pondoknusa/collection": "3.4.0"
+    "@pondoknusa/collection": "4.0.0"
   }
 }

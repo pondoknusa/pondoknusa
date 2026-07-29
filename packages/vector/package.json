@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/vector",
-  "version": "3.4.0",
+  "version": "4.0.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,11 +15,11 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/cache": "3.4.0",
-    "@pondoknusa/queue": "3.4.0"
+    "@pondoknusa/cache": "4.0.0",
+    "@pondoknusa/queue": "4.0.0"
   },
   "peerDependencies": {
-    "@pondoknusa/database": "^3.4.0"
+    "@pondoknusa/database": "^4.0.0"
   },
   "files": [
     "dist"
@@ -28,7 +28,7 @@
     "node": ">=26"
   },
   "devDependencies": {
-    "@pondoknusa/database": "3.4.0",
+    "@pondoknusa/database": "4.0.0",
     "@types/node": "^26.0.1"
   },
   "description": "Embedding storage and vector similarity search for Pondoknusa",
