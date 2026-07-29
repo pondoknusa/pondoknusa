@@ -12,7 +12,11 @@ export const DEFAULT_CSRF_EXCEPT = [
 
 export function compileCsrfPathPattern(pattern: string): RegExp {
   const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
-  const regexSource = escaped.replace(/\*\*/g, '.*').replace(/\*/g, '[^/]*');
+  // Replace `**` first with a placeholder so the single-`*` pass cannot rewrite it.
+  const regexSource = escaped
+    .replace(/\*\*/g, '\u0000')
+    .replace(/\*/g, '[^/]*')
+    .replace(/\u0000/g, '.*');
   return new RegExp(`^${regexSource}$`);
 }
 
