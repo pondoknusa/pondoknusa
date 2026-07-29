@@ -1,0 +1,7 @@
+# Production build output (pondoknusa build)
+bootstrap/
+# Cache artifacts (config/route/view caches, build entry)
+storage/
+# SQLite runtime files
+database/*.sqlite-shm
+database/*.sqlite-wal

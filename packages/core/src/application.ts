@@ -96,8 +96,8 @@ export class Application extends Container {
 
     this.bootedLazyProviders.add(provider);
     const instance = new provider(this);
-    await instance.register();
-    await instance.boot();
+    await instance.register?.();
+    await instance.boot?.();
   }
 
   async bootLazyProvidersForRequest(pathname: string): Promise<void> {
@@ -171,14 +171,31 @@ export class Application extends Container {
       return;
     }
 
+    const profile = process.env.PONDOKNUSA_BOOT_PROFILE === '1';
+    const timings: string[] = [];
+    const started = performance.now();
+
     for (const Provider of this.providers) {
       const provider = new Provider(this);
-      await provider.register();
+      const t0 = profile ? performance.now() : 0;
+      await provider.register?.();
+      if (profile) {
+        timings.push(`${Provider.name}.register=${Math.round(performance.now() - t0)}ms`);
+      }
     }
 
     for (const Provider of this.providers) {
       const provider = new Provider(this);
-      await provider.boot();
+      const t0 = profile ? performance.now() : 0;
+      await provider.boot?.();
+      if (profile) {
+        timings.push(`${Provider.name}.boot=${Math.round(performance.now() - t0)}ms`);
+      }
+    }
+
+    if (profile) {
+      const total = Math.round(performance.now() - started);
+      console.error(`[boot-profile] total=${total}ms ${timings.join(' ')}`);
     }
 
     this.booted = true;

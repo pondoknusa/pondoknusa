@@ -38,10 +38,11 @@ export default defineConfig({
       { text: 'Tutorials', link: '/tutorials/', activeMatch: '/tutorials/' },
       { text: 'Cookbook', link: '/cookbook/', activeMatch: '/cookbook/' },
       {
-        text: 'v3.0.0',
+        text: 'v4.0.0',
         items: [
           { text: 'Changelog', link: 'https://github.com/pondoknusa/pondoknusa/blob/main/CHANGELOG.md' },
           { text: 'API stability', link: '/guide/api-stability' },
+          { text: 'Upgrading to 4.0', link: '/guide/upgrading-to-4.0' },
           { text: 'Upgrading to 3.0', link: '/guide/upgrading-to-3.0' },
           { text: 'Upgrading to 2.0', link: '/guide/upgrading-to-2.0' },
           { text: 'Upgrading to 1.0', link: '/guide/upgrading-to-1.0' },

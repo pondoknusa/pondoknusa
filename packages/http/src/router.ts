@@ -270,7 +270,12 @@ export class Router implements Routable {
       pattern: fullPattern,
       handler: this.handlerNormalizer(handler),
       handlerLabel: resolveHandlerLabel(handler),
-      middleware: this.resolveMiddleware(middlewareInputs),
+      // Resolution is deferred to route-table compile time so alias strings
+      // registered by later-booting providers do not fail at route
+      // registration time (and tooling like route:cache can run without the
+      // full provider stack).
+      middleware: [],
+      middlewareInputs,
       middlewareLabels: collectMiddlewareLabels(middlewareInputs),
       name: undefined,
       namePrefix: activeScope.namePrefix,
@@ -301,10 +306,7 @@ export class Router implements Routable {
 
     const label = throttleMiddlewareAlias(preset);
     route.middlewareLabels = [...(route.middlewareLabels ?? []), label];
-    route.middleware = [
-      ...route.middleware,
-      this.middlewareRegistry.resolve(label),
-    ];
+    route.middlewareInputs = [...(route.middlewareInputs ?? []), label];
     this.invalidateCompiledCache();
     return this;
   }
@@ -337,18 +339,29 @@ export class Router implements Routable {
   }
 
   exportRouteCache(): RouteCacheManifest {
-    const table = this.compile();
-    const compiled = [...table.allStatic, ...table.allDynamic];
+    // Deliberately avoids compile(): exporting only needs labels and param
+    // names, and must not trigger middleware alias resolution (tooling such
+    // as route:cache runs without the full provider stack booted).
     return {
       version: 1,
-      routes: compiled.map((route) => ({
-        method: route.definition.method,
-        pattern: route.definition.pattern,
-        name: route.definition.name,
-        middleware: route.definition.middlewareLabels ?? [],
-        action: route.definition.handlerLabel ?? 'Closure',
-        paramNames: route.paramNames,
-      })),
+      routes: this.routes.map((definition) => {
+        const paramNames: string[] = [];
+        definition.pattern
+          .replace(/\/+$/, '')
+          .replace(/:([A-Za-z0-9_]+)/g, (_, name: string) => {
+            paramNames.push(name);
+            return '([^/]+)';
+          });
+
+        return {
+          method: definition.method,
+          pattern: definition.pattern,
+          name: definition.name,
+          middleware: definition.middlewareLabels ?? [],
+          action: definition.handlerLabel ?? 'Closure',
+          paramNames,
+        };
+      }),
     };
   }
 
@@ -506,21 +519,28 @@ export class Router implements Routable {
     );
   }
 
-  private resolveMiddleware(inputs: MiddlewareInput[]): Middleware[] {
-    return this.middlewareRegistry.resolveMany(inputs);
+  private resolveRouteMiddleware(route: RouteDefinition): Middleware[] {
+    if (route.middlewareInputs) {
+      route.middleware = this.middlewareRegistry.resolveMany(route.middlewareInputs);
+      delete route.middlewareInputs;
+    }
+
+    return route.middleware;
   }
 
   private buildPipelineMiddleware(route: RouteDefinition): Middleware[] {
+    const middleware = this.resolveRouteMiddleware(route);
+
     if (!this.jsonFastPathEnabled) {
-      return route.middleware;
+      return middleware;
     }
 
     const labels = route.middlewareLabels ?? [];
-    if (!qualifiesForJsonFastPathResolved(route.method, labels, route.middleware)) {
-      return route.middleware;
+    if (!qualifiesForJsonFastPathResolved(route.method, labels, middleware)) {
+      return middleware;
     }
 
-    return filterFastPathMiddleware(route.middleware);
+    return filterFastPathMiddleware(middleware);
   }
 
   private mergeScopes(scopes: RouteScope[]): RouteScope {

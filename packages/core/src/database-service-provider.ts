@@ -24,7 +24,10 @@ export class DatabaseServiceProvider extends ServiceProvider {
     Model.setConnectionResolver(() => connection);
 
     if (resolvePoolWarmupEnabled(databaseConfig)) {
-      void manager.warmPools().catch((error) => {
+      // Warm only the default connection: warming every configured connection
+      // at boot dials services the app may never use (e.g. an optional
+      // postgres block while DB_CONNECTION=sqlite) and stalls cold starts.
+      void manager.warmPools([manager.getDefaultConnectionName()]).catch((error) => {
         console.error(
           '[database] Pool warm-up failed:',
           error instanceof Error ? error.message : String(error),

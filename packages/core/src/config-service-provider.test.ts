@@ -2,7 +2,7 @@ import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { configCachePath, ConfigRepository } from '@pondoknusa/config';
+import { configBundlePath, configCachePath, ConfigRepository } from '@pondoknusa/config';
 import { Application } from './application.js';
 import { ConfigServiceProvider } from './config-service-provider.js';
 
@@ -67,6 +67,10 @@ export default { name: env('APP_NAME', 'fallback') };`,
       const { buildConfigCacheManifest } = await import('@pondoknusa/config');
       const manifest = await buildConfigCacheManifest(tempDir);
       writeFileSync(configCachePath(tempDir), `${JSON.stringify(manifest, null, 2)}\n`);
+      writeFileSync(
+        configBundlePath(tempDir),
+        'export default { app: { name: "CachedApp", debug: false } };\n',
+      );
 
       const app = new Application(tempDir);
       app.register(ConfigServiceProvider);

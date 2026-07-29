@@ -26,6 +26,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 
 ### Values
 
+- `CONFIG_BUNDLE_RELATIVE_PATH`
 - `CONFIG_CACHE_RELATIVE_PATH`
 - `ConfigRepository`
 - `ConfigValidationError`
@@ -33,12 +34,14 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `collectBootEnvFailures`
 - `collectConfigFingerprints`
 - `collectConfigValidationFailures`
+- `configBundlePath`
 - `configCachePath`
 - `env`
 - `envBool`
 - `envInt`
 - `fingerprintsMatch`
 - `formatConfigValidationFailures`
+- `getCachedConfig`
 - `loadConfig`
 - `loadConfigWithSchemas`
 - `loadEnv`
@@ -46,6 +49,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `mergeConfig`
 - `parseEnv`
 - `readConfigCacheManifest`
+- `registerCachedConfig`
 - `requiredEnv`
 - `resolveConfigForBoot`
 - `s`

@@ -1,3 +1,4 @@
+import type { MiddlewareInput } from './middleware-registry.js';
 import type { PondoknusaRequest } from './request.js';
 
 export type HttpMethod =
@@ -30,4 +31,11 @@ export interface RouteDefinition {
   namePrefix?: string;
   middleware: Middleware[];
   middlewareLabels?: string[];
+  /**
+   * Unresolved middleware as registered (alias strings included). Resolved
+   * lazily on first route-table compile — after all service providers have
+   * booted — so routes may reference aliases before providers register them.
+   * Cleared once resolved into {@link middleware}.
+   */
+  middlewareInputs?: MiddlewareInput[];
 }

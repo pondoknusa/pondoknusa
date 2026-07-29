@@ -113,7 +113,7 @@ async function validateConfigManifest(root: string): Promise<{ ok: boolean; mess
     const manifest = await buildConfigCacheManifest(root);
     return {
       ok: true,
-      message: `${Object.keys(manifest.config).length} config file(s) compile for config:cache`,
+      message: `${manifest.files.length} config file(s) compile for config:cache`,
     };
   } catch (error) {
     return {

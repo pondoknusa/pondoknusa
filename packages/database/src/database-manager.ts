@@ -27,6 +27,10 @@ export class DatabaseManager {
     return Object.keys(this.config.connections);
   }
 
+  getDefaultConnectionName(): string {
+    return this.config.default;
+  }
+
   connection(name?: string): DatabaseConnection {
     const connectionName = name ?? this.config.default;
     const existing = this.connections.get(connectionName);

@@ -41,7 +41,11 @@ export class RouteCacheCommand extends Command {
     const routesModule = await importProjectRoutes(root);
     routesModule?.registerRoutes?.();
 
-    const manifest = app.router().warmRouteCache().exportRouteCache();
+    // exportRouteCache works from labels only — no middleware resolution — so
+    // it succeeds even though providers that own aliases (csrf, auth, ...) are
+    // not booted here. Warming the compiled table would be pointless anyway:
+    // this process exits right after writing the manifest.
+    const manifest = app.router().exportRouteCache();
     const targetDir = join(root, 'storage', 'framework');
     await mkdir(targetDir, { recursive: true });
     await writeFile(

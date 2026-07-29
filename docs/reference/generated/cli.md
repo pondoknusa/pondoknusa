@@ -18,7 +18,7 @@ pondoknusa help <command>
 
 | Command | Description | Usage |
 |---------|-------------|-------|
-| `build` | Bundle the app entry into a single production file (esbuild) | `pondoknusa build [--outfile=<path>] [--minify]` |
+| `build` | Bundle the app entry into a single production file (esbuild) | `pondoknusa build [--outfile=<path>] [--minify] [--full]` |
 | `dev` | Start the local development server with hot reload | `pondoknusa dev [--port=<port>] [--host=<hostname>] [--tls] [--no-queue] [--no-watch]` |
 | `doctor` | Run environment and project health checks | `pondoknusa doctor [--perf]` |
 | `migrate` | Run database migrations | `pondoknusa migrate` |
@@ -181,8 +181,8 @@ pondoknusa help <command>
 
 | Command | Description | Usage |
 |---------|-------------|-------|
-| `config:cache` | Serialize merged config for production boot | `pondoknusa config:cache` |
-| `config:clear` | Remove the cached config manifest | `pondoknusa config:clear` |
+| `config:cache` | Bundle merged config into a single module for production boot | `pondoknusa config:cache` |
+| `config:clear` | Remove the cached config manifest and bundle | `pondoknusa config:clear` |
 
 ## deploy
 

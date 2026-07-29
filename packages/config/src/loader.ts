@@ -38,27 +38,32 @@ export async function loadConfigWithSchemas(basePath: string): Promise<LoadedCon
   const config: ConfigTree = {};
   const schemas: Record<string, ConfigSchema> = {};
 
-  for (const entry of entries) {
+  const files = entries.filter((entry) => {
     if (!entry.isFile()) {
-      continue;
+      return false;
     }
 
     const match = entry.name.match(/^(.+)\.(ts|js|mjs)$/);
-    if (!match) {
-      continue;
-    }
+    return match !== null && Boolean(match[1]);
+  });
 
-    const key = match[1];
-    if (!key) {
-      continue;
-    }
+  // Import config modules concurrently; assemble in directory order below so
+  // duplicate keys (e.g. app.ts and app.js) resolve exactly as the old
+  // sequential loader did — last file wins.
+  const loaded = await Promise.all(
+    files.map(async (entry) => {
+      const key = entry.name.match(/^(.+)\.(ts|js|mjs)$/)![1]!;
+      const moduleUrl = pathToFileURL(join(configDir, entry.name)).href;
+      const mod = await import(moduleUrl);
+      return { key, mod };
+    }),
+  );
 
-    const moduleUrl = pathToFileURL(join(configDir, entry.name)).href;
-    const loaded = await import(moduleUrl);
-    config[key] = loaded.default ?? loaded;
+  for (const { key, mod } of loaded) {
+    config[key] = mod.default ?? mod;
 
-    if (loaded.schema && typeof loaded.schema.validate === 'function') {
-      schemas[key] = loaded.schema as ConfigSchema;
+    if (mod.schema && typeof mod.schema.validate === 'function') {
+      schemas[key] = mod.schema as ConfigSchema;
     }
   }
 

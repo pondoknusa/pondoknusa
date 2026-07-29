@@ -1,20 +1,30 @@
 import { readFile, stat } from 'node:fs/promises';
 import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { loadConfig } from './loader.js';
 import type { ConfigTree } from './repository.js';
 
 export const CONFIG_CACHE_RELATIVE_PATH = 'storage/framework/config.json';
+export const CONFIG_BUNDLE_RELATIVE_PATH = 'storage/framework/config.mjs';
 
 export interface ConfigFileFingerprint {
   name: string;
   mtimeMs: number;
 }
 
+/**
+ * Cache manifest (version 2). The merged config tree itself is NOT embedded:
+ * config values may hold class references and closures that JSON cannot
+ * represent. Instead the manifest points at a bundled ESM module
+ * (see {@link CONFIG_BUNDLE_RELATIVE_PATH}) produced by `pondoknusa
+ * config:cache`, which preserves live class references.
+ */
 export interface ConfigCacheManifest {
-  version: 1;
+  version: 2;
   generatedAt: string;
   files: ConfigFileFingerprint[];
-  config: ConfigTree;
+  /** Path to the bundled config module, relative to the manifest directory. */
+  bundle: string;
 }
 
 export interface ConfigBootResult {
@@ -25,6 +35,10 @@ export interface ConfigBootResult {
 
 export function configCachePath(basePath: string): string {
   return join(basePath, CONFIG_CACHE_RELATIVE_PATH);
+}
+
+export function configBundlePath(basePath: string): string {
+  return join(basePath, CONFIG_BUNDLE_RELATIVE_PATH);
 }
 
 export async function collectConfigFingerprints(
@@ -89,14 +103,13 @@ export function fingerprintsMatch(
 export async function buildConfigCacheManifest(
   basePath: string,
 ): Promise<ConfigCacheManifest> {
-  const config = await loadConfig(basePath);
   const files = await collectConfigFingerprints(basePath);
 
   return {
-    version: 1,
+    version: 2,
     generatedAt: new Date().toISOString(),
     files,
-    config,
+    bundle: 'config.mjs',
   };
 }
 
@@ -107,18 +120,32 @@ export async function readConfigCacheManifest(
     const raw = await readFile(configCachePath(basePath), 'utf8');
     const manifest = JSON.parse(raw) as ConfigCacheManifest;
 
-    if (manifest.version !== 1 || !manifest.config || !Array.isArray(manifest.files)) {
+    if (
+      manifest.version !== 2
+      || typeof manifest.bundle !== 'string'
+      || !Array.isArray(manifest.files)
+    ) {
       return null;
     }
 
     return manifest;
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-      return null;
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+      throw error;
     }
 
-    throw error;
+    return null;
   }
+}
+
+async function loadCachedConfigBundle(
+  basePath: string,
+  manifest: ConfigCacheManifest,
+): Promise<ConfigTree> {
+  const bundlePath = join(basePath, 'storage', 'framework', manifest.bundle);
+  const moduleUrl = pathToFileURL(bundlePath).href;
+  const loaded = await import(moduleUrl);
+  return (loaded.default ?? loaded) as ConfigTree;
 }
 
 export async function resolveConfigForBoot(
@@ -155,7 +182,7 @@ export async function resolveConfigForBoot(
 
     return {
       loaded: true,
-      config: manifest.config,
+      config: await loadCachedConfigBundle(basePath, manifest),
       message: `Loaded cached config (${manifest.files.length} source file(s))`,
     };
   } catch (error) {

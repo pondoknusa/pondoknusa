@@ -1,10 +1,13 @@
 export { ConfigValidationError, formatConfigValidationFailures } from './config-validation-error.js';
 export type { ConfigValidationFailure } from './config-validation-error.js';
+export { getCachedConfig, registerCachedConfig } from './cached-config.js';
 export { env, envBool, envInt, requiredEnv } from './env.js';
 export {
   buildConfigCacheManifest,
   collectConfigFingerprints,
+  configBundlePath,
   configCachePath,
+  CONFIG_BUNDLE_RELATIVE_PATH,
   CONFIG_CACHE_RELATIVE_PATH,
   fingerprintsMatch,
   readConfigCacheManifest,

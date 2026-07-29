@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "PONDOKNUSA_HOST=0.0.0.0 tsx src/main.ts",
-    "start": "PONDOKNUSA_HOST=0.0.0.0 tsx src/main.ts",
+    "build": "tsx ../../packages/cli/dist/bin/pondoknusa.js route:cache && tsx ../../packages/cli/dist/bin/pondoknusa.js view:cache && pondoknusa build --full",
+    "start": "PONDOKNUSA_HOST=0.0.0.0 node bootstrap/app.mjs",
     "test": "vitest run"
   },
   "dependencies": {

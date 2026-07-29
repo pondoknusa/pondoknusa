@@ -646,7 +646,33 @@ export class ViewEngine {
       return 0;
     }
 
-    return this.warmCompiledCache();
+    // Boot-time preload must be cheap: read already-compiled artifacts from
+    // the disk cache instead of recompiling every template (which spawns a
+    // worker pool — far too expensive for a serverless cold start). Views
+    // without a cache entry are left to the lazy loadTemplate() path.
+    const registryVersion = this.registry.getCompileVersion();
+    const names = await this.listViewNames();
+
+    const results = await Promise.all(
+      names.map(async (name) => {
+        const path = this.resolvePath(name);
+        const cacheFile = cacheFileForView(this.compiledCacheDirectory!, this.viewsRoot, path);
+        const diskEntry = await readCompiledCache(cacheFile);
+
+        if (!diskEntry || diskEntry.registryVersion !== registryVersion) {
+          return false;
+        }
+
+        this.setCachedTemplate(path, {
+          mtimeMs: diskEntry.mtimeMs,
+          registryVersion,
+          template: diskEntry.template,
+        });
+        return true;
+      }),
+    );
+
+    return results.filter(Boolean).length;
   }
 
   async clearCompiledCache(): Promise<number> {

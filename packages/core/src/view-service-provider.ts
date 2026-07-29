@@ -44,10 +44,18 @@ function readValidationErrors(request: PondoknusaRequest | undefined): ViewError
   return new ViewErrorBag(errors);
 }
 
+function resolveViewConfig(config: ConfigRepository): ViewConfig {
+  // Merge over DEFAULT_VIEW_CONFIG so a partial config/views file (e.g. only
+  // path + extension) does not silently drop production defaults like
+  // compiled / preloadCompiled.
+  const configured = config.get<Partial<ViewConfig>>('views');
+  return { ...DEFAULT_VIEW_CONFIG, ...configured };
+}
+
 export class ViewServiceProvider extends ServiceProvider {
   override async register() {
     const config = this.app.make<ConfigRepository>('config');
-    const viewConfig = config.get<ViewConfig>('views') ?? DEFAULT_VIEW_CONFIG;
+    const viewConfig = resolveViewConfig(config);
     const engine = new ViewEngine(this.app.basePath, viewConfig);
 
     this.app.instance('view', engine);
@@ -59,7 +67,7 @@ export class ViewServiceProvider extends ServiceProvider {
 
     const engine = this.app.make<ViewEngine>('view');
     const config = this.app.make<ConfigRepository>('config');
-    const viewConfig = config.get<ViewConfig>('views') ?? DEFAULT_VIEW_CONFIG;
+    const viewConfig = resolveViewConfig(config);
 
     const environment = String(
       viewConfig.env ?? config.get('app.env', process.env.NODE_ENV ?? 'production'),

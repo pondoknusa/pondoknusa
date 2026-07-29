@@ -166,13 +166,17 @@ pondoknusa start --cluster --workers=4
 For edge deploys (Fly Machines, Lambda-style), bundle the entry after caches are warm:
 
 ```bash
-pondoknusa config:cache && pondoknusa route:cache && pondoknusa view:cache
+pondoknusa route:cache && pondoknusa view:cache
 npm install -D esbuild
-pondoknusa build --outfile=bootstrap/app.mjs --minify
+pondoknusa build --full --outfile=bootstrap/app.mjs --minify
 node bootstrap/app.mjs
 ```
 
-Trade-offs: faster cold start, but native addons and some dynamic imports may need esbuild plugins. See `bootstrap/README.txt` after build.
+`--full` inlines the framework and your app code (third-party npm packages such as `pg` or native addons like `oracledb` stay external in `node_modules`) and bakes the merged config into the same file, so a cold start reads one module instead of hundreds of small ones. Because config is embedded at build time, **re-run the build after changing `config/*`** — the fingerprint-based staleness check from `config:cache` does not apply to embedded config. Route and view caches are still read from `storage/framework` at boot, so keep `route:cache` / `view:cache` in your deploy step.
+
+Without `--full`, `pondoknusa build` keeps every npm package (including `@pondoknusa/*`) external; pair it with `pondoknusa config:cache`, which bundles `config/*` into a single class-safe `storage/framework/config.mjs` (class references such as Eloquent models and event listeners survive the cache, unlike the old JSON manifest).
+
+Trade-offs: faster cold start, but native addons and some dynamic imports may need esbuild plugins. See `bootstrap/README.txt` after build. To see where boot time goes, run with `PONDOKNUSA_BOOT_PROFILE=1` to log per-provider timings.
 
 ## Perf budgets in CI
 
