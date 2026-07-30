@@ -136,7 +136,7 @@ export class AuthServiceProvider extends ServiceProvider {
     this.app.use(createFormBodyCacheMiddleware());
     this.app.use(createStartSessionMiddleware(auth));
     this.app.middleware('csrf', createVerifyCsrfTokenMiddleware({
-      except: ['/api/*', '/broadcasting/auth', '/webhooks/*'],
+      except: ['/api/**', '/broadcasting/auth', '/webhooks/**'],
     }));
     this.app.use('csrf');
     this.app.middleware('auth', createAuthMiddleware(auth));

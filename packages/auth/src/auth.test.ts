@@ -102,6 +102,35 @@ describe('SessionGuard', () => {
     expect(cookie).toContain('Secure');
     expect(cookie).toContain('SameSite=Strict');
   });
+
+  it('clears authenticated user on a subsequent anonymous request', async () => {
+    const hasher = new Hasher();
+    const store = new MemorySessionStore();
+    const guard = new SessionGuard('web', new StubProvider(hasher), store, config);
+
+    const loginRequest = new PondoknusaRequest(
+      new Request('http://localhost/login', { method: 'POST' }),
+    );
+    guard.setRequest(loginRequest);
+    await guard.startSession();
+    await guard.attempt({ email: 'a@b.c', password: 'secret' });
+    await guard.persistSession(new globalThis.Response('ok', { status: 200 }));
+    expect(guard.check()).toBe(true);
+    expect(guard.id()).toBe(1);
+    expect(loginRequest.user).toBe(guard.user());
+
+    const anonymousRequest = new PondoknusaRequest(
+      new Request('http://localhost/', { method: 'GET' }),
+    );
+    // Simulate request.user leftover from a pooled/singleton context.
+    anonymousRequest.user = loginRequest.user;
+    guard.setRequest(anonymousRequest);
+    await guard.startSession();
+
+    expect(guard.check()).toBe(false);
+    expect(guard.user()).toBeNull();
+    expect(anonymousRequest.user).toBeNull();
+  });
 });
 
 describe('Hasher', () => {

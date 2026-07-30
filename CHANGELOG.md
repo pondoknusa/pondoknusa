@@ -2,6 +2,18 @@
 
 All notable changes to Pondoknusa are documented in this file.
 
+## [4.0.1] - 2026-07-30
+
+### Fixed
+
+- **`@pondoknusa/auth` database sessions** — `DatabaseSessionStore` uses update-first upserts (with UNIQUE-conflict recovery) and short read retries so D1/SQLite read-after-write lag and concurrent first-insert races no longer drop CSRF/session state.
+- **`SessionGuard`** — clears `currentUser` / `request.user` whenever the session has no auth id, so a process-singleton guard cannot leak a logged-in user onto the next anonymous request.
+- **CSRF diagnostics** — `VerifyCsrfTokenException` still returns **419**, but distinguishes missing session token vs mismatched submitted token (`CSRF_SESSION_TOKEN_MISSING` / `CSRF_TOKEN_MISMATCH`).
+- **CSRF except `**` globs** — `compilePathPattern` replaces `**` safely before `*`; default `AuthServiceProvider` exceptions are `/api/**`, `/broadcasting/auth`, `/webhooks/**` so nested API routes are exempt without app patches.
+
+See [v4.0.1 release notes](https://github.com/pondoknusa/pondoknusa/releases/tag/v4.0.1).
+
+
 
 
 

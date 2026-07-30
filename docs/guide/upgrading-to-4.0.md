@@ -108,6 +108,8 @@ If you depend on secondary connections being hot at boot, warm them explicitly a
 
 ## Smaller changes
 
+- **Database sessions (D1/SQLite):** `DatabaseSessionStore.write()` is a true upsert (update-first, insert on miss, recover from UNIQUE races). `read()` retries briefly when a row is not yet visible, which avoids intermittent CSRF 419s from read-after-write lag on Cloudflare D1.
+- **CSRF except globs:** `**` is compiled correctly (`/api/**` matches `/api/v1/...`). Default exceptions are `/api/**`, `/broadcasting/auth`, and `/webhooks/**`.
 - **`build --minify` keeps class names** (`keepNames: true`). Minified 3.x bundles could crash the event registry (`Cannot read properties of null (reading 'name')`) because `constructor.name` is load-bearing. Bundles are slightly larger; no action needed.
 - **`config:cache` / `loadConfig` import config modules concurrently.** Duplicate keys (`app.ts` + `app.js`) still resolve last-file-wins, in directory order.
 - **New diagnostics:** run with `PONDOKNUSA_BOOT_PROFILE=1` to log per-provider boot timings — handy for your own cold-start budgets.

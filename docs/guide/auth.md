@@ -137,7 +137,9 @@ providers: {
 
 `AuthServiceProvider` registers global CSRF verification after the session middleware. Mutating requests must include the session token via a hidden `_token` field or the `X-CSRF-TOKEN` header.
 
-Safe methods (`GET`, `HEAD`, `OPTIONS`) are skipped. `/api/*` and `/broadcasting/auth` are exempt by default.
+Safe methods (`GET`, `HEAD`, `OPTIONS`) are skipped. `/api/**`, `/broadcasting/auth`, and `/webhooks/**` are exempt by default (`*` matches one path segment; `**` matches nested paths such as `/api/v1/login`).
+
+When verification fails the response is still HTTP **419**. The exception distinguishes a missing session CSRF token (`CSRF_SESSION_TOKEN_MISSING`) from a mismatched submitted token (`CSRF_TOKEN_MISMATCH`) so logs are not misleading when the session store lagged or was empty.
 
 Auth scaffold routes include the `csrf` middleware alias on form posts:
 

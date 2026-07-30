@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { PondoknusaRequest } from '@pondoknusa/http';
 import { Session } from './session.js';
 import {
+  compilePathPattern,
   createVerifyCsrfTokenMiddleware,
   VerifyCsrfTokenException,
 } from './verify-csrf-token.js';
@@ -24,6 +25,22 @@ function requestWithSession(
   return request;
 }
 
+describe('compilePathPattern', () => {
+  it('matches a single segment with *', () => {
+    const pattern = compilePathPattern('/api/*');
+    expect(pattern.test('/api/posts')).toBe(true);
+    expect(pattern.test('/api/v1/login')).toBe(false);
+  });
+
+  it('matches nested paths with ** without the single-* rewrite bug', () => {
+    const pattern = compilePathPattern('/api/**');
+    expect(pattern.test('/api/posts')).toBe(true);
+    expect(pattern.test('/api/v1/login')).toBe(true);
+    expect(pattern.test('/api/v1/cli/browser-auth')).toBe(true);
+    expect(pattern.test('/login')).toBe(false);
+  });
+});
+
 describe('createVerifyCsrfTokenMiddleware', () => {
   it('skips safe methods', async () => {
     const middleware = createVerifyCsrfTokenMiddleware();
@@ -40,6 +57,24 @@ describe('createVerifyCsrfTokenMiddleware', () => {
     await expect(middleware(request, async () => new Response('ok'))).rejects.toBeInstanceOf(
       VerifyCsrfTokenException,
     );
+  });
+
+  it('distinguishes missing session token from token mismatch', async () => {
+    const middleware = createVerifyCsrfTokenMiddleware();
+
+    const missing = requestWithSession('POST', '/login');
+    await expect(middleware(missing, async () => new Response('ok'))).rejects.toMatchObject({
+      status: 419,
+      code: 'CSRF_SESSION_TOKEN_MISSING',
+      message: 'CSRF session token missing.',
+    });
+
+    const mismatch = requestWithSession('POST', '/login', 'token-a', { _token: 'wrong' });
+    await expect(middleware(mismatch, async () => new Response('ok'))).rejects.toMatchObject({
+      status: 419,
+      code: 'CSRF_TOKEN_MISMATCH',
+      message: 'CSRF token mismatch.',
+    });
   });
 
   it('accepts a matching body token', async () => {
@@ -64,11 +99,16 @@ describe('createVerifyCsrfTokenMiddleware', () => {
     expect(await response.text()).toBe('ok');
   });
 
-  it('respects except patterns', async () => {
-    const middleware = createVerifyCsrfTokenMiddleware({ except: ['/api/*'] });
-    const request = requestWithSession('POST', '/api/posts');
+  it('respects except patterns including nested ** paths', async () => {
+    const single = createVerifyCsrfTokenMiddleware({ except: ['/api/*'] });
+    const nestedDenied = requestWithSession('POST', '/api/v1/login');
+    await expect(single(nestedDenied, async () => new Response('ok'))).rejects.toBeInstanceOf(
+      VerifyCsrfTokenException,
+    );
 
-    const response = await middleware(request, async () => new Response('ok'));
+    const globstar = createVerifyCsrfTokenMiddleware({ except: ['/api/**'] });
+    const nestedOk = requestWithSession('POST', '/api/v1/login');
+    const response = await globstar(nestedOk, async () => new Response('ok'));
     expect(await response.text()).toBe('ok');
   });
 });

@@ -45,15 +45,15 @@ export function lintCsrf(
       continue;
     }
 
-    // The classic footgun: `/api/*` does not match `/api/v1/...`
+    // Narrow custom except (e.g. `/api/*`) still leaves nested `/api/v1/...` unprotected.
     if (!excepted && isNestedApiPath(route.fullPath) && MUTATING.has(route.method)) {
       issues.push({
         rule: 'csrf-except-gap',
         message:
           `Mutating route ${route.method.toUpperCase()} ${route.fullPath} is not covered by CSRF exceptions ` +
           `(${except.map((p) => `"${p}"`).join(', ')}). ` +
-          'Default `/api/*` only matches one path segment — `/api/v1/...` still requires ' +
-          'X-CSRF-TOKEN / _token, or widen except to `/api/**` or `/api/v1/*`.',
+          'Default `/api/**` covers nested API paths — if you customize except, use `/api/**` ' +
+          '(or `/api/v1/*`) rather than `/api/*`, which only matches one segment.',
         file: route.file,
         line: route.line,
         severity: issueSeverity('csrf-except-gap', strict),

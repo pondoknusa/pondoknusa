@@ -51,7 +51,10 @@ export class SessionGuard implements Guard {
     if (userId !== undefined) {
       this.currentUser = await this.provider.retrieveById(userId);
       this.request.user = this.currentUser;
-    } else if (!this.request.user) {
+    } else {
+      // SessionGuard is often a process singleton — always clear auth when
+      // this session has no user id so state cannot leak across requests.
+      this.currentUser = null;
       this.request.user = null;
     }
   }

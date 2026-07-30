@@ -10,10 +10,18 @@ import {
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 const MAX_PATH_LENGTH = 4096;
 
+export type CsrfFailureCode = 'CSRF_SESSION_TOKEN_MISSING' | 'CSRF_TOKEN_MISMATCH';
+
 export class VerifyCsrfTokenException extends HttpException {
-  constructor(message = 'CSRF token mismatch.') {
+  readonly code: CsrfFailureCode;
+
+  constructor(
+    message = 'CSRF token mismatch.',
+    code: CsrfFailureCode = 'CSRF_TOKEN_MISMATCH',
+  ) {
     super(message, 419);
     this.name = 'VerifyCsrfTokenException';
+    this.code = code;
   }
 }
 
@@ -38,12 +46,18 @@ export function createVerifyCsrfTokenMiddleware(
 
     const sessionToken = request.session?.get<string>('_csrf_token');
     if (!sessionToken) {
-      throw new VerifyCsrfTokenException();
+      throw new VerifyCsrfTokenException(
+        'CSRF session token missing.',
+        'CSRF_SESSION_TOKEN_MISSING',
+      );
     }
 
     const submitted = await readSubmittedToken(request);
     if (!submitted || !tokensMatch(sessionToken, submitted)) {
-      throw new VerifyCsrfTokenException();
+      throw new VerifyCsrfTokenException(
+        'CSRF token mismatch.',
+        'CSRF_TOKEN_MISMATCH',
+      );
     }
 
     return next();
@@ -82,8 +96,16 @@ function isExcepted(path: string, patterns: RegExp[]): boolean {
   return patterns.some((pattern) => pattern.test(path));
 }
 
-function compilePathPattern(pattern: string): RegExp {
+/**
+ * Compiles a CSRF except path pattern.
+ * `*` matches a single path segment; `**` matches any depth (including `/`).
+ * Globstars are substituted before single `*` so `/api/**` does not become `/api/.[^/]*`.
+ */
+export function compilePathPattern(pattern: string): RegExp {
   const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
-  const regexSource = escaped.replace(/\*\*/g, '.*').replace(/\*/g, '[^/]*');
+  const regexSource = escaped
+    .replace(/\*\*/g, '\u0000')
+    .replace(/\*/g, '[^/]*')
+    .replace(/\u0000/g, '.*');
   return new RegExp(`^${regexSource}$`);
 }

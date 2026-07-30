@@ -5,9 +5,9 @@
 
 /** Default exceptions registered by AuthServiceProvider. */
 export const DEFAULT_CSRF_EXCEPT = [
-  '/api/*',
+  '/api/**',
   '/broadcasting/auth',
-  '/webhooks/*',
+  '/webhooks/**',
 ] as const;
 
 export function compileCsrfPathPattern(pattern: string): RegExp {
@@ -38,7 +38,8 @@ export function normalizeCsrfPath(path: string): string {
 
 /**
  * True when a path looks like a multi-segment API route that developers often
- * assume is covered by `/api/*` but is not (e.g. `/api/v1/login`).
+ * assume is covered by a single-segment `/api/*` except but is not
+ * (e.g. `/api/v1/login`). Framework defaults use `/api/**`, which does cover these.
  */
 export function isNestedApiPath(path: string): boolean {
   const normalized = normalizeCsrfPath(path);

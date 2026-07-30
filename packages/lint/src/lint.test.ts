@@ -9,9 +9,12 @@ const fixturesRoot = fileURLToPath(new URL('./__fixtures__', import.meta.url));
 describe('csrf except matching', () => {
   it('matches AuthServiceProvider defaults the same way as verify-csrf-token', () => {
     expect(pathMatchesCsrfExcept('/api/posts', DEFAULT_CSRF_EXCEPT)).toBe(true);
-    expect(pathMatchesCsrfExcept('/api/v1/login', DEFAULT_CSRF_EXCEPT)).toBe(false);
+    expect(pathMatchesCsrfExcept('/api/v1/login', DEFAULT_CSRF_EXCEPT)).toBe(true);
+    expect(pathMatchesCsrfExcept('/api/v1/cli/browser-auth', DEFAULT_CSRF_EXCEPT)).toBe(true);
     expect(pathMatchesCsrfExcept('/broadcasting/auth', DEFAULT_CSRF_EXCEPT)).toBe(true);
     expect(pathMatchesCsrfExcept('/webhooks/stripe', DEFAULT_CSRF_EXCEPT)).toBe(true);
+    expect(pathMatchesCsrfExcept('/webhooks/stripe/renew', DEFAULT_CSRF_EXCEPT)).toBe(true);
+    expect(pathMatchesCsrfExcept('/login', DEFAULT_CSRF_EXCEPT)).toBe(false);
     expect(isNestedApiPath('/api/v1/login')).toBe(true);
     expect(isNestedApiPath('/api/posts')).toBe(false);
   });
@@ -20,6 +23,7 @@ describe('csrf except matching', () => {
     expect(pathMatchesCsrfExcept('/api/v1/login', ['/api/**'])).toBe(true);
     expect(pathMatchesCsrfExcept('/api/v1/cli/browser-auth', ['/api/**'])).toBe(true);
     expect(pathMatchesCsrfExcept('/login', ['/api/**'])).toBe(false);
+    expect(pathMatchesCsrfExcept('/api/v1/login', ['/api/*'])).toBe(false);
   });
 });
 

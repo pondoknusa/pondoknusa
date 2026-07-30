@@ -30,7 +30,7 @@ describe('buildCsrfRuntimeProbes', () => {
 
     expect(byPath['/login']).toBe('require-419');
     expect(byPath['/api/posts']).toBe('forbid-419');
-    expect(byPath['/api/v1/login']).toBe('require-419');
+    expect(byPath['/api/v1/login']).toBe('forbid-419');
     expect(probes.some((probe) => probe.withToken)).toBe(true);
   });
 });
