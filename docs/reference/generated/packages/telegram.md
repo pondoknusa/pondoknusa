@@ -15,7 +15,7 @@ npm install @pondoknusa/telegram
 
 | Field | Value |
 |-------|-------|
-| Version | `4.0.0` |
+| Version | `4.0.1` |
 | Source | [`packages/telegram`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/telegram) |
 | Category | Other packages |
 | Node.js | `>=26` |
