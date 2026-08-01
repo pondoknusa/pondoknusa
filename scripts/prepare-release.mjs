@@ -170,6 +170,7 @@ console.log(`  Bumped ${bumped} package.json files + stubs.ts + stubs-project.ts
 
 log('Syncing package-lock.json');
 run('npm install', { stdio: 'inherit' });
+run('node scripts/check-lockfile.mjs', { stdio: 'inherit' });
 
 // ── Update CHANGELOG ────────────────────────────────────────
 
