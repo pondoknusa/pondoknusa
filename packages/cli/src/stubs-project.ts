@@ -424,7 +424,7 @@ export default {
 `;
 }
 
-export function envExample(name: string, options: NewProjectOptions): string {
+export function envExample(name: string, options: NewProjectOptions, appKey: string): string {
   const dbLines =
     options.database === 'sqlite'
       ? `DB_CONNECTION=sqlite
@@ -465,6 +465,7 @@ REDIS_DB=0`
 
   return `# ${name} environment variables
 APP_NAME=${name}
+APP_KEY=${appKey}
 APP_DEBUG=true
 APP_URL=http://127.0.0.1:3000
 APP_LOCALE=en

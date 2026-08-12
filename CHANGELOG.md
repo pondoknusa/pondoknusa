@@ -2,6 +2,20 @@
 
 All notable changes to Pondoknusa are documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- **Create-and-breathe `pondoknusa new`** — generates `APP_KEY`, creates `storage/`, writes `.gitignore`, always runs `npm install` (unless `--no-install`), auto-runs `auth:install` when auth is on, migrates SQLite, initializes git (unless `--no-git`), and installs MCP agent wiring by default (unless `--no-mcp`).
+- **`pondoknusa mcp:install`** — writes `.cursor/mcp.json`, Cursor rules, and `AGENTS.md`; adds `@pondoknusa/mcp` dependency.
+- **`pondoknusa.primer` MCP tool** + static framework primer embedded in agent rules.
+- **`pondoknusa key:generate`** — set/rotate `APP_KEY` in `.env`.
+
+### Improved
+
+- **`pondoknusa doctor`** — checks `APP_KEY`, pending migrations, queue connectivity, optional `--url` `/health/ready` probe, clearer pass/fail counts, and informational `debug:config` when installed; tears down DB/Redis probes after use.
+- **`pondoknusa debug:*`** — install next-steps document auth-gated `/__debug`; `debug:watch --once` prints and exits; unauthenticated `/__debug` responses hint at `debug:watch`; debug bar DOM/CSS renamed from `tyr-*` to `pondoknusa-*`; generated `config/debug.ts` includes `correlationsPath`.
+
 ## [4.0.1] - 2026-07-30
 
 ### Fixed

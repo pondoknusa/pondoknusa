@@ -3,10 +3,10 @@ import type { DebugRequestEntry } from './types.js';
 export function renderDebugBar(entry: DebugRequestEntry, debugPath: string): string {
   const warningCount = entry.warnings.length;
   const queryCount = entry.queries.length;
-  const warningClass = warningCount > 0 ? ' tyr-debug-bar--warn' : '';
+  const warningClass = warningCount > 0 ? ' pondoknusa-debug-bar--warn' : '';
 
   return `
-<div id="tyr-debug-bar" class="tyr-debug-bar${warningClass}">
+<div id="pondoknusa-debug-bar" class="pondoknusa-debug-bar${warningClass}">
   <span><strong>Pondoknusa</strong></span>
   <span>${entry.method} ${entry.path}</span>
   <span>${entry.status}</span>
@@ -18,14 +18,14 @@ export function renderDebugBar(entry: DebugRequestEntry, debugPath: string): str
   ${entry.replay ? '<span title="curl / fetch snippets available in JSON">replay</span>' : ''}
 </div>
 <style>
-  .tyr-debug-bar {
+  .pondoknusa-debug-bar {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 99999;
     display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;
     padding: 0.5rem 1rem; font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
     background: #111827; color: #f9fafb; border-top: 2px solid #374151;
   }
-  .tyr-debug-bar--warn { border-top-color: #f59e0b; }
-  .tyr-debug-bar a { color: #93c5fd; }
+  .pondoknusa-debug-bar--warn { border-top-color: #f59e0b; }
+  .pondoknusa-debug-bar a { color: #93c5fd; }
 </style>`;
 }
 

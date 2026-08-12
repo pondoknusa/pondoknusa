@@ -60,6 +60,8 @@ import { VectorEmbedCommand } from './commands/vector-embed.js';
 import { VectorInstallCommand } from './commands/vector-install.js';
 import { McpServeCommand } from './commands/mcp-serve.js';
 import { McpExportRulesCommand } from './commands/mcp-export-rules.js';
+import { McpInstallCommand } from './commands/mcp-install.js';
+import { KeyGenerateCommand } from './commands/key-generate.js';
 import { MakeToolCommand } from './commands/make-tool.js';
 import { MakeRagResourceCommand } from './commands/make-rag-resource.js';
 import { NotificationFailedCommand, NotificationRetryCommand } from './commands/notification-failed.js';
@@ -132,7 +134,9 @@ export function createKernel(): ConsoleKernel {
     new VectorEmbedCommand(),
     new VectorInstallCommand(),
     new McpServeCommand(),
+    new McpInstallCommand(),
     new McpExportRulesCommand(),
+    new KeyGenerateCommand(),
     new MakeToolCommand(),
     new MakeRagResourceCommand(),
     new NotificationFailedCommand(),

@@ -3,13 +3,15 @@
 ## Create a new application
 
 ```bash
-npx pondoknusa new my-app
+npm create pondoknusa@latest my-app
+# fallback while create-pondoknusa publishes: npx -y @pondoknusa/cli new my-app
 cd my-app
-npm install
-pondoknusa serve
+pondoknusa dev
 ```
 
-Visit `http://127.0.0.1:3000`.
+`pondoknusa new` is create-and-breathe: it generates `APP_KEY`, creates `storage/`, runs `npm install`, installs auth when enabled, migrates SQLite, wires Cursor MCP + agent rules, and initializes git. Then open `http://127.0.0.1:3000`.
+
+Escape hatches: `--no-install`, `--no-mcp`, `--no-git`, `--no-auth`.
 
 ### Backend-only (headless API)
 
@@ -18,8 +20,6 @@ For JSON APIs without views, SSR, or client assets:
 ```bash
 npm create pondoknusa@latest my-api -- --headless
 cd my-api
-npm install
-pondoknusa migrate
 pondoknusa dev
 curl http://127.0.0.1:3000/api/v1/health
 ```
@@ -89,7 +89,10 @@ When you are ready to ship:
 3. Automate releases with [CI/CD](./deployment/ci-cd)
 
 ```bash
+pondoknusa doctor         # env, APP_KEY, DB/Redis/queue, migrations
 pondoknusa deploy:check   # doctor + route/view validation before traffic
+pondoknusa mcp:install    # Cursor MCP + AGENTS.md (also default on `new`)
+pondoknusa key:generate   # rotate APP_KEY in .env
 ```
 
 Managed **Pondoknusa Cloud** (git-push deploy) is planned — see [Pondoknusa Cloud](./deployment/pondoknusa-cloud). Until then, copy manifests from `examples/hello-world/deploy/`.

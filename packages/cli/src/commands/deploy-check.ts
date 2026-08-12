@@ -26,10 +26,13 @@ export class DeployCheckCommand extends Command {
     console.log('');
 
     let failed = 0;
+    let passed = 0;
     for (const check of checks) {
       const icon = check.ok ? '✓' : '✗';
       console.log(`${icon} ${check.name}: ${check.message}`);
-      if (!check.ok) {
+      if (check.ok) {
+        passed += 1;
+      } else {
         failed += 1;
       }
     }
@@ -37,14 +40,18 @@ export class DeployCheckCommand extends Command {
     const routeCheck = await validateRouteManifest(root);
     const routeIcon = routeCheck.ok ? '✓' : '✗';
     console.log(`${routeIcon} routes: ${routeCheck.message}`);
-    if (!routeCheck.ok) {
+    if (routeCheck.ok) {
+      passed += 1;
+    } else {
       failed += 1;
     }
 
     const configCheck = await validateConfigManifest(root);
     const configIcon = configCheck.ok ? '✓' : '✗';
     console.log(`${configIcon} config: ${configCheck.message}`);
-    if (!configCheck.ok) {
+    if (configCheck.ok) {
+      passed += 1;
+    } else {
       failed += 1;
     }
 
@@ -54,17 +61,19 @@ export class DeployCheckCommand extends Command {
       : await validateViewCompilation(root);
     const viewIcon = viewCheck.ok ? '✓' : '✗';
     console.log(`${viewIcon} views: ${viewCheck.message}`);
-    if (!viewCheck.ok) {
+    if (viewCheck.ok) {
+      passed += 1;
+    } else {
       failed += 1;
     }
 
     console.log('');
     if (failed > 0) {
-      console.log(`${failed} check(s) failed.`);
+      console.log(`${passed} passed, ${failed} failed.`);
       return 1;
     }
 
-    console.log('All deploy checks passed.');
+    console.log(`All ${passed} deploy check(s) passed.`);
     return 0;
   }
 }

@@ -1,4 +1,5 @@
 import { flattenConfigKeys, isSensitiveConfigKey, redactConfigValue } from './config-keys.js';
+import { frameworkPrimerMarkdown } from './framework-primer.js';
 import type { AppMcpContext, CapabilityManifest } from './types.js';
 import type { McpTool } from './server.js';
 
@@ -81,6 +82,15 @@ export function createFrameworkTools(context: AppMcpContext): McpTool[] {
           return context.docs;
         }
         return context.docs.filter((entry) => entry.path.includes(filter));
+      },
+    },
+    {
+      name: 'pondoknusa.primer',
+      description:
+        'Return the static Pondoknusa framework primer (layout, workflow, auth, debug, MCP) for coding agents.',
+      inputSchema: { type: 'object', properties: {} },
+      async handler() {
+        return { markdown: frameworkPrimerMarkdown() };
       },
     },
     {

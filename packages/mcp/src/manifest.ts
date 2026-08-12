@@ -44,7 +44,9 @@ const CLI_COMMANDS = [
   'pondoknusa make:tool',
   'pondoknusa make:rag-resource',
   'pondoknusa mcp:serve',
+  'pondoknusa mcp:install',
   'pondoknusa mcp:export-rules',
+  'pondoknusa key:generate',
   'pondoknusa route:list',
 ] as const;
 

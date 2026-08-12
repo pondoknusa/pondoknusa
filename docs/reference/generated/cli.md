@@ -20,9 +20,9 @@ pondoknusa help <command>
 |---------|-------------|-------|
 | `build` | Bundle the app entry into a single production file (esbuild) | `pondoknusa build [--outfile=<path>] [--minify] [--full]` |
 | `dev` | Start the local development server with hot reload | `pondoknusa dev [--port=<port>] [--host=<hostname>] [--tls] [--no-queue] [--no-watch]` |
-| `doctor` | Run environment and project health checks | `pondoknusa doctor [--perf]` |
+| `doctor` | Run environment and project health checks | `pondoknusa doctor [--perf] [--url=<base>]` |
 | `migrate` | Run database migrations | `pondoknusa migrate` |
-| `new` | Create a new Pondoknusa application | `pondoknusa new <name> [--path=<directory>] [--headless] [--template=default\|api\|ssr\|saas\|headless] [--db=sqlite\|mysql\|postgres\|oracle\|mssql] [--redis\|--no-redis] [--auth\|--no-auth] [--queue=database\|redis] [--mail=log\|smtp\|array] [--ai\|--no-ai]` |
+| `new` | Create a new Pondoknusa application | `pondoknusa new <name> [--path=<directory>] [--headless] [--template=default\|api\|ssr\|saas\|headless] [--db=sqlite\|mysql\|postgres\|oracle\|mssql] [--redis\|--no-redis] [--auth\|--no-auth] [--queue=database\|redis] [--mail=log\|smtp\|array] [--ai\|--no-ai] [--no-install] [--no-mcp] [--no-git]` |
 | `serve` | Start the development server | `pondoknusa serve [--port=<port>] [--host=<hostname>] [--tls]` |
 | `shell` | Start an interactive Pondoknusa shell (REPL) | — |
 | `start` | Start the production server | `pondoknusa start [--port=<port>] [--host=<hostname>] [--cluster] [--workers=<n>]` |
@@ -129,6 +129,7 @@ pondoknusa help <command>
 | Command | Description | Usage |
 |---------|-------------|-------|
 | `mcp:export-rules` | Export Cursor/Claude agent rules from the Pondoknusa capability manifest | `pondoknusa mcp:export-rules [--format=cursor\|claude\|agents] [--output=<path>]` |
+| `mcp:install` | Wire Cursor MCP + agent rules so coding tools understand Pondoknusa | `pondoknusa mcp:install [--force]` |
 | `mcp:serve` | Run the Pondoknusa MCP server over stdio for agents | `pondoknusa mcp:serve` |
 
 ## Notifications
@@ -151,7 +152,7 @@ pondoknusa help <command>
 |---------|-------------|-------|
 | `debug:clear` | Clear persisted Pondoknusa debug entries | `pondoknusa debug:clear` |
 | `debug:install` | Scaffold debug bar, timeline routes, and config | `pondoknusa debug:install` |
-| `debug:watch` | Tail persisted debug entries while pondoknusa serve is running | `pondoknusa debug:watch [--correlations]` |
+| `debug:watch` | Tail persisted debug entries while pondoknusa serve is running | `pondoknusa debug:watch [--correlations] [--once]` |
 
 ## Admin
 
@@ -189,3 +190,9 @@ pondoknusa help <command>
 | Command | Description | Usage |
 |---------|-------------|-------|
 | `deploy:check` | Run pre-deploy checks (doctor, routes, views) | `pondoknusa deploy:check` |
+
+## key
+
+| Command | Description | Usage |
+|---------|-------------|-------|
+| `key:generate` | Generate and set APP_KEY in .env | `pondoknusa key:generate [--force]` |

@@ -673,18 +673,21 @@ Make Pondoknusa feel as smooth on day one as Laravel does: fast local iteration,
 
 #### P0 — Must ship
 
-- [x] **`pondoknusa doctor`** — checks Node version, writable `storage/`, database connectivity, Redis when configured, compiled view cache in production, and OAuth redirect URI shape
+- [x] **`pondoknusa doctor`** — checks Node version, `APP_KEY`, writable `storage/`, database connectivity, pending migrations, Redis/queue when configured, compiled view cache in production, OAuth redirect URI shape, optional `--url` `/health/ready` probe, and `--perf` HTTP smoke
 - [x] **Actionable exceptions** — link common boot failures (`CompiledViewCacheMissError`, missing provider, bad `.env`) to docs URLs in the error message
+- [x] **Create-and-breathe `new`** — `APP_KEY`, storage, `.gitignore`, install, auth:install, sqlite migrate, git init, default MCP (`mcp:install`) with `--no-*` escape hatches
+- [x] **`mcp:install` + `pondoknusa.primer`** — Cursor MCP config, agent rules, and static framework primer for coding agents
 
 #### P1 — Strong want
 
 - [x] **Pre-deploy command** — `pondoknusa deploy:check` runs doctor + `route:cache` dry-run + `view:cache` validation; CI-friendly exit codes
 - [x] **Debug bar deep links** — request id in toolbar links to `/__debug?correlation=` JSON for the current entry
 - [x] **N+1 source maps** — show file:line of the query origin in slow-query warnings when `APP_DEBUG=true`
+- [x] **Debug auth UX** — `/__debug` stays auth-gated; install/`debug:watch --once` and 401 payloads document the local watch workflow; debug bar CSS uses `pondoknusa-*` ids
 
 #### P2 — If scope allows
 
-- [x] **Benchmark in doctor** — optional quick `BENCHMARK_QUICK=1` smoke when `--perf` flag passed
+- [x] **Benchmark in doctor** — optional quick HTTP throughput smoke (`runPerfSmoke`) when `--perf` flag passed
 
 ### Views & typing DX
 

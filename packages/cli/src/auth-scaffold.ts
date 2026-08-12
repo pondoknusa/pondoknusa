@@ -1,0 +1,136 @@
+import { loadConfig } from '@pondoknusa/config';
+import { isHeadlessProject } from './headless-project.js';
+import type { NewProjectOptions } from './new-project-options.js';
+import {
+  headlessAuthConfig,
+  headlessAuthRoutes,
+  headlessMainEntryWithAuth,
+} from './stubs-headless.js';
+import {
+  appServiceProviderWithAuth,
+  authConfig,
+  authController,
+  authRoutes,
+  mainEntryWithAuth,
+  oauthAccountsMigration,
+  passwordResetTokensMigration,
+  personalAccessTokensMigration,
+  postPolicyStub,
+  sessionsTableMigration,
+  userModel,
+  usersTableMigration,
+} from './stubs.js';
+import { pathExists, projectPath, writeFile } from './utils.js';
+
+export interface InstallAuthResult {
+  ok: boolean;
+  alreadyInstalled: boolean;
+  message: string;
+}
+
+export async function installAuthScaffold(
+  root: string,
+  options: { quiet?: boolean } = {},
+): Promise<InstallAuthResult> {
+  const headless = await isHeadlessProject(root);
+  const configPath = projectPath(root, 'config/auth.ts');
+
+  if (await pathExists(configPath)) {
+    return {
+      ok: false,
+      alreadyInstalled: true,
+      message: 'config/auth.ts already exists.',
+    };
+  }
+
+  await writeFile(configPath, headless ? headlessAuthConfig() : authConfig());
+  await writeFile(projectPath(root, 'src/models/User.ts'), userModel());
+  await writeFile(projectPath(root, 'src/controllers/AuthController.ts'), authController());
+  await writeFile(
+    projectPath(root, 'src/routes/auth.ts'),
+    headless ? headlessAuthRoutes() : authRoutes(),
+  );
+  await writeFile(projectPath(root, 'src/policies/PostPolicy.ts'), postPolicyStub());
+  await writeFile(projectPath(root, 'src/providers/app-service-provider.ts'), appServiceProviderWithAuth());
+  await writeFile(
+    projectPath(root, 'database/migrations/20260101000000_create_users_table.ts'),
+    usersTableMigration(),
+  );
+  await writeFile(
+    projectPath(root, 'database/migrations/20260101000001_create_sessions_table.ts'),
+    sessionsTableMigration(),
+  );
+  await writeFile(
+    projectPath(root, 'database/migrations/20260101000002_create_password_reset_tokens_table.ts'),
+    passwordResetTokensMigration(),
+  );
+  await writeFile(
+    projectPath(root, 'database/migrations/20260101000003_create_personal_access_tokens_table.ts'),
+    personalAccessTokensMigration(),
+  );
+  await writeFile(
+    projectPath(root, 'database/migrations/20260101000004_create_oauth_accounts_table.ts'),
+    oauthAccountsMigration(),
+  );
+
+  if (headless) {
+    const projectOptions = await resolveHeadlessAuthOptions(root);
+    await writeFile(projectPath(root, 'src/main.ts'), headlessMainEntryWithAuth(projectOptions));
+  } else {
+    await writeFile(projectPath(root, 'src/main.ts'), mainEntryWithAuth());
+  }
+
+  if (!options.quiet) {
+    console.log('Auth scaffolding installed.');
+    console.log('');
+    console.log('Next steps:');
+    console.log('  pondoknusa migrate');
+    if (headless) {
+      console.log(
+        '  POST /api/v1/login  |  POST /api/v1/tokens (session)  |  Authorization: Bearer <token> (api guard)',
+      );
+    } else {
+      console.log('  POST /login  |  POST /tokens (session)  |  Authorization: Bearer <token> (api guard)');
+    }
+    console.log('  POST /forgot-password  |  POST /reset-password');
+    console.log('  GET /auth/github/redirect  |  GET /auth/github/callback');
+    console.log('');
+    console.log('Optional hardening: pondoknusa crypto:install');
+  }
+
+  return {
+    ok: true,
+    alreadyInstalled: false,
+    message: 'Auth scaffolding installed.',
+  };
+}
+
+async function resolveHeadlessAuthOptions(root: string): Promise<NewProjectOptions> {
+  const config = (await loadConfig(root, { validate: false })) as {
+    database?: { default?: string };
+    redis?: { default?: string };
+  };
+
+  const defaultDb = config.database?.default ?? 'sqlite';
+  const database =
+    defaultDb === 'mysql' ||
+    defaultDb === 'postgres' ||
+    defaultDb === 'oracle' ||
+    defaultDb === 'mssql'
+      ? defaultDb
+      : 'sqlite';
+
+  return {
+    database,
+    redis: Boolean(config.redis?.default),
+    auth: true,
+    queue: 'database',
+    mail: 'log',
+    ai: false,
+    template: 'headless',
+    headless: true,
+    install: true,
+    mcp: true,
+    git: true,
+  };
+}

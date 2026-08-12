@@ -17,7 +17,13 @@ export function registerDebugRoutes(
   const guard = options.requireAuth
     ? (request: { user: unknown }) => {
         if (!request.user) {
-          return Response.json({ message: 'Unauthorized.' }, { status: 401 });
+          return Response.json(
+            {
+              message: 'Unauthorized. Sign in to view /__debug, or use `pondoknusa debug:watch` locally.',
+              hint: 'pondoknusa debug:watch [--correlations]',
+            },
+            { status: 401 },
+          );
         }
         return null;
       }

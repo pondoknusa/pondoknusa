@@ -1,21 +1,24 @@
-import { mkdir } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import {
   formatDebugEntryLine,
   formatDebugExecutionLine,
   watchDebugEntries,
+  type DebugJobExecution,
+  type DebugRequestEntry,
 } from '@pondoknusa/debug';
 import { Command } from '../command.js';
 import { requireProjectRoot } from '../project.js';
-import { parseOptions, pathExists, projectPath } from '../utils.js';
+import { optionFlag, parseOptions, pathExists, projectPath } from '../utils.js';
 
 export class DebugWatchCommand extends Command {
   override readonly name = 'debug:watch';
   override readonly description = 'Tail persisted debug entries while pondoknusa serve is running';
-  override readonly usage = 'pondoknusa debug:watch [--correlations]';
+  override readonly usage = 'pondoknusa debug:watch [--correlations] [--once]';
 
   async handle(args: string[]): Promise<number> {
     const options = parseOptions(args);
+    const once = optionFlag(options, 'once');
 
     const root = await requireProjectRoot();
     const entriesPath = await this.resolveEntriesPath(root);
@@ -26,6 +29,11 @@ export class DebugWatchCommand extends Command {
     await mkdir(join(entriesPath, '..'), { recursive: true });
     if (correlationsPath) {
       await mkdir(join(correlationsPath, '..'), { recursive: true });
+    }
+
+    if (once) {
+      await this.printOnce(entriesPath, correlationsPath);
+      return 0;
     }
 
     console.log(`Watching ${entriesPath}${correlationsPath ? ` and ${correlationsPath}` : ''}...`);
@@ -56,6 +64,46 @@ export class DebugWatchCommand extends Command {
     });
 
     return 0;
+  }
+
+  private async printOnce(entriesPath: string, correlationsPath?: string): Promise<void> {
+    const entries = await this.readEntries(entriesPath);
+    if (entries.length === 0) {
+      console.log('No persisted debug entries found.');
+    } else {
+      for (const entry of entries) {
+        console.log(formatDebugEntryLine(entry));
+      }
+    }
+
+    if (!correlationsPath) {
+      return;
+    }
+
+    const executions = await this.readExecutions(correlationsPath);
+    for (const execution of executions) {
+      console.log(formatDebugExecutionLine(execution));
+    }
+  }
+
+  private async readEntries(path: string): Promise<DebugRequestEntry[]> {
+    try {
+      const raw = await readFile(path, 'utf8');
+      const parsed = JSON.parse(raw) as DebugRequestEntry[];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+
+  private async readExecutions(path: string): Promise<DebugJobExecution[]> {
+    try {
+      const raw = await readFile(path, 'utf8');
+      const parsed = JSON.parse(raw) as DebugJobExecution[];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
   }
 
   private async resolveEntriesPath(root: string): Promise<string> {

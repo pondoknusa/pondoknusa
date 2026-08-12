@@ -32,6 +32,9 @@ describe('AuthInstallCommand', () => {
         '--no-auth',
         '--db=sqlite',
         '--no-redis',
+        '--no-install',
+        '--no-git',
+        '--no-mcp',
       ]),
     ).toBe(0);
 

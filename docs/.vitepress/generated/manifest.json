@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-30T02:07:02.675Z",
+  "generatedAt": "2026-08-11T20:29:54.859Z",
   "version": "4.0.1",
   "packages": [
     {
@@ -343,6 +343,7 @@
     "deploy:check",
     "dev",
     "doctor",
+    "key:generate",
     "lang:missing",
     "lang:publish",
     "make:command",
@@ -368,6 +369,7 @@
     "make:tool",
     "make:view",
     "mcp:export-rules",
+    "mcp:install",
     "mcp:serve",
     "migrate",
     "model:prune",

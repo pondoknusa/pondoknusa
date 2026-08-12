@@ -29,6 +29,9 @@ describe('project templates', () => {
       ai: true,
       template: 'headless',
       headless: false,
+      install: true,
+      mcp: true,
+      git: true,
     };
 
     const result = applyTemplateDefaults('headless', base);

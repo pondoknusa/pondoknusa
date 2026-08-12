@@ -3,6 +3,7 @@ export { flattenConfigKeys } from './config-keys.js';
 export { discoverDocs } from './docs-index.js';
 export { discoverModels } from './discover-models.js';
 export { buildAppManifest, createFrameworkTools } from './framework-tools.js';
+export { frameworkPrimerMarkdown } from './framework-primer.js';
 export {
   defaultRulesOutputPath,
   renderAgentRules,

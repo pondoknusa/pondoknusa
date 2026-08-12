@@ -6,9 +6,11 @@ Create a Pondoknusa app, boot the HTTP kernel, and return your first HTML page.
 
 ```bash
 npm create pondoknusa@latest blog
+# fallback: npx -y @pondoknusa/cli new blog
 cd blog
-npm install
 ```
+
+`new` already installs dependencies, generates `APP_KEY`, creates `storage/`, installs auth (default), migrates SQLite, and wires MCP agent rules. You can run `pondoknusa dev` immediately.
 
 The default scaffold uses SQLite, a database queue, and log mail — no Redis or cloud SDKs required.
 
@@ -48,7 +50,7 @@ pondoknusa make:view welcome
 pondoknusa dev
 ```
 
-`pondoknusa dev` starts the server with view, config, and route hot reload. Use `pondoknusa debug:watch` in a second terminal after `pondoknusa debug:install` to tail request timelines.
+`pondoknusa dev` starts the server with view, config, and route hot reload. After `pondoknusa debug:install`, use `pondoknusa debug:watch` to tail request timelines without signing in. The `/__debug` JSON panel requires an authenticated session.
 
 Visit `http://127.0.0.1:3000` and `/health`.
 

@@ -42,6 +42,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `discoverMcpTools`
 - `discoverModels`
 - `flattenConfigKeys`
+- `frameworkPrimerMarkdown`
 - `renderAgentRules`
 
 ### Types

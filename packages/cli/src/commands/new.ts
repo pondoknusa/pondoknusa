@@ -2,6 +2,7 @@ import { chmod } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { spawn } from 'node:child_process';
 import { Command } from '../command.js';
+import { installAuthScaffold } from '../auth-scaffold.js';
 import { resolveNewProjectOptions } from '../new-project-options.js';
 import {
   broadcastChannels,
@@ -71,13 +72,21 @@ import {
   headlessProjectConfig,
   headlessReadme,
 } from '../stubs-headless.js';
+import {
+  createStorageTree,
+  ensureGitignore,
+  generateAppKey,
+  tryGitInit,
+} from '../scaffold-project.js';
+import { McpInstallCommand } from './mcp-install.js';
+import { MigrateCommand } from './migrate.js';
 import { optionString, parseOptions, positionalArgs, projectPath, toKebabCase, writeFile, pathExists } from '../utils.js';
 
 export class NewCommand extends Command {
   override readonly name = 'new';
   override readonly description = 'Create a new Pondoknusa application';
   override readonly usage =
-    'pondoknusa new <name> [--path=<directory>] [--headless] [--template=default|api|ssr|saas|headless] [--db=sqlite|mysql|postgres|oracle|mssql] [--redis|--no-redis] [--auth|--no-auth] [--queue=database|redis] [--mail=log|smtp|array] [--ai|--no-ai]';
+    'pondoknusa new <name> [--path=<directory>] [--headless] [--template=default|api|ssr|saas|headless] [--db=sqlite|mysql|postgres|oracle|mssql] [--redis|--no-redis] [--auth|--no-auth] [--queue=database|redis] [--mail=log|smtp|array] [--ai|--no-ai] [--no-install] [--no-mcp] [--no-git]';
 
   async handle(args: string[]): Promise<number> {
     const options = parseOptions(args);
@@ -107,12 +116,13 @@ export class NewCommand extends Command {
     }
 
     const headless = projectOptions.headless;
+    const appKey = generateAppKey();
 
     await writeFile(
       projectPath(targetDir, 'package.json'),
       headless ? headlessPackageJson(name, projectOptions) : projectPackageJson(name, projectOptions),
     );
-    const envContents = envExample(name, projectOptions);
+    const envContents = envExample(name, projectOptions, appKey);
     await writeFile(projectPath(targetDir, '.env.example'), envContents);
     await writeFile(projectPath(targetDir, '.env'), envContents);
     await writeFile(
@@ -212,7 +222,7 @@ export class NewCommand extends Command {
       );
     }
     if (projectOptions.ai) {
-      const ts = Date.now();
+      const aiTs = Date.now();
       await writeFile(projectPath(targetDir, 'config/vector.ts'), vectorConfig());
       await writeFile(projectPath(targetDir, 'src/embed.ts'), embedStub());
       await writeFile(projectPath(targetDir, 'src/models/Document.ts'), documentModel());
@@ -227,12 +237,12 @@ export class NewCommand extends Command {
         groundedPromptTemplate(),
       );
       await writeFile(
-        projectPath(targetDir, `database/migrations/${ts}_create_documents_table.ts`),
-        documentsMigration(String(ts)),
+        projectPath(targetDir, `database/migrations/${aiTs}_create_documents_table.ts`),
+        documentsMigration(String(aiTs)),
       );
       await writeFile(
-        projectPath(targetDir, `database/migrations/${ts + 1}_create_conversation_messages_table.ts`),
-        conversationMessagesMigration(String(ts + 1)),
+        projectPath(targetDir, `database/migrations/${aiTs + 1}_create_conversation_messages_table.ts`),
+        conversationMessagesMigration(String(aiTs + 1)),
       );
     }
     if (!headless) {
@@ -267,6 +277,9 @@ export class NewCommand extends Command {
       );
     }
 
+    await createStorageTree(targetDir, headless);
+    await ensureGitignore(targetDir);
+
     console.log(`Pondoknusa application created successfully.`);
     console.log('');
     console.log(`  Template: ${projectOptions.template}`);
@@ -279,11 +292,11 @@ export class NewCommand extends Command {
     console.log(`  Mail: ${projectOptions.mail}`);
     console.log(`  Redis: ${projectOptions.redis ? 'yes' : 'no'}`);
     console.log(`  AI/RAG: ${projectOptions.ai ? 'yes' : 'no'}`);
+    console.log(`  MCP: ${projectOptions.mcp ? 'yes' : 'no'}`);
     console.log('');
-    // Run npm install with inline spinner (only in interactive mode)
+
     let npmInstalled = false;
-    if (process.stdout.isTTY) {
-      console.log('');
+    if (projectOptions.install) {
       console.log('Running npm install...');
       const installCode = await runNpmInstall(targetDir);
       npmInstalled = installCode === 0;
@@ -294,15 +307,63 @@ export class NewCommand extends Command {
       }
     }
 
-    printFirstRunChecklist(name, projectOptions, npmInstalled);
+    const previousCwd = process.cwd();
+    let authInstalled = false;
+    let migrated = false;
+    let mcpInstalled = false;
+
+    try {
+      process.chdir(targetDir);
+
+      if (projectOptions.auth) {
+        const authResult = await installAuthScaffold(targetDir, { quiet: true });
+        authInstalled = authResult.ok;
+        if (authResult.ok) {
+          console.log('✓ Auth scaffolding installed');
+        } else if (!authResult.alreadyInstalled) {
+          console.log(`⚠ Auth install skipped: ${authResult.message}`);
+        }
+      }
+
+      if (projectOptions.database === 'sqlite' && npmInstalled) {
+        const migrateCode = await new MigrateCommand().handle([]);
+        migrated = migrateCode === 0;
+        if (migrated) {
+          console.log('✓ Migrations applied');
+        } else {
+          console.log('⚠ migrate failed — run `pondoknusa migrate` manually');
+        }
+      }
+
+      if (projectOptions.mcp) {
+        const mcpCode = await new McpInstallCommand().handle(['--force']);
+        mcpInstalled = mcpCode === 0;
+        if (mcpInstalled) {
+          console.log('✓ MCP + agent rules installed');
+        }
+      }
+
+      if (projectOptions.git) {
+        const initialized = await tryGitInit(targetDir);
+        if (initialized) {
+          console.log('✓ git repository initialized');
+        }
+      }
+    } finally {
+      process.chdir(previousCwd);
+    }
+
+    printFirstRunChecklist(name, projectOptions, {
+      npmInstalled,
+      authInstalled,
+      migrated,
+      mcpInstalled,
+    });
 
     return 0;
   }
 }
 
-/**
- * Run `npm install` in the given directory with a simple progress indicator.
- */
 async function runNpmInstall(targetDir: string): Promise<number> {
   return new Promise((resolvePromise) => {
     const proc = spawn('npm', ['install'], {
@@ -311,30 +372,31 @@ async function runNpmInstall(targetDir: string): Promise<number> {
     });
 
     let dots = 0;
-    const spinner = setInterval(() => {
-      dots = (dots + 1) % 4;
-      const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
-      process.stdout.write(`\r${frames[dots]} Installing dependencies...`);
-    }, 150);
+    const useSpinner = process.stdout.isTTY;
+    const spinner = useSpinner
+      ? setInterval(() => {
+          dots = (dots + 1) % 4;
+          const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+          process.stdout.write(`\r${frames[dots]} Installing dependencies...`);
+        }, 150)
+      : undefined;
 
-    let output = '';
-    proc.stdout?.on('data', (chunk: Buffer) => {
-      output += chunk.toString();
-    });
-
-    proc.stderr?.on('data', (chunk: Buffer) => {
-      output += chunk.toString();
-    });
+    proc.stdout?.on('data', () => {});
+    proc.stderr?.on('data', () => {});
 
     proc.on('close', (code) => {
-      clearInterval(spinner);
-      process.stdout.write('\r' + ' '.repeat(40) + '\r');
+      if (spinner) {
+        clearInterval(spinner);
+        process.stdout.write('\r' + ' '.repeat(40) + '\r');
+      }
       resolvePromise(code ?? 1);
     });
 
     proc.on('error', () => {
-      clearInterval(spinner);
-      process.stdout.write('\r' + ' '.repeat(40) + '\r');
+      if (spinner) {
+        clearInterval(spinner);
+        process.stdout.write('\r' + ' '.repeat(40) + '\r');
+      }
       resolvePromise(1);
     });
   });

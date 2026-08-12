@@ -106,7 +106,7 @@ pondoknusa dev --no-queue   # web only
 pondoknusa deploy:check
 ```
 
-`pondoknusa doctor` reports headless mode and skips production view-cache requirements.
+`pondoknusa doctor` reports headless mode and skips production view-cache requirements. Pass `--url=http://127.0.0.1:3000` to also probe `/health/ready` on a running server. Fresh `new --headless` still generates `APP_KEY`, `storage/`, and MCP wiring by default.
 
 ## Converting an existing app
 

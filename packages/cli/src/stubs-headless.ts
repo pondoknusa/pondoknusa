@@ -30,6 +30,7 @@ export const schema = s.object({
 
 export default {
   name: env('APP_NAME', '${name}'),
+  key: env('APP_KEY', ''),
   headless: true,
   debug: env('APP_DEBUG', true),
   url: env('APP_URL', 'http://127.0.0.1:3000'),

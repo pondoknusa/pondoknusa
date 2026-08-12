@@ -31,8 +31,9 @@ export class DebugInstallCommand extends Command {
     console.log('Next steps:');
     console.log('  npm install @pondoknusa/debug');
     console.log('  Set APP_DEBUG=true in .env');
-    console.log('  Visit any HTML page to see the debug bar');
-    console.log('  Open /__debug for recent request JSON');
+    console.log('  Visit any HTML page (while signed in) to see the debug bar');
+    console.log('  Open /__debug while authenticated for request JSON');
+    console.log('  Or run `pondoknusa debug:watch` to tail entries without auth');
 
     return 0;
   }

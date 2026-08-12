@@ -65,6 +65,7 @@ export const schema = s.object({
 
 export default {
   name: env('APP_NAME', '${name}'),
+  key: env('APP_KEY', ''),
   debug: env('APP_DEBUG', true),
   url: env('APP_URL', 'http://127.0.0.1:3000'),
   locale: env('APP_LOCALE', 'en'),
@@ -1390,6 +1391,7 @@ export function mainEntryWithAuth(): string {
 import { AppServiceProvider } from './providers/app-service-provider.js';
 import './routes/web.js';
 import './routes/auth.js';
+import './routes/channels.js';
 
 const app = new Application(import.meta.dir);
 setRouteApplication(app);
@@ -1532,6 +1534,7 @@ export function debugConfig(): string {
   maxEntries: 50,
   persist: true,
   persistPath: '.pondoknusa/debug-entries.json',
+  correlationsPath: '.pondoknusa/debug-correlations.json',
   slowQueryMs: 100,
   nPlusOneThreshold: 3,
   otel: {

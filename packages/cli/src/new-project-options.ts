@@ -17,6 +17,9 @@ export interface NewProjectOptions {
   ai: boolean;
   template: ProjectTemplate;
   headless: boolean;
+  install: boolean;
+  mcp: boolean;
+  git: boolean;
 }
 
 const DATABASE_CHOICES: { value: DatabaseDriver; label: string }[] = [
@@ -57,6 +60,9 @@ export async function resolveNewProjectOptions(
   let ai = false;
   let template: ProjectTemplate = 'default';
   let headless = false;
+  let install = options['no-install'] !== true;
+  let mcp = options['no-mcp'] !== true;
+  let git = options['no-git'] !== true;
 
   if (options.headless === true) {
     headless = true;
@@ -180,6 +186,9 @@ export async function resolveNewProjectOptions(
     ai,
     template,
     headless: headless || template === 'headless',
+    install,
+    mcp,
+    git,
   });
 }
 

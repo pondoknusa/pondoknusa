@@ -3,41 +3,44 @@ import type { NewProjectOptions } from './new-project-options.js';
 export function printFirstRunChecklist(
   name: string,
   options: NewProjectOptions,
-  npmInstalled: boolean,
+  state: {
+    npmInstalled: boolean;
+    authInstalled: boolean;
+    migrated: boolean;
+    mcpInstalled: boolean;
+  },
 ): void {
   console.log('');
-  console.log('First-run checklist:');
+  console.log('Ready to breathe:');
   console.log('');
   console.log(`  cd ${name}`);
 
-  if (!npmInstalled) {
+  if (!state.npmInstalled) {
     console.log('  npm install');
   }
 
-  console.log('  pondoknusa migrate');
+  if (options.database !== 'sqlite' && !state.migrated) {
+    console.log('  # configure DB_* in .env, then:');
+    console.log('  pondoknusa migrate');
+  }
+
   console.log('  pondoknusa dev');
 
   if (options.headless) {
     console.log('  curl http://127.0.0.1:3000/api/v1/health');
   }
 
-  console.log('  pondoknusa dev --queue     # web + queue worker together');
-  console.log('  # or: npm run dev:worker in another terminal');
-
-  console.log('  pondoknusa test');
-
-  if (options.auth) {
-    console.log(
-      options.headless
-        ? '  pondoknusa auth:install    # API token guards and migrations'
-        : '  pondoknusa auth:install    # guards, login routes, migrations',
-    );
+  if (state.mcpInstalled) {
+    console.log('');
+    console.log('  MCP for coding agents is wired (.cursor/mcp.json + AGENTS.md).');
+    console.log('  Reload Cursor MCP, then ask agents to use pondoknusa.primer.');
+  } else {
+    console.log('  pondoknusa mcp:install   # Cursor MCP + agent rules');
   }
 
-  console.log(
-    options.headless
-      ? '  pondoknusa deploy:check    # doctor + routes (no view cache)'
-      : '  pondoknusa doctor          # verify environment before deploy',
-  );
+  if (options.auth && !state.authInstalled) {
+    console.log('  pondoknusa auth:install');
+  }
+
   console.log('');
 }

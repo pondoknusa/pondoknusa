@@ -102,7 +102,7 @@ Run `pondoknusa deploy:check` before shipping to validate doctor checks, route c
 
 | Laravel | Pondoknusa |
 |---------|---------|
-| Telescope (paid/complex) | `pondoknusa debug:install` + debug bar |
+| Telescope (paid/complex) | `pondoknusa debug:install` + debug bar; `/__debug` requires auth — use `debug:watch` locally |
 | Query log | Debug bar query count + N+1 warnings |
 | `php artisan tinker` | `pondoknusa shell` (`.routes`, `.models`, persistent history) |
 

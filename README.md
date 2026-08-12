@@ -79,12 +79,12 @@ Create a new application:
 
 ```bash
 npm create pondoknusa@latest my-app
+# fallback while create-pondoknusa publishes: npx -y @pondoknusa/cli new my-app
 cd my-app
-npm install
-pondoknusa serve
+pondoknusa dev
 ```
 
-Visit `http://127.0.0.1:3000`.
+Visit `http://127.0.0.1:3000`. The scaffold is create-and-breathe (`APP_KEY`, `storage/`, install, auth, SQLite migrate, Cursor MCP + `AGENTS.md`, git init).
 
 ### Example app
 
@@ -100,7 +100,8 @@ pondoknusa serve
 
 ```bash
 pondoknusa list                         # List available commands
-pondoknusa new <name> [--path=<dir>]    # Scaffold a new application
+pondoknusa new <name> [--path=<dir>]    # Create-and-breathe scaffold (+ MCP)
+pondoknusa key:generate [--force]       # Generate/rotate APP_KEY in .env
 pondoknusa serve [--port=3000] [--host=127.0.0.1]
 pondoknusa make:controller <Name>       # Create src/controllers/<Name>Controller.ts
 pondoknusa make:request <Name>          # Create src/requests/<Name>Request.ts
@@ -130,8 +131,24 @@ pondoknusa crypto:generate-keys [--algorithm=ml-dsa-65] # Generate post-quantum 
 pondoknusa make:social-driver <name>        # Scaffold a custom social OAuth provider
 pondoknusa migrate                        # Run pending migrations
 pondoknusa db:seed [--class=DatabaseSeeder]  # Seed the database
+pondoknusa doctor [--perf] [--url=<base>]   # Environment and project health checks
+pondoknusa deploy:check                     # Pre-deploy doctor + route/config/view validation
+pondoknusa debug:install                    # Scaffold debug bar + /__debug routes
+pondoknusa debug:watch [--correlations] [--once]  # Tail persisted debug entries
+pondoknusa debug:clear                      # Clear persisted debug entries
+pondoknusa mcp:install [--force]            # Cursor MCP + AGENTS.md / Cursor rules
+pondoknusa mcp:serve                        # Stdio MCP server for coding agents
+pondoknusa mcp:export-rules                 # Export agent rules from manifest
 pondoknusa version                      # Show CLI version
 ```
+
+### Diagnose
+
+Use `pondoknusa doctor` before deploy (Node version, `APP_KEY`, storage, database/Redis/queue, migrations, OAuth URIs). Add `--url=http://127.0.0.1:3000` to probe `/health/ready` on a running server, or `--perf` for a quick HTTP throughput smoke.
+
+For local request timelines: `pondoknusa debug:install`, then `pondoknusa debug:watch` (no auth required). The `/__debug` JSON panel requires an authenticated session.
+
+`pondoknusa new` wires MCP by default (`.cursor/mcp.json` + primer rules). Existing apps: `pondoknusa mcp:install`. Agents can call `pondoknusa.primer` for framework context.
 
 New projects include a `pondoknusa.json` config file:
 

@@ -23,6 +23,8 @@ describe('NewCommand', () => {
       `--path=${tempDir}`,
       '--db=sqlite',
       '--no-redis',
+      '--no-install',
+      '--no-git',
     ]);
     const projectDir = join(tempDir, 'my-app');
 
@@ -39,10 +41,24 @@ describe('NewCommand', () => {
     ).toBe(true);
     expect(existsSync(join(projectDir, 'config/redis.ts'))).toBe(false);
 
+    const env = readFileSync(join(projectDir, '.env'), 'utf8');
+    expect(env).toMatch(/^APP_KEY=.+/m);
+    expect(env).toContain('QUEUE_CONNECTION=database');
+    expect(readFileSync(join(projectDir, 'config/app.ts'), 'utf8')).toContain("env('APP_KEY'");
+
+    expect(existsSync(join(projectDir, 'storage/logs/.gitkeep'))).toBe(true);
+    expect(existsSync(join(projectDir, 'storage/framework/views/.gitkeep'))).toBe(true);
+    expect(existsSync(join(projectDir, '.gitignore'))).toBe(true);
+    expect(existsSync(join(projectDir, 'config/auth.ts'))).toBe(true);
+    expect(existsSync(join(projectDir, 'src/models/User.ts'))).toBe(true);
+    expect(existsSync(join(projectDir, '.cursor/mcp.json'))).toBe(true);
+    expect(existsSync(join(projectDir, '.cursor/rules/pondoknusa.mdc'))).toBe(true);
+    expect(existsSync(join(projectDir, 'AGENTS.md'))).toBe(true);
+    expect(readFileSync(join(projectDir, 'AGENTS.md'), 'utf8')).toContain('How Pondoknusa works');
+
     const queueConfig = readFileSync(join(projectDir, 'config/queue.ts'), 'utf8');
     expect(queueConfig).not.toContain("driver: 'sync'");
     expect(queueConfig).toContain("env('QUEUE_CONNECTION', 'database')");
-    expect(readFileSync(join(projectDir, '.env'), 'utf8')).toContain('QUEUE_CONNECTION=database');
 
     expect(existsSync(join(projectDir, 'src/routes/channels.ts'))).toBe(true);
     expect(readFileSync(join(projectDir, 'src/routes/channels.ts'), 'utf8')).toContain(
@@ -65,6 +81,7 @@ describe('NewCommand', () => {
     expect(readFileSync(join(projectDir, 'package.json'), 'utf8')).toContain('"dev": "pondoknusa dev"');
     expect(readFileSync(join(projectDir, 'package.json'), 'utf8')).toContain('"start": "pondoknusa start"');
     expect(readFileSync(join(projectDir, 'package.json'), 'utf8')).toContain('"@pondoknusa/cli"');
+    expect(readFileSync(join(projectDir, 'package.json'), 'utf8')).toContain('@pondoknusa/mcp');
 
     expect(existsSync(join(projectDir, 'deploy/cloudflare.md'))).toBe(true);
     expect(existsSync(join(projectDir, 'deploy/Dockerfile'))).toBe(true);
@@ -84,6 +101,9 @@ describe('NewCommand', () => {
       '--db=sqlite',
       '--no-redis',
       '--no-auth',
+      '--no-install',
+      '--no-git',
+      '--no-mcp',
     ]);
     const projectDir = join(tempDir, 'headless-api');
     const pkg = JSON.parse(readFileSync(join(projectDir, 'package.json'), 'utf8')) as {
@@ -102,6 +122,9 @@ describe('NewCommand', () => {
     expect(existsSync(join(projectDir, 'src/routes/channels.ts'))).toBe(false);
     expect(existsSync(join(projectDir, 'resources/client/echo.ts'))).toBe(false);
     expect(existsSync(join(projectDir, '.github/workflows/view-types.yml'))).toBe(false);
+    expect(existsSync(join(projectDir, 'storage/framework/views'))).toBe(false);
+    expect(existsSync(join(projectDir, 'storage/logs/.gitkeep'))).toBe(true);
+    expect(existsSync(join(projectDir, '.cursor/mcp.json'))).toBe(false);
     expect(pkg.dependencies['@pondoknusa/echo']).toBeUndefined();
     expect(readFileSync(join(projectDir, 'config/app.ts'), 'utf8')).toContain('headless: true');
     expect(readFileSync(join(projectDir, 'src/main.ts'), 'utf8')).toContain('./routes/api.js');
@@ -120,6 +143,10 @@ describe('NewCommand', () => {
       `--path=${tempDir}`,
       '--db=mysql',
       '--redis',
+      '--no-install',
+      '--no-git',
+      '--no-mcp',
+      '--no-auth',
     ]);
     const projectDir = join(tempDir, 'driver-app');
     const pkg = JSON.parse(readFileSync(join(projectDir, 'package.json'), 'utf8')) as {
@@ -159,6 +186,9 @@ describe('NewCommand', () => {
       '--db=oracle',
       '--no-redis',
       '--no-auth',
+      '--no-install',
+      '--no-git',
+      '--no-mcp',
     ]);
     const oracleDir = join(tempDir, 'oracle-app');
     const oraclePkg = JSON.parse(readFileSync(join(oracleDir, 'package.json'), 'utf8')) as {
@@ -180,6 +210,9 @@ describe('NewCommand', () => {
       '--db=mssql',
       '--no-redis',
       '--no-auth',
+      '--no-install',
+      '--no-git',
+      '--no-mcp',
     ]);
     const mssqlDir = join(tempDir, 'mssql-app');
     const mssqlPkg = JSON.parse(readFileSync(join(mssqlDir, 'package.json'), 'utf8')) as {

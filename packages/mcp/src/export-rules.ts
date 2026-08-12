@@ -1,5 +1,6 @@
 import type { AppMcpContext } from './types.js';
 import { buildAppManifest } from './framework-tools.js';
+import { frameworkPrimerMarkdown } from './framework-primer.js';
 
 export type AgentRulesFormat = 'cursor' | 'claude' | 'agents';
 
@@ -53,13 +54,9 @@ function renderRulesBody(context: AppMcpContext, projectName?: string): string {
 
   return `# ${name} — Pondoknusa agent rules
 
-This file is generated from the Pondoknusa capability manifest. Prefer framework primitives over reinventing infrastructure.
+This file is generated from the Pondoknusa capability manifest plus the framework primer. Prefer framework primitives over reinventing infrastructure.
 
-## Project stack
-
-- Runtime: Node.js 26+
-- Framework: Pondoknusa (TypeScript-native, Laravel-shaped ergonomics)
-- LLM integration: use native SDKs in the app layer — Pondoknusa does not ship a unified LLM provider interface
+${frameworkPrimerMarkdown()}
 
 ## Installed Pondoknusa packages
 
