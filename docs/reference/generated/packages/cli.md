@@ -17,7 +17,7 @@ Peer dependencies must be installed in the app (they are not auto-installed on o
 
 | Field | Value |
 |-------|-------|
-| Version | `4.0.1` |
+| Version | `4.1.0` |
 | Source | [`packages/cli`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/cli) |
 | Category | Developer experience |
 | Node.js | `>=26` |

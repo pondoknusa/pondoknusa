@@ -1,6 +1,6 @@
 import type { NewProjectOptions } from './new-project-options.js';
 
-const CORE_VERSION = '^4.0.1';
+const CORE_VERSION = '^4.1.0';
 
 export function headlessProjectConfig(name: string): string {
   return JSON.stringify(

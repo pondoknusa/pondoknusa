@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/cache",
-  "version": "4.0.1",
+  "version": "4.1.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -11,7 +11,7 @@
     }
   },
   "dependencies": {
-    "@pondoknusa/redis": "4.0.1"
+    "@pondoknusa/redis": "4.1.0"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",

@@ -15,7 +15,7 @@ npm install @pondoknusa/telegram-2fa
 
 | Field | Value |
 |-------|-------|
-| Version | `4.0.1` |
+| Version | `4.1.0` |
 | Source | [`packages/telegram-2fa`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/telegram-2fa) |
 | Category | Other packages |
 | Node.js | `>=26` |

@@ -7,17 +7,17 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@pondoknusa/cache": "4.0.1",
-    "@pondoknusa/cli": "4.0.1",
-    "@pondoknusa/config": "4.0.1",
-    "@pondoknusa/core": "4.0.1",
-    "@pondoknusa/database": "4.0.1",
-    "@pondoknusa/storage": "4.0.1",
-    "@pondoknusa/graphql": "4.0.1",
-    "@pondoknusa/http": "4.0.1",
-    "@pondoknusa/queue": "4.0.1",
-    "@pondoknusa/rag": "4.0.1",
-    "@pondoknusa/vector": "4.0.1"
+    "@pondoknusa/cache": "4.1.0",
+    "@pondoknusa/cli": "4.1.0",
+    "@pondoknusa/config": "4.1.0",
+    "@pondoknusa/core": "4.1.0",
+    "@pondoknusa/database": "4.1.0",
+    "@pondoknusa/storage": "4.1.0",
+    "@pondoknusa/graphql": "4.1.0",
+    "@pondoknusa/http": "4.1.0",
+    "@pondoknusa/queue": "4.1.0",
+    "@pondoknusa/rag": "4.1.0",
+    "@pondoknusa/vector": "4.1.0"
   },
   "devDependencies": {
     "vitest": "^3.2.4"

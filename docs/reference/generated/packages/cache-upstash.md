@@ -17,7 +17,7 @@ Peer dependencies must be installed in the app (they are not auto-installed on o
 
 | Field | Value |
 |-------|-------|
-| Version | `4.0.1` |
+| Version | `4.1.0` |
 | Source | [`packages/cache-upstash`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/cache-upstash) |
 | Category | Cache drivers |
 | Node.js | `>=26` |

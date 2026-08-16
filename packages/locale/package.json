@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/locale",
-  "version": "4.0.1",
+  "version": "4.1.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,7 +15,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/http": "4.0.1"
+    "@pondoknusa/http": "4.1.0"
   },
   "files": [
     "dist",

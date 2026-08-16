@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/inference-openai",
-  "version": "4.0.1",
+  "version": "4.1.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -18,7 +18,7 @@
     "openai": "^7.4.0"
   },
   "peerDependencies": {
-    "@pondoknusa/inference": "^4.0.1"
+    "@pondoknusa/inference": "^4.1.0"
   },
   "files": [
     "dist"
@@ -27,7 +27,7 @@
     "node": ">=26"
   },
   "devDependencies": {
-    "@pondoknusa/inference": "4.0.1",
+    "@pondoknusa/inference": "4.1.0",
     "@types/node": "^26.0.1"
   },
   "description": "OpenAI SDK inference provider for Pondoknusa",

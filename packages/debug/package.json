@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/debug",
-  "version": "4.0.1",
+  "version": "4.1.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,17 +15,17 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/config": "4.0.1",
-    "@pondoknusa/http": "4.0.1",
-    "@pondoknusa/log": "4.0.1",
-    "@pondoknusa/queue": "4.0.1",
-    "@pondoknusa/support": "4.0.1"
+    "@pondoknusa/config": "4.1.0",
+    "@pondoknusa/http": "4.1.0",
+    "@pondoknusa/log": "4.1.0",
+    "@pondoknusa/queue": "4.1.0",
+    "@pondoknusa/support": "4.1.0"
   },
   "peerDependencies": {
-    "@pondoknusa/database": "^4.0.1"
+    "@pondoknusa/database": "^4.1.0"
   },
   "devDependencies": {
-    "@pondoknusa/database": "4.0.1"
+    "@pondoknusa/database": "4.1.0"
   },
   "files": [
     "dist"

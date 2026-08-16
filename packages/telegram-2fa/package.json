@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/telegram-2fa",
-  "version": "4.0.1",
+  "version": "4.1.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,13 +15,13 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/auth": "4.0.1",
-    "@pondoknusa/cache": "4.0.1",
-    "@pondoknusa/config": "4.0.1",
-    "@pondoknusa/core": "4.0.1",
-    "@pondoknusa/http": "4.0.1",
-    "@pondoknusa/support": "4.0.1",
-    "@pondoknusa/telegram": "4.0.1"
+    "@pondoknusa/auth": "4.1.0",
+    "@pondoknusa/cache": "4.1.0",
+    "@pondoknusa/config": "4.1.0",
+    "@pondoknusa/core": "4.1.0",
+    "@pondoknusa/http": "4.1.0",
+    "@pondoknusa/support": "4.1.0",
+    "@pondoknusa/telegram": "4.1.0"
   },
   "files": [
     "dist"
