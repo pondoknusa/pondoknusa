@@ -148,7 +148,7 @@ HMAC signing now covers the full query string in canonical order. URLs generated
 
 ### Trusted proxies
 
-Client IP resolution prefers the socket `remoteAddress` and only trusts `X-Forwarded-For` / `X-Real-IP` when proxy trust is configured. Rate limits and audit logs may show different IPs if you previously relied on spoofable headers without proxy config.
+Client IP resolution uses the socket `remoteAddress` unless the peer is listed in `http.trustedProxies` (exact IP or CIDR). Only then are `CF-Connecting-IP` / `X-Forwarded-For` / `X-Real-IP` / `X-Forwarded-Proto` honored. Spoofed forwarded headers from untrusted peers are ignored — important behind Cloudflare Tunnel (`127.0.0.1`) and multi-tenant reverse proxies.
 
 ## WebSocket and broadcasting
 

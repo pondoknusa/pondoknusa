@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-11T20:29:54.859Z",
+  "generatedAt": "2026-08-16T16:14:43.020Z",
   "version": "4.0.1",
   "packages": [
     {
@@ -163,6 +163,24 @@
       "slug": "http",
       "description": "HTTP router and middleware for Pondoknusa",
       "path": "reference/generated/packages/http"
+    },
+    {
+      "name": "@pondoknusa/inference",
+      "slug": "inference",
+      "description": "LLM inference provider registry for Pondoknusa",
+      "path": "reference/generated/packages/inference"
+    },
+    {
+      "name": "@pondoknusa/inference-anthropic",
+      "slug": "inference-anthropic",
+      "description": "Anthropic SDK inference provider for Pondoknusa",
+      "path": "reference/generated/packages/inference-anthropic"
+    },
+    {
+      "name": "@pondoknusa/inference-openai",
+      "slug": "inference-openai",
+      "description": "OpenAI SDK inference provider for Pondoknusa",
+      "path": "reference/generated/packages/inference-openai"
     },
     {
       "name": "@pondoknusa/lint",

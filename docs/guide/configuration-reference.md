@@ -77,9 +77,12 @@ Scaffold sources live in `packages/cli/src/stubs*.ts`. Optional configs are adde
 
 | Key | Notes |
 |-----|-------|
-| `trustedProxies` | IPs trusted for `X-Forwarded-*` |
-| `throttle.enabled` | Global rate limiting |
+| `trustedProxies` | Peer IPs/CIDRs allowed to set `X-Forwarded-*` / `CF-Connecting-IP` (e.g. `127.0.0.1`, `::1`, `10.0.0.0/8`). Headers are ignored unless the connecting socket matches. |
+| `securityHeaders` | Baseline response headers (`true` by default); set `false` to disable |
+| `throttle.enabled` | Global rate limiting (process-local store by default) |
 | `throttle.limits.api` | Preset for `Route.throttle('api')` |
+
+The default throttle store is in-memory and does not share counters across workers or instances. Pass a custom `ThrottleStore` on a preset when you need shared limits.
 
 ### Other default files
 
@@ -87,7 +90,7 @@ Scaffold sources live in `packages/cli/src/stubs*.ts`. Optional configs are adde
 |------|---------|
 | `config/events.ts` | Listener map, subscribers, queue connection |
 | `config/filesystems.ts` | `FILESYSTEM_DISK` — local disk by default |
-| `config/cors.ts` | CORS middleware defaults |
+| `config/cors.ts` | CORS origins — default is `APP_URL` (not `*`) |
 | `config/log.ts` | `LOG_CHANNEL` — stack/stdout/file |
 | `config/health.ts` | `/health` probe toggles |
 | `config/notifications.ts` | Database notification table |

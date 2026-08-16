@@ -12,6 +12,9 @@ Current monorepo version: **4.0.1**.
 | Package | Description |
 |---------|-------------|
 | [@pondoknusa/graphql](/reference/generated/packages/graphql) | Zero-dependency GraphQL server with programmatic schema and operation caching for Pondoknusa |
+| [@pondoknusa/inference](/reference/generated/packages/inference) | LLM inference provider registry for Pondoknusa |
+| [@pondoknusa/inference-anthropic](/reference/generated/packages/inference-anthropic) | Anthropic SDK inference provider for Pondoknusa |
+| [@pondoknusa/inference-openai](/reference/generated/packages/inference-openai) | OpenAI SDK inference provider for Pondoknusa |
 | [@pondoknusa/mcp](/reference/generated/packages/mcp) | MCP server and capability manifest for Pondoknusa agents |
 | [@pondoknusa/rag](/reference/generated/packages/rag) | RAG ingestion and retrieval helpers for Pondoknusa |
 | [@pondoknusa/vector](/reference/generated/packages/vector) | Embedding storage and vector similarity search for Pondoknusa |

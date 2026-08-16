@@ -42,6 +42,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `ConversationMessageRecord`
 - `ConversationRole`
 - `IngestFileOptions`
+- `LoadDocumentOptions`
 - `LoadedDocument`
 - `Rag`
 - `RagOptions`
@@ -57,6 +58,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `loadDocument`
 - `loadPromptTemplate`
 - `renderGroundedPrompt`
+- `resolveSafeDocumentPath`
 - `streamRagResponse`
 
 ### Types

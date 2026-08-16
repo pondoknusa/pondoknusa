@@ -17,6 +17,14 @@ const resetIssueTracker = new Map<string, number[]>();
 const RESET_ISSUE_LIMIT = 5;
 const RESET_ISSUE_WINDOW_MS = 60 * 60 * 1000;
 
+/**
+ * Password reset broker.
+ *
+ * Issue-rate limiting uses an in-memory Map (process-local). It resets on
+ * restart and does not share across workers or instances — put a reverse-proxy
+ * or shared rate limiter in front for multi-node deployments.
+ */
+
 export class PasswordResetBroker {
   private readonly hasher = new Hasher();
 

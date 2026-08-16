@@ -29,7 +29,8 @@
     "pondoknusa": "node packages/cli/dist/bin/pondoknusa.js",
     "prebenchmark": "npm run build",
     "benchmark": "node scripts/benchmark.mjs",
-    "release:prepare": "node scripts/prepare-release.mjs"
+    "release:prepare": "node scripts/prepare-release.mjs",
+    "release:publish": "node scripts/publish-release.mjs"
   },
   "devDependencies": {
     "@hono/node-server": "^2.0.6",

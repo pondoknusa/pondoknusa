@@ -124,7 +124,9 @@ const decrypted = hybrid.decrypt(envelope, keys.secretKey);
 
 ## Session encryption at rest
 
-When `crypto.session.encrypt` is `true`, `AuthServiceProvider` wraps the database and Redis session drivers with a `PayloadCipher`. Session JSON is encrypted with AES-256-GCM before persistence and prefixed with `pqc1:` so plaintext sessions remain readable during rollout.
+When `crypto.session.encrypt` is `true`, `AuthServiceProvider` wraps the database and Redis session drivers with a `PayloadCipher`. Session JSON is encrypted with AES-256-GCM before persistence and prefixed with `pqc1:`. Plaintext payloads are **rejected** when encryption is enabled (fail closed).
+
+Enable encryption only after you are ready to invalidate existing plaintext session rows (users will re-authenticate):
 
 ```bash
 SESSION_ENCRYPT=true
@@ -137,6 +139,8 @@ The encryption key is either:
 2. Derived from `APP_KEY` via scrypt when no dedicated key is set.
 
 The in-memory `array` session driver is never encrypted (intended for tests).
+
+When `APP_KEY` is set, session payloads are also HMAC-sealed (`pn.sess.<mac>.<json>`). Unsigned legacy JSON payloads are rejected.
 
 ## OAuth access token signing
 

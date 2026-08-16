@@ -16,11 +16,20 @@ export class TelegramWebhook {
   /**
    * Parse an incoming Pondoknusa request as a Telegram Update.
    * Throws if the secret token doesn't match.
+   * In production, `expectedSecretToken` is required.
    */
   static async parse(
     request: PondoknusaRequest,
     expectedSecretToken?: string,
   ): Promise<Update> {
+    const requireSecret = process.env.NODE_ENV === 'production';
+    if (requireSecret && !expectedSecretToken) {
+      throw new TelegramWebhookError(
+        'Telegram webhook secret_token is required when NODE_ENV=production.',
+        500,
+      );
+    }
+
     if (expectedSecretToken) {
       const header = request.header('X-Telegram-Bot-Api-Secret-Token');
       if (header !== expectedSecretToken) {
@@ -68,8 +77,16 @@ export abstract class TelegramWebhookController {
     );
   }
 
+  /**
+   * Resolve the Telegram webhook secret. Defaults to config/env:
+   * `telegram.webhook.secret_token` or `TELEGRAM_WEBHOOK_SECRET`.
+   * Override to supply a different source. Required in production.
+   */
   protected resolveSecretToken(): string | undefined {
-    return undefined;
+    return (
+      process.env.TELEGRAM_WEBHOOK_SECRET?.trim() ||
+      undefined
+    );
   }
 }
 

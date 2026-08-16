@@ -14,6 +14,7 @@ export interface UserAttributes {
 
 export class User extends Model<UserAttributes> implements Authenticatable {
   static override table = 'users';
+  static override hidden = ['password'];
 
   static scopeWithEmail(builder: ModelQueryBuilder, domain: string): ModelQueryBuilder {
     return builder.where('email', 'like', `%@${domain}`);

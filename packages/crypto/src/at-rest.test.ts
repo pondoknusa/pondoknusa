@@ -17,4 +17,9 @@ describe('at-rest encryption', () => {
     expect(cipher.isEncrypted(encrypted)).toBe(true);
     expect(cipher.decrypt(encrypted)).toBe('{"theme":"dark"}');
   });
+
+  it('rejects plaintext payloads when encryption is enabled', () => {
+    const cipher = new PayloadCipher(deriveAtRestKey('session-key-123456'));
+    expect(() => cipher.decrypt('{"theme":"dark"}')).toThrow(/not encrypted/);
+  });
 });

@@ -1,9 +1,11 @@
 import {
   createCorsMiddleware,
+  createSecurityHeadersMiddleware,
   createThrottleMiddleware,
   createTrustedProxiesMiddleware,
   registerThrottlePresets,
   type CorsOptions,
+  type SecurityHeadersOptions,
   type ThrottlePresetMap,
 } from '@pondoknusa/http';
 import type { ConfigRepository } from '@pondoknusa/config';
@@ -21,6 +23,11 @@ export interface HttpConfig {
   early404?: boolean;
   /** Reuse PondoknusaRequest instances for matched routes (default: !app.debug). */
   requestPooling?: boolean;
+  /**
+   * Baseline security response headers (X-Content-Type-Options, X-Frame-Options,
+   * Referrer-Policy). Defaults to enabled. Set `false` to disable, or pass options.
+   */
+  securityHeaders?: boolean | SecurityHeadersOptions;
   throttle?: {
     enabled?: boolean;
     limit: number;
@@ -41,6 +48,12 @@ export function registerHttpMiddleware(
   const httpConfig = config.get<HttpConfig | undefined>('http');
   if (httpConfig?.trustedProxies?.length) {
     app.use(createTrustedProxiesMiddleware({ proxies: httpConfig.trustedProxies }));
+  }
+
+  const securityHeaders = httpConfig?.securityHeaders;
+  if (securityHeaders !== false) {
+    const options = typeof securityHeaders === 'object' ? securityHeaders : {};
+    app.use(createSecurityHeadersMiddleware(options));
   }
 
   if (httpConfig?.jsonFastPath === false) {

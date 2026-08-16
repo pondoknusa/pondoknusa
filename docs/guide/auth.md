@@ -139,6 +139,8 @@ providers: {
 
 Safe methods (`GET`, `HEAD`, `OPTIONS`) are skipped. `/api/**`, `/broadcasting/auth`, and `/webhooks/**` are exempt by default (`*` matches one path segment; `**` matches nested paths such as `/api/v1/login`).
 
+Prefer bearer tokens (`auth:api`) for routes under `/api/**`. Cookie-session apps that put mutating endpoints under `/api` should narrow the CSRF except list — broad exemptions assume APIs are not relying on cookie auth alone.
+
 When verification fails the response is still HTTP **419**. The exception distinguishes a missing session CSRF token (`CSRF_SESSION_TOKEN_MISSING`) from a mismatched submitted token (`CSRF_TOKEN_MISMATCH`) so logs are not misleading when the session store lagged or was empty.
 
 Auth scaffold routes include the `csrf` middleware alias on form posts:
@@ -180,7 +182,7 @@ tokens: {
 },
 ```
 
-Token `abilities` are enforced at runtime. Gate routes with `createTokenAbilityMiddleware`:
+Token `abilities` are enforced at runtime. Omitting abilities creates a token with an empty ability list (no wildcard). Pass `['*']` only when you intentionally want unrestricted access. Gate routes with `createTokenAbilityMiddleware`:
 
 ```typescript
 import { createTokenAbilityMiddleware } from '@pondoknusa/auth';

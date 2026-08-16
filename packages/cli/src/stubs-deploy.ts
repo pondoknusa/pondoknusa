@@ -272,7 +272,7 @@ PONDOKNUSA_HOST=0.0.0.0
 SESSION_SECURE=true
 \`\`\`
 
-Use \`TRUST_PROXY=true\` if your app reads \`X-Forwarded-*\` for client IP or scheme.
+Configure \`config/http.ts\` \`trustedProxies\` to the connecting peer (Cloudflare Tunnel: \`['127.0.0.1', '::1']\`). Forwarded headers are trusted only from those peers.
 
 **WebSockets:** Proxy passes upgrades through by default. Broadcasting still terminates on the Node origin; use Redis fan-out when running multiple instances.
 
@@ -504,7 +504,7 @@ Headless JSON on Workers + Hyperdrive is planned; track [ROADMAP](https://github
 | Module | Symptom | Fix |
 |--------|---------|-----|
 | 1 | Redirect loop | SSL **Full (strict)**; origin HTTPS valid |
-| 1 | Wrong client IP | \`TRUST_PROXY=true\`; check \`CF-Connecting-IP\` |
+| 1 | Wrong client IP | \`trustedProxies\` must include the tunnel/proxy peer; check \`CF-Connecting-IP\` |
 | 2 | Stale HTML | Shorter \`max-age\`; bypass auth routes; ETag middleware |
 | 2 | Session lost | Bypass cache on \`Set-Cookie\` routes; \`SESSION_SECURE=true\` |
 | 3 | R2 403 | Token permissions; bucket CORS |

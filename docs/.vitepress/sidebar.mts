@@ -59,6 +59,7 @@ export const guideSidebar = [
       { text: 'Queues & jobs', link: '/guide/queues' },
       { text: 'Events', link: '/guide/events' },
       { text: 'Broadcasting', link: '/guide/broadcasting' },
+      { text: 'AI inference providers', link: '/guide/inference' },
       { text: 'Views & templating', link: '/guide/views' },
       { text: 'Testing', link: '/guide/testing' },
     ],
@@ -98,6 +99,18 @@ export const referenceSidebar = [
       {
         "text": "graphql",
         "link": "/reference/generated/packages/graphql"
+      },
+      {
+        "text": "inference",
+        "link": "/reference/generated/packages/inference"
+      },
+      {
+        "text": "inference-anthropic",
+        "link": "/reference/generated/packages/inference-anthropic"
+      },
+      {
+        "text": "inference-openai",
+        "link": "/reference/generated/packages/inference-openai"
       },
       {
         "text": "mcp",

@@ -1,11 +1,17 @@
 import type { Notification } from '../notification.js';
 import type { Notifiable } from '../types.js';
+import { assertPublicHttpUrl } from '@pondoknusa/support';
 
 export interface WebhookMessage {
   url: string;
   method?: 'POST' | 'PUT' | 'PATCH';
   headers?: Record<string, string>;
   body?: unknown;
+  /**
+   * Allow private/loopback destinations (default false). Only enable for
+   * trusted, app-controlled URLs — never for user-supplied destinations.
+   */
+  allowPrivateNetwork?: boolean;
 }
 
 export class WebhookChannel {
@@ -15,6 +21,10 @@ export class WebhookChannel {
     }
 
     const message = await notification.toWebhook(notifiable);
+    if (!message.allowPrivateNetwork) {
+      await assertPublicHttpUrl(message.url);
+    }
+
     const response = await fetch(message.url, {
       method: message.method ?? 'POST',
       headers: {

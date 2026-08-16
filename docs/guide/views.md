@@ -29,9 +29,13 @@ Route.get('/', async () =>
 ```
 
 - `{{ }}` — escaped output
-- `{!! !!}` — raw HTML
+- `{!! !!}` — raw HTML (only for trusted markup you control)
 - `@layout`, `@section`, `@yield` — layouts
 - `@component` — reusable partials
+
+### Trust boundary
+
+`.tyr` templates and their expressions are evaluated with developer-trusted code (`Function`-backed expressions for non-trivial paths). Treat templates like application source: never compile or render templates, component prop literals, or `{!! !!}` markup supplied by end users. Escape user data with `{{ }}` only.
 
 Generate views with `pondoknusa make:view pages.about`.
 

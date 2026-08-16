@@ -34,6 +34,32 @@ describe('document ingestion', () => {
     expect(rows[0]?.source).toBe(path);
   });
 
+  it('rejects path traversal when rootDir is set', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'pondoknusa-rag-'));
+    await expect(
+      ingestFile(Document, '../outside.md', { rootDir: dir }),
+    ).rejects.toThrow(/escapes ingest root/);
+  });
+
+  it('loads files relative to rootDir', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'pondoknusa-rag-'));
+    await writeFile(join(dir, 'guide.md'), '# Guide\n\nSandboxed ingest.');
+
+    const connection = new SqliteConnection(':memory:');
+    Document.useConnection(connection);
+    await connection.exec(`
+      CREATE TABLE documents (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        content TEXT NOT NULL,
+        source TEXT NOT NULL,
+        metadata TEXT
+      )
+    `);
+
+    const ids = await ingestFile(Document, 'guide.md', { rootDir: dir });
+    expect(ids).toHaveLength(1);
+  });
+
   it('extracts text from simple PDF streams', () => {
     const pdf = Buffer.from(
       '1 0 obj<<>>stream\n'

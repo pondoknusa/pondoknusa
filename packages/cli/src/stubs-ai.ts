@@ -55,13 +55,19 @@ import { ingestFile } from '@pondoknusa/rag';
 import { ${name} } from '../models/${modelImport}';
 
 export interface Ingest${name}Payload extends Record<string, unknown> {
+  /** Path relative to rootDir (never accept absolute client paths). */
   path: string;
   source?: string;
+  rootDir?: string;
 }
 
 export class Ingest${name} extends Job<Ingest${name}Payload> {
   override async handle(): Promise<void> {
-    await ingestFile(${name}, this.data.path, { source: this.data.source });
+    const rootDir = this.data.rootDir ?? 'storage/documents';
+    await ingestFile(${name}, this.data.path, {
+      source: this.data.source,
+      rootDir,
+    });
   }
 }
 `;
@@ -168,7 +174,6 @@ import {
   ConversationMemory,
   Rag,
   ingestDocument,
-  ingestFile,
   loadPromptTemplate,
   streamRagResponse,
 } from '@pondoknusa/rag';
@@ -180,14 +185,11 @@ const rag = new Rag({ model: Document, embed });
 const promptTemplatePath = join(import.meta.dirname ?? import.meta.dir, '../../resources/prompts/grounded-qna.txt');
 
 Route.post('/rag/ingest', async (request) => {
-  const body = await request.json() as { source?: string; content?: string; path?: string };
-  if (body.path) {
-    const ids = await ingestFile(Document, body.path, { source: body.source });
-    return Response.json({ chunks: ids.length, ids, path: body.path });
-  }
-
+  // Inline content only — do not accept server filesystem paths from clients.
+  // Use ingestFile(model, relativePath, { rootDir }) from trusted jobs/CLI instead.
+  const body = await request.json() as { source?: string; content?: string };
   if (!body.source || !body.content) {
-    return Response.json({ message: 'source and content are required (or provide path).' }, { status: 422 });
+    return Response.json({ message: 'source and content are required.' }, { status: 422 });
   }
 
   const ids = await ingestDocument(Document, {

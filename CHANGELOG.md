@@ -6,6 +6,10 @@ All notable changes to Pondoknusa are documented in this file.
 
 ### Added
 
+- **`@pondoknusa/inference`** — provider-agnostic LLM interface (chat, streaming, embeddings) with a named registry. Fetch-based `OpenAICompatibleProvider` plus `INFERENCE_PRESETS` covers 26 providers without SDKs — OpenAI, Anthropic, Google Gemini, xAI, Mistral, DeepSeek, Moonshot, Qwen, z.AI, MiniMax, Perplexity, Nous Portal, Groq, Together AI, Fireworks AI, Cerebras, SambaNova, DeepInfra, OpenRouter, GitHub Copilot, Hugging Face, NVIDIA NIM, Cloudflare Workers AI, LM Studio, Ollama, and llama.cpp. `registerInferenceProvidersFromEnv()` wires up every provider with a key in `.env`, supports `{ENV_VAR}` URL placeholders and `*_BASE_URL` overrides, and opts local servers in via `includeLocal`.
+- **`@pondoknusa/inference-openai`** — translation layer onto the first-party `openai` SDK (chat, streaming, embeddings, custom clients).
+- **`@pondoknusa/inference-anthropic`** — translation layer onto `@anthropic-ai/sdk` (system-prompt hoisting, `max_tokens` defaults, streaming); no `embed` since Anthropic has no embeddings endpoint.
+
 - **Create-and-breathe `pondoknusa new`** — generates `APP_KEY`, creates `storage/`, writes `.gitignore`, always runs `npm install` (unless `--no-install`), auto-runs `auth:install` when auth is on, migrates SQLite, initializes git (unless `--no-git`), and installs MCP agent wiring by default (unless `--no-mcp`).
 - **`pondoknusa mcp:install`** — writes `.cursor/mcp.json`, Cursor rules, and `AGENTS.md`; adds `@pondoknusa/mcp` dependency.
 - **`pondoknusa.primer` MCP tool** + static framework primer embedded in agent rules.

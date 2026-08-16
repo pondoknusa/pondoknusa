@@ -79,7 +79,9 @@ const PACKAGE_CATEGORIES = [
     id: 'ai',
     title: 'AI & agents',
     match: (name) =>
-      ['vector', 'rag', 'graphql', 'mcp'].includes(name) || name.startsWith('vector-'),
+      ['vector', 'rag', 'graphql', 'mcp', 'inference'].includes(name)
+        || name.startsWith('vector-')
+        || name.startsWith('inference-'),
   },
   {
     id: 'dx',
@@ -743,6 +745,7 @@ export const guideSidebar = [
       { text: 'Queues & jobs', link: '/guide/queues' },
       { text: 'Events', link: '/guide/events' },
       { text: 'Broadcasting', link: '/guide/broadcasting' },
+      { text: 'AI inference providers', link: '/guide/inference' },
       { text: 'Views & templating', link: '/guide/views' },
       { text: 'Testing', link: '/guide/testing' },
     ],

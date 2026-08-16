@@ -37,6 +37,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `Str`
 - `Stringable`
 - `app_path`
+- `assertPublicHttpUrl`
 - `base_path`
 - `camelCase`
 - `class_basename`
@@ -48,6 +49,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `dump`
 - `head`
 - `isDangerousKey`
+- `isDisallowedIp`
 - `isSensitiveKey`
 - `kebabCase`
 - `last`

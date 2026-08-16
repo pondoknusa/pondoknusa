@@ -76,6 +76,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `createResponseCacheMiddleware`
 - `createRouteBinding`
 - `createRouter`
+- `createSecurityHeadersMiddleware`
 - `createThrottleMiddleware`
 - `createTrustedProxiesMiddleware`
 - `encodeSseEvents`
@@ -84,13 +85,16 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `getFactoryBufferBody`
 - `getFactoryStringBody`
 - `getMiddlewareMeta`
+- `ipMatchesCidr`
 - `isHtmxRequest`
 - `isJsonResource`
 - `isPaginatorLike`
 - `isResourceCollection`
+- `isTrustedProxyPeer`
 - `isTurboFrameRequest`
 - `joinRoutePaths`
 - `middlewareHasTag`
+- `normalizeIp`
 - `normalizeMiddlewareInput`
 - `normalizeRouteParams`
 - `qualifiesForJsonFastPath`
@@ -102,6 +106,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `resolveHttpResult`
 - `resolveSecure`
 - `routeParamKey`
+- `shouldTrustForwardedHeaders`
 - `signRouteUrl`
 - `streamSsrDocument`
 - `temporarySignedRouteParams`
@@ -134,9 +139,12 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `RouteParams`
 - `RouteScope`
 - `ScopedRouteRegistrar`
+- `SecurityHeadersOptions`
 - `SessionContract`
+- `ThrottleEntry`
 - `ThrottleOptions`
 - `ThrottlePresetMap`
+- `ThrottleStore`
 - `TrustedProxiesOptions`
 
 ## Guide

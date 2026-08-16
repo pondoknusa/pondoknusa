@@ -30,6 +30,23 @@ export default {
 
 Gate access with a policy ability (`access-admin`) on your user model.
 
+Every admin resource **must** declare a `policy`. Per-resource abilities (`viewAny`, `view`, `create`, `update`, `delete`) are enforced through that policy — resources without one are rejected.
+
+File fields support upload hardening:
+
+```typescript
+{
+  name: 'avatar',
+  type: 'file',
+  file: {
+    directory: 'avatars',
+    maxBytes: 2 * 1024 * 1024,
+    allowedExtensions: ['.png', '.jpg', '.jpeg', '.webp'],
+    allowedMimeTypes: ['image/png', 'image/jpeg', 'image/webp'],
+  },
+}
+```
+
 ## Usage
 
 1. Register models you want to manage in the admin provider stub

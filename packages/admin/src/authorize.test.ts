@@ -7,7 +7,7 @@ import type { ModelStatic } from '@pondoknusa/database';
 const model = { name: 'Post', primaryKey: 'id' } as ModelStatic;
 
 describe('authorizeResourceAbility', () => {
-  it('skips authorization when the resource has no policy', async () => {
+  it('requires a policy on the resource', async () => {
     const resource = defineAdminResource('posts', model, {
       fields: [{ name: 'title' }],
     });
@@ -23,7 +23,7 @@ describe('authorizeResourceAbility', () => {
         resource,
         'viewAny',
       ),
-    ).resolves.toBeUndefined();
+    ).rejects.toBeInstanceOf(AuthorizationException);
 
     expect(gate.allows).not.toHaveBeenCalled();
   });

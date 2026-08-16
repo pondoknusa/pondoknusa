@@ -1,143 +1,25 @@
 name: Release
 
+# npm publishing moved to a local script: `npm run release:publish`.
+# npm's long-lived automation tokens are deprecated, so packages are
+# published interactively under the maintainer's npm login (web auth + 2FA).
+# This workflow only creates the GitHub Release when a version tag lands.
+
 on:
   push:
     tags:
       - "v*"
-  workflow_dispatch:
 
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  publish:
+  github-release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      id-token: write # OIDC trusted publishing (preferred over long-lived tokens)
     steps:
-      - uses: actions/checkout@v7
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 26
-          registry-url: https://registry.npmjs.org
-          package-manager-cache: false
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Build
-        run: npm run build
-
-      - name: Test
-        run: npm test
-
-      - name: Publish packages in dependency order
-        run: |
-          set -e
-          PACKAGES=(
-            @pondoknusa/container
-            @pondoknusa/collection
-            @pondoknusa/support
-            @pondoknusa/config
-            @pondoknusa/log
-            @pondoknusa/locale
-            @pondoknusa/http
-            @pondoknusa/validation
-            @pondoknusa/database
-            @pondoknusa/database-mysql
-            @pondoknusa/database-pg
-            @pondoknusa/database-d1
-            @pondoknusa/redis
-            @pondoknusa/redis-node
-            @pondoknusa/views
-            @pondoknusa/reusable-components
-            @pondoknusa/ssr
-            @pondoknusa/echo
-            @pondoknusa/queue
-            @pondoknusa/events
-            @pondoknusa/broadcasting
-            @pondoknusa/broadcasting-websocket
-            @pondoknusa/vector
-            @pondoknusa/vector-pg
-            @pondoknusa/vector-qdrant
-            @pondoknusa/vector-pinecone
-            @pondoknusa/rag
-            @pondoknusa/graphql
-            @pondoknusa/mcp
-            @pondoknusa/crypto
-            @pondoknusa/auth
-            @pondoknusa/auth-passkey
-            @pondoknusa/cache
-            @pondoknusa/cache-dynamodb
-            @pondoknusa/cache-upstash
-            @pondoknusa/cache-memcached
-            @pondoknusa/storage
-            @pondoknusa/storage-aws-s3
-            @pondoknusa/storage-r2
-            @pondoknusa/storage-supabase
-            @pondoknusa/mail
-            @pondoknusa/notifications
-            @pondoknusa/telegram
-            @pondoknusa/telegram-2fa
-            @pondoknusa/admin
-            @pondoknusa/debug
-            @pondoknusa/testing
-            @pondoknusa/core
-            @pondoknusa/lint
-            @pondoknusa/auth-oauth
-            @pondoknusa/repl
-            @pondoknusa/cli
-          )
-
-          PUBLISHED=0
-          SKIPPED=0
-
-          for pkg in "${PACKAGES[@]}"; do
-            SHORT="${pkg#@pondoknusa/}"
-            LOCAL_VERSION=$(node -p "require('./packages/'+'$SHORT'+'/package.json').version")
-
-            REMOTE_VERSION=$(npm view "$pkg" version 2>/dev/null || echo "")
-            if [[ "$LOCAL_VERSION" == "$REMOTE_VERSION" ]]; then
-              echo "⏭  $pkg@$LOCAL_VERSION already published — skipping"
-              SKIPPED=$((SKIPPED + 1))
-              continue
-            fi
-
-            echo "📦 Publishing $pkg@$LOCAL_VERSION…"
-            npm publish --workspace="$pkg" --access public
-            echo "✅ Published $pkg@$LOCAL_VERSION"
-            PUBLISHED=$((PUBLISHED + 1))
-          done
-
-          echo ""
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "Published: $PUBLISHED"
-          echo "Skipped:   $SKIPPED"
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
-          # Unscoped scaffold package (npm create pondoknusa)
-          CREATE_VERSION=$(node -p "require('./packages/create-pondoknusa/package.json').version")
-          CREATE_REMOTE=$(npm view create-pondoknusa version 2>/dev/null || echo "")
-          if [[ "$CREATE_VERSION" == "$CREATE_REMOTE" ]]; then
-            echo "⏭  create-pondoknusa@$CREATE_VERSION already published — skipping"
-          else
-            echo "📦 Publishing create-pondoknusa@$CREATE_VERSION…"
-            if npm publish --workspace=create-pondoknusa --access public; then
-              echo "✅ Published create-pondoknusa@$CREATE_VERSION"
-            else
-              echo "⚠  create-pondoknusa publish failed (unscoped — add it to NPM_TOKEN package list or run ./scripts/publish-create-pondoknusa.sh)"
-            fi
-          fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:

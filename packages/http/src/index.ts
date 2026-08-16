@@ -103,13 +103,15 @@ export {
 export type { MiddlewareMeta, MiddlewareTag } from './middleware-meta.js';
 export { createCorsMiddleware } from './cors.js';
 export type { CorsOptions } from './cors.js';
+export { createSecurityHeadersMiddleware } from './security-headers.js';
+export type { SecurityHeadersOptions } from './security-headers.js';
 export {
   createThrottleMiddleware,
   registerThrottlePresets,
   resetThrottleStore,
   throttleMiddlewareAlias,
 } from './throttle.js';
-export type { ThrottleOptions, ThrottlePresetMap } from './throttle.js';
+export type { ThrottleOptions, ThrottlePresetMap, ThrottleStore, ThrottleEntry } from './throttle.js';
 export { createHttpCacheMiddleware } from './http-cache.js';
 export type { HttpCacheOptions } from './http-cache.js';
 export { createResponseCacheMiddleware } from './response-cache.js';
@@ -122,6 +124,10 @@ export {
   createTrustedProxiesMiddleware,
   resolveClientIp,
   resolveSecure,
+  isTrustedProxyPeer,
+  normalizeIp,
+  ipMatchesCidr,
+  shouldTrustForwardedHeaders,
 } from './trusted-proxies.js';
 export {
   cachedFormData,

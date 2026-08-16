@@ -22,7 +22,7 @@ export function registerWebRoutes(): void {
   );
 
   Route.prefix('api')
-    .middleware('json')
+    .middleware(['json', 'auth:api'])
     .group(() => {
       Route.get('/users', [UserController, 'index']);
       Route.get('/users/:id', [UserController, 'show']).name('users.show');

@@ -202,6 +202,10 @@ export class PondoknusaRequest {
     this.trustedProxies = proxies;
   }
 
+  getTrustedProxies(): string[] {
+    return this.trustedProxies;
+  }
+
   hasTrustedProxies(): boolean {
     return this.trustedProxies.length > 0;
   }

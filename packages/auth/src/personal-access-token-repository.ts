@@ -49,7 +49,7 @@ export class PersonalAccessTokenRepository {
   async createToken(
     user: Authenticatable,
     name: string,
-    abilities: string[] = ['*'],
+    abilities: string[] = [],
     options: CreateTokenOptions = {},
   ): Promise<NewAccessToken> {
     const secret = randomBytes(32).toString('hex');

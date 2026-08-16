@@ -61,7 +61,16 @@ PONDOKNUSA_HOST=0.0.0.0
 SESSION_SECURE=true
 ```
 
-Use `TRUST_PROXY=true` when the app reads `X-Forwarded-*`. WebSocket upgrades pass through; broadcasting still terminates on the Node origin (Redis fan-out for multiple instances).
+Configure `http.trustedProxies` so the origin trusts forwarded client IP/scheme **only from that peer**:
+
+```typescript
+// config/http.ts — Cloudflare Tunnel / local reverse proxy
+trustedProxies: ['127.0.0.1', '::1'],
+```
+
+When the peer matches, Pondoknusa prefers `CF-Connecting-IP`, then `X-Forwarded-For`, then `X-Real-IP`. Direct connections that spoof those headers are ignored. For Docker networks, add the proxy CIDR (for example `172.16.0.0/12` or `10.0.0.0/8`).
+
+WebSocket upgrades pass through; broadcasting still terminates on the Node origin (Redis fan-out for multiple instances).
 
 **Standalone:** TLS + DDoS without edge caching.
 
@@ -147,7 +156,7 @@ cloudflared tunnel route dns pondoknusa-staging staging.example.com
 cloudflared tunnel run pondoknusa-staging
 ```
 
-Set `APP_URL` to the tunnel hostname. Not a production origin replacement.
+Set `APP_URL` to the tunnel hostname. Keep `trustedProxies: ['127.0.0.1', '::1']` so the origin trusts headers from the local `cloudflared` peer. Not a production origin replacement.
 
 ---
 
@@ -240,7 +249,7 @@ Planned: headless JSON on Workers + Hyperdrive, then precompiled SSR. See [Pondo
 | Module | Symptom | Fix |
 |--------|---------|-----|
 | 1 | Redirect loop | SSL **Full (strict)**; valid origin HTTPS |
-| 1 | Wrong client IP | `TRUST_PROXY=true` |
+| 1 | Wrong client IP | Set `trustedProxies` to the tunnel/proxy peer (`127.0.0.1` / `::1` for local tunnels); check `CF-Connecting-IP` |
 | 2 | Stale HTML | Shorter `max-age`; bypass auth; ETag |
 | 2 | Session lost | Bypass `Set-Cookie` routes; `SESSION_SECURE=true` |
 | 3 | R2 403 | Token permissions; bucket CORS |

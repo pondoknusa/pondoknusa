@@ -10,6 +10,7 @@ export interface UserAttributes {
 
 export class User extends Model<UserAttributes> implements Authenticatable {
   static override table = 'users';
+  static override hidden = ['password'];
 
   getAuthIdentifier(): number {
     return Number(this.get('id'));

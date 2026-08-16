@@ -31,6 +31,7 @@ Peer dependencies must be installed in the app (they are not auto-installed on o
 - [@pondoknusa/broadcasting](/reference/generated/packages/broadcasting)
 - [@pondoknusa/mail](/reference/generated/packages/mail)
 - [@pondoknusa/queue](/reference/generated/packages/queue)
+- [@pondoknusa/support](/reference/generated/packages/support)
 
 ## Public exports
 

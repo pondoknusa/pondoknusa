@@ -14,11 +14,20 @@ The `--ai` flag adds vector config, embed jobs, models, and example routes.
 
 ## Ingest documents
 
-```typescript
-import { ingestFile } from '@pondoknusa/rag';
+Prefer inline content on HTTP endpoints. For filesystem ingest from trusted jobs/CLI, pass `rootDir` so paths cannot escape the ingest root:
 
-await ingestFile('storage/docs/handbook.pdf', {
+```typescript
+import { ingestDocument, ingestFile } from '@pondoknusa/rag';
+import { Document } from './models/Document.js';
+
+await ingestDocument(Document, {
   source: 'handbook',
+  content: '# Handbook\n...',
+});
+
+await ingestFile(Document, 'handbook.pdf', {
+  source: 'handbook',
+  rootDir: 'storage/documents',
   chunkSize: 800,
 });
 ```

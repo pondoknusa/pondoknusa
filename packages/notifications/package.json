@@ -17,7 +17,8 @@
   "dependencies": {
     "@pondoknusa/broadcasting": "4.0.1",
     "@pondoknusa/mail": "4.0.1",
-    "@pondoknusa/queue": "4.0.1"
+    "@pondoknusa/queue": "4.0.1",
+    "@pondoknusa/support": "4.0.1"
   },
   "peerDependencies": {
     "@pondoknusa/database": "^4.0.1"

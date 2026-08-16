@@ -40,10 +40,11 @@ export default {
 
 export function corsConfig(): string {
   return `import type { CorsConfig } from '@pondoknusa/core';
+import { env } from '@pondoknusa/config';
 
 export default {
   enabled: true,
-  origins: ['*'],
+  origins: [env('APP_URL', 'http://localhost:3000')],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
   headers: ['Content-Type', 'Authorization'],
   credentials: false,
@@ -55,11 +56,18 @@ export function httpConfig(): string {
   return `import type { HttpConfig } from '@pondoknusa/core';
 
 export default {
+  // Cloudflare Tunnel / local reverse proxies connect as loopback.
+  // For Docker/private networks, add the proxy CIDR (e.g. '10.0.0.0/8', '172.16.0.0/12').
+  // Forwarded headers are honored only when the connecting peer matches this list.
   trustedProxies: ['127.0.0.1', '::1'],
+  // Baseline headers: X-Content-Type-Options, X-Frame-Options, Referrer-Policy.
+  // Set false to disable, or pass { contentSecurityPolicy: "..." } to add CSP.
+  securityHeaders: true,
   throttle: {
     enabled: true,
     limit: 60,
     windowMs: 60_000,
+    // Default store is process-local. Pass a shared ThrottleStore for multi-node.
     limits: {
       api: { limit: 60, windowMs: 60_000 },
     },

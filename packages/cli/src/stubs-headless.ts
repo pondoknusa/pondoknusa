@@ -45,6 +45,8 @@ export function headlessHttpConfig(): string {
   return `import type { HttpConfig } from '@pondoknusa/core';
 
 export default {
+  // Tunnel/local proxies → loopback. Docker proxies → add their CIDR (e.g. 172.16.0.0/12).
+  // X-Forwarded-* / CF-Connecting-IP are trusted only when the peer matches.
   trustedProxies: ['127.0.0.1', '::1'],
   jsonFastPath: true,
   early404: true,

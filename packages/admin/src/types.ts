@@ -20,6 +20,12 @@ export interface AdminBelongsToField {
 export interface AdminFileField {
   disk?: string;
   directory?: string;
+  /** Maximum upload size in bytes (defaults to 5 MiB). */
+  maxBytes?: number;
+  /** Allowed file extensions including the leading dot (e.g. `.png`). */
+  allowedExtensions?: string[];
+  /** Allowed MIME types (e.g. `image/png`). */
+  allowedMimeTypes?: string[];
 }
 
 export interface AdminField {

@@ -16,12 +16,9 @@ export class SessionIntegrity {
   }
 
   open(raw: string): Record<string, unknown> | null {
+    // Fail closed: unsigned payloads are rejected whenever integrity is enabled.
     if (!raw.startsWith(INTEGRITY_PREFIX)) {
-      try {
-        return JSON.parse(raw) as Record<string, unknown>;
-      } catch {
-        return null;
-      }
+      return null;
     }
 
     const body = raw.slice(INTEGRITY_PREFIX.length);

@@ -76,11 +76,26 @@ describe('PersonalAccessTokenRepository', () => {
     expect(resolved?.id).toBe(created.id);
   });
 
+  it('defaults new tokens to no abilities', async () => {
+    const setup = await createRepository();
+    connection = setup.connection;
+    const user = new StubUser(1);
+
+    const created = await setup.repository.createToken(user, 'narrow');
+    expect(created.abilities).toEqual([]);
+
+    const resolved = await setup.repository.findUserIdByBearerToken(
+      created.plainTextToken,
+      async () => user,
+    );
+    expect(resolved?.abilities).toEqual([]);
+  });
+
   it('rejects revoked tokens', async () => {
     const setup = await createRepository();
     connection = setup.connection;
     const user = new StubUser(1);
-    const created = await setup.repository.createToken(user, 'mobile');
+    const created = await setup.repository.createToken(user, 'mobile', ['*']);
 
     expect(await setup.repository.revokeToken(created.id, 1)).toBe(true);
 

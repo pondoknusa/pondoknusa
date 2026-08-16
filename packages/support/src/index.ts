@@ -54,3 +54,8 @@ export {
   safeObject,
   safeSpread,
 } from './safe-parse.js';
+export {
+  assertPublicHttpUrl,
+  isDisallowedIp,
+} from './url-safety.js';
+

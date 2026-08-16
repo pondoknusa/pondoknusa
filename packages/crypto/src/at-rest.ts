@@ -56,7 +56,9 @@ export class PayloadCipher {
 
   decrypt(payload: string): string {
     if (!this.isEncrypted(payload)) {
-      return payload;
+      throw new Error(
+        'Session payload is not encrypted. Plaintext payloads are rejected when session encryption is enabled.',
+      );
     }
 
     const bytes = fromBase64(payload.slice(AT_REST_PREFIX.length));

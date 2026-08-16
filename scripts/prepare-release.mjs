@@ -233,6 +233,7 @@ run(`git tag v${newVersion} -m "v${newVersion}"`);
 log('Pushing to origin');
 run('git push origin main --tags');
 
-console.log(`\n✅ Released v${newVersion}`);
-console.log('   GitHub Actions will publish to npm automatically.');
-console.log('   https://github.com/pondoknusa/pondoknusa/actions');
+console.log(`\n✅ Prepared v${newVersion} (tag pushed — GitHub creates the release notes).`);
+console.log('   Next: npm run release:publish');
+console.log('   Logs you into npm if needed, then publishes every package in dependency order.');
+console.log('   Preview first with: npm run release:publish -- --plan');

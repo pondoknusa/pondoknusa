@@ -1,7 +1,7 @@
 export { ConversationMemory, type ConversationMemoryOptions, type ConversationMessageRecord, type ConversationRole } from './conversation.js';
 export { ingestDocument } from './ingest.js';
 export { ingestFile, type IngestFileOptions } from './ingest-file.js';
-export { loadDocument, type LoadedDocument } from './load-document.js';
+export { loadDocument, resolveSafeDocumentPath, type LoadedDocument, type LoadDocumentOptions } from './load-document.js';
 export { extractPdfText } from './pdf-text.js';
 export { buildGroundedPrompt } from './prompt.js';
 export {

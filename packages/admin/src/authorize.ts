@@ -28,7 +28,9 @@ export async function authorizeResourceAbility(
   record?: unknown,
 ): Promise<void> {
   if (!resource.policy) {
-    return;
+    throw new AuthorizationException(
+      `Admin resource [${resource.key}] requires a policy. Pass policy when defining the resource.`,
+    );
   }
 
   const user = auth.user();

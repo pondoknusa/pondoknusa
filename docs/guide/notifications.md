@@ -90,6 +90,8 @@ override toSlack() {
 
 ### Webhook
 
+Webhook destinations are validated before fetch: only `http:`/`https:` URLs that resolve to public addresses are allowed. Private, loopback, and link-local targets are blocked unless you set `allowPrivateNetwork: true` for trusted, app-controlled URLs.
+
 ```typescript
 override toWebhook() {
   return {

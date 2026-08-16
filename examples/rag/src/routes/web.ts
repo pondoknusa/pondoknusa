@@ -5,7 +5,6 @@ import {
   ConversationMemory,
   Rag,
   ingestDocument,
-  ingestFile,
   loadPromptTemplate,
   renderGroundedPrompt,
   streamRagResponse,
@@ -23,14 +22,10 @@ const rerankByLength: RerankFn = async (_query, chunks) =>
 
 export function registerWebRoutes(): void {
 Route.post('/rag/ingest', async (request) => {
-  const body = await request.json() as { source?: string; content?: string; path?: string };
-  if (body.path) {
-    const ids = await ingestFile(Document, body.path, { source: body.source });
-    return Response.json({ chunks: ids.length, ids, path: body.path });
-  }
-
+  // Accept only inline content — never a server filesystem path from the client.
+  const body = await request.json() as { source?: string; content?: string };
   if (!body.source || !body.content) {
-    return Response.json({ message: 'source and content are required (or provide path).' }, { status: 422 });
+    return Response.json({ message: 'source and content are required.' }, { status: 422 });
   }
 
   const ids = await ingestDocument(Document, {

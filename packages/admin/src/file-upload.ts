@@ -8,6 +8,8 @@ export interface StorageLike {
   url(path: string): string;
 }
 
+const DEFAULT_MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+
 export async function parseAdminInputWithFiles(
   request: PondoknusaRequest,
   fields: AdminField[],
@@ -85,13 +87,47 @@ async function uploadFieldFile(
     throw new Error(`Storage is not configured for admin file field [${field.name}].`);
   }
 
+  const maxBytes = field.file?.maxBytes ?? DEFAULT_MAX_UPLOAD_BYTES;
+  if (raw.size > maxBytes) {
+    throw new Error(
+      `Uploaded file for [${field.name}] exceeds the maximum size of ${maxBytes} bytes.`,
+    );
+  }
+
+  const extension = normalizeExtension(extname(raw.name));
+  const allowedExtensions = field.file?.allowedExtensions?.map(normalizeExtension);
+  if (allowedExtensions && allowedExtensions.length > 0) {
+    if (!extension || !allowedExtensions.includes(extension)) {
+      throw new Error(
+        `Uploaded file for [${field.name}] has a disallowed extension [${extension || '(none)'}].`,
+      );
+    }
+  }
+
+  const allowedMimeTypes = field.file?.allowedMimeTypes;
+  if (allowedMimeTypes && allowedMimeTypes.length > 0) {
+    const mime = (raw.type || '').toLowerCase();
+    if (!mime || !allowedMimeTypes.map((entry) => entry.toLowerCase()).includes(mime)) {
+      throw new Error(
+        `Uploaded file for [${field.name}] has a disallowed content type [${mime || '(none)'}].`,
+      );
+    }
+  }
+
   const directory = field.file?.directory ?? field.name;
-  const extension = extname(raw.name) || '';
   const filename = `${randomUUID()}${extension}`;
   const path = `${directory.replace(/\/$/, '')}/${filename}`;
   const buffer = Buffer.from(await raw.arrayBuffer());
   await storage.put(path, buffer);
   return storage.url(path);
+}
+
+function normalizeExtension(extension: string): string {
+  if (!extension) {
+    return '';
+  }
+  const lower = extension.toLowerCase();
+  return lower.startsWith('.') ? lower : `.${lower}`;
 }
 
 function coerceScalar(field: AdminField, raw: unknown): unknown {
