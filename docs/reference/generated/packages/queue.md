@@ -17,7 +17,7 @@ Peer dependencies must be installed in the app (they are not auto-installed on o
 
 | Field | Value |
 |-------|-------|
-| Version | `4.1.0` |
+| Version | `4.1.1` |
 | Source | [`packages/queue`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/queue) |
 | Category | Platform services |
 | Node.js | `>=26` |

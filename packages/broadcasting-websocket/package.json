@@ -1,6 +1,6 @@
 {
   "name": "@pondoknusa/broadcasting-websocket",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,8 +15,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pondoknusa/broadcasting": "4.1.0",
-    "@pondoknusa/redis": "4.1.0"
+    "@pondoknusa/broadcasting": "4.1.1",
+    "@pondoknusa/redis": "4.1.1"
   },
   "files": [
     "dist"

@@ -17,7 +17,7 @@ Peer dependencies must be installed in the app (they are not auto-installed on o
 
 | Field | Value |
 |-------|-------|
-| Version | `4.1.0` |
+| Version | `4.1.1` |
 | Source | [`packages/auth`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/auth) |
 | Category | Platform services |
 | Node.js | `>=26` |
@@ -59,6 +59,7 @@ From the package entry point (`dist/index.d.ts`). Deep imports are not supported
 - `MemorySessionStore`
 - `MicrosoftOAuthDriver`
 - `OAuthManager`
+- `OAuthStateError`
 - `PasswordResetBroker`
 - `PersonalAccessTokenRepository`
 - `Policy`

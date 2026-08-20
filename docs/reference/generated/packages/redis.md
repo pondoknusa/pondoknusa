@@ -15,7 +15,7 @@ npm install @pondoknusa/redis
 
 | Field | Value |
 |-------|-------|
-| Version | `4.1.0` |
+| Version | `4.1.1` |
 | Source | [`packages/redis`](https://github.com/pondoknusa/pondoknusa/tree/main/packages/redis) |
 | Category | Redis |
 | Node.js | `>=26` |
