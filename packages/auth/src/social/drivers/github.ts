@@ -39,6 +39,10 @@ export class GithubOAuthDriver implements SocialOAuthDriver {
       },
     });
 
+    if (!userRes.ok) {
+      throw new Error('GitHub user profile request failed.');
+    }
+
     const user = (await userRes.json()) as {
       id: number;
       login?: string;
@@ -47,11 +51,59 @@ export class GithubOAuthDriver implements SocialOAuthDriver {
       avatar_url?: string | null;
     };
 
+    const { email, emailVerified } = await resolveGithubEmail(accessToken, user.email);
+
     return {
       id: String(user.id),
-      email: user.email ?? null,
+      email,
       name: user.name ?? user.login ?? null,
       avatar: user.avatar_url ?? null,
+      emailVerified,
     };
+  }
+}
+
+/**
+ * GitHub's `/user` email is frequently null or unverified. Resolve a verified
+ * address from `/user/emails` so account linking only trusts addresses GitHub
+ * has actually confirmed.
+ */
+async function resolveGithubEmail(
+  accessToken: string,
+  profileEmail: string | null | undefined,
+): Promise<{ email: string | null; emailVerified: boolean }> {
+  const emails = await fetchGithubEmails(accessToken);
+  if (profileEmail) {
+    const match = emails.find((entry) => entry.email === profileEmail);
+    return { email: profileEmail, emailVerified: match?.verified === true };
+  }
+
+  const verified =
+    emails.find((entry) => entry.primary === true && entry.verified === true)
+    ?? emails.find((entry) => entry.verified === true);
+
+  return {
+    email: verified?.email ?? null,
+    emailVerified: verified?.verified === true,
+  };
+}
+
+async function fetchGithubEmails(
+  accessToken: string,
+): Promise<Array<{ email?: string; verified?: boolean; primary?: boolean }>> {
+  try {
+    const emailsRes = await fetch('https://api.github.com/user/emails', {
+      headers: {
+        authorization: `Bearer ${accessToken}`,
+        accept: 'application/json',
+        'user-agent': 'pondoknusa-auth',
+      },
+    });
+    if (!emailsRes.ok) {
+      return [];
+    }
+    return (await emailsRes.json()) as Array<{ email?: string; verified?: boolean; primary?: boolean }>;
+  } catch {
+    return [];
   }
 }

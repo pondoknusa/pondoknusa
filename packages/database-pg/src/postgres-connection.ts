@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import type { ConnectionOptions } from 'node:tls';
 import pg from 'pg';
 import type { DatabaseConnection, QueryResult } from '@pondoknusa/database';
 import { PostgresGrammar, type SqlGrammar } from '@pondoknusa/database';
@@ -19,7 +20,7 @@ export class PostgresConnection implements DatabaseConnection {
       database: config.database,
       user: config.username,
       password: config.password,
-      ssl: config.ssl ? { rejectUnauthorized: false } : undefined,
+      ssl: resolvePgSsl(config.ssl),
     });
   }
 
@@ -95,6 +96,20 @@ class PostgresTransactionConnection implements DatabaseConnection {
   ): Promise<T> {
     return callback(this);
   }
+}
+
+export function resolvePgSsl(
+  ssl: PgConnectionConfig['ssl'],
+): boolean | ConnectionOptions | undefined {
+  if (ssl === undefined || ssl === false) {
+    return undefined;
+  }
+
+  if (ssl === true) {
+    return { rejectUnauthorized: true };
+  }
+
+  return { rejectUnauthorized: true, ...ssl };
 }
 
 function normalizeBindings(bindings: RowValue[]): RowValue[] {

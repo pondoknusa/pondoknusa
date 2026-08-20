@@ -61,12 +61,17 @@ export class ViewAttributeBag {
         continue;
       }
 
-      if (value === true) {
-        parts.push(key);
+      const safeKey = sanitizeAttributeName(key);
+      if (!safeKey) {
         continue;
       }
 
-      parts.push(`${key}="${escapeHtml(String(value))}"`);
+      if (value === true) {
+        parts.push(safeKey);
+        continue;
+      }
+
+      parts.push(`${safeKey}="${escapeHtml(String(value))}"`);
     }
 
     return parts.join(' ');
@@ -102,4 +107,15 @@ function mergeAttributeStrings(existing: string, incoming: string): string {
     return existing;
   }
   return `${existing} ${incoming}`;
+}
+
+/**
+ * Attribute names are not HTML-escaped by browsers, so any character that can
+ * terminate or break out of an attribute name must be stripped. Whitespace,
+ * quotes, `<`, `>`, `=`, backslashes and control characters are removed;
+ * anything else (letters, digits, `-`, `_`, `.`, `:`) is preserved.
+ */
+function sanitizeAttributeName(key: string): string {
+  const safe = String(key).replace(/[\s"'=<>`\\]/g, '');
+  return /^[A-Za-z_:][\w:.\-]*$/.test(safe) ? safe : '';
 }

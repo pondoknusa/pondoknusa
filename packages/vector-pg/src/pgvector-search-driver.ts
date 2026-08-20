@@ -22,16 +22,18 @@ export class PgVectorSearchDriver implements VectorSearchDriver {
 
     const column = options.column ?? model.vectorColumn ?? 'embedding';
     const metric = options.metric ?? 'cosine';
-    const limit = options.limit ?? 10;
+    const limit = Math.max(1, Math.min(1000, Math.floor(Number(options.limit ?? 10))));
+    if (!Number.isFinite(limit)) {
+      throw new TypeError('Vector search limit must be a finite number.');
+    }
     const operator = pgVectorOperator(metric);
     const vectorLiteral = formatPgVector(embedding);
     const grammar = connection.grammar;
     const table = grammar.wrapIdentifier(model.table);
     const vectorColumn = grammar.wrapIdentifier(column);
     const bindings: Array<string | number> = [vectorLiteral];
-    let sql =
-      `SELECT *, (${vectorColumn} ${operator} $1::vector) AS distance`
-      + ` FROM ${table}`;
+    let nextParam = 2;
+    let whereClause = '';
 
     if (options.threshold !== undefined) {
       const scoreExpr = metric === 'cosine'
@@ -39,11 +41,17 @@ export class PgVectorSearchDriver implements VectorSearchDriver {
         : metric === 'inner_product'
           ? `(-(${vectorColumn} ${operator} $1::vector))`
           : `(1 / (1 + (${vectorColumn} ${operator} $1::vector)))`;
-      sql += ` WHERE ${scoreExpr} >= $2`;
+      whereClause = ` WHERE ${scoreExpr} >= $${nextParam}`;
       bindings.push(options.threshold);
+      nextParam += 1;
     }
 
-    sql += ` ORDER BY ${vectorColumn} ${operator} $1::vector ASC LIMIT ${limit}`;
+    const sql =
+      `SELECT *, (${vectorColumn} ${operator} $1::vector) AS distance`
+      + ` FROM ${table}`
+      + whereClause
+      + ` ORDER BY ${vectorColumn} ${operator} $1::vector ASC LIMIT $${nextParam}`;
+    bindings.push(limit);
     const result = await connection.query(sql, bindings);
     return result.rows.map((row) => {
       const distance = Number(row.distance ?? 0);

@@ -7,6 +7,8 @@ export type GraphQLScalar = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID';
 
 export interface GraphQLContext {
   request?: unknown;
+  userId?: string | number;
+  tenantId?: string | number;
   [key: string]: unknown;
 }
 

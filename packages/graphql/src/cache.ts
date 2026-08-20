@@ -1,10 +1,20 @@
 import { createHash } from 'node:crypto';
 import type { CacheStore } from '@pondoknusa/cache';
-import type { GraphQLExecutionResult, GraphQLRequestPayload } from './types.js';
+import type { GraphQLContext, GraphQLExecutionResult, GraphQLRequestPayload } from './types.js';
 
-export function buildGraphQLCacheKey(payload: GraphQLRequestPayload): string {
+export function graphqlCacheIdentity(context: GraphQLContext = {}): string {
+  const tenant = context.tenantId == null || context.tenantId === '' ? 'none' : String(context.tenantId);
+  const user = context.userId == null || context.userId === '' ? 'anonymous' : String(context.userId);
+  return `${tenant}:${user}`;
+}
+
+export function buildGraphQLCacheKey(
+  payload: GraphQLRequestPayload,
+  context: GraphQLContext = {},
+): string {
   const digest = createHash('sha256')
     .update(JSON.stringify({
+      identity: graphqlCacheIdentity(context),
       query: payload.query ?? '',
       operationName: payload.operationName ?? '',
       variables: payload.variables ?? {},

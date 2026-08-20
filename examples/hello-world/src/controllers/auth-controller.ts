@@ -2,7 +2,7 @@ import type { PondoknusaRequest } from '@pondoknusa/http';
 import { Response } from '@pondoknusa/http';
 import { Auth, Password, fire } from '@pondoknusa/core';
 import type { Application } from '@pondoknusa/core';
-import { Hasher, OAuthManager } from '@pondoknusa/auth';
+import { Hasher, OAuthManager, OAuthStateError } from '@pondoknusa/auth';
 import { User } from '../models/user.js';
 import { UserRegistered } from '../events/user-registered.js';
 
@@ -125,13 +125,17 @@ export class AuthController {
   oauthRedirect(request: PondoknusaRequest) {
     const provider = request.param('provider');
     const oauth = this.app.make(OAuthManager);
+    if (!request.session) {
+      return Response.json({ message: 'Session required for OAuth.' }, { status: 400 });
+    }
+
     const state = oauth.createState();
-    request.session?.put(`oauth.${provider}.state`, state);
+    oauth.bindOAuthState(request.session, provider, state);
 
     const authorize: { codeChallenge?: string; codeChallengeMethod?: 'S256' } = {};
     if (oauth.driverUsesPkce(provider)) {
       const pkce = oauth.createPkcePair();
-      request.session?.put(`oauth.${provider}.pkce_verifier`, pkce.verifier);
+      request.session.put(`oauth.${provider}.pkce_verifier`, pkce.verifier);
       authorize.codeChallenge = pkce.challenge;
       authorize.codeChallengeMethod = pkce.method;
     }
@@ -146,13 +150,25 @@ export class AuthController {
     const url = new URL(request.url);
     const code = url.searchParams.get('code') ?? '';
     const state = url.searchParams.get('state') ?? '';
-    const expected = request.session?.get<string>(`oauth.${provider}.state`);
-    if (!expected || expected !== state) {
-      return Response.json({ message: 'Invalid OAuth state.' }, { status: 422 });
+
+    if (!request.session) {
+      return Response.json({ message: 'Session required for OAuth.' }, { status: 400 });
     }
 
-    const codeVerifier = request.session?.get<string>(`oauth.${provider}.pkce_verifier`);
-    const profile = await oauth.handleCallback(provider, code, { codeVerifier });
+    const codeVerifier = request.session.get<string>(`oauth.${provider}.pkce_verifier`);
+
+    let profile;
+    try {
+      profile = await oauth.handleCallback(provider, code, { codeVerifier }, {
+        state,
+        session: request.session,
+      });
+    } catch (error) {
+      if (error instanceof OAuthStateError) {
+        return Response.json({ message: error.message }, { status: 422 });
+      }
+      throw error;
+    }
     const user = await oauth.findOrCreateUser(provider, profile);
     await Auth.login(user);
     return Response.redirect('/', 302);

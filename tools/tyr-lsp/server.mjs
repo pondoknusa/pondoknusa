@@ -8,8 +8,8 @@ import {
 } from 'vscode-languageserver/node.js';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { readdir, readFile } from 'node:fs/promises';
-import { dirname, join, relative } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const connection = createConnection(ProposedFeatures.all);
 const documents = new TextDocuments(TextDocument);
@@ -139,16 +139,22 @@ connection.onDefinition(async (params) => {
   }
 
   const viewName = match[2];
+  const viewsDir = resolve(workspaceRoot, 'resources/views');
   const candidates = [
-    join(workspaceRoot, 'resources/views', `${viewName}.tyr`),
-    join(workspaceRoot, 'resources/views', `${viewName}.tyr.ts`),
-    join(workspaceRoot, 'resources/views', viewName, 'index.tyr'),
+    join(viewsDir, `${viewName}.tyr`),
+    join(viewsDir, `${viewName}.tyr.ts`),
+    join(viewsDir, viewName, 'index.tyr'),
   ];
 
   for (const candidate of candidates) {
+    const resolved = resolve(candidate);
+    const rel = relative(viewsDir, resolved);
+    if (rel === '' || rel === '..' || rel.startsWith(`..${sep}`) || isAbsolute(rel)) {
+      continue;
+    }
     try {
-      await readFile(candidate);
-      return { uri: candidate, range: { start: { line: 0, character: 0 }, end: { line: 0, character: 0 } } };
+      await readFile(resolved);
+      return { uri: pathToFileURL(resolved).href, range: { start: { line: 0, character: 0 }, end: { line: 0, character: 0 } } };
     } catch {
       continue;
     }

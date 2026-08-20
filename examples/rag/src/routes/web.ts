@@ -6,7 +6,6 @@ import {
   Rag,
   ingestDocument,
   loadPromptTemplate,
-  renderGroundedPrompt,
   streamRagResponse,
   type RerankFn,
 } from '@pondoknusa/rag';
@@ -52,18 +51,14 @@ Route.post('/rag/ask', async (request) => {
     hybrid: { textQuery: body.question },
     rerank: rerankByLength,
   });
-  const template = await loadPromptTemplate(promptTemplatePath);
-  const prompt = renderGroundedPrompt(body.question, chunks, template);
 
   if (memory) {
     await memory.add('user', body.question);
-    await memory.add('assistant', prompt);
   }
 
   return Response.json({
-    prompt,
     chunks,
-    note: 'Send prompt to your LLM SDK in the app layer.',
+    note: 'Assemble the prompt server-side and send it to your LLM SDK. The system prompt is not returned to clients.',
   });
 });
 

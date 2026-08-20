@@ -2,7 +2,7 @@ import { connect as tlsConnect, type TLSSocket } from 'node:tls';
 import { connect as netConnect, type Socket } from 'node:net';
 import type { MailMessage, SmtpMailConfig } from './types.js';
 import type { MailTransport } from './transport.js';
-import { buildMimeMessage, dotStuff } from './mime.js';
+import { assertSafeAddress, buildMimeMessage, dotStuff } from './mime.js';
 
 export class SmtpMailTransport implements MailTransport {
   constructor(private readonly config: SmtpMailConfig) {}
@@ -49,10 +49,11 @@ async function transmit(
   message: MailMessage,
   timeout: number,
 ): Promise<void> {
-  const from = message.from!.address;
+  const from = assertSafeAddress(message.from!.address);
   await sendCommand(socket, `MAIL FROM:<${from}>`, timeout);
   for (const recipient of allRecipients(message)) {
-    await sendCommand(socket, `RCPT TO:<${recipient}>`, timeout);
+    const safeRecipient = assertSafeAddress(recipient);
+    await sendCommand(socket, `RCPT TO:<${safeRecipient}>`, timeout);
   }
   const body = dotStuff(buildMimeMessage(message));
   const dataReply = await sendCommand(socket, 'DATA', timeout);

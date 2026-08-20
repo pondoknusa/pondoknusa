@@ -8,4 +8,11 @@ describe('chunkText', () => {
     expect(chunks.length).toBeGreaterThan(1);
     expect(chunks.every((chunk) => chunk.length <= 400)).toBe(true);
   });
+
+  it('terminates when overlap >= size (no infinite loop)', () => {
+    const text = 'b'.repeat(500);
+    const chunks = chunkText(text, { size: 100, overlap: 100 });
+    expect(chunks.length).toBeGreaterThan(0);
+    expect(chunks.every((chunk) => chunk.length <= 100)).toBe(true);
+  });
 });

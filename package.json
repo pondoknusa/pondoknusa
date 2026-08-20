@@ -9,6 +9,14 @@
   "engines": {
     "node": ">=26"
   },
+  "overrides": {
+    "vitepress": {
+      "esbuild": "^0.25.0"
+    },
+    "vitest": {
+      "esbuild": "^0.25.0"
+    }
+  },
   "scripts": {
     "build": "tsc -b && npm run build --workspace=@pondoknusa/cli",
     "check:node": "node scripts/check-node.mjs",

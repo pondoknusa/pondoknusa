@@ -1,15 +1,37 @@
 import type { MailAddress, MailMessage } from './types.js';
 
 export function formatMailbox(address: MailAddress): string {
+  const safeAddress = assertSafeAddress(address.address);
   if (address.name) {
     const encoded = encodeHeaderValue(address.name);
-    return `"${encoded}" <${address.address}>`;
+    return `"${encoded}" <${safeAddress}>`;
   }
-  return address.address;
+  return safeAddress;
+}
+
+/**
+ * Strips CR/LF (and other unsafe control characters) from any header field
+ * value, preventing header injection. The leading/trailing whitespace is also
+ * trimmed so a trailing CRLF can't split the header.
+ */
+function stripCrlf(value: string): string {
+  return value.replace(/[\r\n\t]/g, '').trim();
 }
 
 function encodeHeaderValue(value: string): string {
-  return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  return stripCrlf(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
+
+/**
+ * Validates that an email address contains no CR/LF and roughly matches an
+ * address form. Throws on invalid input so malicious addresses can never reach
+ * a `From:`/`To:` header or an SMTP `MAIL FROM`/`RCPT TO` command.
+ */
+export function assertSafeAddress(address: string): string {
+  if (/[\r\n]/.test(address) || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(address.trim())) {
+    throw new Error(`Invalid mail address: ${JSON.stringify(address)}`);
+  }
+  return address.trim();
 }
 
 export function buildMimeMessage(message: MailMessage): string {
@@ -52,10 +74,11 @@ export function buildMimeMessage(message: MailMessage): string {
 }
 
 export function encodeSubject(subject: string): string {
-  if (/^[\x20-\x7E]*$/.test(subject)) {
-    return subject;
+  const safe = stripCrlf(subject);
+  if (/^[\x20-\x7E]*$/.test(safe)) {
+    return safe;
   }
-  const encoded = Buffer.from(subject, 'utf8').toString('base64');
+  const encoded = Buffer.from(safe, 'utf8').toString('base64');
   return `=?UTF-8?B?${encoded}?=`;
 }
 

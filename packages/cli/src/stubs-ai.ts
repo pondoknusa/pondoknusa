@@ -214,18 +214,14 @@ Route.post('/rag/ask', async (request) => {
     minScore: 0.1,
     hybrid: { textQuery: body.question },
   });
-  const template = await loadPromptTemplate(promptTemplatePath);
-  const prompt = rag.buildPrompt(body.question, chunks, template);
 
   if (memory) {
     await memory.add('user', body.question);
-    await memory.add('assistant', prompt);
   }
 
   return Response.json({
-    prompt,
     chunks,
-    note: 'Send prompt to your LLM SDK in the app layer.',
+    note: 'Assemble the prompt server-side and send it to your LLM SDK. The system prompt is not returned to clients.',
   });
 });
 

@@ -4,8 +4,12 @@ export interface ChunkTextOptions {
 }
 
 export function chunkText(text: string, options: ChunkTextOptions = {}): string[] {
-  const size = options.size ?? 800;
-  const overlap = options.overlap ?? 120;
+  const size = Math.max(1, Math.floor(Number(options.size ?? 800)) || 800);
+  const maxOverlap = size - 1;
+  const overlap = Math.min(
+    Math.max(0, Math.floor(Number(options.overlap ?? 120)) || 0),
+    maxOverlap,
+  );
   const normalized = text.replace(/\r\n/g, '\n').trim();
 
   if (!normalized) {

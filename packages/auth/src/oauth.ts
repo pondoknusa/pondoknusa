@@ -1,4 +1,4 @@
-import { randomBytes } from 'node:crypto';
+import { randomBytes, createHash, timingSafeEqual } from 'node:crypto';
 import type { DatabaseConnection } from '@pondoknusa/database';
 import { QueryBuilder } from '@pondoknusa/database';
 import { Hasher } from './hasher.js';
@@ -61,12 +61,25 @@ interface OAuthAccountRow {
   [key: string]: unknown;
 }
 
+export class OAuthStateError extends Error {
+  constructor(message = 'Invalid OAuth state.') {
+    super(message);
+    this.name = 'OAuthStateError';
+  }
+}
+
+function timingSafeEqualString(left: string, right: string): boolean {
+  const digest = (value: string) => createHash('sha256').update(value).digest();
+  return timingSafeEqual(digest(left), digest(right));
+}
+
 export function bindOAuthState(
   session: import('./session.js').Session,
   provider: string,
   state: string,
 ): void {
-  session.put('_oauth_state', { provider, state });
+  const existing = session.get<Record<string, string>>('_oauth_state') ?? {};
+  session.put('_oauth_state', { ...existing, [provider]: state });
 }
 
 export function consumeOAuthState(
@@ -74,11 +87,19 @@ export function consumeOAuthState(
   provider: string,
   state: string,
 ): void {
-  const record = session.get<{ provider?: string; state?: string }>('_oauth_state');
-  if (!record || record.provider !== provider || record.state !== state) {
-    throw new Error('Invalid OAuth state.');
+  const record = session.get<Record<string, string>>('_oauth_state');
+  const expected = record?.[provider] ?? '';
+  const matches = timingSafeEqualString(expected, state);
+  if (!record?.[provider] || !matches) {
+    throw new OAuthStateError();
   }
-  session.forget('_oauth_state');
+  const remaining = { ...record };
+  delete remaining[provider];
+  if (Object.keys(remaining).length === 0) {
+    session.forget('_oauth_state');
+  } else {
+    session.put('_oauth_state', remaining);
+  }
 }
 
 export class OAuthManager {
@@ -104,6 +125,22 @@ export class OAuthManager {
     return randomBytes(24).toString('base64url');
   }
 
+  bindOAuthState(
+    session: import('./session.js').Session,
+    provider: string,
+    state: string,
+  ): void {
+    bindOAuthState(session, provider, state);
+  }
+
+  consumeOAuthState(
+    session: import('./session.js').Session,
+    provider: string,
+    state: string,
+  ): void {
+    consumeOAuthState(session, provider, state);
+  }
+
   createPkcePair() {
     return createPkcePair();
   }
@@ -125,15 +162,25 @@ export class OAuthManager {
     provider: string,
     code: string,
     exchange: OAuthExchangeContext = {},
-    options?: { state?: string; session?: import('./session.js').Session },
+    options?: {
+      state?: string;
+      session?: import('./session.js').Session;
+      /** Opt out of CSRF state verification for non-browser (e.g. machine-to-machine) flows. */
+      skipStateVerification?: boolean;
+    },
   ): Promise<OAuthUserProfile> {
-    if (options?.state && options.session) {
-      consumeOAuthState(options.session, provider, options.state);
-    }
-
     const driver = this.drivers.get(provider);
     if (!driver) {
       throw new Error(`OAuth provider not configured: ${provider}`);
+    }
+
+    if (!options?.skipStateVerification) {
+      if (!options?.state || !options?.session) {
+        throw new Error(
+          'OAuth state verification is required. Pass { state, session } or set skipStateVerification: true for non-browser flows.',
+        );
+      }
+      consumeOAuthState(options.session, provider, options.state);
     }
 
     return driver.exchangeCode(code, exchange);
@@ -165,7 +212,7 @@ export class OAuthManager {
     const ModelClass = this.userModel as unknown as typeof import('@pondoknusa/database').Model;
     let user: Authenticatable | null = null;
 
-    if (profile.email) {
+    if (profile.email && profile.emailVerified === true) {
       user = (await ModelClass.query()
         .where('email', profile.email)
         .firstModel()) as Authenticatable | null;

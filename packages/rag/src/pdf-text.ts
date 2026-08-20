@@ -1,8 +1,13 @@
 import { inflateSync } from 'node:zlib';
 
-export function extractPdfText(buffer: Buffer): string {
+export interface ExtractPdfTextOptions {
+  /** Maximum bytes a single FlateDecode stream may decompress to. Guards against decompression bombs. */
+  maxInflateBytes?: number;
+}
+
+export function extractPdfText(buffer: Buffer, options: ExtractPdfTextOptions = {}): string {
   const latin = buffer.toString('latin1');
-  const inflated = inflatePdfStreams(latin);
+  const inflated = inflatePdfStreams(latin, options.maxInflateBytes ?? 50 * 1024 * 1024);
   const texts: string[] = [];
 
   for (const match of inflated.matchAll(/\((?:\\.|[^\\)])*\)\s*Tj/g)) {
@@ -25,7 +30,7 @@ export function extractPdfText(buffer: Buffer): string {
   return texts.join(' ').replace(/\s+/g, ' ').trim();
 }
 
-function inflatePdfStreams(content: string): string {
+function inflatePdfStreams(content: string, maxInflateBytes: number): string {
   const chunks: string[] = [];
   const pattern = /<<([^>]*)>>\s*stream\r?\n([\s\S]*?)\r?\nendstream/g;
 
@@ -39,8 +44,11 @@ function inflatePdfStreams(content: string): string {
 
     try {
       const compressed = Buffer.from(body, 'latin1');
-      chunks.push(inflateSync(compressed).toString('latin1'));
-    } catch {
+      chunks.push(inflateSync(compressed, { maxOutputLength: maxInflateBytes }).toString('latin1'));
+    } catch (error) {
+      if (error instanceof RangeError) {
+        throw new Error('PDF stream exceeded maximum decompression size (possible decompression bomb).');
+      }
       chunks.push(body);
     }
   }

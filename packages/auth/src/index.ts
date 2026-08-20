@@ -29,6 +29,7 @@ export {
   createPkcePair,
   bindOAuthState,
   consumeOAuthState,
+  OAuthStateError,
 } from './oauth.js';
 export type {
   OAuthUserProfile,

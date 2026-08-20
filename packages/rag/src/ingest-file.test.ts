@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { mkdtemp, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
+import { deflateSync } from 'node:zlib';
 import { Model, SqliteConnection } from '@pondoknusa/database';
 import { extractPdfText, ingestFile, loadPromptTemplate, renderGroundedPrompt } from './index.js';
 
@@ -70,6 +71,17 @@ describe('document ingestion', () => {
 
     expect(extractPdfText(pdf)).toContain('Hello PDF');
     expect(extractPdfText(pdf)).toContain('from Pondoknusa');
+  });
+
+  it('rejects FlateDecode streams that exceed the inflate cap', () => {
+    const compressed = deflateSync(Buffer.alloc(2000, 65));
+    const pdf = Buffer.concat([
+      Buffer.from('<< /Filter /FlateDecode >>\nstream\n', 'latin1'),
+      compressed,
+      Buffer.from('\nendstream', 'latin1'),
+    ]);
+
+    expect(() => extractPdfText(pdf, { maxInflateBytes: 16 })).toThrow(/decompression bomb/i);
   });
 
   it('renders grounded prompts from templates', async () => {

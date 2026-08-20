@@ -22,9 +22,9 @@ describe('TelegramWebhook', () => {
     expect(update.update_id).toBe(1);
   });
 
-  it('rejects mismatched secrets', async () => {
+  it('rejects mismatched secrets even when lengths differ', async () => {
     await expect(
-      TelegramWebhook.parse(requestWithSecret('wrong'), 's3cret'),
+      TelegramWebhook.parse(requestWithSecret('nope'), 's3cret'),
     ).rejects.toBeInstanceOf(TelegramWebhookError);
   });
 

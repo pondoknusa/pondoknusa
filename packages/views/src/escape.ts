@@ -48,7 +48,11 @@ export function escapeCss(value: unknown): string {
     return '';
   }
 
-  return String(value).replace(/["'\\]/g, '\\$&');
+  return String(value)
+    .replace(/["'\\]/g, '\\$&')
+    .replace(/</g, '\\3C ')
+    .replace(/>/g, '\\3E ')
+    .replace(/\//g, '\\2F ');
 }
 
 export const BUILTIN_ESCAPE_CONTEXTS: Record<string, EscapeHandler> = {

@@ -1,10 +1,16 @@
 import type { Notification } from '../notification.js';
 import type { Notifiable } from '../types.js';
+import { assertPublicHttpUrl } from '@pondoknusa/support';
 
 export interface SlackMessage {
   webhookUrl: string;
   text: string;
   blocks?: unknown[];
+  /**
+   * Allow private/loopback destinations. Only enable for app-controlled,
+   * trusted URLs — never for user-supplied destinations. Defaults to false.
+   */
+  allowPrivateNetwork?: boolean;
 }
 
 export class SlackChannel {
@@ -14,6 +20,9 @@ export class SlackChannel {
     }
 
     const message = await notification.toSlack(notifiable);
+    if (!message.allowPrivateNetwork) {
+      await assertPublicHttpUrl(message.webhookUrl);
+    }
     const response = await fetch(message.webhookUrl, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },

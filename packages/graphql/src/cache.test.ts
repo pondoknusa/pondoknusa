@@ -17,6 +17,30 @@ describe('GraphQL cache helpers', () => {
     expect(left.startsWith('graphql:response:')).toBe(true);
   });
 
+  it('derives distinct keys for different user contexts', () => {
+    const payload = { query: '{ me }', variables: {} };
+    const alice = buildGraphQLCacheKey(payload, { userId: 'alice' });
+    const bob = buildGraphQLCacheKey(payload, { userId: 'bob' });
+    const anon = buildGraphQLCacheKey(payload, {});
+
+    expect(alice).not.toBe(bob);
+    expect(alice).not.toBe(anon);
+    expect(bob).not.toBe(anon);
+  });
+
+  it('does not share a key across users that only share a tenant', () => {
+    const payload = { query: '{ me }', variables: {} };
+    const alice = buildGraphQLCacheKey(payload, { tenantId: 'org-1', userId: 'alice' });
+    const bob = buildGraphQLCacheKey(payload, { tenantId: 'org-1', userId: 'bob' });
+    const tenantOnly = buildGraphQLCacheKey(payload, { tenantId: 'org-1' });
+    const otherTenant = buildGraphQLCacheKey(payload, { tenantId: 'org-2', userId: 'alice' });
+
+    expect(alice).not.toBe(bob);
+    expect(alice).not.toBe(tenantOnly);
+    expect(bob).not.toBe(tenantOnly);
+    expect(alice).not.toBe(otherTenant);
+  });
+
   it('caches successful responses and skips error responses', async () => {
     const cache = new ArrayStore();
     const callback = vi

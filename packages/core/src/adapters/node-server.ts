@@ -168,6 +168,24 @@ async function createNodeServer(
 const DEFAULT_MAX_BODY_BYTES = 10 * 1024 * 1024;
 const REMOTE_ADDRESS_HEADER = 'x-pondoknusa-remote-address';
 
+/**
+ * Stamps the real socket peer onto the private remote-address header.
+ *
+ * The adapter owns this header: any client-supplied copy must be dropped,
+ * even when the socket has no remote address (e.g. Unix domain sockets),
+ * otherwise an attacker can spoof their IP and bypass throttling and
+ * trusted-proxy checks.
+ */
+export function applyRemoteAddress(
+  headers: Headers,
+  remoteAddress: string | undefined,
+): void {
+  headers.delete(REMOTE_ADDRESS_HEADER);
+  if (remoteAddress) {
+    headers.set(REMOTE_ADDRESS_HEADER, remoteAddress);
+  }
+}
+
 async function toFetchRequest(incoming: IncomingMessage, scheme: string): Promise<Request> {
   const method = incoming.method ?? 'GET';
   const { url, pathname } = resolveRequestUrl(incoming, scheme);
@@ -187,10 +205,7 @@ async function toFetchRequest(incoming: IncomingMessage, scheme: string): Promis
     headers.set(key, value);
   }
 
-  const remoteAddress = incoming.socket.remoteAddress;
-  if (remoteAddress) {
-    headers.set(REMOTE_ADDRESS_HEADER, remoteAddress);
-  }
+  applyRemoteAddress(headers, incoming.socket.remoteAddress);
 
   let request: Request;
   if (method === 'GET' || method === 'HEAD') {

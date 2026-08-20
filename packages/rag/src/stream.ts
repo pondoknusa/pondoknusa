@@ -7,6 +7,12 @@ import type { ConversationMemory } from './conversation.js';
 export interface RagStreamOptions extends RagRetrieveOptions {
   promptTemplate?: string;
   memory?: ConversationMemory;
+  /**
+   * When true, emits the fully-rendered prompt and retrieved chunks to the
+   * client for debugging. Off by default: the system template and assembled
+   * context must not be leaked to end clients.
+   */
+  debug?: boolean;
 }
 
 export interface RagTokenStream {
@@ -35,10 +41,12 @@ export async function* streamRagResponse(
     ? renderGroundedPrompt(question, chunks, options.promptTemplate)
     : rag.buildPrompt(question, chunks);
 
-  yield {
-    event: 'prompt',
-    data: JSON.stringify({ prompt }),
-  };
+  if (options.debug === true) {
+    yield {
+      event: 'prompt',
+      data: JSON.stringify({ prompt }),
+    };
+  }
 
   let answer = '';
   for await (const token of streamTokens(prompt)) {

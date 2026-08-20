@@ -6,6 +6,29 @@ import { Application } from '../application.js';
 import { HttpKernel } from '../http-kernel.js';
 import { Route, setRouteApplication } from '../route.js';
 import { serve } from '../server.js';
+import { applyRemoteAddress } from './node-server.js';
+
+describe('applyRemoteAddress', () => {
+  const HEADER = 'x-pondoknusa-remote-address';
+
+  it('stamps the socket peer address', () => {
+    const headers = new Headers();
+    applyRemoteAddress(headers, '203.0.113.10');
+    expect(headers.get(HEADER)).toBe('203.0.113.10');
+  });
+
+  it('overwrites a client-supplied copy of the header', () => {
+    const headers = new Headers({ [HEADER]: '1.2.3.4' });
+    applyRemoteAddress(headers, '203.0.113.10');
+    expect(headers.get(HEADER)).toBe('203.0.113.10');
+  });
+
+  it('drops a client-supplied copy when the socket has no remote address', () => {
+    const headers = new Headers({ [HEADER]: '1.2.3.4' });
+    applyRemoteAddress(headers, undefined);
+    expect(headers.get(HEADER)).toBeNull();
+  });
+});
 
 describe('node server streaming', () => {
   it('flushes html chunks before the stream completes', async () => {

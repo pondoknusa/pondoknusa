@@ -1,6 +1,6 @@
 import type { CacheStore } from '@pondoknusa/cache';
-import { GraphQLError } from './errors.js';
-import { buildGraphQLCacheKey, rememberGraphQLResponse } from './cache.js';
+import { GraphQLError, formatInternalError } from './errors.js';
+import { buildGraphQLCacheKey, graphqlCacheIdentity, rememberGraphQLResponse } from './cache.js';
 import { parseQuery, resolveArgumentValues } from './parse-query.js';
 import type { GraphQLOperationRegistry } from './operations.js';
 import type { GraphQLSchema } from './schema.js';
@@ -76,7 +76,7 @@ export async function executeGraphQL(options: ExecuteGraphQLOptions): Promise<Gr
       }
       return {
         data: null,
-        errors: [new GraphQLError(error instanceof Error ? error.message : String(error)).format()],
+        errors: [formatInternalError(error).format()],
       };
     }
   };
@@ -88,7 +88,7 @@ export async function executeGraphQL(options: ExecuteGraphQLOptions): Promise<Gr
   const ttl = options.defaultCacheTtl ?? 60;
   return rememberGraphQLResponse(
     options.cache,
-    buildGraphQLCacheKey(payload),
+    buildGraphQLCacheKey(payload, options.context ?? {}),
     ttl,
     run,
   );
@@ -216,9 +216,11 @@ async function resolveWithCache(
     return execute();
   }
 
-  const cacheKey = definition.cache.key
-    ? `graphql:field:${definition.cache.key(args, options.context)}`
-    : `graphql:field:${path.join('.')}:${JSON.stringify(args)}`;
+  const cacheKey = `graphql:field:${graphqlCacheIdentity(options.context)}:${
+    definition.cache.key
+      ? definition.cache.key(args, options.context)
+      : `${path.join('.')}:${JSON.stringify(args)}`
+  }`;
 
   const cached = await options.cache.get(cacheKey);
   if (cached !== null) {
@@ -267,10 +269,10 @@ async function resolveSelectionSet(
         childPath,
       );
     } catch (error) {
-      throw new GraphQLError(
-        error instanceof Error ? error.message : String(error),
-        childPath,
-      );
+      if (error instanceof GraphQLError) {
+        throw error.path ? error : error.withPath(childPath);
+      }
+      throw formatInternalError(error).withPath(childPath);
     }
   }
 
@@ -294,8 +296,5 @@ function formatExecutionError(
     return error.format();
   }
 
-  return new GraphQLError(
-    error instanceof Error ? error.message : String(error),
-    path,
-  ).format();
+  return formatInternalError(error).withPath(path).format();
 }

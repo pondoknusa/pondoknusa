@@ -20,4 +20,11 @@ describe('ViewAttributeBag', () => {
 
     expect(html).toBe('<button class="base" class="btn" type="button">Save</button>');
   });
+
+  it('sanitizes attribute names to prevent attribute-injection XSS', () => {
+    const bag = new ViewAttributeBag({ 'x" onmouseover="alert(1)': 'v', 'data-ok': 'y' });
+    const html = bag.toHtml();
+    expect(html).not.toContain('onmouseover');
+    expect(html).toContain('data-ok="y"');
+  });
 });

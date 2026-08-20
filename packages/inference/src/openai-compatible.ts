@@ -18,6 +18,8 @@ export interface OpenAICompatibleConfig extends InferenceProviderConfig {
   authHeader?: string;
   /** Model used for embeddings when the call does not pass one. */
   embeddingModel?: string;
+  /** Per-request timeout in milliseconds. Defaults to 30s. */
+  timeout?: number;
 }
 
 interface OpenAIChatResponse {
@@ -51,6 +53,7 @@ export class OpenAICompatibleProvider implements InferenceProvider {
   private readonly embeddingModel: string | undefined;
   private readonly headers: Record<string, string> | undefined;
   private readonly fetchImpl: typeof fetch;
+  private readonly timeout: number;
 
   constructor(config: OpenAICompatibleConfig) {
     this.name = config.name;
@@ -61,6 +64,7 @@ export class OpenAICompatibleProvider implements InferenceProvider {
     this.embeddingModel = config.embeddingModel;
     this.headers = config.headers;
     this.fetchImpl = config.fetch ?? fetch;
+    this.timeout = config.timeout ?? 30_000;
   }
 
   async chat(
@@ -173,17 +177,30 @@ export class OpenAICompatibleProvider implements InferenceProvider {
   }
 
   private async request(path: string, body: Record<string, unknown>): Promise<Response> {
-    const response = await this.fetchImpl(`${this.baseUrl}${path}`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        ...(this.authHeader
-          ? { [this.authHeader]: this.apiKey }
-          : { authorization: `Bearer ${this.apiKey}` }),
-        ...this.headers,
-      },
-      body: JSON.stringify(body),
-    });
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), this.timeout);
+    let response: Response;
+    try {
+      response = await this.fetchImpl(`${this.baseUrl}${path}`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          ...(this.authHeader
+            ? { [this.authHeader]: this.apiKey }
+            : { authorization: `Bearer ${this.apiKey}` }),
+          ...this.headers,
+        },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+    } catch (error) {
+      if (controller.signal.aborted) {
+        throw new InferenceError(`${this.name} request timed out after ${this.timeout}ms`, this.name);
+      }
+      throw error;
+    } finally {
+      clearTimeout(timer);
+    }
 
     if (!response.ok) {
       const text = await response.text();

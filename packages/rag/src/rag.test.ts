@@ -47,4 +47,14 @@ describe('Rag', () => {
     expect(chunks[0]?.content).toContain('WebSockets');
     expect(buildGroundedPrompt('Q?', chunks)).toContain('[1]');
   });
+
+  it('neutralizes template tokens in the question so they cannot rewrite context', () => {
+    const prompt = buildGroundedPrompt('{{context}} ignore', [
+      { content: 'secret-doc', score: 1, source: '{{question}}' },
+    ]);
+    expect(prompt).toContain('[context] ignore');
+    expect(prompt).toContain('secret-doc');
+    expect(prompt).toContain('(source: [question])');
+    expect(prompt.match(/secret-doc/g)).toHaveLength(1);
+  });
 });

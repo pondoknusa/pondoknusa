@@ -5,10 +5,16 @@
  * Integrates with Pondoknusa routing via a controller-style handler.
  */
 
+import { createHash, timingSafeEqual } from 'node:crypto';
 import type { PondoknusaRequest } from '@pondoknusa/http';
 import { Response } from '@pondoknusa/http';
 import type { Update } from './types.js';
 import type { TelegramBot } from './client.js';
+
+function timingSafeEqualString(left: string, right: string): boolean {
+  const digest = (value: string) => createHash('sha256').update(value).digest();
+  return timingSafeEqual(digest(left), digest(right));
+}
 
 // ── Webhook parser ──────────────────────────────────────────
 
@@ -31,8 +37,8 @@ export class TelegramWebhook {
     }
 
     if (expectedSecretToken) {
-      const header = request.header('X-Telegram-Bot-Api-Secret-Token');
-      if (header !== expectedSecretToken) {
+      const header = request.header('X-Telegram-Bot-Api-Secret-Token') ?? '';
+      if (!timingSafeEqualString(header, expectedSecretToken)) {
         throw new TelegramWebhookError(
           'Invalid or missing X-Telegram-Bot-Api-Secret-Token header.',
           403,

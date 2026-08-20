@@ -39,6 +39,7 @@ export class GoogleOAuthDriver implements SocialOAuthDriver {
     const user = (await userRes.json()) as {
       id: string;
       email?: string;
+      verified_email?: boolean;
       name?: string;
       picture?: string;
     };
@@ -48,6 +49,7 @@ export class GoogleOAuthDriver implements SocialOAuthDriver {
       email: user.email ?? null,
       name: user.name ?? null,
       avatar: user.picture ?? null,
+      emailVerified: user.verified_email === true,
     };
   }
 }

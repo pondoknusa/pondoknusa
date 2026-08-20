@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { ArrayStore } from '@pondoknusa/cache';
 import { executeGraphQL, executeNamedOperation } from './execute.js';
+import { GraphQLError } from './errors.js';
 import { createOperationRegistry } from './operations.js';
 import { defineSchema, defineType } from './schema.js';
 
@@ -8,6 +9,10 @@ const schema = defineSchema({
   Query: {
     hello: {
       resolve: (_parent, args: { name?: string }) => `Hello, ${args.name ?? 'world'}!`,
+    },
+    me: {
+      resolve: (_parent, _args, context) => `user:${String(context.userId ?? 'anon')}`,
+      cache: { ttl: 120 },
     },
     version: {
       resolve: () => '0.14.0',
@@ -32,6 +37,11 @@ const schema = defineSchema({
       },
       source: {
         resolve: (parent) => (parent as { source: string }).source,
+      },
+      classified: {
+        resolve: () => {
+          throw new GraphQLError('not authorized', undefined, { code: 'FORBIDDEN' });
+        },
       },
     }),
   },
@@ -81,6 +91,17 @@ describe('executeGraphQL', () => {
     expect(result.errors?.[0]?.path).toEqual(['fail']);
   });
 
+  it('preserves GraphQLError from nested resolvers instead of wrapping them', async () => {
+    const result = await executeGraphQL({
+      schema,
+      document: '{ documents { classified } }',
+    });
+
+    expect(result.errors?.[0]?.message).toBe('not authorized');
+    expect(result.errors?.[0]?.extensions).toEqual({ code: 'FORBIDDEN' });
+    expect(result.errors?.[0]?.path).toEqual(['documents', 0, 'classified']);
+  });
+
   it('caches field resolvers and operation responses', async () => {
     const cache = new ArrayStore();
     const versionResolve = vi.spyOn(schema.queryFields.version!, 'resolve');
@@ -97,6 +118,49 @@ describe('executeGraphQL', () => {
     });
 
     expect(versionResolve).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not reuse default field cache across users', async () => {
+    const cache = new ArrayStore();
+    const meResolve = vi.spyOn(schema.queryFields.me!, 'resolve');
+
+    const alice = await executeGraphQL({
+      schema,
+      document: '{ me }',
+      cache,
+      context: { userId: 'alice' },
+    });
+    const bob = await executeGraphQL({
+      schema,
+      document: '{ me }',
+      cache,
+      context: { userId: 'bob' },
+    });
+
+    expect(alice.data?.me).toBe('user:alice');
+    expect(bob.data?.me).toBe('user:bob');
+    expect(meResolve).toHaveBeenCalledTimes(2);
+  });
+
+  it('scopes custom field cache keys by identity', async () => {
+    const cache = new ArrayStore();
+    const versionResolve = vi.spyOn(schema.queryFields.version!, 'resolve');
+    versionResolve.mockClear();
+
+    await executeGraphQL({
+      schema,
+      document: '{ version }',
+      cache,
+      context: { userId: 'alice' },
+    });
+    await executeGraphQL({
+      schema,
+      document: '{ version }',
+      cache,
+      context: { userId: 'bob' },
+    });
+
+    expect(versionResolve).toHaveBeenCalledTimes(2);
   });
 });
 

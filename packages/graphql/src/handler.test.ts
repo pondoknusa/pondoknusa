@@ -28,6 +28,31 @@ describe('createGraphQLHandler', () => {
     expect(await response.json()).toEqual({ data: { hello: 'world' } });
   });
 
+  it('rejects mutations over GET', async () => {
+    const mutatingSchema = defineSchema({
+      Query: {
+        hello: {
+          resolve: () => 'world',
+        },
+      },
+      Mutation: {
+        ping: {
+          resolve: () => 'pong',
+        },
+      },
+    });
+    const handler = createGraphQLHandler({ schema: mutatingSchema });
+    const request = new PondoknusaRequest(
+      new Request('http://localhost/graphql?query=mutation%20%7B%20ping%20%7D'),
+    );
+
+    const response = await handler(request);
+    expect(response.status).toBe(405);
+    expect(await response.json()).toEqual({
+      errors: [{ message: 'Mutations are not allowed over GET.' }],
+    });
+  });
+
   it('handles GET requests with query parameters', async () => {
     const handler = createGraphQLHandler({ schema });
     const request = new PondoknusaRequest(
@@ -36,6 +61,19 @@ describe('createGraphQLHandler', () => {
 
     const response = await handler(request);
     expect(await response.json()).toEqual({ data: { hello: 'world' } });
+  });
+
+  it('rejects invalid GET variables JSON', async () => {
+    const handler = createGraphQLHandler({ schema });
+    const request = new PondoknusaRequest(
+      new Request('http://localhost/graphql?query=%7B%20hello%20%7D&variables=not-json'),
+    );
+
+    const response = await handler(request);
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      errors: [{ message: 'Invalid GraphQL request JSON.' }],
+    });
   });
 
   it('executes named persisted operations when registered', async () => {

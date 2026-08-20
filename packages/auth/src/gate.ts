@@ -6,7 +6,7 @@ import { Policy } from './policy.js';
 import { AuthorizationException } from './authorization-exceptions.js';
 
 export class Gate {
-  private readonly policyMap = new Map<string, PolicyConstructor>();
+  private readonly policyMap = new Map<string | Constructor<unknown>, PolicyConstructor>();
 
   constructor(
     private readonly container: Container,
@@ -19,6 +19,7 @@ export class Gate {
 
   policy(model: Constructor<unknown>, policy: PolicyConstructor): this {
     this.policyMap.set(model.name, policy);
+    this.policyMap.set(model, policy);
     return this;
   }
 
@@ -69,18 +70,21 @@ export class Gate {
       return null;
     }
 
-    const modelName =
+    const constructor =
       typeof model === 'object' && model !== null && 'constructor' in model
-        ? (model.constructor as { name: string }).name
+        ? (model.constructor as Constructor<unknown>)
         : typeof model === 'function'
-          ? (model as { name: string }).name
+          ? (model as Constructor<unknown>)
           : undefined;
 
-    if (!modelName) {
+    if (!constructor) {
       return null;
     }
 
-    const PolicyClass = this.policyMap.get(modelName);
+    const PolicyClass =
+      this.policyMap.get(constructor) ??
+      this.policyMap.get(constructor.name);
+
     if (!PolicyClass) {
       return null;
     }
